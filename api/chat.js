@@ -1,3 +1,4 @@
+import { systemPrompt } from "../config/systemPrompt.js";
 export default async function handler(req, res) {
     if (req.method !== "POST") {
         return res.status(405).json({ error: "Method not allowed" });
@@ -9,6 +10,9 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: "Invalid request" });
         }
 
+        // 🧠 Thêm systemPrompt vào đầu danh sách
+        const finalMessages = [systemPrompt, ...messages];
+
         const response = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -17,7 +21,7 @@ export default async function handler(req, res) {
             },
             body: JSON.stringify({
                 model: "gpt-3.5-turbo",
-                messages,
+                messages: finalMessages,
                 max_tokens: 800
             })
         });

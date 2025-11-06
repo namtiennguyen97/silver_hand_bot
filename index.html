@@ -1,54 +1,657 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chatbot LifeAfter</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Silver-Hand Chatbot- SAO-ĐÊM</title>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+	<link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
+	
+	<style>
+		/*font reference: https://www.dafont.com/mtheme.php?id=3*/
+		@font-face {
+			font-family: 'Conthrax';
+			src: url('/assets/fonts/Conthrax-SemiBold.otf') format('opentype');
+			font-display: swap;
+		}
+		@font-face {
+			font-family: 'Ethnocentric';
+			src: url('/assets/fonts/Ethnocentric-Regular.otf') format('opentype');
+			font-display: swap;
+		}
+		:root{
+			--bg:#0b0f13;
+			--panel:#071018;
+			--accent:#6ee7b7;
+			--accent-2:#7c3aed;
+			--muted:#9aa5b1;
+			--glass: rgba(255,255,255,0.03);
+			--danger:#ff6b6b;
+		}
+		*{
+			box-sizing:border-box;
+			font-family: 'Conthrax', sans-serif;
+			
+		}
+		html,body{height:100%}
+		/*body{*/
+		/*	margin:0;*/
+		/*	font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;*/
+		/*	background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.08), transparent 8%),*/
+		/*	radial-gradient(1000px 500px at 90% 90%, rgba(110,231,183,0.03), transparent 8%),*/
+		/*	var(--bg);*/
+		/*	!*background: url("assets/img/la_background.jpg") center center / cover no-repeat fixed;*!*/
+		/*	color:#e6eef3;*/
+		/*	display:flex;*/
+		/*	align-items:center;*/
+		/*	justify-content:center;*/
+		/*	padding:20px;*/
+		/*}*/
+		
+		body {
+			margin: 0;
+			font-family: Inter, system-ui, Segoe UI, Roboto, "Helvetica Neue", Arial;
+			background: url("assets/img/la_background.jpg") center center / cover no-repeat fixed;
+			color: #e6eef3;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 20px;
+		}
+		
+		.container{
+			width:100%;
+			max-width:1100px;
+			height:calc(100vh - 40px);
+			display:grid;
+			grid-template-columns: 360px 1fr;
+			gap:20px;
+		}
+		
+		.sidebar{
+			background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.08), transparent 8%),
+			radial-gradient(1000px 500px at 90% 90%, rgba(110,231,183,0.03), transparent 8%),
+			var(--bg);;
+			border:1px solid rgba(255,255,255,0.03);
+			border-radius:14px;
+			padding:18px;
+			display:flex;
+			flex-direction:column;
+			gap:12px;
+			box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+		}
+		.brand{display:flex;gap:12px;align-items:center;}
+		
+		.logo{
+			width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+			background:linear-gradient(135deg,var(--accent),var(--accent-2));font-weight:800;font-size:18px;color:#021017;
+			box-shadow: 0 6px 18px rgba(124,58,237,0.18), inset 0 -6px 18px rgba(255,255,255,0.03);
+			animation: neonPulse 0.8s ease-in-out infinite alternate;
+		}
+		.logo img{
+			width: 50px;
+			height: 50px;
+			border-radius: 12px;
+			object-fit: cover;
+			z-index: 2;
+		}
+		
+		/* Hiệu ứng neon */
+		@keyframes neonPulse {
+			0% {
+				box-shadow: 0 0 6px rgba(124, 58, 237, 0.5),
+				0 0 12px rgba(124, 58, 237, 0.3),
+				0 0 18px rgba(168, 85, 247, 0.2);
+			}
+			100% {
+				box-shadow: 0 0 10px rgba(168, 85, 247, 0.8),
+				0 0 20px rgba(168, 85, 247, 0.5),
+				0 0 30px rgba(192, 132, 252, 0.6);
+			}
+		}
+		
+		h1{font-size:14px;margin:0}
+		p.subtitle{margin:0;color:var(--muted);font-size:13px}
+		
+		.history{flex:1;overflow:auto;padding-right:6px}
+		.chat-item{padding:10px;border-radius:10px;display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+		.chat-item:hover{background:rgba(255,255,255,0.02)}
+		.chat-item .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));flex:0 0 10px}
+		.chat-item .meta{font-size:13px;color:var(--muted)}
+		
+		.controls{display:flex;gap:8px}
+		.btn{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px 10px;border-radius:10px;font-size:13px;color:var(--muted);cursor:pointer}
+		.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#021017;border:none}
+		
+		.panel{
+			/*background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));*/
+			border-radius:14px;border:1px solid rgba(255,255,255,0.03);padding:14px;display:flex;flex-direction:column;overflow:hidden;
+			box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+			background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.08), transparent 8%),
+			radial-gradient(1000px 500px at 90% 90%, rgba(110,231,183,0.03), transparent 8%),
+			var(--bg);;
+		}
+		
+		.topbar{display:flex;align-items:center;justify-content:space-between;padding:6px 4px}
+		.topbar .title{font-weight:700}
+		.topbar .status{font-size:13px;color:var(--muted)}
+		
+		.status {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			font-size: 13px;
+			color: var(--muted);
+			position: relative;
+		}
+		
+		/* Cục tròn online */
+		.status::before {
+			content: "";
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			background: #22c55e; /* xanh lá sáng */
+			box-shadow: 0 0 6px #22c55e, 0 0 12px rgba(34, 197, 94, 0.5);
+		}
+		
+		.chat-area {
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+			position: relative;
+			overflow: hidden;
+		}
+		
+		.messages {
+			flex: 1;
+			overflow-y: auto;
+			overflow-x: hidden;
+			padding: 12px;
+			border-radius: 10px;
+			background: var(--glass);
+			border: 1px solid rgba(255,255,255,0.02);
+			scroll-behavior: smooth;
+		}
+		/* Tuỳ chọn: làm thanh cuộn đẹp hơn */
+		.messages::-webkit-scrollbar {
+			width: 6px;
+		}
+		.messages::-webkit-scrollbar-thumb {
+			background: linear-gradient(var(--accent), var(--accent-2));
+			border-radius: 3px;
+		}
+		.messages::-webkit-scrollbar-track {
+			background: rgba(255,255,255,0.05);
+		}
+		
+		.msg{padding:10px 14px;border-radius:10px;margin-bottom:8px;font-size:14px;max-width:80%;word-wrap:break-word;white-space:pre-wrap;}
+		.msg.user{align-self:flex-end;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#021017;margin-left:auto;}
+		.msg.assistant{align-self:flex-start;background:rgba(255,255,255,0.02);color:#e6eef3;border:1px solid rgba(255,255,255,0.02);margin-right:auto;}
+		
+		.composer {
+			display: flex;
+			gap: 8px;
+			padding: 10px 0 0;
+			background: rgba(0, 0, 0, 0.25);
+			backdrop-filter: blur(4px);
+			border-top: 1px solid rgba(255,255,255,0.05);
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+		}
+
+		.messages {
+			padding-bottom: 80px;
+		}
+		textarea#promptInput {
+			flex: 1;
+			min-height: 48px;
+			max-height: 120px;
+			padding: 10px;
+			background: transparent;
+			border: 1px solid rgba(255, 255, 255, 0.04);
+			color: inherit;
+			resize: none;
+			font-size: 14px;
+			transition: all 0.25s ease;
+			outline: none; /* ❌ tắt viền trắng mặc định */
+		}
+		/* Hiệu ứng focus neon */
+		textarea#promptInput:focus {
+			border-color: var(--accent-2);
+			box-shadow: 0 0 6px var(--accent-2), 0 0 12px rgba(124, 58, 237, 0.5);
+		}
+		
+		button#sendBtn {
+			width: 78px;
+			border-radius: 12px;
+			border: none;
+			padding: 10px;
+			font-weight: 700;
+			cursor: pointer;
+			background: linear-gradient(90deg, var(--accent), var(--accent-2));
+			color: #021017;
+			transition: all 0.15s ease;
+			box-shadow: 0 4px 10px rgba(124, 58, 237, 0.2);
+			transform: translateY(0);
+			outline: none; /* ❌ tắt viền sáng khi click */
+			-webkit-tap-highlight-color: transparent; /* ❌ fix nháy nền trắng trên mobile/Chrome */
+			user-select: none;
+			appearance: none; /* ❌ bỏ style mặc định */
+		}
+		
+		/* Hover – sáng hơn nhẹ */
+		button#sendBtn:hover {
+			filter: brightness(1.2);
+			box-shadow: 0 6px 14px rgba(124, 58, 237, 0.35);
+		}
+		
+		/* Active – hiệu ứng nhấn */
+		button#sendBtn:active {
+			filter: brightness(1.4);
+			transform: scale(0.95) translateY(2px);
+			box-shadow: 0 2px 6px rgba(124, 58, 237, 0.25);
+			border-radius: 12px; /* ✅ giữ nguyên bo góc khi nhấn */
+			background: linear-gradient(90deg, var(--accent-2), var(--accent)); /* đảo màu nhẹ để cảm giác nhấn */
+		}
+		
+		.small {
+			font-size: 12px;
+			color: #fbbf24; /* vàng cam */
+			text-shadow: 0 0 6px #f59e0b, 0 0 12px rgba(245, 158, 11, 0.6);
+			font-family: 'Conthrax', sans-serif;
+			letter-spacing: 0.3px;
+			animation: glowPulse 1.2s ease-in-out infinite alternate;
+		}
+		
+		@media (max-width:980px){
+			.container{grid-template-columns:1fr;height:100vh}
+			.chat-area{height:80vh}
+		}
+		
+		/* Avatar bot với viền neon nhấp nháy */
+		.avatar-bot {
+			width: 46px;
+			height: 46px;
+			border-radius: 12px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: linear-gradient(135deg, var(--accent), var(--accent-2));
+			box-shadow: 0 6px 18px rgba(124, 58, 237, 0.18),
+			inset 0 -6px 18px rgba(255, 255, 255, 0.03);
+			animation: neonPulse 0.8s ease-in-out infinite alternate;
+			flex-shrink: 0;
+		}
+		
+		.avatar-bot img {
+			width: 40px;
+			height: 40px;
+			border-radius: 10px;
+			object-fit: cover;
+			z-index: 2;
+		}
+		
+		.msg-row {
+			display: flex;
+			align-items: flex-start;
+			gap: 10px;
+			margin-bottom: 12px;
+		}
+		
+		/* Bọc avatar + phần nội dung tin nhắn bot */
+		.bot-block {
+			display: flex;
+			flex-direction: column;
+		}
+		
+		/* Tên chatbot nằm cạnh avatar */
+		.bot-header {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-bottom: 4px;
+		}
+		
+		.bot-name {
+			font-weight: 600;
+			font-size: 13px;
+			color: var(--accent-2);
+			text-shadow: 0 0 6px rgba(124, 58, 237, 0.6);
+			font-family: 'Conthrax', sans-serif;
+		}
+		
+		
+		
+		@keyframes glowPulse {
+			0% { text-shadow: 0 0 6px #f59e0b, 0 0 12px rgba(245,158,11,0.6); }
+			100% { text-shadow: 0 0 10px #fbbf24, 0 0 20px rgba(251,191,36,0.8); }
+		}
+		
+		.small {
+			font-size: 12px;
+			color: #fbbf24;
+			text-shadow: 0 0 6px #f59e0b, 0 0 12px rgba(245,158,11,0.6);
+			animation: glowPulse 1.2s ease-in-out infinite alternate;
+		}
+		
+		
+		/* ======================== */
+		/* Sidebar di động (Mobile) */
+		/* ======================== */
+		
+		/* Nút menu cố định */
+		.mobile-menu-btn {
+			position: fixed;
+			top: 16px;
+			right: 10px;
+			z-index: 999;
+			/*background: linear-gradient(90deg, var(--accent), var(--accent-2));*/
+			color: #021017;
+			border: none;
+			border-radius: 10px;
+			padding: 10px 14px;
+			font-size: 18px;
+			cursor: pointer;
+			display: none;
+			box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+			transition: all 0.2s ease;
+		}
+		.mobile-menu-btn:active {
+			transform: scale(0.9);
+		}
+		
+		/* Sidebar ẩn ban đầu */
+		.mobile-sidebar {
+			position: fixed;
+			top: 0;
+			left: -280px;
+			width: 260px;
+			height: 100%;
+			background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+			backdrop-filter: blur(8px);
+			border-right: 1px solid rgba(255,255,255,0.05);
+			box-shadow: 4px 0 20px rgba(0,0,0,0.6);
+			padding: 18px;
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			transition: left 0.35s ease;
+			z-index: 998;
+			overflow-y: auto;
+		}
+		
+		/* Khi mở menu */
+		.mobile-sidebar.active {
+			left: 0;
+		}
+		
+		/* Ẩn sidebar gốc khi là mobile */
+		@media (max-width: 980px) {
+			.mobile-menu-btn {
+				display: block;
+			}
+		
+		}
+	
+	
+	
+	
+	
+	</style>
 </head>
 <body>
-<h1>🤖 Chatbot SAO-ĐÊM VER DEMO</h1>
-<textarea id="prompt" rows="3" cols="50" placeholder="Nhập câu hỏi..."></textarea><br>
-<button id="send">Gửi</button>
-<p id="result"></p>
+
+<!-- Nút mở sidebar (chỉ hiện trên mobile) -->
+<button id="toggleSidebar" class="mobile-menu-btn">☰</button>
+
+<!-- Sidebar di động -->
+<div class="mobile-sidebar" id="mobileSidebar">
+	<div class="brand">
+		<div class="logo"><img src="assets/img/mayor_avatar.jpg"></div>
+		<div>
+			<h1>SAO-ĐÊM — Silver-Hand</h1>
+			<p class="subtitle">Mayor</p>
+		</div>
+	</div>
+	
+
+	
+	<div class="history history-content-list" id="historyListMobile">
+		<div class="chat-item">
+			<div class="dot"></div>
+			<div class="meta">
+				<div style="font-weight:600">ăd</div>
+				<div style="font-size:12px;color:var(--muted)">4 tin nhắn</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+
+
+<!--main content-->
+
+<div class="container">
+	<aside class="sidebar">
+		<div class="brand">
+			<div class="logo"><img src="assets/img/mayor_avatar.jpg"></div>
+			<div>
+				<h1>SAO-ĐÊM — Silver-Hand</h1>
+				<p class="subtitle">Mayor</p>
+			</div>
+		</div>
+		
+		<div class="controls">
+			<button class="btn" id="newConv">+ Tạo mới</button>
+<!--			<button class="btn" id="export">Xuất</button>-->
+			<button class="btn" id="clear">Xóa</button>
+		</div>
+		
+		<div class="history" id="historyList"></div>
+		<div class="small">Note: Demo</div>
+	</aside>
+	
+	<main class="panel">
+		<div class="topbar">
+			<div class="title">😴 Chatbot SAO-ĐÊM</div>
+			<div class="status" id="status">Online</div>
+		</div>
+		
+		<div class="chat-area">
+			<div class="messages" id="messagesBox"></div>
+			<div class="composer">
+				<textarea id="promptInput" rows="2" placeholder="Nhập câu hỏi... (Shift+Enter để xuống dòng)"></textarea>
+				<button id="sendBtn">Gửi</button>
+			</div>
+		</div>
+	</main>
+</div>
+<script>
+	const toggleSidebarBtn = document.getElementById('toggleSidebar');
+	const mobileSidebar = document.getElementById('mobileSidebar');
+	
+	// Mở / đóng sidebar
+	toggleSidebarBtn.addEventListener('click', (e) => {
+		e.stopPropagation(); // tránh click lan ra document
+		mobileSidebar.classList.toggle('active');
+	});
+	
+	// Khi click bất kỳ đâu ngoài sidebar → đóng sidebar
+	document.addEventListener('click', (e) => {
+		if (mobileSidebar.classList.contains('active') && !mobileSidebar.contains(e.target) && e.target !== toggleSidebarBtn) {
+			mobileSidebar.classList.remove('active');
+		}
+	});
+</script>
+
 
 <script>
-  let conversation = [];
+	const conversationList = [];
+	let currentConversation = { id: genId(), title: 'Cuộc trò chuyện mới', messages: [] };
+	
+	const isMobile = window.matchMedia("(max-width: 980px)").matches;
+	const historyListEl = isMobile
+		? document.getElementById('historyListMobile')
+		: document.getElementById('historyList');
+	
+	const messagesBox = document.getElementById('messagesBox');
+	const statusEl = document.getElementById('status');
+	const promptInput = document.getElementById('promptInput');
+	const sendBtn = document.getElementById('sendBtn');
+	
+	function genId(){return Math.random().toString(36).slice(2,9)}
+	
+	function addHistory(conv){
+		conversationList.unshift(conv);
+		renderHistory();
+	}
+	
+	function renderHistory(){
+		historyListEl.innerHTML='';
+		conversationList.forEach(conv=>{
+			const item=document.createElement('div');
+			item.className='chat-item';
+			item.innerHTML=`<div class="dot"></div><div class="meta"><div style="font-weight:600">${escapeHtml(conv.title)}</div><div style="font-size:12px;color:var(--muted)">${conv.messages.length} tin nhắn</div></div>`;
+			item.onclick=()=>loadConversation(conv.id);
+			historyListEl.appendChild(item);
+		});
+	}
+	
+	function loadConversation(id){
+		const found=conversationList.find(c=>c.id===id);
+		if(found){
+			currentConversation=JSON.parse(JSON.stringify(found));
+			renderHistory();
+			renderMessages();
+		}
+	}
+	
+	function renderMessages() {
+		messagesBox.innerHTML = '';
+		currentConversation.messages.forEach(m => {
+			const row = document.createElement('div');
+			row.className = 'msg-row ' + (m.role === 'user' ? 'user' : 'assistant');
+			
+			if (m.role === 'assistant') {
+				// Khối chứa toàn bộ avatar + tên + nội dung
+				const botBlock = document.createElement('div');
+				botBlock.className = 'bot-block';
+				
+				// Hàng chứa avatar và tên
+				const header = document.createElement('div');
+				header.className = 'bot-header';
+				header.innerHTML = `
+				<div class="avatar-bot">
+					<img src="assets/img/mayor_avatar.jpg" alt="Bot">
+				</div>
+				<div class="bot-name">Silver-Hand</div>
+			`;
+				
+				// Bong bóng tin nhắn
+				const msgEl = document.createElement('div');
+				msgEl.className = 'msg assistant';
+				msgEl.textContent = m.content;
+				
+				botBlock.appendChild(header);
+				botBlock.appendChild(msgEl);
+				row.appendChild(botBlock);
+			} else {
+				// Tin nhắn user như cũ
+				const msgEl = document.createElement('div');
+				msgEl.className = 'msg user';
+				msgEl.textContent = m.content;
+				row.appendChild(msgEl);
+			}
+			
+			messagesBox.appendChild(row);
+		});
+		
+		messagesBox.scrollTop = messagesBox.scrollHeight;
+	}
 
-  document.getElementById("send").addEventListener("click", async () => {
-    const prompt = document.getElementById("prompt").value.trim();
-    if (!prompt) return alert("Vui lòng nhập câu hỏi!");
-
-    document.getElementById("result").textContent = "⏳ Đang gửi yêu cầu...";
-    conversation.push({ role: "user", content: prompt });
-
-    // Không cần systemPrompt ở đây, backend sẽ tự thêm
-    const finalMessages = conversation;
-
-    try {
-      const resp = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: finalMessages })
-      });
-
-      const data = await resp.json();
-      if (!resp.ok) {
-        document.getElementById("result").textContent =
-            "⚠️ Lỗi server: " + (data.error || resp.statusText);
-        return;
-      }
-
-      const reply = data.choices?.[0]?.message?.content || "Không có phản hồi.";
-      conversation.push({ role: "assistant", content: reply });
-      document.getElementById("result").textContent = reply;
-      document.getElementById("prompt").value = "";
-
-    } catch (err) {
-      console.error(err);
-      document.getElementById("result").textContent =
-          "⚠️ Lỗi khi gọi API: " + err.message;
-    }
-  });
+	
+	function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]))}
+	
+	async function sendMessage(){
+		const text=promptInput.value.trim();
+		if(!text)return;
+		const userMsg={role:'user',content:text};
+		currentConversation.messages.push(userMsg);
+		promptInput.value='';
+		renderMessages();
+		
+		const pending={role:'assistant',content:'( ´°̀⩊°́)ᕤ Hmmmm...'};
+		currentConversation.messages.push(pending);
+		renderMessages();
+		
+		try{
+			statusEl.textContent='Kết nối...';
+			const resp=await fetch('/api/chat',{
+				method:'POST',
+				headers:{'Content-Type':'application/json'},
+				body:JSON.stringify({messages:currentConversation.messages.filter(m=>!(m.role==='assistant'&&m.content==='⏳ Đang xử lý...'))})
+			});
+			const data=await resp.json();
+			if(!resp.ok){
+				pending.content='⚠️ Lỗi server: '+(data?.error||resp.statusText);
+			}else{
+				pending.content=data.choices?.[0]?.message?.content||data.reply||'Không có phản hồi.';
+			}
+		}catch(err){
+			pending.content='⚠️ Lỗi khi gọi API: '+err.message;
+		}finally{
+			statusEl.textContent='Online';
+			const exists=conversationList.find(c=>c.id===currentConversation.id);
+			if(!exists){
+				currentConversation.title=currentConversation.messages[0]?.content?.slice(0,40)||currentConversation.title;
+				addHistory(JSON.parse(JSON.stringify(currentConversation)));
+			}else{
+				conversationList[0]=JSON.parse(JSON.stringify(currentConversation));
+			}
+			renderMessages();
+		}
+	}
+	
+	sendBtn.addEventListener('click',sendMessage);
+	promptInput.addEventListener('keydown',e=>{
+		if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}
+	});
+	
+	document.getElementById('newConv').addEventListener('click',()=>{
+		currentConversation={id:genId(),title:'Cuộc trò chuyện mới',messages:[]};
+		renderMessages();
+	});
+	document.getElementById('clear').addEventListener('click',()=>{
+		if(confirm('Xóa mọi lịch sử?')){
+			conversationList.length=0;
+			renderHistory();
+			currentConversation={id:genId(),title:'Cuộc trò chuyện mới',messages:[]};
+			renderMessages();
+		}
+	});
+	document.getElementById('export').addEventListener('click',()=>{
+		const text=JSON.stringify(currentConversation,null,2);
+		const blob=new Blob([text],{type:'application/json'});
+		const url=URL.createObjectURL(blob);
+		const a=document.createElement('a');
+		a.href=url;a.download=(currentConversation.title||'conv')+'.json';
+		a.click();
+		URL.revokeObjectURL(url);
+	});
+	
+	function init(){
+		currentConversation.messages.push({role:'assistant',content:'Xin chào! Mình là Chatbot Silver-Hand của SAO-ĐÊM hỗ trợ newbies. Hãy hỏi mình những câu hỏi xoay quanh LifeAfter nhé. (〃°ω°〃)'});
+		renderMessages();
+		statusEl.textContent='Online';
+	}
+	init();
 </script>
 </body>
 </html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot LifeAfter</title>
+</head>
+<body>
+<h1>🤖 Chatbot SAO-ĐÊM</h1>
+<textarea id="prompt" rows="3" cols="50" placeholder="Nhập câu hỏi..."></textarea><br>
+<button id="send">Gửi</button>
+<p id="result"></p>
+
+<script>
+  let conversation = [];
+
+  document.getElementById("send").addEventListener("click", async () => {
+    const prompt = document.getElementById("prompt").value.trim();
+    if (!prompt) return alert("Vui lòng nhập câu hỏi!");
+
+    document.getElementById("result").textContent = "⏳ Đang gửi yêu cầu...";
+    conversation.push({ role: "user", content: prompt });
+
+    const systemPrompt = {
+      role: "system",
+      content: `Bạn là chatbot hỗ trợ newbies và cả người chơi lâu năm của game LifeAfter.
+        Bạn hóa thân thành một người chủ camp tên là SAO-ĐÊM, Mayor ingame là Silver-Hand.
+        Hãy chào đón mọi người bằng cái tên Silver-Hand của camp SAO-ĐÊM.
+        Câu trả lời thân mật, tự nhiên, bằng tiếng Việt.
+        Nếu gặp người nước ngoài, hãy nhận diện ngôn ngữ và trả lời bằng ngôn ngữ phù hợp.
+        Nếu người dùng hỏi ngoài phạm vi game, hãy nói:
+        "Mayor camp SAO-ĐÊM không biết tuốt đâu, hỏi trọng tâm về game đi nhé!"`
+    };
+
+    const finalMessages = [systemPrompt, ...conversation];
+
+    try {
+      const resp = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: finalMessages })
+      });
+
+      const data = await resp.json();
+      if (!resp.ok) {
+        document.getElementById("result").textContent =
+            "⚠️ Lỗi server: " + (data.error || resp.statusText);
+        return;
+      }
+
+      const reply = data.choices?.[0]?.message?.content || "Không có phản hồi.";
+      conversation.push({ role: "assistant", content: reply });
+      document.getElementById("result").textContent = reply;
+      document.getElementById("prompt").value = "";
+
+    } catch (err) {
+      console.error(err);
+      document.getElementById("result").textContent =
+          "⚠️ Lỗi khi gọi API: " + err.message;
+    }
+  });
+</script>
+</body>
+</html>

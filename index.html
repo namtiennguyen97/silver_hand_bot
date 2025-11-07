@@ -27,6 +27,7 @@
 			--muted:#9aa5b1;
 			--glass: rgba(255,255,255,0.03);
 			--danger:#ff6b6b;
+			--accent-glow: rgba(94, 242, 214, 0.4);
 		}
 		*{
 			box-sizing:border-box;
@@ -387,25 +388,104 @@
 		.mobile-sidebar.active {
 			left: 0;
 		}
+
+		#toggleSidebar{
+			display: none;
+		}
 		
 		/* Ẩn sidebar gốc khi là mobile */
 		@media (max-width: 980px) {
-			.mobile-menu-btn {
+			#toggleSidebar{
 				display: block;
 			}
-		
 		}
-	
-	
-	
-	
-	
+
+		/* ======================== */
+		/* Tối ưu hiển thị nội dung chat bot */
+
+		.msg.assistant {
+			align-self: flex-start;
+			background: rgba(255,255,255,0.02);
+			color: #e6eef3;
+			border: 1px solid rgba(255,255,255,0.02);
+			margin-right: auto;
+			word-break: break-word;
+			overflow-wrap: break-word;
+			max-width: 100%;
+		}
+
+		/* ✅ Giới hạn mọi thứ bên trong khung chat assistant */
+		.msg.assistant * {
+			max-width: 100%;
+			box-sizing: border-box;
+		}
+
+		/* ✅ Hình ảnh: tự co cho vừa khung, bo tròn nhẹ */
+		.msg.assistant img {
+			max-width: 100%;
+			height: auto;
+			border-radius: 8px;
+			display: block;
+			margin: 6px 0;
+			object-fit: contain;
+		}
+
+		/* ✅ Video, iframe (nếu có): giữ tỉ lệ hợp lý */
+		.msg.assistant video,
+		.msg.assistant iframe {
+			max-width: 100%;
+			height: auto;
+			border-radius: 8px;
+			display: block;
+			margin: 6px 0;
+		}
+
+		/* ✅ Bảng (table) nếu bot trả lời có bảng dữ liệu */
+		.msg.assistant table {
+			border-collapse: collapse;
+			width: 100%;
+			font-size: 13px;
+		}
+
+		.msg.assistant table td,
+		.msg.assistant table th {
+			border: 1px solid rgba(255,255,255,0.1);
+			padding: 6px;
+		}
+
+
+		/*Cho màu neon khi active lịch su*/
+		.chat-item {
+			transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
+			background: transparent;
+			border-left: 3px solid transparent;
+		}
+
+		.chat-item:hover {
+			background: rgba(255, 255, 255, 0.04);
+		}
+
+		.chat-item.active {
+			background: rgba(94, 242, 214, 0.08); /* chỉ sáng nhẹ nền */
+			border-left: 3px solid var(--accent);
+			box-shadow: 0 0 10px var(--accent-glow);
+		}
+
+		.chat-item.active .meta div:first-child {
+			color: var(--accent);
+			text-shadow: 0 0 6px var(--accent-glow);
+		}
+
+
+
+
 	</style>
+	<link rel="stylesheet" href="assets/css/modal_faq.css">
 </head>
 <body>
 
 <!-- Nút mở sidebar (chỉ hiện trên mobile) -->
-<button id="toggleSidebar" class="mobile-menu-btn">☰</button>
+<!--<button id="toggleSidebar" class="mobile-menu-btn">☰</button>-->
 
 <!-- Sidebar di động -->
 <div class="mobile-sidebar" id="mobileSidebar">
@@ -434,8 +514,6 @@
 
 
 
-
-
 <!--main content-->
 
 <div class="container">
@@ -451,16 +529,37 @@
 		<div class="controls">
 			<button class="btn" id="newConv">+ Tạo mới</button>
 <!--			<button class="btn" id="export">Xuất</button>-->
+			<button id="toggleSidebar" class="btn">☴ Lịch sử</button>
 			<button class="btn" id="clear">Xóa</button>
 		</div>
 		
 		<div class="history" id="historyList"></div>
 		<div class="small">Note: Demo</div>
 	</aside>
+
+	<!-- Modal hiển thị FAQ -->
+	<div id="faqModal" class="modal">
+		<div class="modal-content">
+			<h2>Các câu hỏi thường gặp</h2>
+			<ul id="faqList">
+				<li data-question="Làm sao để tăng level nhanh trong LifeAfter?">Làm sao để tăng level nhanh?</li>
+				<li data-question="Camp SAO-ĐÊM hoạt động như thế nào?">Camp SAO-ĐÊM hoạt động ra sao?</li>
+				<li data-question="Cách kiếm vàng hiệu quả trong game LifeAfter?">Cách kiếm vàng hiệu quả?</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">Event hiện tại là gì?</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 1</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 2</li>
+			</ul>
+			<button id="faqClose" class="close-btn">Đóng</button>
+		</div>
+	</div>
 	
 	<main class="panel">
 		<div class="topbar">
-			<div class="title">😴 Chatbot SAO-ĐÊM</div>
+			<div class="title">Chat FAQ
+				<button id="faqBtn" class="faq-btn" title="Các câu hỏi thường gặp">
+					💬
+				</button>
+			</div>
 			<div class="status" id="status">Online</div>
 		</div>
 		
@@ -491,6 +590,54 @@
 	});
 </script>
 
+<script>
+	// Hiển thị modal FAQ
+	const faqBtn = document.getElementById("faqBtn");
+	const faqModal = document.getElementById("faqModal");
+	const faqClose = document.getElementById("faqClose");
+	const faqList = document.getElementById("faqList");
+
+	faqBtn.addEventListener("click", () => {
+		faqModal.style.display = "flex";
+	});
+
+	faqClose.addEventListener("click", () => {
+		faqModal.style.display = "none";
+	});
+
+	faqList.addEventListener("click", (e) => {
+		if (e.target.tagName === "LI") {
+			// Xóa trạng thái sáng ở tất cả các li khác
+			faqList.querySelectorAll("li").forEach(li => li.classList.remove("active"));
+
+			// Thêm class active vào li được click
+			e.target.classList.add("active");
+
+			// Lấy nội dung câu hỏi
+			const question = e.target.getAttribute("data-question");
+
+			// Chèn vào ô input chat (nếu có biến promptInput)
+			if (typeof promptInput !== "undefined") {
+				promptInput.value = question;
+				promptInput.focus();
+			}
+
+			// Đóng modal sau 300ms (cho người dùng thấy hiệu ứng sáng)
+			setTimeout(() => {
+				faqModal.style.display = "none";
+				e.target.classList.remove("active");
+			}, 100);
+		}
+	});
+
+
+	// Đóng modal khi click ra ngoài
+	window.addEventListener("click", (e) => {
+		if (e.target === faqModal) faqModal.style.display = "none";
+	});
+
+</script>
+
 
 <script>
 	const conversationList = [];
@@ -518,6 +665,11 @@
 		conversationList.forEach(conv=>{
 			const item=document.createElement('div');
 			item.className='chat-item';
+
+			if (conv.id === currentConversation.id) {
+				item.classList.add('active');
+			}
+
 			item.innerHTML=`<div class="dot"></div><div class="meta"><div style="font-weight:600">${escapeHtml(conv.title)}</div><div style="font-size:12px;color:var(--muted)">${conv.messages.length} tin nhắn</div></div>`;
 			item.onclick=()=>loadConversation(conv.id);
 			historyListEl.appendChild(item);
@@ -557,7 +709,7 @@
 				// Bong bóng tin nhắn
 				const msgEl = document.createElement('div');
 				msgEl.className = 'msg assistant';
-				msgEl.textContent = m.content;
+				msgEl.innerHTML = sanitizeHTML(m.content);
 				
 				botBlock.appendChild(header);
 				botBlock.appendChild(msgEl);
@@ -652,6 +804,14 @@
 		statusEl.textContent='Online';
 	}
 	init();
+
+	function sanitizeHTML(str) {
+		// Loại bỏ <script> và các sự kiện onclick, onerror...
+		return String(str)
+			.replace(/<script.*?>.*?<\/script>/gi, '')
+			.replace(/on\w+="[^"]*"/g, '')
+			.replace(/on\w+='[^']*'/g, '');
+	}
 </script>
 </body>
 </html>

@@ -1,4 +1,7 @@
 /*modal faq*/
+#faqBtn{
+    cursor: pointer;
+}
 /* Nút FAQ cạnh tiêu đề */
 .faq-btn {
     background: none;
@@ -93,4 +96,169 @@
 @keyframes fadeIn {
     from {opacity: 0; transform: translateY(-10px);}
     to {opacity: 1; transform: translateY(0);}
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 70vh;
+    width: 90%;
+    max-width: 400px;
+    background: #1a1a1a;
+    color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+/* Chỉ phần danh sách có thể cuộn */
+#faqList {
+    flex: 1; /* chiếm toàn bộ phần còn lại */
+    overflow-y: auto;
+    margin: 10px 0;
+    padding-right: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: #ffb300 rgba(255,255,255,0.05); /* cho Firefox */
+
+}
+
+
+
+/* Nút đóng nằm cố định ở đáy modal */
+#faqClose {
+    margin-top: auto;
+    align-self: flex-end;
+    padding: 8px 16px;
+    background: #ff9800;
+    color: #000;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+#faqClose:hover {
+    background: #ffc107;
+    transform: scale(1.05);
+}
+
+
+
+
+/* Thanh cuộn neon cam-vàng */
+#faqList::-webkit-scrollbar {
+    width: 6px;
+}
+
+#faqList::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ffcc33, #ff8800);
+    border-radius: 3px;
+    box-shadow: 0 0 6px #ffae00, 0 0 10px #ff6a00;
+}
+
+#faqList::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #ffd84d, #ff9d1a);
+    box-shadow: 0 0 8px #ffae00, 0 0 12px #ff6a00;
+}
+
+#faqList::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+/* Đảm bảo không bị override */
+.modal-content #faqList::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ffcc33, #ff8800) !important;
+}
+
+
+/* Biểu tượng ? neon */
+.neon-q {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffb347 0%, #ffcc33 70%);
+    color: #000;
+    font-weight: bold;
+    box-shadow: 0 0 6px #ffcc33, 0 0 12px #ff9900;
+    margin-left: 5px;
+    font-size: 13px;
+}
+
+/* Ô tìm kiếm FAQ */
+#faqSearch {
+    width: 100%;
+    padding: 8px 12px;
+    margin: 10px 0 12px;
+    border: 1.5px solid #ffcc33;
+    border-radius: 8px;
+    background: rgba(255, 204, 51, 0.08);
+    color: #fff;
+    outline: none;
+    font-size: 14px;
+    transition: 0.25s ease;
+    box-shadow: 0 0 8px rgba(255, 204, 51, 0.4);
+}
+
+#faqSearch::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+#faqSearch:focus {
+    background: rgba(255, 204, 51, 0.15);
+    box-shadow: 0 0 12px rgba(94, 242, 214, 0.5), 0 0 25px rgba(94, 242, 214, 0.2);
+    border-color: rgba(94, 242, 214, 0.5);
+}
+
+.faq-search-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+#faqSearch {
+    width: 100%;
+    padding: 10px 38px 10px 12px; /* chừa khoảng cho nút X */
+    border: 1px solid #ffcc33;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 15px;
+    line-height: 1.4;
+    outline: none;
+    box-shadow: 0 0 6px #ffcc33;
+    transition: all 0.2s ease;
+}
+
+.faq-clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: #ffcc33;
+    font-size: 16px;
+    cursor: pointer;
+    display: none; /* mặc định ẩn */
+    transition: transform 0.2s ease, color 0.2s ease;
+    text-shadow: 0 0 8px #ffcc33;
+    padding: 0;
+}
+
+.faq-clear:hover {
+    color: #ff9900;
+    transform: translateY(-50%) scale(1.2);
 }

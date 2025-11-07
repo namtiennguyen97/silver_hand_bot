@@ -42,3 +42,29 @@ faqList.addEventListener("click", (e) => {
 window.addEventListener("click", (e) => {
     if (e.target === faqModal) faqModal.style.display = "none";
 });
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const faqSearch = document.getElementById('faqSearch');
+    const faqClear = document.getElementById('faqClear');
+    const faqList = document.getElementById('faqList');
+    const faqItems = faqList.getElementsByTagName('li');
+
+    function filterFAQ() {
+        const keyword = faqSearch.value.toLowerCase().trim();
+        faqClear.style.display = keyword ? 'block' : 'none'; // hiện nút X nếu có text
+
+        Array.from(faqItems).forEach(li => {
+            const text = li.textContent.toLowerCase();
+            li.style.display = text.includes(keyword) ? '' : 'none';
+        });
+    }
+
+    faqSearch.addEventListener('input', filterFAQ);
+
+    faqClear.addEventListener('click', () => {
+        faqSearch.value = '';
+        filterFAQ();
+        faqSearch.focus();
+    });
+});

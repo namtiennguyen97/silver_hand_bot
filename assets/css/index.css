@@ -39,16 +39,33 @@ html,body{height:100%}
 /*	padding:20px;*/
 /*}*/
 
+/*body {*/
+/*    margin: 0;*/
+/*    font-family: Inter, system-ui, Segoe UI, Roboto, "Helvetica Neue", Arial;*/
+/*    background: url("/assets/img/img_1.png") center center / cover no-repeat fixed;*/
+/*    !*background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.08), transparent 8%), radial-gradient(1000px 500px at 90% 90%, rgba(110,231,183,0.03), transparent 8%), var(--bg);*!*/
+/*    color: #e6eef3;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    padding: 20px;*/
+/*}*/
+
 body {
     margin: 0;
     font-family: Inter, system-ui, Segoe UI, Roboto, "Helvetica Neue", Arial;
-    background: url("/assets/img/la_background.jpg") center center / cover no-repeat fixed;
+    background: url("/assets/img/img3.jpg") center center / cover no-repeat fixed;
+
+    /*background-color: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.08), transparent 8%), radial-gradient(1000px 500px at 90% 90%, rgba(110,231,183,0.03), transparent 8%), var(--bg);*/
+    background-color: #a41c3b;
     color: #e6eef3;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
+    transition: background-position 0.1s ease-out; /* mượt hơn khi di chuyển */
 }
+
 
 .container{
     width:100%;
@@ -186,7 +203,7 @@ p.subtitle{margin:0;color:var(--muted);font-size:13px}
     background: rgba(0, 0, 0, 0.25);
     backdrop-filter: blur(4px);
     border-top: 1px solid rgba(255,255,255,0.05);
-    position: absolute;
+    position: sticky;
     bottom: 0;
     left: 0;
     right: 0;
@@ -451,3 +468,6 @@ button#sendBtn:active {
     color: #fbbf24;
     text-shadow: 0 0 6px #f59e0b, 0 0 12px rgba(245,158,11,0.6);
 }
+
+
+

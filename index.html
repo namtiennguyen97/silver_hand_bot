@@ -13,6 +13,7 @@
 </head>
 <body>
 
+
 <div id="loadingOverlay">
 	<div class="loading-wrapper">
 		<div class="loading-text">
@@ -59,19 +60,37 @@
 		</div>
 		
 		<div class="history" id="historyList"></div>
-		<div class="small">Note: Demo</div>
+		<div class="small">Note: Hỏi đáp về Life After</div>
 	</aside>
 
 	<!-- Modal hiển thị FAQ -->
 	<div id="faqModal" class="modal">
 		<div class="modal-content">
-			<h2>Các câu hỏi thường gặp</h2>
+			<h2>Câu hỏi thường gặp</h2>
+			<div class="faq-search-wrapper">
+				<input type="text" id="faqSearch" placeholder="🔍 Tìm câu hỏi..." />
+				<button id="faqClear" class="faq-clear">x</button>
+			</div>
 			<ul id="faqList">
 				<li data-question="Làm sao để tăng level nhanh trong LifeAfter?">Làm sao để tăng level nhanh?</li>
 				<li data-question="Camp SAO-ĐÊM hoạt động như thế nào?">Camp SAO-ĐÊM hoạt động ra sao?</li>
 				<li data-question="Cách kiếm vàng hiệu quả trong game LifeAfter?">Cách kiếm vàng hiệu quả?</li>
 				<li data-question="Event hiện tại trong LifeAfter là gì?">Event hiện tại là gì?</li>
 				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 1</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 2</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 2</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 2</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 2</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 2</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 2</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 2</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 2</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 2</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 2</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 2</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 2</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 2</li>
+				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 2</li>
 				<li data-question="Event hiện tại trong LifeAfter là gì?">DEMO 2</li>
 			</ul>
 			<button id="faqClose" class="close-btn">Đóng</button>
@@ -94,11 +113,7 @@
 
 	<main class="panel">
 		<div class="topbar">
-			<div class="title">Chat FAQ
-				<button id="faqBtn" class="faq-btn" title="Các câu hỏi thường gặp">
-					💬
-				</button>
-			</div>
+			<div id="faqBtn" class="title">Click hỏi nhanh <span class="neon-q">?</span></div>
 			<div class="status" id="status">Online</div>
 		</div>
 		
@@ -112,10 +127,10 @@
 	</main>
 </div>
 
+<script src="assets/js/index.js"></script>
 <script src="assets/js/chat_handle.js"></script>
 <script src="assets/js/loading.js"></script>
 <script src="assets/js/side_bar.js"></script>
 <script src="assets/js/faq.js"></script>
-
 </body>
 </html>

@@ -1,0 +1,453 @@
+/*font reference: https://www.dafont.com/mtheme.php?id=3*/
+@font-face {
+    font-family: 'Conthrax';
+    src: url('/assets/fonts/Conthrax-SemiBold.otf') format('opentype');
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Ethnocentric';
+    src: url('/assets/fonts/Ethnocentric-Regular.otf') format('opentype');
+    font-display: swap;
+}
+:root{
+    --bg:#0b0f13;
+    --panel:#071018;
+    --accent:#6ee7b7;
+    --accent-2:#7c3aed;
+    --muted:#9aa5b1;
+    --glass: rgba(255,255,255,0.03);
+    --danger:#ff6b6b;
+    --accent-glow: rgba(94, 242, 214, 0.4);
+}
+*{
+    box-sizing:border-box;
+    font-family: 'Conthrax', sans-serif;
+
+}
+html,body{height:100%}
+/*body{*/
+/*	margin:0;*/
+/*	font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;*/
+/*	background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.08), transparent 8%),*/
+/*	radial-gradient(1000px 500px at 90% 90%, rgba(110,231,183,0.03), transparent 8%),*/
+/*	var(--bg);*/
+/*	!*background: url("assets/img/la_background.jpg") center center / cover no-repeat fixed;*!*/
+/*	color:#e6eef3;*/
+/*	display:flex;*/
+/*	align-items:center;*/
+/*	justify-content:center;*/
+/*	padding:20px;*/
+/*}*/
+
+body {
+    margin: 0;
+    font-family: Inter, system-ui, Segoe UI, Roboto, "Helvetica Neue", Arial;
+    background: url("/assets/img/la_background.jpg") center center / cover no-repeat fixed;
+    color: #e6eef3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container{
+    width:100%;
+    max-width:1100px;
+    height:calc(100vh - 40px);
+    display:grid;
+    grid-template-columns: 360px 1fr;
+    gap:20px;
+}
+
+.sidebar{
+    background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.08), transparent 8%),
+    radial-gradient(1000px 500px at 90% 90%, rgba(110,231,183,0.03), transparent 8%),
+    var(--bg);;
+    border:1px solid rgba(255,255,255,0.03);
+    border-radius:14px;
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+.brand{display:flex;gap:12px;align-items:center;}
+
+.logo{
+    width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));font-weight:800;font-size:18px;color:#021017;
+    box-shadow: 0 6px 18px rgba(124,58,237,0.18), inset 0 -6px 18px rgba(255,255,255,0.03);
+    animation: neonPulse 0.8s ease-in-out infinite alternate;
+}
+.logo img{
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+/* Hiệu ứng neon */
+@keyframes neonPulse {
+    0% {
+        box-shadow: 0 0 6px rgba(124, 58, 237, 0.5),
+        0 0 12px rgba(124, 58, 237, 0.3),
+        0 0 18px rgba(168, 85, 247, 0.2);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(168, 85, 247, 0.8),
+        0 0 20px rgba(168, 85, 247, 0.5),
+        0 0 30px rgba(192, 132, 252, 0.6);
+    }
+}
+
+h1{font-size:14px;margin:0}
+p.subtitle{margin:0;color:var(--muted);font-size:13px}
+
+.history{flex:1;overflow:auto;padding-right:6px}
+.chat-item{padding:10px;border-radius:10px;display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.chat-item:hover{background:rgba(255,255,255,0.02)}
+.chat-item .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));flex:0 0 10px}
+.chat-item .meta{font-size:13px;color:var(--muted)}
+
+.controls{display:flex;gap:8px}
+.btn{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px 10px;border-radius:10px;font-size:13px;color:var(--muted);cursor:pointer}
+.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#021017;border:none}
+
+.panel{
+    /*background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));*/
+    border-radius:14px;border:1px solid rgba(255,255,255,0.03);padding:14px;display:flex;flex-direction:column;overflow:hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.08), transparent 8%),
+    radial-gradient(1000px 500px at 90% 90%, rgba(110,231,183,0.03), transparent 8%),
+    var(--bg);;
+}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:6px 4px}
+.topbar .title{font-weight:700}
+.topbar .status{font-size:13px;color:var(--muted)}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    position: relative;
+}
+
+/* Cục tròn online */
+.status::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e; /* xanh lá sáng */
+    box-shadow: 0 0 6px #22c55e, 0 0 12px rgba(34, 197, 94, 0.5);
+}
+
+.chat-area {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.messages {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 12px;
+    border-radius: 10px;
+    background: var(--glass);
+    border: 1px solid rgba(255,255,255,0.02);
+    scroll-behavior: smooth;
+}
+/* Tuỳ chọn: làm thanh cuộn đẹp hơn */
+.messages::-webkit-scrollbar {
+    width: 6px;
+}
+.messages::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--accent), var(--accent-2));
+    border-radius: 3px;
+}
+.messages::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+}
+
+.msg{padding:10px 14px;border-radius:10px;margin-bottom:8px;font-size:14px;max-width:80%;word-wrap:break-word;white-space:pre-wrap;}
+.msg.user{align-self:flex-end;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#021017;margin-left:auto;}
+.msg.assistant{align-self:flex-start;background:rgba(255,255,255,0.02);color:#e6eef3;border:1px solid rgba(255,255,255,0.02);margin-right:auto;}
+
+.composer {
+    display: flex;
+    gap: 8px;
+    padding: 10px 0 0;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+
+.messages {
+    padding-bottom: 80px;
+}
+textarea#promptInput {
+    flex: 1;
+    min-height: 48px;
+    max-height: 120px;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    color: inherit;
+    resize: none;
+    font-size: 14px;
+    transition: all 0.25s ease;
+    outline: none; /* ❌ tắt viền trắng mặc định */
+}
+/* Hiệu ứng focus neon */
+textarea#promptInput:focus {
+    border-color: var(--accent-2);
+    box-shadow: 0 0 6px var(--accent-2), 0 0 12px rgba(124, 58, 237, 0.5);
+}
+
+button#sendBtn {
+    width: 78px;
+    border-radius: 12px;
+    border: none;
+    padding: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    color: #021017;
+    transition: all 0.15s ease;
+    box-shadow: 0 4px 10px rgba(124, 58, 237, 0.2);
+    transform: translateY(0);
+    outline: none; /* ❌ tắt viền sáng khi click */
+    -webkit-tap-highlight-color: transparent; /* ❌ fix nháy nền trắng trên mobile/Chrome */
+    user-select: none;
+    appearance: none; /* ❌ bỏ style mặc định */
+}
+
+/* Hover – sáng hơn nhẹ */
+button#sendBtn:hover {
+    filter: brightness(1.2);
+    box-shadow: 0 6px 14px rgba(124, 58, 237, 0.35);
+}
+
+/* Active – hiệu ứng nhấn */
+button#sendBtn:active {
+    filter: brightness(1.4);
+    transform: scale(0.95) translateY(2px);
+    box-shadow: 0 2px 6px rgba(124, 58, 237, 0.25);
+    border-radius: 12px; /* ✅ giữ nguyên bo góc khi nhấn */
+    background: linear-gradient(90deg, var(--accent-2), var(--accent)); /* đảo màu nhẹ để cảm giác nhấn */
+}
+
+.small {
+    font-size: 12px;
+    color: #fbbf24; /* vàng cam */
+    text-shadow: 0 0 6px #f59e0b, 0 0 12px rgba(245, 158, 11, 0.6);
+    font-family: 'Conthrax', sans-serif;
+    letter-spacing: 0.3px;
+    animation: glowPulse 1.2s ease-in-out infinite alternate;
+}
+
+@media (max-width:980px){
+    .container{grid-template-columns:1fr;height:100vh}
+    .chat-area{height:80vh}
+}
+
+/* Avatar bot với viền neon nhấp nháy */
+.avatar-bot {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    box-shadow: 0 6px 18px rgba(124, 58, 237, 0.18),
+    inset 0 -6px 18px rgba(255, 255, 255, 0.03);
+    animation: neonPulse 0.8s ease-in-out infinite alternate;
+    flex-shrink: 0;
+}
+
+.avatar-bot img {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.msg-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+/* Bọc avatar + phần nội dung tin nhắn bot */
+.bot-block {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Tên chatbot nằm cạnh avatar */
+.bot-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.bot-name {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--accent-2);
+    text-shadow: 0 0 6px rgba(124, 58, 237, 0.6);
+    font-family: 'Conthrax', sans-serif;
+}
+
+
+
+@keyframes glowPulse {
+    0% { text-shadow: 0 0 6px #f59e0b, 0 0 12px rgba(245,158,11,0.6); }
+    100% { text-shadow: 0 0 10px #fbbf24, 0 0 20px rgba(251,191,36,0.8); }
+}
+
+.small {
+    font-size: 12px;
+    color: #fbbf24;
+    text-shadow: 0 0 6px #f59e0b, 0 0 12px rgba(245,158,11,0.6);
+    animation: glowPulse 1.2s ease-in-out infinite alternate;
+}
+
+
+/* ======================== */
+/* Sidebar di động (Mobile) */
+/* ======================== */
+
+
+
+/* Sidebar ẩn ban đầu */
+.mobile-sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 260px;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    backdrop-filter: blur(8px);
+    border-right: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 4px 0 20px rgba(0,0,0,0.6);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: left 0.35s ease;
+    z-index: 998;
+    overflow-y: auto;
+}
+
+/* Khi mở menu */
+.mobile-sidebar.active {
+    left: 0;
+}
+
+#toggleSidebar{
+    display: none;
+}
+
+/* Ẩn sidebar gốc khi là mobile */
+@media (max-width: 980px) {
+    #toggleSidebar{
+        display: block;
+    }
+}
+
+/* ======================== */
+/* Tối ưu hiển thị nội dung chat bot */
+
+.msg.assistant {
+    align-self: flex-start;
+    background: rgba(255,255,255,0.02);
+    color: #e6eef3;
+    border: 1px solid rgba(255,255,255,0.02);
+    margin-right: auto;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+}
+
+/* ✅ Giới hạn mọi thứ bên trong khung chat assistant */
+.msg.assistant * {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* ✅ Hình ảnh: tự co cho vừa khung, bo tròn nhẹ */
+.msg.assistant img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+    margin: 6px 0;
+    object-fit: contain;
+}
+
+/* ✅ Video, iframe (nếu có): giữ tỉ lệ hợp lý */
+.msg.assistant video,
+.msg.assistant iframe {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+    margin: 6px 0;
+}
+
+/* ✅ Bảng (table) nếu bot trả lời có bảng dữ liệu */
+.msg.assistant table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 13px;
+}
+
+.msg.assistant table td,
+.msg.assistant table th {
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 6px;
+}
+
+
+/*Cho màu neon khi active lịch su*/
+.chat-item {
+    transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
+    background: transparent;
+    border-left: 3px solid transparent;
+}
+
+.chat-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.chat-item.active {
+    background: rgba(94, 242, 214, 0.08); /* chỉ sáng nhẹ nền */
+    border-left: 3px solid var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.chat-item.active .meta div:first-child {
+    color: var(--accent);
+    text-shadow: 0 0 6px var(--accent-glow);
+}
+
+.modal-warning-title{
+    animation: glowPulse 1.2s ease-in-out infinite alternate;
+    color: #fbbf24;
+    text-shadow: 0 0 6px #f59e0b, 0 0 12px rgba(245,158,11,0.6);
+}

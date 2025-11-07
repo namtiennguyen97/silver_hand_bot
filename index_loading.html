@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading SAO-ĐÊM</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+        body, html {
+            margin:0;
+            padding:0;
+            width:100%;
+            height:100%;
+            overflow:hidden;
+            background: #0b0f13;
+            font-family: 'Conthrax', 'Inter', sans-serif;
+        }
+
+        /* Overlay toàn màn hình */
+        #loadingOverlay {
+            position: fixed;
+            top:0; left:0; right:0; bottom:0;
+            background: #0b0f13;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .loading-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .loading-text {
+            font-family: 'Conthrax', sans-serif;
+            font-size: 48px;
+            color: #6ee7b7;
+            text-shadow: 0 0 8px #6ee7b7, 0 0 20px #7c3aed, 0 0 30px #6ee7b7;
+            display: flex;
+            gap: 0;
+            animation: rotate 1s linear infinite;
+        }
+
+        .loading-text span {
+            display: inline-block;
+            position: relative;
+        }
+
+        @keyframes rotate {
+            0%{ transform: rotate(0deg);}
+            100%{ transform: rotate(360deg);}
+        }
+
+        .line {
+            position: absolute;
+            height: 2px;
+            background: #fff;
+            width: 100px;
+            transition: all 1s ease-out;
+        }
+        .line.top { top: -12px; left: 50%; transform: translateX(-50%); }
+        .line.bottom { bottom: -12px; left: 50%; transform: translateX(-50%); }
+
+        /* Khi loading xong */
+        .finished .loading-text { animation: none; }
+
+        .finished .sao { transform: translateX(-150px); transition: transform 1s ease-out; }
+        .finished .dem { transform: translateX(150px); transition: transform 1s ease-out; }
+
+        .finished .line.top {
+            left: calc(50% - 150px);
+            transform: none;
+            width: 300px;
+        }
+        .finished .line.bottom {
+            left: calc(50% + 150px);
+            transform: none;
+            width: 300px;
+        }
+
+        .finished #loadingOverlay {
+            transition: opacity 0.5s ease 1s;
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="loadingOverlay">
+    <div class="loading-wrapper">
+        <div class="loading-text">
+            <span class="sao">SAO</span><span class="dem">-ĐÊM</span>
+        </div>
+        <div class="line top"></div>
+        <div class="line bottom"></div>
+    </div>
+</div>
+
+<script>
+    // Tự động kết thúc loading sau 1 giây
+    setTimeout(() => {
+        document.body.classList.add('finished');
+    }, 1000);
+</script>
+
+</body>
+</html>

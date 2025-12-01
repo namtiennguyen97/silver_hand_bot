@@ -1,4 +1,4 @@
-import { systemPrompt } from "../config/systemPrompt.js";
+import { systemPrompt } from "../server/training.js";
 export default async function handler(req, res) {
     if (req.method !== "POST") {
         return res.status(405).json({ error: "Method not allowed" });

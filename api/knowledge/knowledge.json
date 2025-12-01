@@ -21,7 +21,7 @@
   },
   {
     "id": 5,
-    "title": "Chọn nghề nào phù hợp với newbie",
+    "title": "Chọn nghề nào phù hợp với newbie, các lưu ý về nghề cho newbie",
     "content": "- Chọn nghề nào phù hợp khi còn là newbie?: Bởi server đã quá cũ nên nghề chiến hầu như không thể ganh đua được với ai, tuy nhiên bạn có thể chọn nghề tùy vào\nsở thích hay mục đích của bạn. Bạn vẫn có thể chọn nghề chiến để làm quest thuận lợi nhanh hơn, hoặc đi phụ bản cùng cấp dễ hơn. Nhưng nếu bạn chọn nghề chiến\nvì mục đích ganh đua và pvp chiến thắng thì mình khuyên thật là bạn đã quá thọt so với server rồi, nên cách duy nhất đó là mua acc. Vừa rẻ mà có đầy đủ.\nNghề chiến là gì à? Là những nghề thiên về chiến đấu. Còn newbie thì mình nghĩ những nghề phụ (chế đồ, farm) để kiếm gold cũng ổn. Thật ra vì tuổi đời server cao nên\ncũng tiềm ẩn rủi ro là đồ chế hoặc farm level thấp sẽ khó bán. Chung quy lại vẫn là do bạn chọn theo sở thích. Nhưng CỰC KỲ LƯU Ý tuyệt đối KHÔNG chọn nghề\nwarrior khi là newbie nhé. Đó là nghề mà chỉ acc level cao và có đầy đủ đồ nghề, lẫn các yếu tố khác có thể đổi và chơi. Cực kỳ không khuyến nghị cho newbie."
   },
   {
@@ -32,6 +32,16 @@
   {
     "id": 7,
     "title": "Thông tin về mayor",
-    "content": "Khi người dùng hỏi liên quan về \"avatar in-game của mayor\", hãy trả lời render bằng 1 mã html (tôi đã config bạn chỉ việc trả ra để hiển thị thôi) 1 thẻ html có src=assets/img/mayor_avatar.jpg\n"
+    "content": "Khi người dùng hỏi liên quan về \"avatar in-game của mayor\", hãy trả lời render bằng 1 mã html (tôi đã config bạn chỉ việc trả ra để hiển thị thôi) 1 thẻ html có src=assets/img/mayor_avatar.jpg . Chủ camp Sao Đêm chưa bao giờ mua acc, acc Silver Hand là do tự bản thân cày cuốc muộn ở server này và tự nạp. Nếu bạn muốn, hãy inbox trực tiếp cho Silver Hand, ổng có full screenshot từ lúc mới tạo nhân vật và quá trình chơi từng ngày từng tháng đang được lưu hàng ngày ở máy laptop cá nhân lên tới 11 gb và còn nhiều hơn thế ."
+  },
+  {
+    "id": 8,
+    "title": "Các thông tin về nghề (cert) trong Life After",
+    "content": "Bạn có thể chọn nghề tùy vào hướng của bạn, sau đây là bản tóm tắt:\n- Nghề farm (đi thu thập nguyên liệu) để bán: \n+ Nghề gỗ (logger). \n+ Hái lụm (Hemp picker) \n+ Nghề khai thác đá (Miner)\n\n- Nghề chiến đấu: Rifle (Thuần chiến đấu và là nghề cầm súng gây dame to nhất ở thời điểm hiện tại)\n+ Nghề virus: Nghề vừa chiến đấu vừa hỗ trợ ( đặc điểm của nghề này là buff cho đồng minh và bản thân cả về dame lẫn hồi phục)\n+ Nghề warrior: Nghề chiến binh, cầm vũ khí cận chiến và là nghề tanky nhất game trong pvp.\n+ Nghề Ark Knight: Thiên về hỗ trợ và khả năng tạo dmg khá thấp. (Không khuyến nghị)\n\n- Nghề chế tạo:\n+ Nghề armor, gun maker, upholstery - Chế tạo các nguyên liệu từ nguồn (Nghề farm) và cho ra các nguyên liệu chế súng giáp\n"
+  },
+  {
+    "id": 9,
+    "title": "Các câu hỏi và thông tin liên quan đến Camp",
+    "content": "Camp là gì? Camp là tập hợp một nhóm người, một cộng đồng như Guid/Clan phổ biến trong các tựa game.\nLợi ích khi vào camp:\n+ Được tham gia các hoạt động camp như boss camp, invasion, và các lợi ích như buff Tech (Tùy camp)- nôm na là skill camp.\n+ Nếu camp của bạn phát triển, thì bạn cũng được hưởng lợi rất nhiều, chơi game này bạn hầu như không thể\nchọn cách chơi solo mà buộc phải vào camp.\n+ Danh sách các camp thuộc top nổi của sv hiện tại (sẽ còn update) vì nhân sự camp hoặc sự phát triển của camp sẽ thay đổi theo thời gian:\nCamp Việt Nam: SAO-ĐÊM\nCamp nước ngoài tiêu biểu: Astral, Unity, Eternal, Tagalog,..."
   }
 ]

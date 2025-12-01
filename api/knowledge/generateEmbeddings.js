@@ -1,39 +1,55 @@
 import fs from "fs";
 import path from "path";
+import OpenAI from "openai";
+import "dotenv/config";
 
-export default async function handler(req, res) {
+
+const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+async function main() {
     try {
-        const knowledgePath = path.join(process.cwd(), "api/knowledge/knowledge.json");
-        const knowledge = JSON.parse(fs.readFileSync(knowledgePath, "utf8"));
+        const knowledgePath = path.join(process.cwd(), "api", "knowledge", "knowledge.json");
+        const outputPath   = path.join(process.cwd(), "api", "knowledge", "embedding.json");
 
-        const results = [];
+        // 1. Đọc knowledge.json
+        if (!fs.existsSync(knowledgePath)) {
+            console.error("❌ knowledge.json not found at:", knowledgePath);
+            return;
+        }
 
-        for (const item of knowledge) {
-            const embedRes = await fetch("https://api.openai.com/v1/embeddings", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
-                },
-                body: JSON.stringify({
-                    model: "text-embedding-3-small",
-                    input: item.content
-                })
+        const raw = fs.readFileSync(knowledgePath, "utf8");
+        const items = JSON.parse(raw);
+
+        console.log(`📚 Loading ${items.length} knowledge items...`);
+
+        const result = [];
+
+        for (const item of items) {
+            console.log(`→ Embedding: ${item.title} ...`);
+
+            const response = await client.embeddings.create({
+                model: "text-embedding-3-small",
+                input: `${item.title}\n${item.content}`,
             });
 
-            const data = await embedRes.json();
-            results.push({
+            if (!response?.data || !response.data[0]?.embedding) {
+                console.error("❌ API ERROR:", response);
+                throw new Error("Embedding API returned invalid response");
+            }
+
+            result.push({
                 ...item,
-                embedding: data.data[0].embedding
+                embedding: response.data[0].embedding,
             });
         }
 
-        const embedPath = path.join(process.cwd(), "api/knowledge/embedding.json");
-        fs.writeFileSync(embedPath, JSON.stringify(results, null, 2));
+        // 3. Ghi file
+        fs.writeFileSync(outputPath, JSON.stringify(result, null, 2));
+        console.log(`✅ DONE → embedding.json created (${result.length} items)`);
 
-        res.json({ success: true, count: results.length });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Failed to generate embeddings", details: err.message });
+        console.error("❌ Script failed:", err);
     }
 }
+
+main();

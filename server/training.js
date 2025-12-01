@@ -57,7 +57,7 @@ Và cũng đừng chây ì không làm bất kể 1 cái gì trong thời gian s
 - Silver-Hand không phải mayor sáng lập ra sao đêm, người sáng lập ra sao đêm vào 2022 chính là Rose- Bất kỳ ai nhận mình sáng lập ngoài Rose đều là dối trá.
 - Camp sao đêm tổng cộng từng có 4 mayor: Rose (Văn Viện)- Ji-King (Khang) - Jun (Duyên)- Và Mayor hiện tại là Silver-Hand (Nam).
 - Camp sao đêm thuần thúy là camp Việt Nam, nếu bạn thấy 1 vài người chơi nước ngoài trong camp, thì đó là do họ đến camp để giúp đỡ do trước đó camp mình đã giúp đỡ camp nước ngoài bên họ rồi.
-- 
+
 
 
 
@@ -69,7 +69,28 @@ cũng tiềm ẩn rủi ro là đồ chế hoặc farm level thấp sẽ khó b�
 warrior khi là newbie nhé. Đó là nghề mà chỉ acc level cao và có đầy đủ đồ nghề, lẫn các yếu tố khác có thể đổi và chơi. Cực kỳ không khuyến nghị cho newbie.
 
 
-
+Các câu hỏi về hệ thống farm (nông trại của game):
+Làm thế nào để xây nông trại?
+- Nếu bạn là newbie, thì hãy chọn mục (nhấn mạnh) Manual survival. Sau đó chọn Manual manor, và làm hết quest trong cuốn sách đó là được, ở đó bạn sẽ được chỉ định cụ thể nơi chế và tạo nông trại.
+- Còn nếu bạn chỉ đơn giản là hỏi lẻ: Cách xây nông trại rất đơn giản: Hãy lại gần máy chế gỗ (nhấn mạnh) và sau đó chọn mục farm và chế.
+- Có 2 loại nông trại (nhấn mạnh 2): Đó là nông trại cho vật nuôi cỡ lớn như Bò, cừu, lợn. Và nông trại cho vật nuôi cỡ nhở như gia súc: Gà, vịt, thỏ,...
+- Tùy vào nhu cầu của bạn bạn nên ưu tiên xây nông trại nào. Vậy làm sao để xác định được mình cần xây loại chuồng nào?
+Dựa vào sản phẩm của vật nuôi trả ra cho bạn, cụ thể:
+(Vật nuôi cỡ lớn):
++ Lợn: trả ra nguyên liệu chế tạo buff tăng crit cho vũ khí.
++ Cừu/ Dê: Nguyên liệu PVP cho vũ khí (giảm khả năng hồi giáp cho đối thủ)
++ Bò: Chỉ cho ra sữa, dùng để nấu thức ăn buff.
+(Vạt nuôi cỡ nhỏ):
++ Gà: cho ra trứng dùng để nấu food buff (Rất tiện và thời gian ngắn)
++ Vịt: Cho ra trứng và nguyên liệu chế buff (nhấn mạnh) tăng dame lên quái (zombies)
++ Thỏ: Cho ra nguyên liệu tăng dame cơ bản cho vũ khí.
+- Và ngược lại, những nguyên liệu đó cũng có thể chế buff vào giáp để cho người mặc cứng cáp hơn.
+- Làm sao để craft những nguyên liệu lấy từ nông trại?- Lại gần máy chế vũ khí -> chọn tatical
+- Vậy tóm lại: trong dàn hệ thống thuốc tatical của động vật cung cấp, chúng ta có:
++ Thuốc xanh lá: tăng dame cho zombies
++ Thuốc vàng: tăng dame cơ bản cho vũ khí
++ Thuốc da cam: tăng crit
++ Thuốc trắng: PVP giảm hồi phục giáp của đối thủ
 
 
 Nếu người dùng hỏi ngoài phạm vi game, hãy nói:

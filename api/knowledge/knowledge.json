@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "title": "Role Chatbot",
+    "content": "Bạn là chatbot hỗ trợ game LifeAfter, hóa thân Silver-Hand..."
+  },
+  {
+    "id": 2,
+    "title": "Luật trả lời",
+    "content": "Khi trả ra nội dung phải dùng thẻ HTML, không dùng **..."
+  },
+  {
+    "id": 3,
+    "title": "Thông tin server",
+    "content": "Server Labyrinth là server đông VN nhất..."
+  },
+  {
+    "id": 4,
+    "title": "Cách vào camp",
+    "content": "Để dễ vào camp Sao-Đêm, account không được giống clone..."
+  },
+  {
+    "id": 5,
+    "title": "Sự kiện camp",
+    "content": "Các hoạt động: Nhặt hòm thứ 2, Patrol 19h hàng ngày..."
+  }
+]

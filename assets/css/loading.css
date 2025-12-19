@@ -71,3 +71,62 @@
     opacity: 0;
     pointer-events: none;
 }
+
+/* =========================
+   PROGRESS BAR – NEON BLOCK
+   ========================= */
+
+.loading-progress {
+    margin-top: 22px;
+    width: 260px;
+}
+
+.progress-bar {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr); /* 20 khối or custom */
+    gap: 4px;
+}
+
+.progress-bar .chunk {
+    height: 15px;
+    background: transparent;
+    border: 1px solid #00ffff;
+    box-shadow: inset 0 0 4px rgba(0,255,255,0.3);
+}
+
+.progress-bar .chunk.active {
+    background: #00ffff;
+    box-shadow:
+        0 0 6px #00ffff,
+        0 0 12px rgba(0,255,255,0.9);
+}
+
+
+/* =========================
+   CHAT LOADING PROGRESS BAR
+   ========================= */
+
+.chat-loading {
+    width: 160px;
+    margin-top: 6px;
+}
+
+.chat-loading-bar {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr); /* số chunk */
+    gap: 4px;
+}
+
+.chat-loading-bar .chunk {
+    height: 8px;
+    background: transparent;
+    border: 1px solid #00ffff;
+    box-shadow: inset 0 0 3px rgba(0, 255, 255, 0.3);
+}
+
+.chat-loading-bar .chunk.active {
+    background: #00ffff;
+    box-shadow:
+        0 0 4px #00ffff,
+        0 0 8px rgba(0, 255, 255, 0.8);
+}

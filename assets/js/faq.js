@@ -68,3 +68,25 @@ document.addEventListener('DOMContentLoaded', () => {
         faqSearch.focus();
     });
 });
+
+
+//Schedule modal -------------------
+const scheduleInfoBtn = document.getElementById("scheduleInfoBtn");
+const aiModal = document.getElementById("aiModal");
+const aiModalClose = document.getElementById("aiModalClose");
+
+scheduleInfoBtn.addEventListener("click", () => {
+    aiModal.style.display = "flex";
+});
+
+aiModalClose.addEventListener("click", () => {
+    aiModal.style.display = "none";
+});
+
+aiModal.addEventListener("click", (e) => {
+    if (e.target === aiModal) {
+        aiModal.style.display = "none";
+    }
+});
+
+//END OF SCHEDULE MODAL

@@ -53,8 +53,8 @@
 		<div class="brand">
 			<div class="logo"><img src="assets/img/mayor_avatar.jpg"></div>
 			<div>
-				<h1>SAO-ĐÊM — Silver-Hand</h1>
-				<p class="subtitle">Mayor</p>
+				<h1>SAO-ĐÊM</h1>
+				<p class="subtitle">Mayor AI</p>
 			</div>
 		</div>
 		
@@ -66,8 +66,47 @@
 		</div>
 		
 		<div class="history" id="historyList"></div>
-		<div class="small">Note: Hỏi đáp về Life After</div>
+<!--		<div class="small">Note: Hỏi đáp về Life After</div>-->
+		<div class="small" style="display: flex; justify-content: space-between; align-items: center">
+			<span>
+				InGame Time: <span id="clock" style="font-size: 16px; font-weight: bold;
+				color: #00ffff;
+				"></span>
+			</span>
+
+
+			<button id="scheduleInfoBtn" title="AI Training Info">
+				Event 📢
+			</button>
+		</div>
 	</aside>
+
+
+	<div id="aiModal" class="modal ai-modal">
+		<div class="modal-content ai-modal-content">
+			<h2>Lịch event camp</h2>
+
+			<div class="ai-training-box">
+				<div class="ai-title">Lưu ý: Đây là giờ VN, không phải giờ Ingame</div>
+
+				<pre class="ai-content">
++ Thứ 2 giờ ngẫu nhiên trong phạm vi 19h - 20h30: Nhặt hòm (resource scramble)
++ 19h hằng ngày sẽ là Patrol.
++ 21h30 tối thứ 3: Def camp (camp invasion)
++ 22h tối thứ 5: Boss camp.
+            </pre>
+
+				<img
+					src="assets/img/mayor_emote/mayor_notice.png"
+					class="ai-note-img"
+					alt="AI Notice"
+				/>
+			</div>
+
+			<button id="aiModalClose" class="close-btn">Đóng</button>
+		</div>
+	</div>
+
 
 	<!-- Modal hiển thị FAQ -->
 	<div id="faqModal" class="modal">
@@ -117,6 +156,28 @@
 		</div>
 	</main>
 </div>
+<script>
+	function updateClock() {
+		const now = new Date();
+
+		const formatter = new Intl.DateTimeFormat('en-GB', {
+			timeZone: 'Asia/Singapore',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			hour12: false
+		});
+
+		document.getElementById('clock').textContent = formatter.format(now);
+	}
+
+	// chạy ngay khi load
+	updateClock();
+
+	// cập nhật mỗi giây
+	setInterval(updateClock, 1000);
+</script>
+
 
 <script src="assets/js/index.js"></script>
 <script src="assets/js/chat_handle.js"></script>

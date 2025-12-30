@@ -262,3 +262,98 @@
     color: #ff9900;
     transform: translateY(-50%) scale(1.2);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.ai-info-btn {
+    background: radial-gradient(circle, #ffcc33 0%, #ff9800 70%);
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 15px;
+    box-shadow: 0 0 8px #ffcc33, 0 0 16px #ff9800;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ai-info-btn:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 12px #ffcc33, 0 0 25px #ff9800;
+}
+
+
+
+
+/* ===============================
+   SCHEDULE MODAL / AI TRAINING
+================================ */
+.ai-modal {
+    z-index: 1000;
+}
+
+.ai-modal-content {
+    max-width: 520px;
+    background: linear-gradient(180deg, #1a1a1a, #111);
+    border: 1px solid rgba(255, 204, 51, 0.4);
+    box-shadow:
+        0 0 20px rgba(255, 204, 51, 0.5),
+        0 0 40px rgba(255, 153, 0, 0.25);
+}
+
+/* ===============================
+   AI TRAINING CONTENT
+================================ */
+.ai-training-box {
+    background: rgba(255, 204, 51, 0.08);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: left;
+    box-shadow: inset 0 0 10px rgba(255, 204, 51, 0.2);
+}
+
+.ai-title {
+    font-weight: 700;
+    color: #ffcc33;
+    margin-bottom: 8px;
+    text-shadow: 0 0 6px #ffcc33;
+}
+
+.ai-content {
+    white-space: pre-wrap;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #eee;
+    font-family: Consolas, monospace;
+}
+
+.ai-note-img {
+    display: block;
+    margin: 12px auto 0;
+    width: 64px;
+    height: auto;
+    filter: drop-shadow(0 0 8px #ffcc33);
+}
+
+#scheduleInfoBtn{
+    background: rgba(94, 242, 214, 0.2);
+    border: 1px solid rgba(94, 242, 214, 0.5);
+    box-shadow: 0 0 12px rgba(94, 242, 214, 0.5), 0 0 25px rgba(94, 242, 214, 0.2);
+    color: white;
+}
+
+/* ===============================
+   END OF SCHEDULE MODAL / AI TRAINING
+================================ */

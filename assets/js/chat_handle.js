@@ -299,9 +299,16 @@ document.getElementById('export')?.addEventListener('click', () => {
 function init() {
     currentConversation.messages.push({
         role: 'assistant',
-        content:
-            'Xin chào! Mình là Chatbot Silver-Hand của SAO-ĐÊM hỗ trợ newbies. ' +
-            'Hãy hỏi mình những câu hỏi xoay quanh LifeAfter nhé. (〃°ω°〃)'
+        content: `Xin chào! Mình là Chatbot <b style="color: orange">Silver-Hand</b> của SAO-ĐÊM hỗ trợ newbies.<br>Hãy hỏi mình những câu hỏi xoay quanh <b style="color: orange">LifeAfter</b> nhé.
+            <video 
+                src="assets/videos/mayor_confuse.mp4"
+                autoplay
+                loop
+                muted
+                playsinline
+                style="width:100px;height:100px;border-radius:8px;"
+            ></video>
+        `
     });
     renderMessages();
     statusEl.textContent = 'Online';

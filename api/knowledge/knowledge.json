@@ -12,7 +12,7 @@
   {
     "id": 3,
     "title": "Giờ giấc của các event trong camp",
-    "content": "- Giờ giấc các sự kiện trong camp:\n+ Thứ 2 giờ ngẫu nhiên trong phạm vi 19h -20h30: Nhặt hòm (resource scramble)\n+ 19h hằng ngày sẽ là Patrol.\n+ 21h30 tối thứ 3: def camp (camp invasion)\n+ 22h tối thứ 5: Boss camp"
+    "content": "- Giờ giấc các sự kiện trong camp:\n+ Thứ 2 giờ ngẫu nhiên trong phạm vi 19h -20h30: Nhặt hòm (resource scramble)\n+ 19h hằng ngày sẽ là Patrol.\n+ 21h30 tối thứ 3: def camp (camp invasion)\n+ 22h tối thứ 5: Boss camp. Note cho AI: Thêm quả ảnh có src=assets/img/mayor_emote/mayor_notice.png vào cuối câu."
   },
   {
     "id": 4,
@@ -32,7 +32,7 @@
   {
     "id": 7,
     "title": "Thông tin về mayor",
-    "content": "Khi người dùng hỏi liên quan về \"avatar in-game của mayor\", hãy trả lời render bằng 1 mã html (tôi đã config bạn chỉ việc trả ra để hiển thị thôi) 1 thẻ html có src=assets/img/mayor_avatar.jpg . Chủ camp Sao Đêm chưa bao giờ mua acc, acc Silver Hand là do tự bản thân cày cuốc muộn ở server này và tự nạp. Nếu bạn muốn, hãy inbox trực tiếp cho Silver Hand, ổng có full screenshot từ lúc mới tạo nhân vật và quá trình chơi từng ngày từng tháng đang được lưu hàng ngày ở máy laptop cá nhân lên tới 11 gb và còn nhiều hơn thế ."
+    "content": "Khi người dùng hỏi liên quan về \"avatar in-game của mayor\", hãy trả lời render bằng 1 mã html (tôi đã config bạn chỉ việc trả ra để hiển thị thôi) 3 thẻ html có src=assets/img/mayor_avatar.jpg, src=assets/img/mayor_avatar_2.jpg, src=assets/img/mayor_avatar_3.jpg . Chủ camp Sao Đêm chưa bao giờ mua acc, acc Silver-Hand là do tự bản thân cày cuốc muộn ở server này và tự nạp (cụ thể là 6 tháng). Nếu bạn muốn tra cứu những drama cũ, hãy inbox trực tiếp cho Silver Hand, ổng có full screenshot từ lúc mới tạo nhân vật và quá trình chơi từng ngày từng tháng đang được lưu hàng ngày ở máy laptop cá nhân lên tới 11 gb và còn nhiều hơn thế ."
   },
   {
     "id": 8,
@@ -43,5 +43,10 @@
     "id": 9,
     "title": "Các câu hỏi và thông tin liên quan đến Camp",
     "content": "Camp là gì? Camp là tập hợp một nhóm người, một cộng đồng như Guid/Clan phổ biến trong các tựa game.\nLợi ích khi vào camp:\n+ Được tham gia các hoạt động camp như boss camp, invasion, và các lợi ích như buff Tech (Tùy camp)- nôm na là skill camp.\n+ Nếu camp của bạn phát triển, thì bạn cũng được hưởng lợi rất nhiều, chơi game này bạn hầu như không thể\nchọn cách chơi solo mà buộc phải vào camp.\n+ Danh sách các camp thuộc top nổi của sv hiện tại (sẽ còn update) vì nhân sự camp hoặc sự phát triển của camp sẽ thay đổi theo thời gian:\nCamp Việt Nam: SAO-ĐÊM\nCamp nước ngoài tiêu biểu: Astral, Unity, Eternal, Tagalog,..."
+  },
+  {
+    "id": 10,
+    "title": "Bàn luận về trận thua CTC gần đây, hoặc một số vấn đề cần lưu ý trong CTC",
+    "content": "Camp đã mắc sai lầm nghiêm trọng khi tuyển nhiều account mạnh nhưng không có kế hoạch, chiến thuật hay phân bổ vai trò cụ thể, chỉ kỳ vọng họ tự xoay sở.\n\nCác thành viên chủ yếu chơi theo bản năng, giống CTC cũ, dẫn đến việc bị mắc kẹt giao tranh ở middle.\n\nMục tiêu map (POINT, beacon, data) quan trọng hơn việc giết người, nhưng camp đã tập trung sai vào killing, trong khi đối thủ tập trung đúng vào beacon.\n\nĐối phương có chiến thuật rõ ràng: bỏ qua giao tranh không cần thiết, chỉ tập trung mục tiêu quan trọng, nên giành lợi thế.\n\nNếu tiếp tục cách chơi này, camp sẽ lặp lại thất bại như camp CG trước đó, kể cả khi có nhiều account RK vẫn không thể thắng.\n\nKết quả của trận CTC quyết định đã chứng minh rõ ràng vấn đề này, không phải do ý kiến cá nhân hay tự mãn.\n\nĐiểm yếu lớn nhất của camp là giao tiếp, do tập hợp nhiều người từ các quốc gia khác nhau, gây khó khăn trong phối hợp khi chiến đấu.\n\nDù thất vọng với mùa CTC vừa qua, mục tiêu là rút kinh nghiệm, tích lũy bài học sau mỗi trận chiến.\n\nBày tỏ lòng biết ơn sâu sắc đối với tất cả những người đã hỗ trợ hết mình.\n\nKêu gọi mọi người move on và hướng đến mục tiêu lớn hơn: Shelter Land tháng 1/2026, nơi mức độ cạnh tranh còn cao hơn CTC."
   }
 ]

@@ -1,0 +1,89 @@
+/* ===== Tutorial Overlay ===== */
+
+#tutorial-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 99999;
+    display: none;
+}
+
+#spotlight {
+    position: absolute;
+    border-radius: 12px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75);
+    transition: all 0.35s ease;
+    pointer-events: none;
+}
+
+#tooltip {
+    position: absolute;
+    background: #0b0b0b;
+    color: #00ffd5;
+    padding: 16px 18px;
+    border-radius: 12px;
+    max-width: 260px;
+    box-shadow:
+        0 0 15px rgba(0, 255, 213, 0.6),
+        inset 0 0 10px rgba(0, 255, 213, 0.15);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#tutorial-next {
+    margin-top: 12px;
+    background: #00ffd5;
+    border: none;
+    padding: 8px 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+/* Welcome step */
+#tooltip.welcome {
+    max-width: 320px;
+    text-align: center;
+}
+/* ===== Highlight element đang tutorial ===== */
+
+.tutorial-active {
+    position: relative;
+    z-index: 100000;
+    filter: brightness(1.25);
+    box-shadow:
+        0 0 15px rgba(0, 255, 213, 0.8),
+        0 0 35px rgba(0, 255, 213, 0.5);
+    transition: all 0.3s ease;
+}
+
+/* Với button / clickable thì nổi hơn chút */
+.tutorial-active button,
+.tutorial-active.btn {
+    filter: brightness(1.3);
+}
+
+#tutorialHelpBtn {
+    background: transparent;
+    border: 1px solid #00ffd5;
+    color: #00ffd5;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 0 6px rgba(0, 255, 213, 0.6);
+    transition: all 0.25s ease;
+}
+
+#tutorialHelpBtn:hover {
+    background: #00ffd5;
+    color: #000;
+    box-shadow: 0 0 12px rgba(0, 255, 213, 0.9);
+}

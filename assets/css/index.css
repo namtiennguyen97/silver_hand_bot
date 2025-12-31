@@ -9,6 +9,11 @@
     src: url('/assets/fonts/Ethnocentric-Regular.otf') format('opentype');
     font-display: swap;
 }
+@font-face {
+    font-family: 'Digital-Custom';
+    src: url('/assets/fonts/DS-DIGI.TTF') format('opentype');
+    font-display: swap;
+}
 :root{
     --bg:#0b0f13;
     --panel:#071018;

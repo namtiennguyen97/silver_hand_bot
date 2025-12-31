@@ -51,8 +51,11 @@ document.onreadystatechange = () => {
 window.addEventListener("load", () => {
     target = 100;
 
-    // 👉 GIỮ NGUYÊN LUỒNG CŨ
     setTimeout(() => {
         document.body.classList.add("finished");
+
+        // 🔔 BÁO CHO TUTORIAL BIẾT: LOADING ĐÃ XONG
+        window.dispatchEvent(new Event("app:loaded"));
+
     }, 300);
 });

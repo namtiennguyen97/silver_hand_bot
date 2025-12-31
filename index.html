@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="assets/css/loading.css">
 	<link rel="stylesheet" href="assets/css/index.css">
 	<link rel="stylesheet" href="assets/css/modal_faq.css">
+	<link rel="stylesheet" href="assets/css/tutorial.css">
 </head>
 <body>
 
@@ -57,7 +58,6 @@
 				<p class="subtitle">Mayor AI</p>
 			</div>
 		</div>
-		
 		<div class="controls">
 			<button class="btn" id="newConv">+ Tạo mới</button>
 <!--			<button class="btn" id="export">Xuất</button>-->
@@ -69,14 +69,18 @@
 <!--		<div class="small">Note: Hỏi đáp về Life After</div>-->
 		<div class="small" style="display: flex; justify-content: space-between; align-items: center">
 			<span>
-				InGame Time: <span id="clock" style="font-size: 16px; font-weight: bold;
-				color: #00ffff;
+				InGame Time: <span id="clock" style="font-size: 20px; font-weight: bold;
+				color: #00ffff; font-family: 'Digital-Custom', sans-serif;
 				"></span>
 			</span>
 
 
-			<button id="scheduleInfoBtn" title="AI Training Info">
-				Event 📢
+<!--			<button id="scheduleInfoBtn" title="AI Training Info">-->
+<!--				Event 📢-->
+<!--			</button>-->
+			<button id="tutorialHelpBtn"
+					title="Xem lại hướng dẫn">
+				❔
 			</button>
 		</div>
 	</aside>
@@ -119,9 +123,9 @@
 			<ul id="faqList">
 				<li data-question="Thời gian của sự kiện camp">Thời gian của sự kiện camp</li>
 				<li data-question="Camp SAO-ĐÊM hoạt động ra sao?">Camp SAO-ĐÊM hoạt động ra sao?</li>
+				<li data-question="Thông tin cơ bản về nghề trong Life After">Thông tin cơ bản về nghề (Cert)</li>
 				<li data-question="Chọn nghề nào phù hợp khi là newbie?">Chọn nghề nào phù hợp khi là newbie?</li>
 				<li data-question="Thông tin về nông trại (farm)">Thông tin về nông trại (farm)</li>
-				<li data-question="Thông tin cơ bản về nghề trong Life After">Thông tin cơ bản về nghề (Cert)</li>
 			</ul>
 			<button id="faqClose" class="close-btn">Đóng</button>
 		</div>
@@ -144,7 +148,7 @@
 	<main class="panel">
 		<div class="topbar">
 			<div id="faqBtn" class="title">Click hỏi nhanh <span class="neon-q">?</span></div>
-			<div class="status" id="status">Online</div>
+			<div class="status" id="status">Online </div>
 		</div>
 		
 		<div class="chat-area">
@@ -156,6 +160,18 @@
 		</div>
 	</main>
 </div>
+
+<!-- Tutorial Overlay -->
+<div id="tutorial-overlay">
+	<div id="spotlight"></div>
+
+	<div id="tooltip">
+		<div id="tooltip-text"></div>
+		<button id="tutorial-next">Tiếp tục</button>
+	</div>
+</div>
+
+<script src="assets/js/tutorial.js"></script>
 <script>
 	function updateClock() {
 		const now = new Date();

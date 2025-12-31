@@ -301,7 +301,7 @@ function init() {
         role: 'assistant',
         content: `Xin chào! Mình là Chatbot <b style="color: orange">Silver-Hand</b> của SAO-ĐÊM hỗ trợ newbies.<br>Hãy hỏi mình những câu hỏi xoay quanh <b style="color: orange">LifeAfter</b> nhé.
             <video 
-                src="assets/videos/mayor_confuse.mp4"
+                src="assets/videos/mayor_confuse_3d.mp4"
                 autoplay
                 loop
                 muted

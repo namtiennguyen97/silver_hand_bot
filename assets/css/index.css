@@ -196,7 +196,7 @@ p.subtitle{margin:0;color:var(--muted);font-size:13px}
     background: rgba(255,255,255,0.05);
 }
 
-.msg{padding:10px 14px;border-radius:10px;margin-bottom:8px;font-size:14px;max-width:80%;word-wrap:break-word;white-space:pre-wrap;}
+.msg{padding:10px 14px;border-radius:10px;margin-bottom:8px;font-size:14px;max-width:80%;word-wrap:break-word;white-space:pre-wrap;font-family: Consolas, monospace !important;}
 .msg.user{align-self:flex-end;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#021017;margin-left:auto;}
 .msg.assistant{align-self:flex-start;background:rgba(255,255,255,0.02);color:#e6eef3;border:1px solid rgba(255,255,255,0.02);margin-right:auto;}
 
@@ -396,7 +396,8 @@ button#sendBtn:active {
 
 .msg.assistant {
     align-self: flex-start;
-    background: rgba(255,255,255,0.02);
+    /*background: rgba(255,255,255,0.02);*/
+    background: rgba(255, 204, 51, 0.08);
     color: #e6eef3;
     border: 1px solid rgba(255,255,255,0.02);
     margin-right: auto;

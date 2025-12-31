@@ -15,6 +15,10 @@ document.addEventListener("DOMContentLoaded", () => {
             text: "❓ Bạn có thể <b>click hỏi nhanh</b> những câu hỏi cơ bản, không cần gõ tay."
         },
         {
+            selector: "#clock",
+            text: "⏰ Đây là <b>thời gian trong game LifeAfter</b> (Hope 101 time zone).<br><br>Đôi lúc bạn cần theo dõi để <b>tham gia các sự kiện ingame đúng giờ</b>."
+        },
+        {
             selector: "#newConv",
             text: "➕ Bấm vào đây để <b>tạo một hội thoại mới</b>."
         }

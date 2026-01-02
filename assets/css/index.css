@@ -68,7 +68,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 20px;
-    transition: background-position 0.1s ease-out; /* mượt hơn khi di chuyển */
+    /*transition: background-position 0.1s ease-out; !* mượt hơn khi di chuyển *!*/
 }
 
 
@@ -477,6 +477,32 @@ button#sendBtn:active {
     animation: glowPulse 1.2s ease-in-out infinite alternate;
     color: #fbbf24;
     text-shadow: 0 0 6px #f59e0b, 0 0 12px rgba(245,158,11,0.6);
+}
+
+
+
+/* Brand = Home */
+.home-brand {
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+/* Hover: nổi nhẹ + glow */
+.home-brand:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.15);
+}
+
+/* Nhấn */
+.home-brand:active {
+    transform: scale(0.97);
+}
+
+/* Logo sáng hơn khi hover */
+.home-brand:hover .logo {
+    box-shadow:
+        0 0 10px rgba(94, 242, 214, 0.8),
+        0 0 22px rgba(124, 58, 237, 0.6);
 }
 
 

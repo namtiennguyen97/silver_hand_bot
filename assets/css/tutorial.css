@@ -9,11 +9,28 @@
 }
 
 #spotlight {
-    position: absolute;
-    border-radius: 12px;
-    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75);
-    transition: all 0.35s ease;
+    position: fixed;
+    z-index: 10001;
     pointer-events: none;
+
+    /* 🌟 Bo góc */
+    border-radius: 14px;
+
+    /* 🌟 Viền neon mỏng */
+    border: 2px solid rgba(94, 242, 214, 0.9);
+
+    /* 🌟 Glow */
+    box-shadow:
+        0 0 12px rgba(94, 242, 214, 0.6),
+        0 0 24px rgba(94, 242, 214, 0.35);
+
+    /* Smooth movement */
+    transition:
+        top 0.25s ease,
+        left 0.25s ease,
+        width 0.25s ease,
+        height 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
 #tooltip {
@@ -86,4 +103,20 @@
     background: #00ffd5;
     color: #000;
     box-shadow: 0 0 12px rgba(0, 255, 213, 0.9);
+}
+/* Khi tutorial đang chạy → khóa toàn bộ interaction */
+body.tutorial-lock * {
+    pointer-events: none;
+}
+
+/* Cho phép click tooltip + nút next */
+body.tutorial-lock #tooltip,
+body.tutorial-lock #tutorial-next,
+body.tutorial-lock #tutorial-prev {
+    pointer-events: auto;
+}
+
+/* Spotlight chỉ để nhìn */
+#spotlight {
+    pointer-events: none;
 }

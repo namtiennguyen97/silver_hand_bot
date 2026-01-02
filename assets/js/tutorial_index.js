@@ -7,24 +7,16 @@ document.addEventListener("DOMContentLoaded", () => {
             text: "👋 Chào mừng bạn đến với <b>Silver-Hand Chatbot – SAO-ĐÊM</b>.<br><br>Mình sẽ hướng dẫn bạn nhanh cách sử dụng nhé!"
         },
         {
-            selector: ".chat-area",
+            selector: "#info-grid",
             text: "💬 Đây là <b>khung chat</b> để bạn giao tiếp trực tiếp với <b>Mayor AI</b>."
         },
         {
-            selector: "#faqBtn",
+            selector: "#mayor-chat",
             text: "❓ Bạn có thể <b>click hỏi nhanh</b> những câu hỏi cơ bản, không cần gõ tay."
         },
         {
             selector: "#clock",
             text: "⏰ Đây là <b>thời gian trong game LifeAfter</b> (Hope 101 time zone).<br><br>Đôi lúc bạn cần theo dõi để <b>tham gia các sự kiện ingame đúng giờ</b>."
-        },
-        {
-            selector: "#newConv",
-            text: "➕ Bấm vào đây để <b>tạo một hội thoại mới</b>."
-        },
-        {
-            selector: "#homeBtn",
-            text: "🏠 Bấm vào đây để <b>quay về màn hình chính</b>."
         }
     ];
 
@@ -129,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
             overlay.style.display = "none";
             document.body.classList.remove("tutorial-lock");
 
-            localStorage.setItem("sao-dem-tutorial-done", "1");
+            localStorage.setItem("sao-dem-main-tutorial-done", "1");
             return;
         }
 
@@ -147,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 🚀 CHỈ START TUTORIAL SAU KHI LOADING XONG
     window.addEventListener("app:loaded", () => {
-        if (localStorage.getItem("sao-dem-tutorial-done")) return;
+        if (localStorage.getItem("sao-dem-main-tutorial-done")) return;
 
         setTimeout(() => {
             overlay.style.display = "block";
@@ -177,5 +169,6 @@ document.addEventListener("DOMContentLoaded", () => {
         overlay.style.display = "block";
         showStep(currentStep);
     }
+
 });
 

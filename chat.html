@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="vi">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Silver-Hand Chatbot- SAO-ĐÊM</title>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+	<link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
+	
+	<link rel="stylesheet" href="assets/css/loading.css">
+	<link rel="stylesheet" href="assets/css/index.css">
+	<link rel="stylesheet" href="assets/css/modal_faq.css">
+	<link rel="stylesheet" href="assets/css/tutorial.css">
+</head>
+<body>
+
+
+<div id="loadingOverlay">
+	<div class="loading-wrapper">
+		<div class="loading-text">
+			<span class="sao">SAO &nbsp;</span><span class="dem"> ĐÊM</span>
+		</div>
+
+		<!-- 🔽 PROGRESS BAR -->
+		<div class="loading-progress">
+			<div class="progress-bar" id="loadingProgress"></div>
+		</div>
+
+		<div class="line top"></div>
+		<div class="line bottom"></div>
+	</div>
+</div>
+
+<!-- Sidebar di động -->
+<div class="mobile-sidebar" id="mobileSidebar">
+	<div class="brand">
+		<div class="logo"><img src="assets/img/mayor_avatar.jpg"></div>
+		<div>
+			<h1>Lịch sử chat</h1>
+			<p class="subtitle">Danh sách</p>
+		</div>
+	</div>
+	
+	<div class="history history-content-list" id="historyListMobile">
+
+	</div>
+</div>
+
+
+<!--main content-->
+
+<div class="container">
+	<aside class="sidebar">
+		<div class="brand home-brand" id="homeBtn" title="Quay về màn hình chính">
+			<div class="logo">
+				<img src="assets/img/mayor_avatar.jpg">
+			</div>
+			<div>
+				<h1>SAO-ĐÊM</h1>
+				<p class="subtitle">Mayor AI</p>
+			</div>
+		</div>
+		<div class="controls">
+			<button class="btn" id="newConv">+ Tạo mới</button>
+<!--			<button class="btn" id="export">Xuất</button>-->
+			<button id="toggleSidebar" class="btn">☴ Lịch sử</button>
+			<button class="btn" id="clear">Xóa</button>
+		</div>
+		
+		<div class="history" id="historyList"></div>
+<!--		<div class="small">Note: Hỏi đáp về Life After</div>-->
+		<div class="small" style="display: flex; justify-content: space-between; align-items: center">
+			<span>
+				InGame Time: <span id="clock" style="font-size: 20px; font-weight: bold;
+				color: #00ffff; font-family: 'Digital-Custom', sans-serif;
+				"></span>
+			</span>
+
+
+<!--			<button id="scheduleInfoBtn" title="AI Training Info">-->
+<!--				Event 📢-->
+<!--			</button>-->
+			<button id="tutorialHelpBtn"
+					title="Xem lại hướng dẫn">
+				❔
+			</button>
+		</div>
+	</aside>
+
+
+	<div id="aiModal" class="modal ai-modal">
+		<div class="modal-content ai-modal-content">
+			<h2>Lịch event camp</h2>
+
+			<div class="ai-training-box">
+				<div class="ai-title">Lưu ý: Đây là giờ VN, không phải giờ Ingame</div>
+
+				<pre class="ai-content">
++ Thứ 2 giờ ngẫu nhiên trong phạm vi 19h - 20h30: Nhặt hòm (resource scramble)
++ 19h hằng ngày sẽ là Patrol.
++ 21h30 tối thứ 3: Def camp (camp invasion)
++ 22h tối thứ 5: Boss camp.
+            </pre>
+
+				<img
+					src="assets/img/mayor_emote/mayor_notice.png"
+					class="ai-note-img"
+					alt="AI Notice"
+				/>
+			</div>
+
+			<button id="aiModalClose" class="close-btn">Đóng</button>
+		</div>
+	</div>
+
+
+	<!-- Modal hiển thị FAQ -->
+	<div id="faqModal" class="modal">
+		<div class="modal-content">
+			<h2>Câu hỏi thường gặp</h2>
+			<div class="faq-search-wrapper">
+				<input type="text" id="faqSearch" placeholder="🔍 Tìm câu hỏi..." />
+				<button id="faqClear" class="faq-clear">x</button>
+			</div>
+			<ul id="faqList">
+				<li data-question="Thời gian của sự kiện camp">Thời gian của sự kiện camp</li>
+				<li data-question="Camp SAO-ĐÊM hoạt động ra sao?">Camp SAO-ĐÊM hoạt động ra sao?</li>
+				<li data-question="Thông tin cơ bản về nghề trong Life After">Thông tin cơ bản về nghề (Cert)</li>
+				<li data-question="Chọn nghề nào phù hợp khi là newbie?">Chọn nghề nào phù hợp khi là newbie?</li>
+				<li data-question="Thông tin về nông trại (farm)">Thông tin về nông trại (farm)</li>
+			</ul>
+			<button id="faqClose" class="close-btn">Đóng</button>
+		</div>
+	</div>
+
+
+	<!-- Modal xác nhận xóa -->
+	<div id="confirmModal" class="modal">
+		<div class="modal-content">
+			<h3 class="modal-warning-title">Xóa toàn bộ lịch sử?</h3>
+			<p>Bạn có chắc muốn xóa mọi cuộc trò chuyện không?</p>
+			<div class="modal-actions">
+				<button id="confirmYes" class="btn neon-btn">Có</button>
+				<button id="confirmNo" class="btn neon-btn cancel">Không</button>
+			</div>
+		</div>
+	</div>
+
+
+	<main class="panel">
+		<div class="topbar">
+			<div id="faqBtn" class="title">Click hỏi nhanh <span class="neon-q">?</span></div>
+			<div class="status" id="status">Online </div>
+		</div>
+		
+		<div class="chat-area">
+			<div class="messages" id="messagesBox"></div>
+			<div class="composer">
+				<textarea id="promptInput" rows="2" placeholder="Nhập câu hỏi... (Shift+Enter để xuống dòng)"></textarea>
+				<button id="sendBtn">Gửi</button>
+			</div>
+		</div>
+	</main>
+</div>
+
+<!-- Tutorial Overlay -->
+<div id="tutorial-overlay">
+	<div id="spotlight"></div>
+
+	<div id="tooltip">
+		<div id="tooltip-text"></div>
+		<button id="tutorial-next">Tiếp tục</button>
+	</div>
+</div>
+
+<script src="assets/js/tutorial.js"></script>
+<script>
+
+	document.getElementById("homeBtn")?.addEventListener("click", () => {
+		window.location.href = "index.html"; // hoặc overview.html
+	});
+</script>
+
+
+<script src="assets/js/hope101_time.js"></script>
+<script src="assets/js/index.js"></script>
+<script src="assets/js/chat_handle.js"></script>
+<script src="assets/js/loading.js"></script>
+<script src="assets/js/side_bar.js"></script>
+<script src="assets/js/faq.js"></script>
+</body>
+</html>

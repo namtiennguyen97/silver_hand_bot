@@ -1,0 +1,43 @@
+.map-block {
+    margin-bottom: 18px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: rgba(94, 242, 214, 0.08);
+    border-left: 3px solid var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+.copy-map-btn {
+    margin-top: 12px;
+    align-self: flex-end;
+
+    background: rgba(255, 204, 51, 0.12);
+    border: 1px solid rgba(255, 204, 51, 0.6);
+    border-radius: 8px;
+
+    color: #ffcc33;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+
+    padding: 6px 12px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    box-shadow:
+        0 0 6px rgba(255, 204, 51, 0.4);
+
+    transition: all 0.2s ease;
+}
+
+.copy-map-btn:hover {
+    background: rgba(255, 204, 51, 0.25);
+    box-shadow:
+        0 0 10px rgba(255, 204, 51, 0.8),
+        0 0 20px rgba(255, 153, 0, 0.4);
+    transform: translateY(-1px);
+}
+.map-title{
+    color: #ffcc33;
+}

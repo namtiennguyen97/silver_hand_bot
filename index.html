@@ -12,10 +12,13 @@
   <link rel="stylesheet" href="assets/css/tutorial.css">
   <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
   <link rel="stylesheet" href="assets/css/heartlock_zone_info.css">
+  <link rel="stylesheet" href="assets/css/cert_info.css">
+
 
 
 </head>
 <body>
+
 <div id="hope-clock" class="home-clock">
 	<span>
 		Hope 101 time:
@@ -54,25 +57,32 @@
   </div>
 
   <!-- INFO BLOCKS -->
-  <div id="info-grid" class="info-grid">
-    <div class="info-card" data-modal="infoA">
-      📢
-      <span>Thời gian sự kiện camp</span>
+  <div class="info-grid-wrapper">
+    <div id="info-grid" class="info-grid">
+      <div class="info-card" data-modal="infoA">
+        📢
+        <span>Thời gian sự kiện camp</span>
+      </div>
+
+      <div class="info-card" data-modal="infoB">
+        ⚔️
+        <span>Giới thiệu về Cert</span>
+      </div>
+
+      <div class="info-card" data-modal="infoC">
+        🔐
+        <span>Code Heart lock Zone</span>
+      </div>
+
+      <div class="info-card" data-modal="infoD">
+        🛠️
+        <span>Chi tiet ve cert</span>
+      </div>
+
+
     </div>
-
-    <div class="info-card" data-modal="infoB">
-      ⚔️
-      <span>Giới thiệu về Cert</span>
-    </div>
-
-    <div class="info-card" data-modal="infoC">
-      🔐
-      <span>Code Heart lock Zone</span>
-    </div>
-
-
-
   </div>
+
 
   <!-- ENTER CHAT BUTTON -->
   <a id="mayor-chat" href="chat.html" class="enter-chat-btn round-focus">
@@ -100,18 +110,115 @@
   <div class="ai-title">
     Lưu ý: Đây là giờ VN, không phải giờ Ingame
   </div>
-+ Thứ 2 (19h – 20h30): Nhặt hòm (Resource Scramble)
-+ 19h hằng ngày: Patrol
-+ 21h30 tối thứ 3: Def camp (Camp Invasion)
-+ 22h tối thứ 5: Boss camp
+  <div>+ <span style="color: orange">Thứ 2 (19h – 20h30):</span> Nhặt hòm (Resource Scramble)</div>
+  <div>+ <span style="color: orange">19h hằng ngày:</span> Patrol</div>
+  <div>+ <span style="color: orange">21h30 tối thứ 3:</span> Def camp (Camp Invasion)</div>
+  <div>+ <span style="color: orange">22h tối thứ 5:</span> Boss camp</div>
+
 
 </template>
 
 <template id="tpl-infoB">
-  <ul class="ai-content">
-    <li>⚔️ Upcoming....</li>
-  </ul>
+  <div class="ai-section">
+
+    <p class="ai-paragraph">
+      📌 <b>Sau bản update ngày <span class="highlight">31/12/2025</span></b>, hệ thống
+      <b>Cert</b> trong LifeAfter đã được <b>chia rõ rệt</b> và có nhiều cải tiến mới.
+    </p>
+
+    <p class="ai-paragraph">
+      Ngoài <b>Cert chính</b>, người chơi giờ đây có thể chọn thêm
+      <b class="neon-text">Cert Part-time (Cert phụ)</b>.
+    </p>
+
+    <div class="ai-warning">
+      ⚠️ <b>Lưu ý quan trọng:</b><br>
+      Cert phụ <u>không mở toàn bộ kỹ năng</u> của nghề đó.
+      Hệ thống chỉ cho phép chọn <b>một số skill cố định</b>.
+      <br><br>
+      👉 Ví dụ: Không thể vừa chơi nghề súng, vừa chế tạo giáp – súng như nghề chế.
+    </div>
+
+    <!-- ===== NGHỀ CƠ BẢN ===== -->
+    <h3 class="ai-title">⚔️ Nghề cơ bản</h3>
+    <p class="ai-paragraph">
+      Vẫn hoạt động như hệ thống cũ – cộng chỉ số trực tiếp và là nền tảng chính của nhân vật.
+    </p>
+
+    <img
+        src="assets/img/guide/cert/basic_skill.png"
+        class="ai-img"
+        alt="Basic Cert Skill"
+    >
+
+    <p class="ai-paragraph">
+      Các nhánh kỹ năng sẽ được lựa chọn <b>theo lối chơi của bạn</b>.
+    </p>
+
+    <img
+        src="assets/img/guide/cert/skill_path.png"
+        class="ai-img"
+        alt="Cert Skill Path"
+    >
+
+    <!-- ===== NGHỀ PHỤ ===== -->
+    <h3 class="ai-title">🧩 Nghề phụ (Cert Part-time)</h3>
+
+    <p class="ai-paragraph">
+      Người chơi được chọn <b>một nghề phụ</b> trong danh sách để hỗ trợ lối build.
+    </p>
+
+    <img
+        src="assets/img/guide/cert/additional_skill.png"
+        class="ai-img"
+        alt="Additional Cert Skill"
+    >
+
+    <!-- ===== TÓM TẮT NGHỀ ===== -->
+    <h3 class="ai-title">📋 Tóm tắt các nhóm nghề</h3>
+
+    <div class="ai-list-block">
+      <h4 class="ai-subtitle">🌿 Nghề Farm (thu thập nguyên liệu)</h4>
+      <ul class="ai-list">
+        <li>🌲 Logger – Nghề gỗ</li>
+        <li>🌿 Hemp Picker – Hái lụm</li>
+        <li>⛏️ Miner – Khai thác đá</li>
+      </ul>
+    </div>
+
+    <div class="ai-list-block">
+      <h4 class="ai-subtitle">🔥 Nghề Chiến Đấu</h4>
+      <ul class="ai-list">
+        <li>
+          🔫 <b>Rifle</b> – Thuần chiến đấu, dame cao nhất hiện tại
+        </li>
+        <li>
+          🧬 <b>Virus</b> – Vừa đánh vừa hỗ trợ, buff dame & hồi phục
+        </li>
+        <li>
+          🛡️ <b>Warrior</b> – Cận chiến, tanky nhất trong PvP
+        </li>
+        <li class="dim">
+          ⚔️ Ark Knight – Hỗ trợ là chính, dame thấp (❌ không khuyến nghị)
+        </li>
+      </ul>
+    </div>
+
+    <div class="ai-list-block">
+      <h4 class="ai-subtitle">🛠️ Nghề Chế Tạo</h4>
+      <ul class="ai-list">
+        <li>
+          Armor / Gun Maker / Upholstery – Chế nguyên liệu súng & giáp
+        </li>
+        <li class="note">
+          👉 Phụ thuộc nguồn nguyên liệu từ nghề farm
+        </li>
+      </ul>
+    </div>
+
+  </div>
 </template>
+
 
 <template id="tpl-infoC">
   <div class="ai-content">
@@ -164,6 +271,50 @@
   </div>
 </template>
 
+<template id="tpl-infoD">
+  <div class="skill-section" data-skill-root>
+
+    <!-- VIEW 1: DANH SÁCH NGHỀ -->
+    <div class="cert-view">
+
+      <div class="job-list">
+        <div class="job-item" data-job="rifle">
+          <img src="https://picsum.photos/200?1">
+          <span>Rifle</span>
+        </div>
+
+        <div class="job-item" data-job="virus">
+          <img src="https://picsum.photos/200?2">
+          <span>Virus</span>
+        </div>
+
+        <div class="job-item" data-job="warrior">
+          <img src="https://picsum.photos/200?3">
+          <span>Warrior</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- VIEW 2: SKILL -->
+    <div class="skill-view hidden">
+
+      <button class="btn-back">⬅ Quay lại</button>
+
+      <div class="skill-layout">
+        <div class="skill-list"></div>
+
+        <div class="skill-detail">
+          <p class="skill-placeholder">👈 Chọn 1 skill để xem chi tiết</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</template>
+
+
 
 
 <!-- Tutorial Overlay -->
@@ -175,10 +326,13 @@
     <button id="tutorial-next">Tiếp tục</button>
   </div>
 </div>
+
+
 <script src="assets/js/loading.js"></script>
 <script src="assets/js/tutorial_index.js"></script>
 <script src="assets/js/hope101_time.js"></script>
 <script src="assets/js/heartlock_zone_info.js"></script>
+<script src="assets/js/cert_detail_info.js"></script>
 <script>
   const modal = document.getElementById("infoModal");
   const modalTitle = document.getElementById("modalTitle");
@@ -198,7 +352,12 @@
     infoC: {
       title: "🔐 Code Heart Lock Zone",
       template: "tpl-infoC"
-    }
+    },
+    infoD: {
+      title: "🛠️ Code Heart Lock Zone",
+      template: "tpl-infoD"
+    },
+
   };
 
   document.querySelectorAll(".info-card").forEach(card => {

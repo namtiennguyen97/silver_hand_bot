@@ -4,15 +4,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const steps = [
         {
             selector: null,
-            text: "👋 Chào mừng bạn đến với <b>Silver-Hand Chatbot – SAO-ĐÊM</b>.<br><br>Mình sẽ hướng dẫn bạn nhanh cách sử dụng nhé!"
+            text: "👋 Chào mừng bạn đến với <b>Life After VN- SAO-ĐÊM</b>.<br><br>Mình sẽ hướng dẫn bạn nhanh cách sử dụng nhé!"
         },
         {
             selector: "#info-grid",
-            text: "💬 Đây là <b>khung chat</b> để bạn giao tiếp trực tiếp với <b>Mayor AI</b>."
+            text: "💬 Đây là <b>khung thông tin</b> để bạn bấm vào xem thông tin nhé."
         },
         {
             selector: "#mayor-chat",
-            text: "❓ Bạn có thể <b>click hỏi nhanh</b> những câu hỏi cơ bản, không cần gõ tay."
+            text: "❓ Bạn có thể <b>giao tiếp với trợ lý AI Mayor</b> những câu hỏi cơ bản, không cần gõ tay."
         },
         {
             selector: "#clock",

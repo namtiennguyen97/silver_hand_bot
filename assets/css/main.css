@@ -258,6 +258,10 @@ button.round-focus:focus-visible::after {
 /* ===============================
    INFO GRID SCROLL FIX
 ================================ */
+.info-grid-wrapper {
+    position: relative;
+    overflow: visible; /* 🔥 QUAN TRỌNG */
+}
 
 /* khung chứa các card */
 .info-grid {
@@ -265,11 +269,29 @@ button.round-focus:focus-visible::after {
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 16px;
 
-    /* QUAN TRỌNG */
-    max-height: 320px;          /* chỉnh theo layout bạn muốn */
+    max-height: 320px;
     overflow-y: auto;
 
-    padding-right: 6px;         /* tránh scrollbar đè content */
+    padding: 8px;
+    padding-right: 6px;
+}
+
+.info-card {
+    position: relative;
+    z-index: 1;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.info-card:hover {
+    transform: scale(1.08) translateY(-4px);
+    z-index: 10;
+
+    box-shadow:
+        0 0 12px rgba(0, 255, 255, 0.8),
+        0 0 28px rgba(0, 200, 255, 0.6);
+}
+.info-grid {
+    scrollbar-gutter: stable;
 }
 
 /* CARD */

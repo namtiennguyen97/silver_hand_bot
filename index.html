@@ -272,47 +272,42 @@
 </template>
 
 <template id="tpl-infoD">
-  <div class="skill-section" data-skill-root>
-
-    <!-- VIEW 1: DANH SÁCH NGHỀ -->
-    <div class="cert-view">
-
-      <div class="job-list">
-        <div class="job-item" data-job="rifle">
-          <img src="https://picsum.photos/200?1">
-          <span>Rifle</span>
-        </div>
-
-        <div class="job-item" data-job="virus">
-          <img src="https://picsum.photos/200?2">
-          <span>Virus</span>
-        </div>
-
-        <div class="job-item" data-job="warrior">
-          <img src="https://picsum.photos/200?3">
-          <span>Warrior</span>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- VIEW 2: SKILL -->
-    <div class="skill-view hidden">
-
-      <button class="btn-back">⬅ Quay lại</button>
-
-      <div class="skill-layout">
-        <div class="skill-list"></div>
-
-        <div class="skill-detail">
-          <p class="skill-placeholder">👈 Chọn 1 skill để xem chi tiết</p>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
+	<div class="skill-section" data-skill-root>
+		
+		<!-- JOB LIST (WHEEL VERSION) -->
+		<div class="job-list job-wheel" data-job-wheel>
+			<div class="job-wheel-track">
+				
+				<div class="job-item" data-job="rifle">
+					<img src="https://picsum.photos/200?1">
+					<span>Rifle</span>
+				</div>
+				
+				<div class="job-item" data-job="virus">
+					<img src="https://picsum.photos/200?2">
+					<span>Virus</span>
+				</div>
+				
+				<div class="job-item" data-job="warrior">
+					<img src="https://picsum.photos/200?3">
+					<span>Warrior</span>
+				</div>
+			
+			</div>
+		</div>
+		
+		<!-- SKILL LIST -->
+		<div class="skill-list"></div>
+	</div>
+	
+	<!-- 🔥 PANEL CHI TIẾT -->
+	<div class="skill-detail-panel">
+		<div class="skill-detail-placeholder">
+			Chọn một skill để xem thông tin
+		</div>
+	</div>
 </template>
+
 
 
 

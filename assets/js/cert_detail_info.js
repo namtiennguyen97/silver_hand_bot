@@ -12,20 +12,85 @@
         rifle: {
             main: [
                 {
-                    name: "Rapid Shot",
-                    description: "Bắn nhanh, sát thương cao",
-                    img: "https://picsum.photos/50?1"
+                    name: "Weapon Mastery",
+                    description: "Tăng Damage cơ bản cho bản thân. (Damage Bonus)",
+                    img: "assets/img/guide/cert_skills/rifle/weapon_mastery.png"
                 },
                 {
-                    name: "Piercing Bullet",
-                    description: "Đạn xuyên giáp",
-                    img: "https://picsum.photos/50?2"
+                    name: "Swift Assault",
+                    description: "Thay thế skill nhào lộn mặc định bằng cú lướt xa hơn, mỗi cú lướt hồi phục % số lượng đạn.",
+                    img: "assets/img/guide/cert_skills/rifle/swift_assault.png"
                 },
                 {
-                    name: "Headshot",
-                    description: "Gây sát thương chí mạng",
-                    img: "https://picsum.photos/50?3"
-                }
+                    name: "Infected Hunt",
+                    description: "Tăng sát thương mạnh đối với Zombies",
+                    img: "assets/img/guide/cert_skills/rifle/infected_hunt.png"
+                },
+                {
+                    name: "Practice Makes Perfect",
+                    description: "Tăng chỉ số chuẩn xác (Accuracy) và (Misdirection) khi cầm vũ khí.",
+                    img: "assets/img/guide/cert_skills/rifle/practice_makes_perfect.png"
+                },
+                {
+                    name: "Break the Surface",
+                    description: "Tăng Damage khi cầm vũ khí, và sẽ tăng dần nếu bắn liên tục.",
+                    img: "assets/img/guide/cert_skills/rifle/break_the_surface.png"
+                },
+                {
+                    name: "Suppressive Fire",
+                    description: "Tăng tỉ lệ crit khi dùng vũ khí, và tỷ lệ tăng gấp đôi nếu dùng AR.",
+                    img: "assets/img/guide/cert_skills/rifle/supressive_fire.png"
+                },
+                {
+                    name: "Simple Loadout",
+                    description: "Tăng tốc độ nạp đạn, và tăng tốc độ di chuyển khi bắn.",
+                    img: "assets/img/guide/cert_skills/rifle/simple_loadout.png"
+                },
+                {
+                    name: "Crippling Shoot",
+                    description: "Tăng damage khi bắn đối phương nhảy/ ngăn không cho Lướt và giảm tốc độ di chuyển của đối phương.",
+                    img: "assets/img/guide/cert_skills/rifle/crippling_shoot.png"
+                },
+                {
+                    name: "Quick Hemostasis",
+                    description: "Tăng khả năng hồi phục khi sử dụng thuốc hoặc Spore, và giảm thời gian bị trọng thương.",
+                    img: "assets/img/guide/cert_skills/rifle/quick_hemostasis.png"
+                },
+                {
+                    name: "Armor-piering Missile",
+                    description: "Khi bắn có khả năng loại bỏ chỉ số giáp của đối phương.",
+                    img: "assets/img/guide/cert_skills/rifle/armor_piering_missile.png"
+                },
+                {
+                    name: "Special effect shooting",
+                    description: "Tăng sát thương của Special Bullet, và giảm thời gian hồi Special Bullet.",
+                    img: "assets/img/guide/cert_skills/rifle/special_effect_shooting.png"
+                },
+                {
+                    name: "Headshot Expert",
+                    description: "Tăng sát thương headshot khi dùng AR, và tăng sát thương nếu đối phương ở vị trí thấp hơn.",
+                    img: "assets/img/guide/cert_skills/rifle/headshot_expert.png"
+                },
+                {
+                    name: "Head-on strike",
+                    description: "Giảm chỉ số chuẩn xác (Accuracy) và damage của đối phương nếu bạn gây headshot vào họ.",
+                    img: "assets/img/guide/cert_skills/rifle/headshot_expert.png"
+                },
+                {
+                    name: "Reaper",
+                    description: "Tăng damage khi bắn Zombies.",
+                    img: "assets/img/guide/cert_skills/rifle/reaper.png"
+                },
+                {
+                    name: "Preparedness averts peril",
+                    description: "Tăng số lượng đạn tối đa của vũ khí hạng nhẹ và trung.",
+                    img: "assets/img/guide/cert_skills/rifle/prepareness_averts_peril.png"
+                },
+                {
+                    name: "Agile hare",
+                    description: "Sau khi dùng Lướt- có tỷ lệ reset thời gian hồi chiêu Lướt.",
+                    img: "assets/img/guide/cert_skills/rifle/agile_hare.png"
+                },
             ],
             traits: [
                 {

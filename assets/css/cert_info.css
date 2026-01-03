@@ -343,7 +343,7 @@
 .skill-detail-panel {
     margin-top: 14px;
     padding: 18px;
-    min-height: 120px;
+    min-height: 170px;
 
     background:
             linear-gradient(145deg, rgba(0, 35, 55, 0.95), rgba(0, 15, 30, 0.95));
@@ -801,7 +801,7 @@
 
 }
 #infoModal .ai-training-box{
-    overflow-y: hidden;
+    overflow-y: auto;
 }
 /* =============================
    BASIC SKILL LABEL
@@ -898,7 +898,7 @@
 .skill-item img {
     width: 44px;
     height: 44px;
-    border-radius: 10px;
+    border-radius: 0px;
 
     object-fit: cover;
 

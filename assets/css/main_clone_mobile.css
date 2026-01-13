@@ -1,0 +1,367 @@
+/*font reference: https://www.dafont.com/mtheme.php?id=3*/
+@font-face {
+    font-family: 'Conthrax';
+    src: url('/assets/fonts/Conthrax-SemiBold.otf') format('opentype');
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Ethnocentric';
+    src: url('/assets/fonts/Ethnocentric-Regular.otf') format('opentype');
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Digital-Custom';
+    src: url('/assets/fonts/DS-DIGI.TTF') format('opentype');
+    font-display: swap;
+}
+
+*{
+    box-sizing:border-box;
+    font-family: 'Conthrax', sans-serif;
+}
+
+body {
+    margin: 0;
+    background: radial-gradient(circle at top, #0b0f13, #000);
+
+    color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+.overview-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+}
+
+.mayor-hero img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    box-shadow: 0 0 20px #00ffff, 0 0 40px rgba(0,255,255,0.6);
+}
+
+.mayor-hero h1 {
+    margin: 12px 0 4px;
+    font-size: 40px;
+    text-shadow: 0 0 10px #6ee7b7;
+}
+
+.subtitle {
+    opacity: 0.8;
+    margin-bottom: 30px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    width: 100%;
+    max-width: 520px;
+    margin-bottom: 32px;
+}
+
+.info-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(94,242,214,0.4);
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(94,242,214,0.3);
+    transition: 0.25s ease;
+    font-size: 20px;
+}
+
+.info-card span {
+    display: block;
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+.info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 20px rgba(94,242,214,0.7);
+}
+
+.enter-chat-btn {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 22px;
+    background: linear-gradient(90deg, #ffcc33, #ff9800);
+    color: #000;
+    font-weight: bold;
+    border-radius: 40px;
+    text-decoration: none;
+    box-shadow: 0 0 20px #ffb300;
+    transition: 0.25s ease;
+}
+
+.enter-chat-btn img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+
+.enter-chat-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 30px #ffcc33;
+}
+
+/* ================================
+   FIX focus outline cho button/link tròn
+   ================================ */
+
+a,
+button {
+    -webkit-tap-highlight-color: transparent; /* mobile */
+}
+
+/* Tắt outline mặc định */
+a:focus,
+a:active,
+button:focus,
+button:active {
+    outline: none;
+}
+
+/* Chỉ hiện focus khi dùng bàn phím */
+a:focus-visible,
+button:focus-visible {
+    outline: none;
+}
+
+/* ===== Custom focus ring bo tròn ===== */
+a.round-focus:focus-visible::after,
+button.round-focus:focus-visible::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    pointer-events: none;
+
+    box-shadow:
+        0 0 0 2px rgba(94, 242, 214, 0.9),
+        0 0 16px rgba(94, 242, 214, 0.6),
+        0 0 28px rgba(124, 58, 237, 0.45);
+}
+
+/* ===============================
+   HOME - INGAME CLOCK
+================================ */
+.home-clock {
+    position: fixed;
+    top: 16px;
+    left: 18px;
+    z-index: 1;
+
+    font-size: 16px;
+    color: #bfffff;
+    font-family: 'Conthrax', sans-serif;
+
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(6px);
+
+    padding: 6px 12px;
+    border-radius: 10px;
+
+    border: 1px solid rgba(0, 255, 255, 0.4);
+    box-shadow:
+        0 0 10px rgba(0, 255, 255, 0.4),
+        0 0 20px rgba(0, 255, 255, 0.2);
+}
+
+.tutorial {
+    position: fixed;
+    bottom: 16px;
+    right: 18px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+
+    font-size: 16px;
+    color: #bfffff;
+    font-family: 'Conthrax', sans-serif;
+
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(6px);
+
+    padding: 6px 12px;
+    border-radius: 10px;
+
+    border: 1px solid rgba(0, 255, 255, 0.4);
+    box-shadow:
+        0 0 10px rgba(0, 255, 255, 0.4),
+        0 0 20px rgba(0, 255, 255, 0.2);
+}
+
+
+
+.home-clock #clock {
+    font-size: 26px;
+    font-weight: bold;
+    margin-left: 6px;
+
+    color: #00ffff;
+    font-family: 'Digital-Custom', sans-serif;
+    text-shadow:
+        0 0 6px #00ffff,
+        0 0 12px rgba(0, 255, 255, 0.8);
+}
+
+/* ===============================
+   INFO MODAL SCROLL FIX
+================================ */
+
+/* giới hạn chiều cao modal */
+#infoModal .modal-content {
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* box chứa nội dung AI */
+#infoModal .ai-training-box {
+    flex: 1;
+    overflow-y: auto;
+    margin: 12px 0;
+    padding-right: 8px;
+}
+
+/* NEON SCROLLBAR */
+#infoModal .ai-training-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+#infoModal .ai-training-box::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ffcc33, #ff8800);
+    border-radius: 3px;
+    box-shadow: 0 0 6px #ffae00;
+}
+
+#infoModal .ai-training-box::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+    #infoModal .modal-content {
+        max-height: 85vh;
+    }
+}
+
+
+/* ===============================
+   INFO GRID SCROLL FIX
+================================ */
+.info-grid-wrapper {
+    position: relative;
+    overflow: visible; /* 🔥 QUAN TRỌNG */
+}
+
+/* khung chứa các card */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+
+    max-height: 320px;
+    overflow-y: auto;
+
+    padding: 8px;
+    padding-right: 6px;
+}
+
+.info-card {
+    position: relative;
+    z-index: 1;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.info-card:hover {
+    transform: scale(1.08) translateY(-4px);
+    z-index: 10;
+
+    box-shadow:
+        0 0 12px rgba(0, 255, 255, 0.8),
+        0 0 28px rgba(0, 200, 255, 0.6);
+}
+.info-grid {
+    scrollbar-gutter: stable;
+}
+
+/* CARD */
+.info-card {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(94, 242, 214, 0.35);
+    border-radius: 14px;
+    padding: 18px 12px;
+    text-align: center;
+    cursor: pointer;
+
+    box-shadow:
+        0 0 10px rgba(94, 242, 214, 0.25);
+
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow:
+        0 0 14px rgba(94, 242, 214, 0.6),
+        0 0 28px rgba(94, 242, 214, 0.25);
+}
+
+/* ===============================
+   SCROLLBAR NEON
+================================ */
+.info-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.info-grid::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #00ffff, #5ef2d6);
+    border-radius: 3px;
+    box-shadow: 0 0 6px #00ffff;
+}
+
+.info-grid::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ===============================
+   MOBILE TUNING
+================================ */
+@media (max-width: 600px) {
+    .info-grid {
+        max-height: 260px;
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+body.modal-open .home-clock {
+    opacity: 0;
+    pointer-events: none;
+}
+
+
+/* Khi tutorial đang chạy → khóa toàn bộ interaction */
+body.tutorial-lock * {
+    pointer-events: none;
+}
+
+/* Cho phép click tooltip + nút next */
+body.tutorial-lock #tooltip,
+body.tutorial-lock #tutorial-next,
+body.tutorial-lock #tutorial-prev {
+    pointer-events: auto;
+}
+
+/* Spotlight chỉ để nhìn */
+#spotlight {
+    pointer-events: none;
+}

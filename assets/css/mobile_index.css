@@ -1,0 +1,558 @@
+#stage {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: #000;
+}
+
+/* QUAN TRỌNG */
+#stage::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;              /* 👈 THÊM */
+    pointer-events: none;
+
+    background: radial-gradient(
+        ellipse at center,
+        rgba(0,0,0,0) 45%,
+        rgba(0,0,0,0.35) 100%
+    );
+}
+/* Mặc định: KHÔNG cinematic */
+#stage {
+    display: none;
+}
+
+/* Chỉ bật trên mobile */
+@media (max-width: 768px) and (orientation: portrait) {
+    #stage {
+        display: block;
+    }
+}
+
+#ambient {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+
+    background-image: url('/assets/img/mayor_mobile_workspace.png');
+    background-size: cover;
+    background-position: center;
+
+    filter:
+        blur(14px)
+        brightness(0.75)
+        contrast(0.85)
+        saturate(1.1);
+
+    transform: scale(1.08);
+}
+#ambient::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('/assets/img/mayor_mobile_workspace.png');
+    opacity: 0.05;
+    pointer-events: none;
+}
+
+
+
+
+/* LAYER VIDEO CHÍNH */
+#video {
+    position: absolute;
+    z-index: 1;
+}
+
+
+
+#hotspot-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+}
+.hotspot {
+    position: absolute;
+}
+
+/* HOTSPOT DOT */
+.hotspot-dot {
+    position: relative;
+    width: 16px; /* tăng kích thước 1 chút */
+    height: 16px;
+    border-radius: 50%;
+    background: #00ffff; /* neon cyan sáng */
+    box-shadow:
+            0 0 8px #00ffff,
+            0 0 16px #00ffff,
+            0 0 24px rgba(0,255,255,0.6),
+            0 0 32px rgba(0,255,255,0.4);
+    z-index: 2;
+}
+
+/* Dot phát sáng halo */
+.hotspot-dot::after {
+    content: '';
+    position: absolute;
+    inset: 50%;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,255,255,0.8);
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+    animation: hotspot-pulse-strong 2s ease-out infinite;
+}
+/*@keyframes hotspot-pulse-strong {*/
+/*    0% {*/
+/*        transform: translate(-50%, -50%) scale(1);*/
+/*        opacity: 0;*/
+/*    }*/
+/*    10% {*/
+/*        opacity: 1;*/
+/*    }*/
+/*    70% {*/
+/*        transform: translate(-50%, -50%) scale(3);*/
+/*        opacity: 0;*/
+/*    }*/
+/*    100% {*/
+/*        opacity: 0;*/
+/*    }*/
+/*}*/
+/*@keyframes hotspot-pulse {*/
+/*    0% {*/
+/*        transform: translate(-50%, -50%) scale(1);*/
+/*        opacity: 0;*/
+/*    }*/
+
+/*    10% {*/
+/*        opacity: 1;*/
+/*    }*/
+
+/*    70% {*/
+/*        transform: translate(-50%, -50%) scale(3);*/
+/*        opacity: 0;*/
+/*    }*/
+
+/*    100% {*/
+/*        opacity: 0;*/
+/*    }*/
+/*}*/
+
+
+
+
+@keyframes pulse {
+    0%   { transform: scale(1);   opacity: 1; }
+    50%  { transform: scale(1.35); opacity: 0.7; }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+
+@keyframes tooltip-in {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.tooltip-line {
+    width: 28px;
+    height: 28px;
+
+    border-left: 2px solid rgba(94,242,214,0.8);
+    border-bottom: 2px solid rgba(94,242,214,0.8);
+
+    filter: drop-shadow(0 0 6px #5ef2d6);
+}
+.tooltip-box {
+    background: rgba(0, 20, 25, 0.75);
+    border: 1px solid rgba(94,242,214,0.5);
+    border-radius: 10px;
+    padding: 10px 14px;
+
+    box-shadow:
+        0 0 12px rgba(94,242,214,0.4),
+        inset 0 0 10px rgba(94,242,214,0.15);
+
+    backdrop-filter: blur(6px);
+    color: #eaffff;
+    font-size: 13px;
+}
+
+.tooltip-title {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: #5ef2d6;
+    margin-bottom: 4px;
+
+    /*white-space: nowrap;*/
+    /*overflow: hidden;*/
+    /*text-overflow: ellipsis;*/
+}
+
+
+.tooltip-text {
+    font-size: 12px;
+    line-height: 1.4;
+}
+/* HOTSPOT LINE */
+.hotspot-line {
+    position: absolute;
+    left: 14px;
+    top: 6px;
+    width: 42px;
+    height: 2px;
+    background: linear-gradient(
+            90deg,
+            #00ffff,
+            rgba(0,255,255,0.15)
+    );
+    box-shadow:
+            0 0 6px #00ffff,
+            0 0 12px #00ffff,
+            0 0 18px rgba(0,255,255,0.5);
+    transform-origin: left center;
+    transform: rotate(-18deg);
+}
+
+
+
+
+
+.hotspot-tooltip {
+    position: absolute;
+    left: 58px;       /* sau line */
+    top: -26px;
+}
+/* Nếu hotspot hướng left */
+.hotspot[data-dir="left"] .hotspot-line {
+    left: auto;
+    right: 14px;
+    background: linear-gradient(
+            270deg,
+            #00ffff,
+            rgba(0,255,255,0.15)
+    );
+    transform-origin: right center;
+    transform: rotate(18deg);
+}
+
+.hotspot[data-dir="left"] .hotspot-tooltip {
+    left: auto;
+    right: 58px;
+    text-align: left;
+}
+
+@keyframes tooltip-in {
+    from {
+        opacity: 0;
+        transform: translateY(-50%) scale(0.6);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+    }
+}
+
+
+.hotspot-connector {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 40px;
+    height: 40px;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+/* đoạn ngang */
+.hotspot-connector::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 18px;
+    height: 2px;
+
+    background: #5ef2d6;
+    box-shadow: 0 0 6px #5ef2d6;
+}
+
+/* đoạn dọc */
+.hotspot-connector::after {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    width: 2px;
+    height: 18px;
+
+    background: #5ef2d6;
+    box-shadow: 0 0 6px #5ef2d6;
+}
+
+/* Chỉ tooltip-box nhận pointer-events */
+.hotspot-tooltip {
+    pointer-events: auto;
+}
+/* Tooltip bình thường */
+.hotspot-tooltip .tooltip-box {
+    position: relative;
+    display: inline-block;
+    color: #eaffff;
+    background: rgba(0,20,25,0.75);
+    border: 2px solid rgba(94,242,214,0.5);
+    border-radius: 10px;
+    padding: 10px 14px;
+    z-index: 10;
+    cursor: pointer;
+    overflow: visible; /* để ánh sáng tỏa ra */
+}
+
+/* Pseudo-element cho hiệu ứng viền tỏa sáng */
+.tooltip-pulse-border::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border-radius: 12px; /* vừa với border radius tooltip */
+    border: 2px solid #5ef2d6;
+    box-shadow: 0 0 8px #5ef2d6, 0 0 16px #5ef2d6 inset;
+    opacity: 0;
+    transform: scale(1);
+    pointer-events: none;
+    animation: borderPulse 1s ease-out forwards;
+}
+
+/* Keyframes: viền tỏa ra */
+@keyframes borderPulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+        box-shadow: 0 0 8px #5ef2d6, 0 0 16px #5ef2d6 inset;
+    }
+    70% {
+        transform: scale(1.5);
+        opacity: 0;
+        box-shadow: 0 0 20px #5ef2d6, 0 0 30px #5ef2d6 inset;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+
+
+/* Overlay đen mờ */
+.cyber-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    display: none;       /* ẩn mặc định */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+}
+
+/* List các option dạng ul li */
+.cyber-options-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 280px;
+}
+
+/* Mỗi option là thanh ngang */
+.cyber-option {
+    background: linear-gradient(90deg, #00ffff, #5ef2d6);
+    color: #000;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    padding: 14px 20px;
+    margin: 10px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    opacity: 0;           /* start hidden for animation */
+    transform: translateX(100%); /* start from right */
+    box-shadow: 0 0 8px #00ffff, 0 0 16px #5ef2d6 inset;
+    transition: box-shadow 0.3s ease;
+}
+
+/* Hover glow */
+.cyber-option:hover {
+    box-shadow: 0 0 16px #00ffff, 0 0 32px #5ef2d6 inset;
+}
+
+/* Animation slide từ phải sang trái */
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+/* Overlay background */
+#cyberOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75); /* mờ để nổi option */
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 50;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+/* Container option */
+#cyberOverlay .cyber-option {
+    position: relative;
+    width: 260px;
+    margin: 10px 0;
+    padding: 14px 20px;
+    background: rgba(0, 20, 25, 0.8);
+    border: 2px solid #5ef2d6;
+    border-radius: 12px;
+    color: #e0ffff;
+    font-weight: 600;
+    font-family: 'Orbitron', sans-serif;
+    text-align: center;
+    cursor: pointer;
+    box-shadow:
+            0 0 6px #5ef2d6,
+            0 0 12px rgba(94,242,214,0.5),
+            inset 0 0 6px rgba(94,242,214,0.3);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+/* Neon glow hover */
+#cyberOverlay .cyber-option:hover {
+    background: rgba(0, 30, 40, 0.85);
+    border-color: #00ffff;
+    box-shadow:
+            0 0 12px #00ffff,
+            0 0 24px #5ef2d6,
+            inset 0 0 10px #00ffff;
+    transform: scale(1.05);
+    color: #00ffff;
+}
+
+/* Option active click */
+#cyberOverlay .cyber-option:active {
+    transform: scale(0.98);
+    box-shadow:
+            0 0 8px #5ef2d6 inset;
+}
+
+/* Slide in animation (from JS) */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Optional: tiny neon flicker effect */
+#cyberOverlay .cyber-option::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 0 6px #5ef2d6, 0 0 12px #00ffff inset;
+    opacity: 0.3;
+    animation: flicker 1.2s infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes flicker {
+    0% { opacity: 0.3; }
+    25% { opacity: 0.6; }
+    50% { opacity: 0.2; }
+    75% { opacity: 0.5; }
+    100% { opacity: 0.3; }
+}
+
+
+/* Overlay chat */
+#rpgChatOverlay {
+    display: none; /* ẩn mặc định */
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    pointer-events: auto; /* cho phép click vào chat */
+    width: 400px;       /* hoặc max-width */
+    max-width: 90%;
+}
+
+/* Khung chat */
+.rpg-chat-box {
+    display: flex;
+    align-items: flex-start;
+    width: 400px;
+    max-width: 90%;
+    background: rgba(0,20,30,0.85);
+    border: 2px solid #00ffff;
+    border-radius: 12px;
+    box-shadow: 0 0 12px #00ffff, 0 0 24px rgba(0,255,255,0.5) inset;
+    padding: 10px;
+    pointer-events: auto; /* cho phép click */
+    font-family: 'Orbitron', sans-serif;
+    color: #e0ffff;
+}
+
+/* Avatar */
+.rpg-avatar {
+    flex: 0 0 60px;
+    margin-right: 12px;
+}
+
+.rpg-avatar img {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    border: 2px solid #00ffff;
+    box-shadow: 0 0 8px #00ffff;
+}
+
+/* Chat content */
+.rpg-chat-content {
+    flex: 1;
+    max-height: 120px;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: pre-wrap; /* giữ xuống dòng */
+    position: relative;
+    cursor: pointer;
+}
+
+/* Scrollbar neon */
+.rpg-chat-content::-webkit-scrollbar {
+    width: 6px;
+}
+.rpg-chat-content::-webkit-scrollbar-thumb {
+    background: #00ffff;
+    border-radius: 3px;
+}
+.rpg-chat-content::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.2);
+}

@@ -76,31 +76,58 @@
 }
 .hotspot {
     position: absolute;
-    left: 0;
-    top: 0;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
 }
 
-
 .hotspot-dot {
-    position: absolute;
-    left: 0;
-    top: 0;
-
+    position: relative;
     width: 14px;
     height: 14px;
     border-radius: 50%;
 
     background: #5ef2d6;
+
     box-shadow:
         0 0 6px #5ef2d6,
-        0 0 14px rgba(94,242,214,0.8),
-        0 0 28px rgba(94,242,214,0.5);
+        0 0 14px rgba(94,242,214,0.9);
 
-    transform: translate(-50%, -50%);
-    z-index: 3;
+    z-index: 2;
 }
+.hotspot-dot::after {
+    content: '';
+    position: absolute;
+    inset: 50%;
+
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+
+    border: 2px solid rgba(94,242,214,0.8);
+
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+
+    animation: hotspot-pulse 2.6s ease-out infinite;
+}
+/*@keyframes hotspot-pulse {*/
+/*    0% {*/
+/*        transform: translate(-50%, -50%) scale(1);*/
+/*        opacity: 0;*/
+/*    }*/
+
+/*    10% {*/
+/*        opacity: 1;*/
+/*    }*/
+
+/*    70% {*/
+/*        transform: translate(-50%, -50%) scale(3);*/
+/*        opacity: 0;*/
+/*    }*/
+
+/*    100% {*/
+/*        opacity: 0;*/
+/*    }*/
+/*}*/
+
 
 
 
@@ -160,37 +187,50 @@
 }
 .hotspot-line {
     position: absolute;
-    left: 0;
-    top: 0;
+    left: 14px;          /* sát mép dot */
+    top: 6px;
 
-    width: 64px;
+    width: 42px;
     height: 2px;
 
     background: linear-gradient(
         90deg,
         rgba(94,242,214,1),
-        rgba(94,242,214,0.2)
+        rgba(94,242,214,0.15)
     );
 
-    box-shadow: 0 0 8px rgba(94,242,214,0.8);
+    box-shadow: 0 0 6px rgba(94,242,214,0.8);
 
     transform-origin: left center;
-    transform: rotate(-30deg);
-    z-index: 1;
+    transform: rotate(-18deg);
 }
+
+
+
 
 .hotspot-tooltip {
     position: absolute;
+    left: 58px;       /* sau line */
+    top: -26px;
+}
+.hotspot[data-dir="left"] .hotspot-line {
+    left: auto;
+    right: 14px;
 
-    left: 56px;   /* gần bằng chiều dài line */
-    top: -28px;   /* đẩy lên theo góc */
+    background: linear-gradient(
+        270deg,
+        rgba(94,242,214,1),
+        rgba(94,242,214,0.15)
+    );
 
-    transform: scale(0.7);
-    transform-origin: left center;
+    transform-origin: right center;
+    transform: rotate(18deg);
+}
 
-    opacity: 0;
-    animation: tooltip-in 0.6s ease-out forwards;
-    animation-delay: 0.2s;
+.hotspot[data-dir="left"] .hotspot-tooltip {
+    left: auto;
+    right: 58px;
+    text-align: left;
 }
 
 @keyframes tooltip-in {

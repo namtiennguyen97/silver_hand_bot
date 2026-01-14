@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>SAO-ĐÊM – Mayor AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- CSS dùng lại -->
+  <link rel="stylesheet" href="assets/css/modal_faq.css">
+  <link rel="stylesheet" href="assets/css/main_clone_mobile.css">
+  <link rel="stylesheet" href="assets/css/loading.css">
+  <link rel="stylesheet" href="assets/css/tutorial.css">
+  <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
+  <link rel="stylesheet" href="assets/css/heartlock_zone_info.css">
+  <link rel="stylesheet" href="assets/css/cert_info.css">
+  <link rel="stylesheet" href="assets/css/mobile_index.css">
+
+
+</head>
+<body>
+<!-- CYBER LIST OVERLAY -->
+<div id="cyberOverlay" class="cyber-overlay">
+</div>
+
+
+<div id="stage">
+  <div id="ambient"></div>
+  <video id="video" src="assets/videos/mobile_workspace_mayor.mp4" autoplay muted loop playsinline></video>
+</div>
+
+<div id="hotspot-layer">
+  <div class="hotspot" data-x="620" data-y="360">
+    <div class="hotspot-dot"></div>
+
+    <div class="hotspot-line"></div>
+
+    <div class="hotspot-tooltip">
+      <div class="tooltip-box" data-options="mayorOptions">
+        <div class="tooltip-title">MAYOR</div>
+        <div class="tooltip-text">Talk</div>
+      </div>
+    </div>
+  </div>
+  <div class="hotspot" data-x="620" data-y="100" data-dir="left">
+    <div class="hotspot-dot"></div>
+    <div class="hotspot-line"></div>
+
+    <div class="hotspot-tooltip">
+      <div class="tooltip-box" data-options="controlOptions">
+        <div class="tooltip-title">CONTROL PANEL ACCESS</div>
+        <div class="tooltip-text">Access</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay chat, ẩn mặc định -->
+<div id="rpgChatOverlay">
+	<div class="rpg-chat-box">
+		<div class="rpg-avatar">
+			<img src="assets/img/mayor_avatar_2.png" alt="Avatar">
+		</div>
+		<div class="rpg-chat-content" id="rpgChatContent">
+			<!-- Text sẽ render từng chữ bằng JS -->
+		</div>
+	</div>
+</div>
+
+
+<div id="hope-clock" class="home-clock">
+	<span>
+		Hope 101 time:
+		<span id="clock"></span>
+	</span>
+</div>
+
+<button id="tutorialHelpBtn" class="tutorial"
+        title="Xem lại hướng dẫn">
+  ❔
+</button>
+
+<div id="loadingOverlay">
+  <div class="loading-wrapper">
+    <div class="loading-text">
+      <span class="sao">SAO &nbsp;</span><span class="dem"> ĐÊM</span>
+    </div>
+
+    <!-- 🔽 PROGRESS BAR -->
+    <div class="loading-progress">
+      <div class="progress-bar" id="loadingProgress"></div>
+    </div>
+
+    <div class="line top"></div>
+    <div class="line bottom"></div>
+  </div>
+</div>
+
+<!--<div class="overview-container">-->
+
+<!--  &lt;!&ndash; MAYOR AVATAR &ndash;&gt;-->
+<!--  <div class="mayor-hero">-->
+<!--    <img src="assets/img/mayor_avatar.jpg" alt="Mayor AI">-->
+<!--    <h1>SAO-ĐÊM</h1>-->
+<!--    <p class="subtitle">LifeAfter VN Assistant</p>-->
+<!--  </div>-->
+
+<!--  &lt;!&ndash; INFO BLOCKS &ndash;&gt;-->
+<!--  <div class="info-grid-wrapper">-->
+<!--    <div id="info-grid" class="info-grid">-->
+<!--      <div class="info-card" data-modal="infoA">-->
+<!--        📢-->
+<!--        <span>Thời gian sự kiện camp</span>-->
+<!--      </div>-->
+
+<!--      <div class="info-card" data-modal="infoB">-->
+<!--        ⚔️-->
+<!--        <span>Giới thiệu về Cert</span>-->
+<!--      </div>-->
+
+<!--      <div class="info-card" data-modal="infoC">-->
+<!--        🔐-->
+<!--        <span>Code Heart lock Zone</span>-->
+<!--      </div>-->
+
+<!--      <div class="info-card" data-modal="infoD">-->
+<!--        🛠️-->
+<!--        <span>Chi tiết skills Cert</span>-->
+<!--      </div>-->
+
+
+<!--    </div>-->
+<!--  </div>-->
+
+
+<!--  &lt;!&ndash; ENTER CHAT BUTTON &ndash;&gt;-->
+<!--  <a id="mayor-chat" href="chat.html" class="enter-chat-btn round-focus">-->
+<!--    <img src="assets/img/mayor_avatar.jpg">-->
+<!--    <span>Bắt đầu chat với Mayor</span>-->
+<!--  </a>-->
+
+<!--</div>-->
+
+<!-- MODAL -->
+<div class="modal" id="infoModal">
+  <div class="modal-content ai-modal-content">
+    <h2 id="modalTitle"></h2>
+    <div class="ai-training-box">
+      <div class="ai-content" id="modalContent"></div>
+    </div>
+    <button id="closeModal" class="close-btn">Đóng</button>
+  </div>
+</div>
+
+
+<!-- ================== MODAL TEMPLATES ================== -->
+
+<template id="tpl-infoA">
+  <div class="ai-title">
+    Lưu ý: Đây là giờ VN, không phải giờ Ingame
+  </div>
+  <div>+ <span style="color: orange">Thứ 2 (19h – 20h30):</span> Nhặt hòm (Resource Scramble)</div>
+  <div>+ <span style="color: orange">19h hằng ngày:</span> Patrol</div>
+  <div>+ <span style="color: orange">21h30 tối thứ 3:</span> Def camp (Camp Invasion)</div>
+  <div>+ <span style="color: orange">22h tối thứ 5:</span> Boss camp</div>
+
+
+</template>
+
+<template id="tpl-infoB">
+  <div class="ai-section">
+
+    <p class="ai-paragraph">
+      📌 <b>Sau bản update ngày <span class="highlight">31/12/2025</span></b>, hệ thống
+      <b>Cert</b> trong LifeAfter đã được <b>chia rõ rệt</b> và có nhiều cải tiến mới.
+    </p>
+
+    <p class="ai-paragraph">
+      Ngoài <b>Cert chính</b>, người chơi giờ đây có thể chọn thêm
+      <b class="neon-text">Cert Part-time (Cert phụ)</b>.
+    </p>
+
+    <div class="ai-warning">
+      ⚠️ <b>Lưu ý quan trọng:</b><br>
+      Cert phụ <u>không mở toàn bộ kỹ năng</u> của nghề đó.
+      Hệ thống chỉ cho phép chọn <b>một số skill cố định</b>.
+      <br><br>
+      👉 Ví dụ: Không thể vừa chơi nghề súng, vừa chế tạo giáp – súng như nghề chế.
+    </div>
+
+    <!-- ===== NGHỀ CƠ BẢN ===== -->
+    <h3 class="ai-title">⚔️ Nghề cơ bản</h3>
+    <p class="ai-paragraph">
+      Vẫn hoạt động như hệ thống cũ – cộng chỉ số trực tiếp và là nền tảng chính của nhân vật.
+    </p>
+
+    <img
+        src="assets/img/guide/cert/basic_skill.png"
+        class="ai-img"
+        alt="Basic Cert Skill"
+    >
+
+    <p class="ai-paragraph">
+      Các nhánh kỹ năng sẽ được lựa chọn <b>theo lối chơi của bạn</b>.
+    </p>
+
+    <img
+        src="assets/img/guide/cert/skill_path.png"
+        class="ai-img"
+        alt="Cert Skill Path"
+    >
+
+    <!-- ===== NGHỀ PHỤ ===== -->
+    <h3 class="ai-title">🧩 Nghề phụ (Cert Part-time)</h3>
+
+    <p class="ai-paragraph">
+      Người chơi được chọn <b>một nghề phụ</b> trong danh sách để hỗ trợ lối build.
+    </p>
+
+    <img
+        src="assets/img/guide/cert/additional_skill.png"
+        class="ai-img"
+        alt="Additional Cert Skill"
+    >
+
+    <!-- ===== TÓM TẮT NGHỀ ===== -->
+    <h3 class="ai-title">📋 Tóm tắt các nhóm nghề</h3>
+
+    <div class="ai-list-block">
+      <h4 class="ai-subtitle">🌿 Nghề Farm (thu thập nguyên liệu)</h4>
+      <ul class="ai-list">
+        <li>🌲 Logger – Nghề gỗ</li>
+        <li>🌿 Hemp Picker – Hái lụm</li>
+        <li>⛏️ Miner – Khai thác đá</li>
+      </ul>
+    </div>
+
+    <div class="ai-list-block">
+      <h4 class="ai-subtitle">🔥 Nghề Chiến Đấu</h4>
+      <ul class="ai-list">
+        <li>
+          🔫 <b>Rifle</b> – Thuần chiến đấu, dame cao nhất hiện tại
+        </li>
+        <li>
+          🧬 <b>Virus</b> – Vừa đánh vừa hỗ trợ, buff dame & hồi phục
+        </li>
+        <li>
+          🛡️ <b>Warrior</b> – Cận chiến, tanky nhất trong PvP
+        </li>
+        <li class="dim">
+          ⚔️ Ark Knight – Hỗ trợ là chính, dame thấp (❌ không khuyến nghị)
+        </li>
+      </ul>
+    </div>
+
+    <div class="ai-list-block">
+      <h4 class="ai-subtitle">🛠️ Nghề Chế Tạo</h4>
+      <ul class="ai-list">
+        <li>
+          Armor / Gun Maker / Upholstery – Chế nguyên liệu súng & giáp
+        </li>
+        <li class="note">
+          👉 Phụ thuộc nguồn nguyên liệu từ nghề farm
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</template>
+
+
+<template id="tpl-infoC">
+  <div class="ai-content">
+
+    <div class="map-block">
+      <div class="map-title">🗺️ Map: Silent Plain:</div>
+      <div class="code-list">
+        <span class="code-chip">006</span>
+        <span class="code-chip">1205</span>
+        <span class="code-chip">3326</span>
+        <span class="code-chip">8254</span>
+      </div>
+      <button class="copy-map-btn" title="Copy toàn bộ code">
+        📋 Copy
+      </button>
+    </div>
+    <div class="map-block">
+      <div class="map-title">🗺️ Map: Mount Gray Bear:</div>
+      <div class="code-list">
+        <span class="code-chip">96</span>
+        <span class="code-chip">222</span>
+        <span class="code-chip">333</span>
+        <span class="code-chip">451</span>
+        <span class="code-chip">777</span>
+        <span class="code-chip">0000</span>
+        <span class="code-chip">0524</span>
+      </div>
+      <button class="copy-map-btn" title="Copy toàn bộ code">
+        📋 Copy
+      </button>
+    </div>
+    <div class="map-block">
+      <div class="map-title">🗺️ Map: Santopany:</div>
+      <div class="code-list">
+        <span class="code-chip">13</span>
+        <span class="code-chip">24</span>
+        <span class="code-chip">98</span>
+        <span class="code-chip">232</span>
+        <span class="code-chip">997</span>
+        <span class="code-chip">1010</span>
+        <span class="code-chip">1114</span>
+        <span class="code-chip">4222</span>
+      </div>
+      <button class="copy-map-btn" title="Copy toàn bộ code">
+        📋 Copy
+      </button>
+    </div>
+
+
+  </div>
+</template>
+
+<template id="tpl-infoD">
+  <div class="skill-section" data-skill-root>
+
+    <!-- JOB LIST (WHEEL VERSION) -->
+    <div class="job-list job-wheel" data-job-wheel>
+      <div class="job-wheel-track">
+
+        <div class="job-item" data-job="rifle">
+          <img src="assets/img/guide/cert_skills/rifle/rifle_symbol.png">
+          <span>Rifle</span>
+        </div>
+
+        <div class="job-item" data-job="virus">
+          <img src="https://picsum.photos/200?2">
+          <span>Virus</span>
+        </div>
+
+        <div class="job-item" data-job="warrior">
+          <img src="https://picsum.photos/200?3">
+          <span>Warrior</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SKILL LIST -->
+    <div class="skill-zone">
+      <!-- BASIC SKILL -->
+      <div class="skill-basic">
+        <div class="skill-basic-label">Basic Skills</div>
+        <div class="skill-list"></div>
+      </div>
+
+      <!-- SKILL TRAIT -->
+      <div class="skill-trait">
+        <div class="skill-trait-label">Skill Trait</div>
+
+        <!-- CHỈ render vào đây -->
+        <div class="skill-trait-content">
+          <div class="skill-trait-placeholder">
+            Skill phụ sẽ hiển thị ở đây
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+  </div>
+
+  <!-- 🔥 PANEL CHI TIẾT -->
+  <div class="skill-detail-panel">
+    <div class="skill-detail-placeholder">
+      Chọn một skill để xem thông tin
+    </div>
+  </div>
+</template>
+
+
+
+
+
+<!-- Tutorial Overlay -->
+<div id="tutorial-overlay">
+  <div id="spotlight"></div>
+
+  <div id="tooltip">
+    <div id="tooltip-text"></div>
+    <button id="tutorial-next">Tiếp tục</button>
+  </div>
+</div>
+
+<script>
+  /* ===============================
+     CONFIG
+  ================================ */
+  const VIDEO_W   = 1280;
+  const VIDEO_H   = 720;
+  const CONTENT_W = 475;
+
+  /* ===============================
+     ELEMENTS
+  ================================ */
+  const video        = document.getElementById('video');
+  const hotspotLayer = document.getElementById('hotspot-layer');
+
+  /* ===============================
+     DEVICE CHECK
+  ================================ */
+  function isMobile() {
+    return window.matchMedia('(max-width: 768px) and (pointer: coarse)').matches;
+  }
+
+  /* ===============================
+     VIDEO LAYOUT
+  ================================ */
+  function layoutVideo() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    const scaleContent = vw / CONTENT_W;
+    const scaleVideo   = vw / VIDEO_W;
+    const scale        = Math.max(scaleContent, scaleVideo);
+
+    const renderW = VIDEO_W * scale;
+    const renderH = VIDEO_H * scale;
+
+    video.style.width  = renderW + 'px';
+    video.style.height = renderH + 'px';
+
+    const contentCenterX = (VIDEO_W / 2) * scale;
+    video.style.left = (vw / 2 - contentCenterX) + 'px';
+    video.style.top  = (vh - renderH) / 2 + 'px';
+  }
+
+  /* ===============================
+     HOTSPOT ENGINE
+  ================================ */
+  class HotspotEngine {
+    constructor(videoEl, layerEl, videoW, videoH) {
+      this.video  = videoEl;
+      this.layer  = layerEl;
+      this.videoW = videoW;
+      this.videoH = videoH;
+      this.items  = [];
+    }
+
+    collect() {
+      this.items = Array.from(this.layer.querySelectorAll('.hotspot'));
+    }
+
+    update() {
+      if (!this.video || !this.items.length) return;
+
+      const rect = this.video.getBoundingClientRect();
+
+      this.items.forEach(hs => {
+        const x = parseFloat(hs.dataset.x);
+        const y = parseFloat(hs.dataset.y);
+
+        if (isNaN(x) || isNaN(y)) return;
+
+        const px = rect.left + (x / this.videoW) * rect.width;
+        const py = rect.top  + (y / this.videoH) * rect.height;
+
+        hs.style.left = px + 'px';
+        hs.style.top  = py + 'px';
+      });
+    }
+  }
+
+  /* ===============================
+     INIT
+  ================================ */
+  const hotspotEngine = new HotspotEngine(
+      video,
+      hotspotLayer,
+      VIDEO_W,
+      VIDEO_H
+  );
+
+  /* ===============================
+     SYNC ALL
+  ================================ */
+  function syncLayout() {
+    layoutVideo();
+    hotspotEngine.update();
+  }
+
+  /* ===============================
+     BOOTSTRAP
+  ================================ */
+  if (isMobile()) {
+    // load video only on mobile
+    video.src = '/assets/videos/mobile_workspace_mayor.mp4';
+    video.load();
+
+    window.addEventListener('load', () => {
+      hotspotEngine.collect();
+      syncLayout();
+    });
+
+    window.addEventListener('resize', syncLayout);
+  }
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// đoạn box ho
+	const chatOverlay = document.getElementById('rpgChatOverlay');
+
+	// Ẩn chat khi click ra ngoài
+	document.addEventListener('click', (e) => {
+		const chatOverlay = document.getElementById('rpgChatOverlay');
+	
+		// Nếu chat đang hiển thị và click không phải trong overlay
+		if (chatOverlay.style.display === 'block' && !chatOverlay.contains(e.target)) {
+			chatOverlay.style.display = 'none';
+		}
+	});
+
+	// Ngăn overlay nhận sự kiện click khi click trong chat
+	chatOverlay.addEventListener('click', (e) => {
+		e.stopPropagation();
+	});
+
+</script>
+<script>
+	/**
+	 * Hiển thị text từng chữ (typewriter) trong chat
+	 * @param {string} text Nội dung chat
+	 * @param {HTMLElement} container Container để render text
+	 * @param {number} speed Tốc độ từng chữ (ms)
+	 */
+	function typewriterChat(text, container, speed = 30) {
+		container.textContent = '';
+		container.dataset.skip = 'false';
+		
+		let i = 0;
+		const interval = setInterval(() => {
+			if (container.dataset.skip === 'true') {
+				// Skip: show tất cả
+				container.textContent = text;
+				clearInterval(interval);
+				return;
+			}
+			
+			container.textContent += text[i];
+			i++;
+			container.scrollTop = container.scrollHeight; // auto scroll
+			
+			if (i >= text.length) {
+				clearInterval(interval);
+			}
+		}, speed);
+		
+		// Click vào container sẽ skip
+		container.onclick = () => {
+			container.dataset.skip = 'true';
+		};
+	}
+	
+	/* Hàm mở chat */
+	function showRPGChat(avatarSrc, chatText) {
+		const chatContent = document.getElementById('rpgChatContent');
+		const avatarImg = chatOverlay.querySelector('.rpg-avatar img');
+		
+		avatarImg.src = avatarSrc;
+		chatOverlay.style.display = 'block';
+		
+		
+		// Typewriter effect
+		typewriterChat(chatText, chatContent, 30);
+	}
+	
+	/* Ẩn chat */
+	function hideRPGChat() {
+		document.getElementById('rpgChatOverlay').style.display = 'none';
+	}
+
+</script>
+<script>
+	const tooltipBoxes = document.querySelectorAll('.hotspot-tooltip .tooltip-box');
+	const cyberOverlay = document.getElementById('cyberOverlay');
+	
+	// Tạo dữ liệu option cho từng tooltip
+	const tooltipOptionsData = {
+		mayorOptions: [
+			"Chat với Mayor",
+			"Xem thông tin AI",
+			"Báo cáo sự kiện"
+		],
+		controlOptions: [
+			"Mở Control Panel",
+			"Xem logs",
+			"Cấu hình hệ thống"
+		]
+	};
+	
+	tooltipBoxes.forEach(box => {
+		box.addEventListener('click', (e) => {
+			e.stopPropagation();
+			
+			// 1️⃣ neon pulse viền
+			box.classList.add('tooltip-pulse-border');
+			
+			setTimeout(() => {
+				box.classList.remove('tooltip-pulse-border');
+				
+				// 2️⃣ Xác định key options
+				const key = box.dataset.options;
+				const options = tooltipOptionsData[key] || [];
+				
+				// 3️⃣ render options vào overlay
+				cyberOverlay.innerHTML = ''; // clear cũ
+				options.forEach((text, index) => {
+					const optionEl = document.createElement('div');
+					optionEl.className = 'cyber-option';
+					optionEl.textContent = text;
+					
+					// Slide-in animation
+					optionEl.style.opacity = 0;
+					optionEl.style.transform = 'translateX(100%)';
+					optionEl.style.animation = `slideIn 0.5s ease forwards`;
+					optionEl.style.animationDelay = `${index * 0.1}s`;
+					
+					// Click chọn
+					optionEl.addEventListener('click', (e) => {
+						e.stopPropagation();
+						
+						
+						// **Phần chat RPG**
+						const avatar = "assets/img/mayor_avatar_2.png";
+						const chatText = "Xin chào! Đây là đoạn hội thoại dài, sẽ được gõ từng chữ một. Nếu bạn click vào ô chat, text sẽ hiện hết ngay lập tức.";
+						showRPGChat(avatar, chatText);
+						
+						
+						console.log('Bạn chọn:', text);
+						// Tùy chỉnh hành động khi click option
+						if (text === "Option 1") {
+							alert("Bạn vừa chọn Option 1!");
+						} else if (text === "Option 2") {
+							alert("Bạn vừa chọn Option 2!");
+						}
+						// Ẩn overlay sau khi chọn
+						cyberOverlay.style.display = 'none';
+					});
+					
+					cyberOverlay.appendChild(optionEl);
+				});
+				
+				// 4️⃣ show overlay
+				cyberOverlay.style.display = 'flex';
+			}, 1000); // 1s delay cho neon pulse
+		});
+	});
+	
+	// Click ngoài overlay để đóng
+	cyberOverlay.addEventListener('click', (e) => {
+		if (e.target === cyberOverlay) cyberOverlay.style.display = 'none';
+	});
+
+</script>
+
+
+
+
+<script src="assets/js/loading.js"></script>
+<script src="assets/js/tutorial_index.js"></script>
+<script src="assets/js/hope101_time.js"></script>
+<script src="assets/js/heartlock_zone_info.js"></script>
+<script src="assets/js/cert_detail_info.js"></script>
+<script>
+  const modal = document.getElementById("infoModal");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalContent = document.getElementById("modalContent");
+  const closeModal = document.getElementById("closeModal");
+
+  // Chỉ còn metadata
+  const modalData = {
+    infoA: {
+      title: "Thời gian event camp",
+      template: "tpl-infoA"
+    },
+    infoB: {
+      title: "⚔️ Giới thiệu về Cert",
+      template: "tpl-infoB"
+    },
+    infoC: {
+      title: "🔐 Code Heart Lock Zone",
+      template: "tpl-infoC"
+    },
+    infoD: {
+      title: "🛠️ Code Heart Lock Zone",
+      template: "tpl-infoD"
+    },
+
+  };
+
+  document.querySelectorAll(".info-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const key = card.dataset.modal;
+      const data = modalData[key];
+      if (!data) return;
+
+      modalTitle.textContent = data.title;
+
+      // clear content cũ
+      modalContent.innerHTML = "";
+
+      // clone template
+      const tpl = document.getElementById(data.template);
+      modalContent.appendChild(tpl.content.cloneNode(true));
+
+      modal.style.display = "flex";
+    });
+  });
+
+  closeModal.onclick = () => modal.style.display = "none";
+  modal.onclick = e => {
+    if (e.target === modal) modal.style.display = "none";
+  };
+</script>
+</body>
+</html>

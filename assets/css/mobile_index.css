@@ -4,6 +4,12 @@
     overflow: hidden;
     background: #000;
 }
+#stage,
+#stage * {
+    -webkit-touch-callout: none; /* iOS: chặn popup */
+    -webkit-user-select: none;
+    user-select: none;
+}
 
 /* QUAN TRỌNG */
 #stage::after {
@@ -62,6 +68,7 @@
 
 /* LAYER VIDEO CHÍNH */
 #video {
+    pointer-events: none; /* 🔥 CHÌA KHÓA */
     position: absolute;
     z-index: 1;
 }
@@ -378,7 +385,7 @@
     font-weight: bold;
     padding: 14px 20px;
     margin: 10px 0;
-    border-radius: 8px;
+    /*border-radius: 8px;*/
     cursor: pointer;
     overflow: hidden;
     position: relative;
@@ -424,7 +431,7 @@
     padding: 14px 20px;
     background: rgba(0, 20, 25, 0.8);
     border: 2px solid #5ef2d6;
-    border-radius: 12px;
+    /*border-radius: 12px;*/
     color: #e0ffff;
     font-weight: 600;
     font-family: 'Orbitron', sans-serif;
@@ -495,7 +502,7 @@
     display: none; /* ẩn mặc định */
     position: fixed;
     bottom: 20px;
-    left: 50%;
+    left: 55%;
     transform: translateX(-50%);
     z-index: 100;
     pointer-events: auto; /* cho phép click vào chat */
@@ -520,10 +527,41 @@
 }
 
 /* Avatar */
+
 .rpg-avatar {
     flex: 0 0 60px;
     margin-right: 12px;
+    /*position: relative;*/
+    /*overflow: hidden;*/
+    /*border: 1px solid #00ffff;*/
+    /*box-shadow: 0 0 10px rgba(0,255,255,0.6);*/
 }
+
+
+/*.rpg-avatar::after {*/
+/*    content: '';*/
+/*    position: absolute;*/
+/*    inset: -1px;*/
+/*    border-radius: inherit;*/
+/*    pointer-events: none;*/
+
+/*    background:*/
+/*        linear-gradient(*/
+/*            180deg,*/
+/*            transparent 0%,*/
+/*            rgba(0,255,255,0.0) 40%,*/
+/*            rgba(0,255,255,0.95) 45%,*/
+/*            rgba(0,255,255,0.95) 46%,*/
+/*            rgba(0,255,255,0.0) 50%,*/
+/*            transparent 100%*/
+/*        );*/
+
+/*    background-size: 100% 200%;*/
+/*    animation: neonFlow 1.6s linear infinite;*/
+
+/*    mix-blend-mode: screen;*/
+/*    filter: drop-shadow(0 0 2px rgba(0,255,255,0.9));*/
+/*}*/
 
 .rpg-avatar img {
     width: 60px;

@@ -29,12 +29,12 @@
 </div>
 
 <div id="hotspot-layer">
-  <div class="hotspot" data-x="620" data-y="360">
+  <div class="hotspot" data-x="620" data-y="360" >
     <div class="hotspot-dot"></div>
 
     <div class="hotspot-line"></div>
 
-    <div class="hotspot-tooltip">
+    <div class="hotspot-tooltip" id="control-panel">
       <div class="tooltip-box" data-options="mayorOptions">
         <div class="tooltip-title">MAYOR</div>
         <div class="tooltip-text">Talk</div>
@@ -45,7 +45,7 @@
     <div class="hotspot-dot"></div>
     <div class="hotspot-line"></div>
 
-    <div class="hotspot-tooltip">
+    <div class="hotspot-tooltip" id="mayor-chat">
       <div class="tooltip-box" data-options="controlOptions">
         <div class="tooltip-title">CONTROL PANEL ACCESS</div>
         <div class="tooltip-text">Access</div>
@@ -58,7 +58,7 @@
 <div id="rpgChatOverlay">
 	<div class="rpg-chat-box">
 		<div class="rpg-avatar">
-			<img src="assets/img/mayor_avatar_2.png" alt="Avatar">
+			<img src="assets/img/mayor_5.png" alt="Avatar">
 		</div>
 		<div class="rpg-chat-content" id="rpgChatContent">
 			<!-- Text sẽ render từng chữ bằng JS -->
@@ -104,7 +104,7 @@
 <!--    <p class="subtitle">LifeAfter VN Assistant</p>-->
 <!--  </div>-->
 
-<!--  &lt;!&ndash; INFO BLOCKS &ndash;&gt;-->
+  <!-- INFO BLOCKS -->
 <!--  <div class="info-grid-wrapper">-->
 <!--    <div id="info-grid" class="info-grid">-->
 <!--      <div class="info-card" data-modal="infoA">-->
@@ -126,8 +126,6 @@
 <!--        🛠️-->
 <!--        <span>Chi tiết skills Cert</span>-->
 <!--      </div>-->
-
-
 <!--    </div>-->
 <!--  </div>-->
 
@@ -571,7 +569,7 @@
 	}
 	
 	/* Hàm mở chat */
-	function showRPGChat(avatarSrc, chatText) {
+	function showRPGChat(chatText, avatarSrc='assets/img/mayor_5.png') {
 		const chatContent = document.getElementById('rpgChatContent');
 		const avatarImg = chatOverlay.querySelector('.rpg-avatar img');
 		
@@ -589,104 +587,23 @@
 	}
 
 </script>
-<script>
-	const tooltipBoxes = document.querySelectorAll('.hotspot-tooltip .tooltip-box');
-	const cyberOverlay = document.getElementById('cyberOverlay');
-	
-	// Tạo dữ liệu option cho từng tooltip
-	const tooltipOptionsData = {
-		mayorOptions: [
-			"Chat với Mayor",
-			"Xem thông tin AI",
-			"Báo cáo sự kiện"
-		],
-		controlOptions: [
-			"Mở Control Panel",
-			"Xem logs",
-			"Cấu hình hệ thống"
-		]
-	};
-	
-	tooltipBoxes.forEach(box => {
-		box.addEventListener('click', (e) => {
-			e.stopPropagation();
-			
-			// 1️⃣ neon pulse viền
-			box.classList.add('tooltip-pulse-border');
-			
-			setTimeout(() => {
-				box.classList.remove('tooltip-pulse-border');
-				
-				// 2️⃣ Xác định key options
-				const key = box.dataset.options;
-				const options = tooltipOptionsData[key] || [];
-				
-				// 3️⃣ render options vào overlay
-				cyberOverlay.innerHTML = ''; // clear cũ
-				options.forEach((text, index) => {
-					const optionEl = document.createElement('div');
-					optionEl.className = 'cyber-option';
-					optionEl.textContent = text;
-					
-					// Slide-in animation
-					optionEl.style.opacity = 0;
-					optionEl.style.transform = 'translateX(100%)';
-					optionEl.style.animation = `slideIn 0.5s ease forwards`;
-					optionEl.style.animationDelay = `${index * 0.1}s`;
-					
-					// Click chọn
-					optionEl.addEventListener('click', (e) => {
-						e.stopPropagation();
-						
-						
-						// **Phần chat RPG**
-						const avatar = "assets/img/mayor_avatar_2.png";
-						const chatText = "Xin chào! Đây là đoạn hội thoại dài, sẽ được gõ từng chữ một. Nếu bạn click vào ô chat, text sẽ hiện hết ngay lập tức.";
-						showRPGChat(avatar, chatText);
-						
-						
-						console.log('Bạn chọn:', text);
-						// Tùy chỉnh hành động khi click option
-						if (text === "Option 1") {
-							alert("Bạn vừa chọn Option 1!");
-						} else if (text === "Option 2") {
-							alert("Bạn vừa chọn Option 2!");
-						}
-						// Ẩn overlay sau khi chọn
-						cyberOverlay.style.display = 'none';
-					});
-					
-					cyberOverlay.appendChild(optionEl);
-				});
-				
-				// 4️⃣ show overlay
-				cyberOverlay.style.display = 'flex';
-			}, 1000); // 1s delay cho neon pulse
-		});
-	});
-	
-	// Click ngoài overlay để đóng
-	cyberOverlay.addEventListener('click', (e) => {
-		if (e.target === cyberOverlay) cyberOverlay.style.display = 'none';
-	});
-
-</script>
-
-
 
 
 <script src="assets/js/loading.js"></script>
 <script src="assets/js/tutorial_index.js"></script>
 <script src="assets/js/hope101_time.js"></script>
 <script src="assets/js/heartlock_zone_info.js"></script>
-<script src="assets/js/cert_detail_info.js"></script>
+<script src="assets/js/cert_detail_info_clone.js"></script>
 <script>
+  /* ===============================
+   MODAL CORE (REUSE OLD LOGIC)
+================================ */
   const modal = document.getElementById("infoModal");
   const modalTitle = document.getElementById("modalTitle");
   const modalContent = document.getElementById("modalContent");
   const closeModal = document.getElementById("closeModal");
 
-  // Chỉ còn metadata
+  /* Metadata modal – GIỮ NGUYÊN NHƯ CŨ */
   const modalData = {
     infoA: {
       title: "Thời gian event camp",
@@ -701,35 +618,150 @@
       template: "tpl-infoC"
     },
     infoD: {
-      title: "🛠️ Code Heart Lock Zone",
+      title: "🛠️ Chi tiết Cert",
       template: "tpl-infoD"
-    },
-
+    }
   };
 
-  document.querySelectorAll(".info-card").forEach(card => {
-    card.addEventListener("click", () => {
-      const key = card.dataset.modal;
-      const data = modalData[key];
-      if (!data) return;
+  /* Hàm mở modal dùng chung */
+  function openModalByKey(key) {
+    const data = modalData[key];
+    if (!data) return;
 
-      modalTitle.textContent = data.title;
+    modalTitle.textContent = data.title ?? "";
+    modalContent.innerHTML = "";
 
-      // clear content cũ
-      modalContent.innerHTML = "";
+    const tpl = document.getElementById(data.template);
+    if (!tpl) return;
 
-      // clone template
-      const tpl = document.getElementById(data.template);
-      modalContent.appendChild(tpl.content.cloneNode(true));
+    modalContent.appendChild(tpl.content.cloneNode(true));
 
-      modal.style.display = "flex";
+    modal.style.display = "flex";
+  }
+
+  /* Đóng modal */
+  if (closeModal) {
+    closeModal.onclick = () => (modal.style.display = "none");
+  }
+
+  if (modal) {
+    modal.onclick = (e) => {
+      if (e.target === modal) modal.style.display = "none";
+    };
+  }
+
+  /* ===============================
+     CYBER OVERLAY OPTION HANDLER
+  ================================ */
+  const cyberOverlay = document.getElementById("cyberOverlay");
+
+  /* Map option text → modal key */
+  const optionActions = {
+    "Event Time": () => openModalByKey("infoA"),
+    "Heart Lock Zone Code": () => openModalByKey("infoC"),
+    "Cert Details": () => {
+      openModalByKey("infoD");
+
+      // 🔥 QUAN TRỌNG: init logic Cert sau khi modal render
+      if (window.initCertSkill) {
+        window.initCertSkill(modalContent);
+      }
+    },
+
+    // Option khác (không mở modal)
+    "Chat": () => {
+      window.location.href = "chat.html";
+    },
+    "Tutorial": () => showRPGChat("Tutorial is coming soon 👀"),
+    "Settings": () => showRPGChat("Settings is under development")
+  };
+
+  /* ===============================
+     TOOLTIP CLICK LOGIC
+  ================================ */
+  const tooltipBoxes = document.querySelectorAll(
+      ".hotspot-tooltip .tooltip-box"
+  );
+
+  const tooltipOptionsData = {
+    mayorOptions: ["Chat", "Tutorial", "Settings"],
+    controlOptions: [
+      "Event Time",
+      "Heart Lock Zone Code",
+      "Cert Details"
+    ]
+  };
+
+  tooltipBoxes.forEach((box) => {
+    box.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      showRPGChat(
+          "You’ve accessed the control panel. Choose an option."
+      );
+
+      // hiệu ứng viền
+      box.classList.add("tooltip-pulse-border");
+
+      setTimeout(() => {
+        box.classList.remove("tooltip-pulse-border");
+
+        const key = box.dataset.options;
+        const options = tooltipOptionsData[key] || [];
+
+        cyberOverlay.innerHTML = "";
+
+        options.forEach((text, index) => {
+          const optionEl = document.createElement("div");
+          optionEl.className = "cyber-option";
+          optionEl.textContent = text;
+
+          optionEl.style.opacity = 0;
+          optionEl.style.transform = "translateX(100%)";
+          optionEl.style.animation =
+              "slideIn 0.5s ease forwards";
+          optionEl.style.animationDelay = `${index * 0.1}s`;
+
+          optionEl.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+
+            cyberOverlay.style.display = "none";
+
+            // 👉 GỌI ACTION TƯƠNG ỨNG
+            optionActions[text]?.() ??
+            showRPGChat(`"${text}" chưa được hỗ trợ`);
+          });
+
+          cyberOverlay.appendChild(optionEl);
+        });
+
+        cyberOverlay.style.display = "flex";
+      }, 500);
     });
   });
 
-  closeModal.onclick = () => modal.style.display = "none";
-  modal.onclick = e => {
-    if (e.target === modal) modal.style.display = "none";
-  };
+  /* Click ngoài overlay để đóng */
+  cyberOverlay.addEventListener("click", (e) => {
+    if (e.target === cyberOverlay)
+      cyberOverlay.style.display = "none";
+  });
+
 </script>
+<script>
+  // Chặn chuột phải / giữ lâu
+  document.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+  });
+
+  // iOS Safari: chặn long press gesture
+  document.addEventListener("touchstart", (e) => {
+    if (e.touches.length > 1) e.preventDefault();
+  }, { passive: false });
+
+  document.addEventListener("gesturestart", (e) => {
+    e.preventDefault();
+  });
+</script>
+
 </body>
 </html>

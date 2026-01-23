@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
             text: "👋 Chào mừng bạn đến với <b>Life After VN- SAO-ĐÊM</b>.<br><br>Mình sẽ hướng dẫn bạn nhanh cách sử dụng nhé!"
         },
         {
-            selector: "#info-grid",
+            selector: "#control-panel",
             text: "💬 Đây là <b>khung thông tin</b> để bạn bấm vào xem thông tin nhé."
         },
         {

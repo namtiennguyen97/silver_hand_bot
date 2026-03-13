@@ -8,6 +8,7 @@ const FIXED_PLAYERS = [
     { name: "Maybe", role: "Warrior", power: 148, group: "Commander", note: "" },
 
     { name: "DL", role: "Sniper", power: 147, group: "Elite", note: "" },
+    { name: "Tormenta", role: "Rifle", power: 145, group: "Elite", note: "" },
     { name: "JVLY", role: "Rifle", power: 147, group: "Elite", note: "" },
     { name: "OPPAPS", role: "Sniper", power: 148, group: "Elite", note: "" },
     { name: "Reanimation", role: "Rifle", power: 147, group: "Elite", note: "" },
@@ -87,6 +88,10 @@ const confirmModalBtn = document.getElementById("confirmModalBtn");
 
 const toastEl = document.getElementById("toast");
 const dropZones = document.querySelectorAll(".drop-zone");
+const viewVideoBtn = document.getElementById("viewVideoBtn");
+const videoModal = document.getElementById("videoModal");
+const closeVideoBtn = document.getElementById("closeVideoBtn");
+const planVideo = document.getElementById("planVideo");
 
 // =========================
 // HELPERS
@@ -189,36 +194,91 @@ function normalizeState() {
 
 function saveState() {
     normalizeState();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        pool: state.pool,
-        categories: state.categories
-    }));
+    // localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    //     pool: state.pool,
+    //     categories: state.categories
+    // }));
 }
 
 function initializeDefaultState() {
-    state.pool = getNonCommanders().map(p => deepClone(p));
+    const defaultAttack1Names = new Set([
+        "Cloud",
+        "ChrOnoA",
+        "Reanimation",
+        "StarFire",
+        "DARKNESS",
+        "Queensy",
+        "Xin",
+        "OPPAPS",
+        "Hanzel",
+        "Blu",
+        "Tormenta",
+        "DL"
+    ]);
+
+    const defaultBeacon2Names = new Set([
+        "Rin-Rin",
+        "Bhuko",
+        "JVLY",
+        "Silver-Hand",
+        "XOX",
+        "6ixtY-9ine",
+        "Vampk",
+        "FixyFoxy",
+        "ZELLA",
+        "Tormenta"
+    ]);
+
+    const defaultFreeRunNames = new Set([
+        "Lascreia",
+        "桃猫"
+    ]);
+
+    const defaultDestroyBaseNames = new Set([
+        "Valkyre"
+    ]);
+
+    state.pool = [];
     for (const cat of CATEGORIES) state.categories[cat] = [];
+
+    getNonCommanders().forEach(p => {
+        const player = deepClone(p);
+
+        if (defaultAttack1Names.has(p.name)) {
+            state.categories["Attack team 1"].push(player);
+        } else if (defaultBeacon2Names.has(p.name)) {
+            state.categories["Beacon team 2"].push(player);
+        } else if (defaultFreeRunNames.has(p.name)) {
+            state.categories["Free run"].push(player);
+        } else if (defaultDestroyBaseNames.has(p.name)) {
+            state.categories["Destroying their base"].push(player);
+        } else {
+            state.pool.push(player);
+        }
+    });
 }
 
 function loadState() {
-    try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) {
-            initializeDefaultState();
-            return;
-        }
-
-        const parsed = JSON.parse(raw);
-        state.pool = Array.isArray(parsed.pool) ? parsed.pool : [];
-        for (const cat of CATEGORIES) {
-            state.categories[cat] = Array.isArray(parsed.categories?.[cat]) ? parsed.categories[cat] : [];
-        }
-
-        normalizeState();
-    } catch (e) {
-        console.warn("Failed to load state", e);
-        initializeDefaultState();
-    }
+    // try {
+    //     const raw = localStorage.getItem(STORAGE_KEY);
+    //     if (!raw) {
+    //         initializeDefaultState();
+    //         return;
+    //     }
+    //
+    //     const parsed = JSON.parse(raw);
+    //     state.pool = Array.isArray(parsed.pool) ? parsed.pool : [];
+    //     for (const cat of CATEGORIES) {
+    //         state.categories[cat] = Array.isArray(parsed.categories?.[cat]) ? parsed.categories[cat] : [];
+    //     }
+    //
+    //     normalizeState();
+    // } catch (e) {
+    //     console.warn("Failed to load state", e);
+    //     initializeDefaultState();
+    // }
+    localStorage.removeItem("ctc_team_planner_v21_object_state");
+    initializeDefaultState();
 }
 
 function removePlayerEverywhere(playerId) {
@@ -640,6 +700,21 @@ function closePicker() {
     document.body.style.overflow = "";
     state.modalTargetCategory = null;
 }
+function openVideoModal() {
+    if (!videoModal) return;
+    videoModal.classList.add("show");
+    document.body.style.overflow = "hidden";
+}
+
+function closeVideoModal() {
+    if (!videoModal) return;
+    videoModal.classList.remove("show");
+    document.body.style.overflow = "";
+
+    if (planVideo) {
+        planVideo.pause();
+    }
+}
 
 document.querySelectorAll("[data-open-modal]").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -692,7 +767,19 @@ sortNameBtn.addEventListener("click", sortAllTeamsByName);
 copyBtn.addEventListener("click", copyResult);
 resetBtn.addEventListener("click", resetAll);
 clearTeamsBtn.addEventListener("click", clearTeamsOnly);
+if (viewVideoBtn) {
+    viewVideoBtn.addEventListener("click", openVideoModal);
+}
 
+if (closeVideoBtn) {
+    closeVideoBtn.addEventListener("click", closeVideoModal);
+}
+
+if (videoModal) {
+    videoModal.addEventListener("click", (e) => {
+        if (e.target === videoModal) closeVideoModal();
+    });
+}
 // =========================
 // INIT
 // =========================

@@ -45,8 +45,9 @@
       <button class="btn" id="randomSplitBtn">Random Split</button>
       <button class="btn" id="sortPowerBtn">Sort by Power</button>
       <button class="btn" id="sortNameBtn">Sort by Name</button>
-      <button class="btn primary" id="copyBtn">Copy Plan</button>
+      <button class="btn btn-important btn-copy" id="copyBtn">Copy Plan</button>
       <button class="btn warn" id="resetBtn">Reset All</button>
+			<button class="btn btn-important btn-video" id="viewVideoBtn" >View Plan Video</button>
     </div>
   </div>
 
@@ -213,6 +214,29 @@
   </div>
 </div>
 
+
+<!-- VIDEO MODAL -->
+<div class="modal" id="videoModal">
+	<div class="modal-panel video-modal-panel">
+		<div class="modal-head">
+			<h3>CTC Tactical Plan Video</h3>
+			<p>Watch the strategy / explanation video for all members</p>
+		</div>
+		
+		<div class="modal-body video-modal-body">
+			<div class="video-frame-wrap">
+				<video id="planVideo" class="plan-video" controls playsinline preload="metadata">
+					<source src="assets/videos/plan.mp4" type="video/mp4" />
+					Your browser does not support the video tag.
+				</video>
+			</div>
+		</div>
+		
+		<div class="modal-foot">
+			<button class="btn" id="closeVideoBtn">Close</button>
+		</div>
+	</div>
+</div>
 <div class="toast" id="toast">Saved</div>
 <script src="assets/js/loading.js"></script>
 <script src="assets/js/ctc.js"></script>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Cyber Neon TV Canvas</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+			background: #05070a;
+			overflow: hidden;
+			font-family: 'Orbitron', monospace;
+		}
+		
+		/* CANVAS FULLSCREEN */
+		canvas {
+			position: fixed;
+			inset: 0;
+			z-index: 0;
+		}
+		
+		/* UI LAYER */
+		.ui {
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			z-index: 2;
+		}
+		
+		/* TV */
+		.tv {
+			position: absolute;
+			width: 180px;
+			height: 120px;
+			background: #020405;
+			border: 2px solid #00ffff;
+			box-shadow:
+				0 0 12px #00ffff,
+				inset 0 0 20px rgba(0,255,255,0.3);
+			animation: flicker 2.5s infinite;
+		}
+		
+		.tv::before {
+			content: "";
+			position: absolute;
+			inset: 6px;
+			background:
+				repeating-linear-gradient(
+					to bottom,
+					rgba(0,255,255,0.12),
+					rgba(0,255,255,0.12) 1px,
+					transparent 1px,
+					transparent 3px
+				);
+			animation: scan 0.12s infinite linear;
+		}
+		
+		/* RANDOM GLITCH */
+		@keyframes flicker {
+			0%, 100% { opacity: 1; }
+			45% { opacity: 0.85; }
+			50% { opacity: 0.4; }
+			55% { opacity: 0.9; }
+		}
+		
+		@keyframes scan {
+			from { background-position: 0 0; }
+			to { background-position: 0 100%; }
+		}
+		
+		/* MESSAGE */
+		.message {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%) scale(0.9);
+			background: rgba(0,0,0,0.85);
+			border: 1px solid #00ffff;
+			padding: 20px 28px;
+			color: #00ffff;
+			letter-spacing: 2px;
+			box-shadow: 0 0 25px #00ffff;
+			opacity: 0;
+			transition: all 0.3s ease;
+			z-index: 3;
+		}
+		
+		.message.show {
+			opacity: 1;
+			transform: translate(-50%, -50%) scale(1);
+		}
+	</style>
+</head>
+
+<body>
+
+<canvas id="cyber"></canvas>
+
+<div class="ui">
+	<div class="tv" style="top:15%; left:10%"></div>
+	<div class="tv" style="top:30%; right:12%"></div>
+	<div class="tv" style="bottom:20%; left:20%"></div>
+	<div class="tv" style="bottom:25%; right:25%"></div>
+</div>
+
+<div id="msg" class="message">SIGNAL DETECTED</div>
+
+<script>
+	/* ===== CANVAS NEON BACKGROUND ===== */
+	const canvas = document.getElementById("cyber");
+	const ctx = canvas.getContext("2d");
+	
+	function resize() {
+		canvas.width = innerWidth;
+		canvas.height = innerHeight;
+	}
+	resize();
+	addEventListener("resize", resize);
+	
+	let lines = [];
+	for (let i = 0; i < 120; i++) {
+		lines.push({
+			x: Math.random() * canvas.width,
+			y: Math.random() * canvas.height,
+			speed: 0.5 + Math.random() * 1.5,
+			len: 40 + Math.random() * 80
+		});
+	}
+	
+	function draw() {
+		ctx.fillStyle = "rgba(5,7,10,0.2)";
+		ctx.fillRect(0,0,canvas.width,canvas.height);
+		
+		ctx.strokeStyle = "rgba(0,255,255,0.5)";
+		ctx.lineWidth = 1;
+		
+		lines.forEach(l => {
+			ctx.beginPath();
+			ctx.moveTo(l.x, l.y);
+			ctx.lineTo(l.x, l.y + l.len);
+			ctx.stroke();
+			
+			l.y += l.speed;
+			if (l.y > canvas.height) {
+				l.y = -l.len;
+				l.x = Math.random() * canvas.width;
+			}
+		});
+		
+		requestAnimationFrame(draw);
+	}
+	draw();
+	
+	/* ===== CLICK EFFECT ===== */
+	document.addEventListener("click", e => {
+		// ripple
+		ctx.beginPath();
+		ctx.arc(e.clientX, e.clientY, 0, 0, Math.PI * 2);
+		ctx.strokeStyle = "#00ffff";
+		ctx.lineWidth = 2;
+		
+		let r = 0;
+		const ripple = setInterval(() => {
+			ctx.clearRect(e.clientX - r - 5, e.clientY - r - 5, r*2+10, r*2+10);
+			ctx.beginPath();
+			ctx.arc(e.clientX, e.clientY, r, 0, Math.PI * 2);
+			ctx.stroke();
+			r += 6;
+			if (r > 120) clearInterval(ripple);
+		}, 16);
+		
+		// message
+		const msg = document.getElementById("msg");
+		msg.textContent = Math.random() > 0.5 ? "SIGNAL DETECTED" : "ACCESS GRANTED";
+		msg.classList.add("show");
+		setTimeout(() => msg.classList.remove("show"), 1200);
+	});
+</script>
+
+</body>
+</html>

@@ -25,16 +25,11 @@
         rgba(0,0,0,0.35) 100%
     );
 }
-/* Mặc định: KHÔNG cinematic */
 #stage {
-    display: none;
-}
-
-/* Chỉ bật trên mobile */
-@media (max-width: 768px) and (orientation: portrait) {
-    #stage {
-        display: block;
-    }
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: #000;
 }
 
 #ambient {

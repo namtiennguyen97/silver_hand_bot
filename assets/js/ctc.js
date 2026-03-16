@@ -2,8 +2,9 @@
 // CONFIG / DATA
 // =========================
 const STORAGE_KEY = "ctc_team_planner_v21_object_state";
+const PLAYER_STORAGE_KEY = "ctc_team_planner_v21_master_players";
 
-const FIXED_PLAYERS = [
+const DEFAULT_PLAYERS = [
     { name: "Chychy", role: "Rifle", power: 148, group: "Commander", note: "" },
     { name: "Maybe", role: "Warrior", power: 148, group: "Commander", note: "" },
 
@@ -46,6 +47,8 @@ const CATEGORIES = [
     "Destroying their base"
 ];
 
+let masterPlayers = [];
+
 // =========================
 // STATE
 // =========================
@@ -58,7 +61,8 @@ const state = {
         "Destroying their base": []
     },
     draggingId: null,
-    modalTargetCategory: null
+    modalTargetCategory: null,
+    editingPlayerId: null
 };
 
 // =========================
@@ -93,6 +97,29 @@ const videoModal = document.getElementById("videoModal");
 const closeVideoBtn = document.getElementById("closeVideoBtn");
 const planVideo = document.getElementById("planVideo");
 
+// Manage Players
+const managePlayersBtn = document.getElementById("managePlayersBtn");
+const playerManagerModal = document.getElementById("playerManagerModal");
+const pmName = document.getElementById("pmName");
+const pmRole = document.getElementById("pmRole");
+const pmPower = document.getElementById("pmPower");
+const pmGroup = document.getElementById("pmGroup");
+const pmNote = document.getElementById("pmNote");
+const pmSaveBtn = document.getElementById("pmSaveBtn");
+const pmSearch = document.getElementById("pmSearch");
+const pmList = document.getElementById("pmList");
+const pmCloseBtn = document.getElementById("pmCloseBtn");
+const pmResetDefaultBtn = document.getElementById("pmResetDefaultBtn");
+
+const moreOptionsWrap = document.getElementById("moreOptionsWrap");
+const moreOptionsBtn = document.getElementById("moreOptionsBtn");
+const moreOptionsMenu = document.getElementById("moreOptionsMenu");
+
+const mobileSmartSplitBtn = document.getElementById("mobileSmartSplitBtn");
+const mobileSortPowerBtn = document.getElementById("mobileSortPowerBtn");
+const mobileSortNameBtn = document.getElementById("mobileSortNameBtn");
+const mobileResetBtn = document.getElementById("mobileResetBtn");
+const mobileRandomSplitBtn = document.getElementById("mobileRandomSplitBtn");
 // =========================
 // HELPERS
 // =========================
@@ -110,26 +137,27 @@ function escapeHtml(str) {
 }
 
 function showToast(text) {
+    if (!toastEl) return;
     toastEl.textContent = text;
     toastEl.classList.add("show");
     clearTimeout(showToast._timer);
     showToast._timer = setTimeout(() => toastEl.classList.remove("show"), 1500);
 }
 
+function deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}
+
 function getPlayerById(id) {
-    return FIXED_PLAYERS.find(p => uid(p) === id) || null;
+    return masterPlayers.find(p => uid(p) === id) || null;
 }
 
 function getCommanders() {
-    return FIXED_PLAYERS.filter(p => p.group === "Commander");
+    return masterPlayers.filter(p => p.group === "Commander");
 }
 
 function getNonCommanders() {
-    return FIXED_PLAYERS.filter(p => p.group !== "Commander");
-}
-
-function deepClone(obj) {
-    return JSON.parse(JSON.stringify(obj));
+    return masterPlayers.filter(p => p.group !== "Commander");
 }
 
 function roleClass(role) {
@@ -138,7 +166,7 @@ function roleClass(role) {
 
 function sortPlayersByPower(arr) {
     arr.sort((a, b) => {
-        if (b.power !== a.power) return b.power - a.power;
+        if ((b.power || 0) !== (a.power || 0)) return (b.power || 0) - (a.power || 0);
         return a.name.localeCompare(b.name);
     });
 }
@@ -157,6 +185,10 @@ function teamTotalPower(teamArr) {
     return teamArr.reduce((sum, p) => sum + (p.power || 0), 0);
 }
 
+function countLabel(n) {
+    return `${n} player${n !== 1 ? "s" : ""}`;
+}
+
 function normalizeState() {
     const seen = new Set();
 
@@ -164,6 +196,7 @@ function normalizeState() {
         const arr = Array.isArray(state.categories[cat]) ? state.categories[cat] : [];
         state.categories[cat] = arr.filter(p => {
             const id = uid(p);
+            if (!getPlayerById(id)) return false; // remove deleted players
             if (seen.has(id)) return false;
             seen.add(id);
             return true;
@@ -172,6 +205,7 @@ function normalizeState() {
 
     state.pool = (Array.isArray(state.pool) ? state.pool : []).filter(p => {
         const id = uid(p);
+        if (!getPlayerById(id)) return false; // remove deleted players
         if (seen.has(id)) return false;
         seen.add(id);
         return true;
@@ -194,10 +228,38 @@ function normalizeState() {
 
 function saveState() {
     normalizeState();
-    // localStorage.setItem(STORAGE_KEY, JSON.stringify({
-    //     pool: state.pool,
-    //     categories: state.categories
-    // }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        pool: state.pool,
+        categories: state.categories
+    }));
+}
+
+function saveMasterPlayers() {
+    localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(masterPlayers));
+}
+
+function loadMasterPlayers() {
+    try {
+        const raw = localStorage.getItem(PLAYER_STORAGE_KEY);
+
+        if (!raw) {
+            masterPlayers = deepClone(DEFAULT_PLAYERS);
+            saveMasterPlayers();
+            return;
+        }
+
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length) {
+            masterPlayers = parsed;
+        } else {
+            masterPlayers = deepClone(DEFAULT_PLAYERS);
+            saveMasterPlayers();
+        }
+    } catch (e) {
+        console.warn("Failed to load master players", e);
+        masterPlayers = deepClone(DEFAULT_PLAYERS);
+        saveMasterPlayers();
+    }
 }
 
 function initializeDefaultState() {
@@ -216,17 +278,17 @@ function initializeDefaultState() {
         "DL"
     ]);
 
+    // Tormenta removed here because already in Attack team 1
+    // Bhuko removed because not in data
     const defaultBeacon2Names = new Set([
         "Rin-Rin",
-        "Bhuko",
         "JVLY",
         "Silver-Hand",
         "XOX",
         "6ixtY-9ine",
         "Vampk",
         "FixyFoxy",
-        "ZELLA",
-        "Tormenta"
+        "ZELLA"
     ]);
 
     const defaultFreeRunNames = new Set([
@@ -256,29 +318,30 @@ function initializeDefaultState() {
             state.pool.push(player);
         }
     });
+
+    normalizeState();
 }
 
 function loadState() {
-    // try {
-    //     const raw = localStorage.getItem(STORAGE_KEY);
-    //     if (!raw) {
-    //         initializeDefaultState();
-    //         return;
-    //     }
-    //
-    //     const parsed = JSON.parse(raw);
-    //     state.pool = Array.isArray(parsed.pool) ? parsed.pool : [];
-    //     for (const cat of CATEGORIES) {
-    //         state.categories[cat] = Array.isArray(parsed.categories?.[cat]) ? parsed.categories[cat] : [];
-    //     }
-    //
-    //     normalizeState();
-    // } catch (e) {
-    //     console.warn("Failed to load state", e);
-    //     initializeDefaultState();
-    // }
-    localStorage.removeItem("ctc_team_planner_v21_object_state");
-    initializeDefaultState();
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+            initializeDefaultState();
+            return;
+        }
+
+        const parsed = JSON.parse(raw);
+        state.pool = Array.isArray(parsed.pool) ? parsed.pool : [];
+
+        for (const cat of CATEGORIES) {
+            state.categories[cat] = Array.isArray(parsed.categories?.[cat]) ? parsed.categories[cat] : [];
+        }
+
+        normalizeState();
+    } catch (e) {
+        console.warn("Failed to load state", e);
+        initializeDefaultState();
+    }
 }
 
 function removePlayerEverywhere(playerId) {
@@ -354,9 +417,8 @@ function randomSplit() {
 function smartSplit() {
     const all = getNonCommanders().map(p => deepClone(p));
 
-    // sort high power first, then distribute to lowest total power team
     all.sort((a, b) => {
-        if (b.power !== a.power) return b.power - a.power;
+        if ((b.power || 0) !== (a.power || 0)) return (b.power || 0) - (a.power || 0);
         return a.name.localeCompare(b.name);
     });
 
@@ -410,10 +472,6 @@ function sortAllTeamsByName() {
     showToast("Sorted by name");
 }
 
-function countLabel(n) {
-    return `${n} player${n !== 1 ? "s" : ""}`;
-}
-
 // =========================
 // RENDER
 // =========================
@@ -429,7 +487,7 @@ function buildCommanderItem(player) {
           <span class="tag ${roleClass(player.role)}">${escapeHtml(player.role)}</span>
           <span class="tag power">${escapeHtml(String(player.power))}</span>
         </div>
-      `;
+    `;
     return el;
 }
 
@@ -450,7 +508,7 @@ function buildChip(player, location) {
         <div class="chip-actions">
           ${location !== "pool" ? `<button class="chip-btn" title="Return to pool">×</button>` : ""}
         </div>
-      `;
+    `;
 
     if (player.group !== "Commander") {
         chip.addEventListener("dragstart", (e) => {
@@ -480,6 +538,8 @@ function buildChip(player, location) {
 }
 
 function renderCommanders() {
+    if (!commanderListEl || !commanderCountEl) return;
+
     const commanders = getCommanders();
     commanderListEl.innerHTML = "";
     commanders.forEach(p => commanderListEl.appendChild(buildCommanderItem(p)));
@@ -487,8 +547,10 @@ function renderCommanders() {
 }
 
 function renderPool() {
-    const keyword = searchInput.value.trim().toLowerCase();
-    const role = roleFilter.value;
+    if (!poolChipsEl || !poolCountEl) return;
+
+    const keyword = (searchInput?.value || "").trim().toLowerCase();
+    const role = roleFilter?.value || "";
 
     poolChipsEl.innerHTML = "";
 
@@ -525,6 +587,8 @@ function renderCategories() {
         if (category === "pool") return;
 
         const chipsWrap = zone.querySelector(".chips");
+        if (!chipsWrap) return;
+
         chipsWrap.innerHTML = "";
 
         const players = state.categories[category] || [];
@@ -546,9 +610,9 @@ function renderCategories() {
             const empty = document.createElement("div");
             empty.className = "empty-state";
             empty.innerHTML = `
-            Drop players here<br>
-            <span style="font-size:11px; opacity:.8;">or use the + button for quick selection</span>
-          `;
+                Drop players here<br>
+                <span style="font-size:11px; opacity:.8;">or use the + button for quick selection</span>
+            `;
             chipsWrap.appendChild(empty);
         }
     });
@@ -568,7 +632,6 @@ function copyResult() {
     const lines = [];
     const commanders = getCommanders();
 
-    // Commander block
     lines.push(`Commander (${commanders.length}):`);
     commanders.forEach((p) => {
         let line = `${p.name} **(${p.role} - ${p.power})**`;
@@ -578,7 +641,6 @@ function copyResult() {
 
     lines.push("");
 
-    // Team blocks (current configured state)
     CATEGORIES.forEach((cat) => {
         const arr = state.categories[cat] || [];
 
@@ -597,7 +659,6 @@ function copyResult() {
         lines.push("");
     });
 
-    // Pool / unassigned
     lines.push(`Unassigned / Bench (${state.pool.length}):`);
     if (!state.pool.length) {
         lines.push(`- (none)`);
@@ -612,10 +673,52 @@ function copyResult() {
     const text = lines.join("\n");
 
     navigator.clipboard.writeText(text)
-        .then(() => showToast("Plan copied"))
-        .catch(() => alert("Copy failed.\n\n" + text));
+        .then(() => {
+            showToast("Plan copied");
+            showCopySuccess();
+        })
+        .catch(() => {
+            alert("Copy failed.\n\n" + text);
+        });
 }
+function showCopySuccess() {
+    if (!copyBtn) return;
 
+    clearTimeout(showCopySuccess._timer);
+
+    const textSpan = copyBtn.querySelector("span:last-child");
+    const iconEl = copyBtn.querySelector(".btn-icon i");
+
+    if (!copyBtn.dataset.originalText) {
+        copyBtn.dataset.originalText = textSpan ? textSpan.textContent : copyBtn.textContent;
+    }
+
+    if (textSpan) {
+        textSpan.textContent = "Copied!";
+    } else {
+        copyBtn.textContent = "Copied!";
+    }
+
+    if (iconEl) {
+        iconEl.className = "fa-solid fa-check";
+    }
+
+    copyBtn.classList.add("copied");
+
+    showCopySuccess._timer = setTimeout(() => {
+        if (textSpan) {
+            textSpan.textContent = copyBtn.dataset.originalText || "Copy Plan";
+        } else {
+            copyBtn.textContent = copyBtn.dataset.originalText || "Copy Plan";
+        }
+
+        if (iconEl) {
+            iconEl.className = "fa-solid fa-copy";
+        }
+
+        copyBtn.classList.remove("copied");
+    }, 3000);
+}
 // =========================
 // DRAG & DROP
 // =========================
@@ -642,18 +745,22 @@ dropZones.forEach(zone => {
 });
 
 // =========================
-// MODAL
+// MODAL - PICKER
 // =========================
 function renderModalList(keyword = "") {
+    if (!checkGrid) return;
+
     checkGrid.innerHTML = "";
 
-    const role = roleFilter.value;
+    const role = roleFilter?.value || "";
+    const kw = keyword.toLowerCase();
+
     const available = state.pool.filter(p => {
         const matchText =
-            p.name.toLowerCase().includes(keyword.toLowerCase()) ||
-            p.role.toLowerCase().includes(keyword.toLowerCase()) ||
-            p.group.toLowerCase().includes(keyword.toLowerCase()) ||
-            (p.note || "").toLowerCase().includes(keyword.toLowerCase());
+            p.name.toLowerCase().includes(kw) ||
+            p.role.toLowerCase().includes(kw) ||
+            p.group.toLowerCase().includes(kw) ||
+            (p.note || "").toLowerCase().includes(kw);
 
         const matchRole = !role || p.role === role;
         return matchText && matchRole;
@@ -670,22 +777,28 @@ function renderModalList(keyword = "") {
     }
 
     available.forEach(player => {
-        const id = `pick_${uid(player).replace(/\s+/g, "_")}_${Math.random().toString(36).slice(2, 6)}`;
+        const safeId = uid(player)
+            .replace(/\s+/g, "_")
+            .replace(/[^\w\-]/g, "");
+        const id = `pick_${safeId}_${Math.random().toString(36).slice(2, 6)}`;
+
         const label = document.createElement("label");
         label.className = "check-item";
         label.innerHTML = `
-          <input type="checkbox" value="${escapeHtml(uid(player))}" id="${id}" />
-          <div class="check-main">
-            <span class="check-name">${escapeHtml(player.name)}</span>
-            <span class="tag ${roleClass(player.role)}">${escapeHtml(player.role)}</span>
-            <span class="tag power">${escapeHtml(String(player.power))}</span>
-          </div>
+            <input type="checkbox" value="${escapeHtml(uid(player))}" id="${id}" />
+            <div class="check-main">
+                <span class="check-name">${escapeHtml(player.name)}</span>
+                <span class="tag ${roleClass(player.role)}">${escapeHtml(player.role)}</span>
+                <span class="tag power">${escapeHtml(String(player.power))}</span>
+            </div>
         `;
         checkGrid.appendChild(label);
     });
 }
 
 function openPicker(category) {
+    if (!pickerModal || !modalTitle || !modalSearch) return;
+
     state.modalTargetCategory = category;
     modalTitle.textContent = `Add players → ${category}`;
     modalSearch.value = "";
@@ -696,10 +809,15 @@ function openPicker(category) {
 }
 
 function closePicker() {
+    if (!pickerModal) return;
     pickerModal.classList.remove("show");
     document.body.style.overflow = "";
     state.modalTargetCategory = null;
 }
+
+// =========================
+// MODAL - VIDEO
+// =========================
 function openVideoModal() {
     if (!videoModal) return;
     videoModal.classList.add("show");
@@ -716,57 +834,257 @@ function closeVideoModal() {
     }
 }
 
+// =========================
+// MODAL - MANAGE PLAYERS
+// =========================
+function resetPlayerForm() {
+    if (!pmName || !pmRole || !pmPower || !pmGroup || !pmNote || !pmSaveBtn) return;
+
+    state.editingPlayerId = null;
+    pmName.value = "";
+    pmRole.value = "Rifle";
+    pmPower.value = "";
+    pmGroup.value = "Elite";
+    pmNote.value = "";
+    pmSaveBtn.textContent = "Add";
+}
+
+function openPlayerManager() {
+    if (!playerManagerModal) return;
+
+    renderPlayerManagerList();
+    resetPlayerForm();
+    playerManagerModal.classList.add("show");
+    document.body.style.overflow = "hidden";
+}
+
+function closePlayerManager() {
+    if (!playerManagerModal) return;
+
+    playerManagerModal.classList.remove("show");
+    document.body.style.overflow = "";
+    resetPlayerForm();
+}
+
+function renderPlayerManagerList() {
+    if (!pmList) return;
+
+    const keyword = (pmSearch?.value || "").trim().toLowerCase();
+    pmList.innerHTML = "";
+
+    const filtered = masterPlayers.filter(p => {
+        return (
+            p.name.toLowerCase().includes(keyword) ||
+            p.role.toLowerCase().includes(keyword) ||
+            p.group.toLowerCase().includes(keyword) ||
+            String(p.power).includes(keyword) ||
+            (p.note || "").toLowerCase().includes(keyword)
+        );
+    });
+
+    if (!filtered.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "No players found";
+        pmList.appendChild(empty);
+        return;
+    }
+
+    filtered.forEach(player => {
+        const row = document.createElement("div");
+        row.className = "commander-item";
+        row.innerHTML = `
+            <div class="chip-main" style="flex-wrap: wrap;">
+                <div class="commander-name">${escapeHtml(player.name)}</div>
+                <span class="tag ${roleClass(player.role)}">${escapeHtml(player.role)}</span>
+                <span class="tag power">${escapeHtml(String(player.power))}</span>
+                <span class="tag">${escapeHtml(player.group)}</span>
+                ${player.note ? `<span class="tag">${escapeHtml(player.note)}</span>` : ""}
+            </div>
+            <div class="chip-actions" style="gap:8px;">
+                <button class="mini-btn" data-edit-player="${escapeHtml(uid(player))}">Edit</button>
+                <button class="mini-btn" data-delete-player="${escapeHtml(uid(player))}">Delete</button>
+            </div>
+        `;
+        pmList.appendChild(row);
+    });
+
+    pmList.querySelectorAll("[data-edit-player]").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const id = btn.dataset.editPlayer;
+            const player = getPlayerById(id);
+            if (!player) return;
+
+            state.editingPlayerId = id;
+            pmName.value = player.name;
+            pmRole.value = player.role;
+            pmPower.value = player.power;
+            pmGroup.value = player.group;
+            pmNote.value = player.note || "";
+            pmSaveBtn.textContent = "Update";
+        });
+    });
+
+    pmList.querySelectorAll("[data-delete-player]").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const id = btn.dataset.deletePlayer;
+
+            if (!confirm(`Delete player "${id}"?`)) return;
+
+            masterPlayers = masterPlayers.filter(p => uid(p) !== id);
+            removePlayerEverywhere(id);
+
+            saveMasterPlayers();
+            saveState();
+            renderPlayerManagerList();
+            render();
+
+            if (state.editingPlayerId === id) {
+                resetPlayerForm();
+            }
+
+            showToast("Player deleted");
+        });
+    });
+}
+
+function addOrUpdatePlayer() {
+    if (!pmName || !pmRole || !pmPower || !pmGroup || !pmNote) return;
+
+    const name = pmName.value.trim();
+    const role = pmRole.value;
+    const power = Number(pmPower.value);
+    const group = pmGroup.value;
+    const note = pmNote.value.trim();
+
+    if (!name) {
+        alert("Please enter player name");
+        return;
+    }
+
+    if (!Number.isFinite(power) || power < 0) {
+        alert("Please enter valid power");
+        return;
+    }
+
+    const duplicate = masterPlayers.find(p => uid(p) === name);
+
+    // ADD
+    if (!state.editingPlayerId) {
+        if (duplicate) {
+            alert("Player name already exists");
+            return;
+        }
+
+        const newPlayer = { name, role, power, group, note };
+        masterPlayers.push(newPlayer);
+
+        if (group !== "Commander") {
+            state.pool.push(deepClone(newPlayer));
+        }
+
+        normalizeState();
+        saveMasterPlayers();
+        saveState();
+        renderPlayerManagerList();
+        render();
+        resetPlayerForm();
+        showToast("Player added");
+        return;
+    }
+
+    // UPDATE
+    const oldId = state.editingPlayerId;
+
+    if (oldId !== name && duplicate) {
+        alert("Another player with this name already exists");
+        return;
+    }
+
+    const idx = masterPlayers.findIndex(p => uid(p) === oldId);
+    if (idx === -1) return;
+
+    const oldPlayer = masterPlayers[idx];
+    const updatedPlayer = { name, role, power, group, note };
+    masterPlayers[idx] = updatedPlayer;
+
+    const replaceInArr = (arr) => arr.map(p => uid(p) === oldId ? deepClone(updatedPlayer) : p);
+
+    state.pool = replaceInArr(state.pool);
+    for (const cat of CATEGORIES) {
+        state.categories[cat] = replaceInArr(state.categories[cat]);
+    }
+
+    // If changed to Commander => remove from pool/teams
+    if (group === "Commander") {
+        removePlayerEverywhere(name);
+        if (oldId !== name) removePlayerEverywhere(oldId);
+    }
+
+    // If was Commander before and now not Commander => add to pool if missing
+    if (oldPlayer.group === "Commander" && group !== "Commander") {
+        const existsInPoolOrTeam =
+            state.pool.some(p => uid(p) === name) ||
+            CATEGORIES.some(cat => state.categories[cat].some(p => uid(p) === name));
+
+        if (!existsInPoolOrTeam) {
+            state.pool.push(deepClone(updatedPlayer));
+        }
+    }
+
+    // If rename happened and old non-commander was not found anywhere, ensure still exists somewhere
+    if (oldPlayer.group !== "Commander" && group !== "Commander") {
+        const existsInPoolOrTeam =
+            state.pool.some(p => uid(p) === name) ||
+            CATEGORIES.some(cat => state.categories[cat].some(p => uid(p) === name));
+
+        if (!existsInPoolOrTeam) {
+            state.pool.push(deepClone(updatedPlayer));
+        }
+    }
+
+    normalizeState();
+    saveMasterPlayers();
+    saveState();
+    renderPlayerManagerList();
+    render();
+    resetPlayerForm();
+    showToast("Player updated");
+}
+
+// =========================
+// BUTTONS TO OPEN PICKER
+// =========================
 document.querySelectorAll("[data-open-modal]").forEach(btn => {
     btn.addEventListener("click", () => {
         openPicker(btn.dataset.openModal);
     });
 });
 
-modalSearch.addEventListener("input", () => {
-    renderModalList(modalSearch.value.trim());
-});
-
-cancelModalBtn.addEventListener("click", closePicker);
-
-pickerModal.addEventListener("click", (e) => {
-    if (e.target === pickerModal) closePicker();
-});
-
-confirmModalBtn.addEventListener("click", () => {
-    const target = state.modalTargetCategory;
-    if (!target) return;
-
-    const checked = [...checkGrid.querySelectorAll('input[type="checkbox"]:checked')]
-        .map(input => input.value);
-
-    if (!checked.length) {
-        closePicker();
-        return;
-    }
-
-    checked.forEach(playerId => movePlayer(playerId, target, false));
-    saveState();
-    render();
-    closePicker();
-    showToast(`Added ${checked.length} player(s)`);
-});
-
 // =========================
 // EVENTS
 // =========================
-searchInput.addEventListener("input", renderPool);
-roleFilter.addEventListener("change", () => {
-    renderPool();
-    if (pickerModal.classList.contains("show")) renderModalList(modalSearch.value.trim());
-});
+if (searchInput) {
+    searchInput.addEventListener("input", renderPool);
+}
 
-smartSplitBtn.addEventListener("click", smartSplit);
-randomSplitBtn.addEventListener("click", randomSplit);
-sortPowerBtn.addEventListener("click", sortAllTeamsByPower);
-sortNameBtn.addEventListener("click", sortAllTeamsByName);
-copyBtn.addEventListener("click", copyResult);
-resetBtn.addEventListener("click", resetAll);
-clearTeamsBtn.addEventListener("click", clearTeamsOnly);
+if (roleFilter) {
+    roleFilter.addEventListener("change", () => {
+        renderPool();
+        if (pickerModal?.classList.contains("show")) {
+            renderModalList(modalSearch?.value.trim() || "");
+        }
+    });
+}
+
+if (smartSplitBtn) smartSplitBtn.addEventListener("click", smartSplit);
+if (randomSplitBtn) randomSplitBtn.addEventListener("click", randomSplit);
+if (sortPowerBtn) sortPowerBtn.addEventListener("click", sortAllTeamsByPower);
+if (sortNameBtn) sortNameBtn.addEventListener("click", sortAllTeamsByName);
+if (copyBtn) copyBtn.addEventListener("click", copyResult);
+if (resetBtn) resetBtn.addEventListener("click", resetAll);
+if (clearTeamsBtn) clearTeamsBtn.addEventListener("click", clearTeamsOnly);
+
 if (viewVideoBtn) {
     viewVideoBtn.addEventListener("click", openVideoModal);
 }
@@ -780,8 +1098,130 @@ if (videoModal) {
         if (e.target === videoModal) closeVideoModal();
     });
 }
+
+if (modalSearch) {
+    modalSearch.addEventListener("input", () => {
+        renderModalList(modalSearch.value.trim());
+    });
+}
+
+if (cancelModalBtn) {
+    cancelModalBtn.addEventListener("click", closePicker);
+}
+
+if (pickerModal) {
+    pickerModal.addEventListener("click", (e) => {
+        if (e.target === pickerModal) closePicker();
+    });
+}
+
+if (confirmModalBtn) {
+    confirmModalBtn.addEventListener("click", () => {
+        const target = state.modalTargetCategory;
+        if (!target) return;
+
+        const checked = [...checkGrid.querySelectorAll('input[type="checkbox"]:checked')]
+            .map(input => input.value);
+
+        if (!checked.length) {
+            closePicker();
+            return;
+        }
+
+        checked.forEach(playerId => movePlayer(playerId, target, false));
+        saveState();
+        render();
+        closePicker();
+        showToast(`Added ${checked.length} player(s)`);
+    });
+}
+
+// Manage Players events
+if (managePlayersBtn) {
+    managePlayersBtn.addEventListener("click", openPlayerManager);
+}
+
+if (pmCloseBtn) {
+    pmCloseBtn.addEventListener("click", closePlayerManager);
+}
+
+if (playerManagerModal) {
+    playerManagerModal.addEventListener("click", (e) => {
+        if (e.target === playerManagerModal) closePlayerManager();
+    });
+}
+
+if (pmSearch) {
+    pmSearch.addEventListener("input", renderPlayerManagerList);
+}
+
+if (pmSaveBtn) {
+    pmSaveBtn.addEventListener("click", addOrUpdatePlayer);
+}
+
+if (pmResetDefaultBtn) {
+    pmResetDefaultBtn.addEventListener("click", () => {
+        if (!confirm("Reset player list to default? This will remove your custom edits.")) return;
+
+        masterPlayers = deepClone(DEFAULT_PLAYERS);
+        saveMasterPlayers();
+        initializeDefaultState();
+        saveState();
+        renderPlayerManagerList();
+        render();
+        resetPlayerForm();
+        showToast("Players reset to default");
+    });
+}
+if (moreOptionsBtn && moreOptionsMenu) {
+    moreOptionsBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        moreOptionsMenu.classList.toggle("show");
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!moreOptionsWrap.contains(e.target)) {
+            moreOptionsMenu.classList.remove("show");
+        }
+    });
+}
+
+if (mobileSmartSplitBtn) {
+    mobileSmartSplitBtn.addEventListener("click", () => {
+        smartSplit();
+        moreOptionsMenu.classList.remove("show");
+    });
+}
+
+if (mobileSortPowerBtn) {
+    mobileSortPowerBtn.addEventListener("click", () => {
+        sortAllTeamsByPower();
+        moreOptionsMenu.classList.remove("show");
+    });
+}
+
+if (mobileSortNameBtn) {
+    mobileSortNameBtn.addEventListener("click", () => {
+        sortAllTeamsByName();
+        moreOptionsMenu.classList.remove("show");
+    });
+}
+
+if (mobileResetBtn) {
+    mobileResetBtn.addEventListener("click", () => {
+        resetAll();
+        moreOptionsMenu.classList.remove("show");
+    });
+}
+if (mobileRandomSplitBtn) {
+    mobileRandomSplitBtn.addEventListener("click", () => {
+        randomSplit();
+        moreOptionsMenu.classList.remove("show");
+    });
+}
 // =========================
 // INIT
 // =========================
+loadMasterPlayers();
 loadState();
 render();

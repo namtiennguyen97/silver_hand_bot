@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>CTC SAO-DEM Team Planner</title>
   <link rel="stylesheet" href="assets/css/loading.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
   <link rel="stylesheet" href="assets/css/ctc.css">
+  <link rel="stylesheet" href="assets/css/ctc-footer.css">
 </head>
 <body>
 <div id="loadingOverlay">
@@ -36,18 +38,86 @@
       </div>
       <p class="hero-sub">
         PC: drag and drop players between teams • Mobile: tap <b>+</b> for multi-select •
-        Commanders stay highlighted separately • Smart split uses non-commanders only.
+        (Trên pc thì kéo thả, còn ở màn mobile thì bấm dấu cộng để thêm mọi người nhé!)
       </p>
     </section>
 
     <div class="toolbar">
-      <button class="btn" id="smartSplitBtn">Smart Split</button>
-      <button class="btn" id="randomSplitBtn">Random Split</button>
-      <button class="btn" id="sortPowerBtn">Sort by Power</button>
-      <button class="btn" id="sortNameBtn">Sort by Name</button>
-      <button class="btn btn-important btn-copy" id="copyBtn">Copy Plan</button>
-      <button class="btn warn" id="resetBtn">Reset All</button>
-			<button class="btn btn-important btn-video" id="viewVideoBtn" >View Plan Video</button>
+      <!-- Desktop / always visible important buttons -->
+      <button class="btn toolbar-secondary" id="smartSplitBtn" type="button">
+        <span class="btn-icon"><i class="fa-solid fa-brain"></i></span>
+        <span>Smart Split</span>
+      </button>
+
+      <button class="btn toolbar-secondary" id="randomSplitBtn" type="button">
+        <span class="btn-icon"><i class="fa-solid fa-dice"></i></span>
+        <span>Random Split</span>
+      </button>
+
+      <button class="btn toolbar-secondary" id="sortPowerBtn" type="button">
+        <span class="btn-icon"><i class="fa-solid fa-bolt"></i></span>
+        <span>Sort by Level</span>
+      </button>
+
+      <button class="btn toolbar-secondary" id="sortNameBtn" type="button">
+        <span class="btn-icon"><i class="fa-solid fa-arrow-down-a-z"></i></span>
+        <span>Sort by Name</span>
+      </button>
+
+      <button id="managePlayersBtn" class="btn btn-important" type="button">
+        <span class="btn-icon"><i class="fa-solid fa-users-gear"></i></span>
+        <span>Manage Players</span>
+      </button>
+
+      <button class="btn btn-important btn-copy" id="copyBtn" type="button">
+        <span class="btn-icon"><i class="fa-solid fa-copy"></i></span>
+        <span>Copy Plan</span>
+      </button>
+
+      <button class="btn warn toolbar-secondary" id="resetBtn" type="button">
+        <span class="btn-icon"><i class="fa-solid fa-rotate-left"></i></span>
+        <span>Reset All</span>
+      </button>
+
+      <button class="btn btn-important btn-video" id="viewVideoBtn" type="button">
+        <span class="btn-icon"><i class="fa-solid fa-circle-play"></i></span>
+        <span>View Plan Video</span>
+      </button>
+
+      <!-- Mobile only More Options -->
+      <div class="more-options-wrap" id="moreOptionsWrap">
+        <button class="btn more-options-btn" id="moreOptionsBtn" type="button">
+          <span class="btn-icon"><i class="fa-solid fa-ellipsis"></i></span>
+          <span>More Options</span>
+        </button>
+
+        <div class="more-options-menu" id="moreOptionsMenu">
+          <button class="btn more-item" id="mobileSmartSplitBtn" type="button">
+            <span class="btn-icon"><i class="fa-solid fa-brain"></i></span>
+            <span>Smart Split</span>
+          </button>
+
+          <button class="btn more-item" id="mobileRandomSplitBtn" type="button">
+            <span class="btn-icon"><i class="fa-solid fa-dice"></i></span>
+            <span>Random Split</span>
+          </button>
+
+          <button class="btn more-item" id="mobileSortPowerBtn" type="button">
+            <span class="btn-icon"><i class="fa-solid fa-bolt"></i></span>
+            <span>Sort by Level</span>
+          </button>
+
+          <button class="btn more-item" id="mobileSortNameBtn" type="button">
+            <span class="btn-icon"><i class="fa-solid fa-arrow-down-a-z"></i></span>
+            <span>Sort by Name</span>
+          </button>
+
+          <button class="btn warn more-item" id="mobileResetBtn" type="button">
+            <span class="btn-icon"><i class="fa-solid fa-rotate-left"></i></span>
+            <span>Reset All</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -221,6 +291,7 @@
 		<div class="modal-head">
 			<h3>CTC Tactical Plan Video</h3>
 			<p>Watch the strategy / explanation video for all members</p>
+			<p>Cùng xem và đưa ra ý kiến nếu không phù hợp nhé mọi người!</p>
 		</div>
 		
 		<div class="modal-body video-modal-body">
@@ -237,9 +308,83 @@
 		</div>
 	</div>
 </div>
+<div class="modal" id="playerManagerModal">
+  <div class="modal-panel" style="max-width: 980px;">
+    <div class="modal-head">
+      <h3>Manage Players</h3>
+      <p>Add / Edit / Delete players in master list</p>
+    </div>
+
+    <div class="modal-body">
+      <div style="display:grid; gap:12px; margin-bottom:16px;">
+        <div class="pm-form-grid">
+          <div class="pm-field pm-field-name">
+            <label for="pmName">Name</label>
+            <input id="pmName" class="input" placeholder="Player name" />
+          </div>
+
+          <div class="pm-field">
+            <label for="pmRole">Role</label>
+            <select id="pmRole" class="select">
+              <option value="Rifle">Rifle</option>
+              <option value="Sniper">Sniper</option>
+              <option value="Warrior">Warrior</option>
+              <option value="Virus">Virus</option>
+            </select>
+          </div>
+
+          <div class="pm-field">
+            <label for="pmPower">Power</label>
+            <input id="pmPower" type="number" class="input" placeholder="147" />
+          </div>
+
+          <div class="pm-field">
+            <label for="pmGroup">Group</label>
+            <select id="pmGroup" class="select">
+              <option value="Commander">Commander</option>
+              <option value="Elite">Elite</option>
+              <option value="Non-Elite">Non-Elite</option>
+              <option value="Pending">Pending</option>
+            </select>
+          </div>
+
+          <div class="pm-field pm-field-note">
+            <label for="pmNote">Note</label>
+            <input id="pmNote" class="input" placeholder="Optional note" />
+          </div>
+
+          <div class="pm-field pm-field-action">
+            <label style="visibility:hidden;">Action</label>
+            <button id="pmSaveBtn" class="btn btn-primary">Add</button>
+          </div>
+        </div>
+
+        <input id="pmSearch" class="search" placeholder="Search player..." />
+      </div>
+
+      <div id="pmList" style="display:grid; gap:10px;"></div>
+    </div>
+
+    <div class="modal-foot">
+      <button id="pmResetDefaultBtn" class="btn warn">Reset Players to Default</button>
+      <button id="pmCloseBtn" class="btn">Close</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast">Saved</div>
 <script src="assets/js/loading.js"></script>
 <script src="assets/js/ctc.js"></script>
+<footer class="site-credit">
+  <span class="credit-line">
+    <i class="fa-solid fa-crosshairs"></i>
+    <span class="credit-text">Made by</span>
 
+    <span class="credit-author">
+      <img src="assets/img/mayor_avatar.jpg" alt="Silver-Hand Avatar" class="credit-avatar">
+      <strong>Silver-Hand</strong>
+    </span>
+    <span class="credit-text">the Mayor</span>
+  </span>
+</footer>
 </body>
 </html>

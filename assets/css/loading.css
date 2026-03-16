@@ -1,52 +1,92 @@
-/* Overlay toàn màn hình */
+/* FULLSCREEN LOADING */
 #loadingOverlay {
     position: fixed;
-    top:0; left:0; right:0; bottom:0;
+    inset: 0;
+    z-index: 99999;
     background: #0b0f13;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
     overflow: hidden;
+    transition: opacity 0.45s ease, visibility 0.45s ease;
+}
+
+body.finished #loadingOverlay {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .loading-wrapper {
     position: relative;
+    width: min(520px, 86vw);
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 18px;
 }
 
 .loading-text {
-    font-family: 'Conthrax', sans-serif;
-    font-size: 48px;
-    color: #ffffff;
-    text-shadow: 0 0 8px #6ee7b7, 0 0 20px #7c3aed, 0 0 30px #6ee7b7;
-    display: flex;
-    gap: 0;
-    /*animation: rotate 1s linear infinite;*/
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
-.loading-text span {
-    display: inline-block;
-    position: relative;
+.loading-text .sao {
+    color: #6ee7ff;
+    text-shadow: 0 0 12px rgba(110,231,255,0.35);
 }
 
-@keyframes rotate {
-    0%{ transform: rotate(0deg);}
-    100%{ transform: rotate(360deg);}
+.loading-text .dem {
+    color: #5dffb2;
+    text-shadow: 0 0 12px rgba(93,255,178,0.35);
+}
+
+.loading-progress {
+    width: 100%;
+}
+
+.progress-bar {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 8px;
+    width: 100%;
+}
+
+.loading-chunk {
+    height: 14px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.35);
+    transition: all 0.18s ease;
+}
+
+.loading-chunk.is-active {
+    background: linear-gradient(90deg, #6ee7ff, #5dffb2);
+    border-color: rgba(110,231,255,0.45);
+    box-shadow:
+        0 0 10px rgba(110,231,255,0.35),
+        0 0 18px rgba(93,255,178,0.22),
+        inset 0 0 6px rgba(255,255,255,0.18);
 }
 
 .line {
     position: absolute;
-    height: 2px;
-    background: #fff;
-    width: 100px;
-    transition: all 1s ease-out;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(110,231,255,0.35), transparent);
 }
-.line.top { top: -12px; left: 50%; transform: translateX(-50%); }
-.line.bottom { bottom: -12px; left: 50%; transform: translateX(-50%); }
 
+.line.top {
+    top: -14px;
+}
+
+.line.bottom {
+    bottom: -14px;
+}
 /* Khi loading xong */
 .finished .loading-text { animation: none; }
 
@@ -129,4 +169,115 @@
     box-shadow:
         0 0 4px #00ffff,
         0 0 8px rgba(0, 255, 255, 0.8);
+}
+.loading-progress {
+    width: 100%;
+    max-width: 420px;
+    padding: 10px 12px;
+    border: 1px solid rgba(110,231,255,0.14);
+    background:
+        linear-gradient(180deg, rgba(8,12,18,0.92), rgba(12,18,28,0.96));
+    box-shadow:
+        inset 0 0 0 1px rgba(110,231,255,0.03),
+        inset 0 0 18px rgba(0,0,0,0.45),
+        0 0 16px rgba(110,231,255,0.06);
+    border-radius: 6px; /* khung hơi vuông */
+}
+
+.progress-bar {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+    width: 100%;
+}
+
+.loading-chunk {
+    position: relative;
+    height: 14px;
+    border-radius: 2px; /* <-- gần vuông, không tròn */
+    background:
+        linear-gradient(180deg, rgba(25,35,48,0.95), rgba(12,18,28,0.98));
+    border: 1px solid rgba(255,255,255,0.03);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.02),
+        inset 0 -2px 4px rgba(0,0,0,0.35);
+    overflow: hidden;
+    transition:
+        background .18s ease,
+        border-color .18s ease,
+        box-shadow .18s ease,
+        transform .18s ease,
+        opacity .18s ease;
+}
+
+/* sọc scan nhẹ trong chunk */
+.loading-chunk::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(255,255,255,0.015) 0px,
+            rgba(255,255,255,0.015) 2px,
+            transparent 2px,
+            transparent 5px
+        );
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* viền sáng mỏng phía trên */
+.loading-chunk::after {
+    content: "";
+    position: absolute;
+    left: 1px;
+    right: 1px;
+    top: 1px;
+    height: 1px;
+    background: rgba(255,255,255,0.05);
+    pointer-events: none;
+}
+
+.loading-chunk.is-active {
+    border-color: rgba(110,231,255,0.52);
+    background:
+        linear-gradient(180deg, #7ff0ff 0%, #39d8ff 45%, #1ab7ff 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        inset 0 -2px 6px rgba(0,0,0,0.22),
+        0 0 8px rgba(110,231,255,0.55),
+        0 0 18px rgba(110,231,255,0.42),
+        0 0 32px rgba(93,255,178,0.18);
+    transform: translateY(-1px) scaleY(1.03);
+}
+
+/* lớp glow chạy bên trong active chunk */
+.loading-chunk.is-active::before {
+    background:
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,0.08) 0%,
+            rgba(255,255,255,0.18) 18%,
+            rgba(255,255,255,0.06) 40%,
+            transparent 70%
+        ),
+        repeating-linear-gradient(
+            90deg,
+            rgba(255,255,255,0.035) 0px,
+            rgba(255,255,255,0.035) 2px,
+            transparent 2px,
+            transparent 5px
+        );
+    opacity: 1;
+    animation: chunkSweep 0.9s linear infinite;
+}
+
+@keyframes chunkSweep {
+    from {
+        background-position: -40px 0, 0 0;
+    }
+    to {
+        background-position: 60px 0, 0 0;
+    }
 }

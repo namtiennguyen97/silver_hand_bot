@@ -843,6 +843,7 @@ body::before {
 }
 
 .btn-important {
+    background: green;
     position: relative;
     overflow: hidden;
     font-weight: 900;
@@ -935,4 +936,320 @@ body::before {
 
 .btn-video.btn-important {
     animation: none;
+}
+#copyBtn.copied {
+    border-color: rgba(120, 255, 180, 0.45);
+    box-shadow:
+        0 0 0 1px rgba(120, 255, 180, 0.12),
+        0 0 14px rgba(120, 255, 180, 0.18);
+}
+
+#copyBtn.copied .btn-icon i {
+    color: #7dffb3;
+    filter: drop-shadow(0 0 6px rgba(125, 255, 179, 0.45));
+}
+
+/* =========================
+   Toolbar icon basic
+========================= */
+.toolbar .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    min-width: 16px;
+    font-size: 14px;
+    line-height: 1;
+    transform: translateY(-1px);
+    transition: transform .18s ease, filter .18s ease;
+}
+
+.toolbar .btn:hover .btn-icon {
+    transform: translateY(-1px) scale(1.08);
+}
+
+/* =========================
+   More Options dropdown
+========================= */
+.more-options-wrap {
+    position: relative;
+    display: none; /* desktop hidden */
+}
+
+.more-options-btn {
+    min-width: 150px;
+}
+
+.more-options-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 1200;
+    min-width: 220px;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(120, 220, 255, 0.16);
+    background:
+        linear-gradient(180deg, rgba(12, 18, 28, 0.98), rgba(9, 14, 22, 0.98));
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.35),
+        0 0 20px rgba(120, 220, 255, 0.08),
+        inset 0 0 0 1px rgba(120, 220, 255, 0.03);
+    backdrop-filter: blur(8px);
+}
+
+.more-options-menu.show {
+    display: flex;
+}
+
+.more-options-menu .more-item {
+    width: 100%;
+    justify-content: flex-start;
+}
+
+/* =========================
+   Mobile behavior
+========================= */
+@media (max-width: 768px) {
+    /* hide secondary buttons on mobile */
+    .toolbar .toolbar-secondary {
+        display: none !important;
+    }
+
+    /* show More Options on mobile */
+    .more-options-wrap {
+        display: inline-flex;
+    }
+
+    /* keep toolbar wrapping nice */
+    .toolbar {
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .toolbar .btn {
+        min-height: 42px;
+    }
+
+    /* make important buttons a bit nicer on mobile */
+    #managePlayersBtn,
+    #copyBtn,
+    #viewVideoBtn,
+    #moreOptionsBtn {
+        flex: 1 1 calc(50% - 10px);
+    }
+
+    .more-options-wrap {
+        flex: 1 1 calc(50% - 10px);
+    }
+
+    .more-options-btn {
+        width: 100%;
+    }
+}
+/* =========================
+   Manage Players form layout
+========================= */
+.pm-form-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+    align-items: end;
+}
+
+.pm-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.pm-field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #9fd7ff;
+    letter-spacing: 0.3px;
+}
+
+.pm-field .input,
+.pm-field .select {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.pm-field-note {
+    grid-column: 1 / span 3;
+}
+
+.pm-field-action {
+    grid-column: 4;
+}
+
+.pm-field-action .btn {
+    width: 100%;
+    height: 42px;
+}
+
+/* Tablet */
+@media (max-width: 980px) {
+    .pm-form-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .pm-field-note {
+        grid-column: 1 / span 2;
+    }
+
+    .pm-field-action {
+        grid-column: 1 / span 2;
+    }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+    .pm-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pm-field-note,
+    .pm-field-action {
+        grid-column: auto;
+    }
+
+    .pm-field-action .btn {
+        width: 100%;
+    }
+}
+/* =========================
+   Better form controls (cyber style)
+========================= */
+.input,
+.select,
+textarea.input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+
+    height: 42px;
+    padding: 0 14px;
+
+    border-radius: 12px;
+    border: 1px solid rgba(79, 195, 247, 0.28);
+
+    background: linear-gradient(180deg, rgba(13, 22, 33, 0.95), rgba(9, 16, 24, 0.95));
+    color: #eaf7ff;
+
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.03),
+        inset 0 0 0 1px rgba(0,0,0,0.12),
+        0 6px 18px rgba(0,0,0,0.22);
+
+    transition:
+        border-color .18s ease,
+        box-shadow .18s ease,
+        transform .12s ease,
+        background .18s ease;
+}
+
+.input::placeholder,
+textarea.input::placeholder {
+    color: rgba(180, 220, 245, 0.45);
+    font-weight: 500;
+}
+
+.input:hover,
+.select:hover,
+textarea.input:hover {
+    border-color: rgba(79, 195, 247, 0.42);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 0 0 1px rgba(79, 195, 247, 0.08),
+        0 8px 22px rgba(0,0,0,0.26);
+}
+
+.input:focus,
+.select:focus,
+textarea.input:focus {
+    border-color: rgba(79, 195, 247, 0.9);
+    box-shadow:
+        0 0 0 3px rgba(79, 195, 247, 0.16),
+        0 0 18px rgba(79, 195, 247, 0.18),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+    transform: translateY(-1px);
+}
+
+/* Select custom arrow */
+.select {
+    padding-right: 42px;
+    background-image:
+        linear-gradient(180deg, rgba(13, 22, 33, 0.95), rgba(9, 16, 24, 0.95)),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239fd7ff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat, no-repeat;
+    background-position: 0 0, right 14px center;
+    background-size: auto, 14px;
+    cursor: pointer;
+}
+
+/* Number input remove ugly browser arrows (optional) */
+input[type="number"].input::-webkit-outer-spin-button,
+input[type="number"].input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"].input {
+    -moz-appearance: textfield;
+}
+
+/* If you later want textarea notes */
+textarea.input {
+    min-height: 88px;
+    height: auto;
+    padding: 12px 14px;
+    resize: vertical;
+    line-height: 1.45;
+}
+
+/* Labels in forms */
+.pm-field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #9fd7ff;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+    opacity: 0.95;
+}
+.select {
+    color: #eaf7ff;
+    background-color: #0d1621;
+}
+
+.select option {
+    background-color: #0d1621;
+    color: #eaf7ff;
+}
+
+.select optgroup {
+    background-color: #0d1621;
+    color: #9fd7ff;
 }

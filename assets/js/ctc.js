@@ -3,6 +3,9 @@
 // =========================
 const STORAGE_KEY = "ctc_team_planner_v21_object_state";
 const PLAYER_STORAGE_KEY = "ctc_team_planner_v21_master_players";
+const SHARED_STATE_API = "/api/ctc-state";
+const SHARED_SYNC_INTERVAL_MS = 60000; // 60s để tiết kiệm quota
+const SHARED_SAVE_DEBOUNCE_MS = 1000; // gom thao tác trong 1s
 
 const DEFAULT_PLAYERS = [
     { name: "Chychy", role: "Rifle", power: 148, group: "Commander", note: "" },
@@ -64,6 +67,12 @@ const state = {
     modalTargetCategory: null,
     editingPlayerId: null
 };
+let sharedSyncTimer = null;
+let sharedSaveTimer = null;
+let lastSharedUpdatedAt = 0;
+let isApplyingRemoteState = false;
+let lastSavedSignature = "";
+let lastAppliedRemoteSignature = "";
 
 // =========================
 // ELEMENTS
@@ -225,7 +234,253 @@ function normalizeState() {
         state.categories[cat] = state.categories[cat].filter(p => p.group !== "Commander");
     }
 }
+function buildSharedPayload() {
+    normalizeState();
 
+    return {
+        version: 1,
+        masterPlayers: deepClone(masterPlayers),
+        pool: deepClone(state.pool),
+        categories: deepClone(state.categories),
+        updatedAt: Date.now()
+    };
+}
+
+function buildStateSignature(payloadLike = null) {
+    const src = payloadLike || {
+        masterPlayers,
+        pool: state.pool,
+        categories: state.categories
+    };
+
+    return JSON.stringify({
+        masterPlayers: src.masterPlayers,
+        pool: src.pool,
+        categories: src.categories
+    });
+}
+
+function isValidPlayerLike(obj) {
+    return obj &&
+        typeof obj.name === "string" &&
+        typeof obj.role === "string" &&
+        Number.isFinite(Number(obj.power)) &&
+        typeof obj.group === "string";
+}
+
+function applySharedPayload(payload, options = {}) {
+    const {
+        saveToLocal = true,
+        silent = false
+    } = options;
+
+    if (!payload || typeof payload !== "object") {
+        throw new Error("Invalid shared payload");
+    }
+
+    const incomingPlayers = Array.isArray(payload.masterPlayers) ? payload.masterPlayers : null;
+    const incomingPool = Array.isArray(payload.pool) ? payload.pool : null;
+    const incomingCategories = payload.categories && typeof payload.categories === "object"
+        ? payload.categories
+        : null;
+
+    if (!incomingPlayers || !incomingPool || !incomingCategories) {
+        throw new Error("Shared payload missing required fields");
+    }
+
+    const cleanedPlayers = incomingPlayers
+        .filter(isValidPlayerLike)
+        .map(p => ({
+            name: String(p.name).trim(),
+            role: String(p.role).trim(),
+            power: Number(p.power) || 0,
+            group: String(p.group).trim(),
+            note: String(p.note || "")
+        }));
+
+    if (!cleanedPlayers.length) {
+        throw new Error("Shared payload has no valid players");
+    }
+
+    const seenNames = new Set();
+    const dedupedPlayers = cleanedPlayers.filter(p => {
+        const id = uid(p);
+        if (!id || seenNames.has(id)) return false;
+        seenNames.add(id);
+        return true;
+    });
+
+    isApplyingRemoteState = true;
+
+    masterPlayers = dedupedPlayers;
+
+    state.pool = incomingPool
+        .filter(p => p && typeof p.name === "string")
+        .map(p => deepClone(p));
+
+    for (const cat of CATEGORIES) {
+        const arr = Array.isArray(incomingCategories[cat]) ? incomingCategories[cat] : [];
+        state.categories[cat] = arr
+            .filter(p => p && typeof p.name === "string")
+            .map(p => deepClone(p));
+    }
+
+    normalizeState();
+
+    if (saveToLocal) {
+        saveMasterPlayers();
+        saveSharedStateDebounced();
+        saveState();
+        saveSharedStateDebounced();
+    }
+
+    lastSharedUpdatedAt = Number(payload.updatedAt) || Date.now();
+    lastSavedSignature = buildStateSignature();
+    lastAppliedRemoteSignature = lastSavedSignature;
+
+    render();
+
+    isApplyingRemoteState = false;
+
+    if (!silent) {
+        showToast("Shared state updated");
+    }
+}
+
+async function fetchSharedState() {
+    try {
+        const res = await fetch(SHARED_STATE_API, {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            },
+            cache: "no-store"
+        });
+
+        if (!res.ok) {
+            throw new Error(`GET shared state failed: ${res.status}`);
+        }
+
+        const json = await res.json();
+        return json?.data || null;
+    } catch (e) {
+        console.warn("fetchSharedState failed", e);
+        return null;
+    }
+}
+
+async function saveSharedStateOnline(force = false) {
+    if (isApplyingRemoteState) return;
+
+    const payload = buildSharedPayload();
+    const signature = buildStateSignature(payload);
+
+    // Không save nếu state không đổi
+    if (!force && signature === lastSavedSignature) {
+        return;
+    }
+
+    try {
+        const res = await fetch(SHARED_STATE_API, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+            throw new Error(`POST shared state failed: ${res.status}`);
+        }
+
+        const json = await res.json();
+        const saved = json?.data || payload;
+
+        lastSharedUpdatedAt = Number(saved.updatedAt) || payload.updatedAt;
+        lastSavedSignature = signature;
+    } catch (e) {
+        console.warn("saveSharedStateOnline failed", e);
+    }
+}
+
+function saveSharedStateDebounced() {
+    if (isApplyingRemoteState) return;
+
+    clearTimeout(sharedSaveTimer);
+    sharedSaveTimer = setTimeout(() => {
+        saveSharedStateOnline();
+    }, SHARED_SAVE_DEBOUNCE_MS);
+}
+
+async function loadSharedStateOnStartup() {
+    const remote = await fetchSharedState();
+
+    if (!remote) {
+        // Chưa có dữ liệu cloud => push state local/default lên cloud 1 lần
+        await saveSharedStateOnline(true);
+        return;
+    }
+
+    const remoteSignature = buildStateSignature(remote);
+    const localSignature = buildStateSignature();
+
+    // Nếu remote giống local thì chỉ sync meta, khỏi render lại
+    if (remoteSignature === localSignature) {
+        lastSharedUpdatedAt = Number(remote.updatedAt) || 0;
+        lastSavedSignature = localSignature;
+        lastAppliedRemoteSignature = remoteSignature;
+        return;
+    }
+
+    applySharedPayload(remote, {
+        saveToLocal: true,
+        silent: true
+    });
+}
+
+async function pollSharedState() {
+    // Không poll khi tab đang ẩn => tiết kiệm quota
+    if (document.hidden) return;
+
+    const remote = await fetchSharedState();
+    if (!remote) return;
+
+    const remoteUpdatedAt = Number(remote.updatedAt) || 0;
+    const remoteSignature = buildStateSignature(remote);
+    const localSignature = buildStateSignature();
+
+    // Nếu remote cũ hơn hoặc bằng local đã biết => bỏ qua
+    if (remoteUpdatedAt <= lastSharedUpdatedAt) {
+        return;
+    }
+
+    // Nếu nội dung giống local thì chỉ update mốc thời gian
+    if (remoteSignature === localSignature) {
+        lastSharedUpdatedAt = remoteUpdatedAt;
+        lastSavedSignature = localSignature;
+        lastAppliedRemoteSignature = remoteSignature;
+        return;
+    }
+
+    // Nếu remote vừa apply rồi mà poll lại đúng bản đó => bỏ qua
+    if (remoteSignature === lastAppliedRemoteSignature) {
+        lastSharedUpdatedAt = remoteUpdatedAt;
+        return;
+    }
+
+    applySharedPayload(remote, {
+        saveToLocal: true,
+        silent: false
+    });
+}
+
+function startSharedSyncPolling() {
+    clearInterval(sharedSyncTimer);
+
+    sharedSyncTimer = setInterval(() => {
+        pollSharedState();
+    }, SHARED_SYNC_INTERVAL_MS);
+}
 function saveState() {
     normalizeState();
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
@@ -245,6 +500,7 @@ function loadMasterPlayers() {
         if (!raw) {
             masterPlayers = deepClone(DEFAULT_PLAYERS);
             saveMasterPlayers();
+            saveSharedStateDebounced();
             return;
         }
 
@@ -254,11 +510,13 @@ function loadMasterPlayers() {
         } else {
             masterPlayers = deepClone(DEFAULT_PLAYERS);
             saveMasterPlayers();
+            saveSharedStateDebounced();
         }
     } catch (e) {
         console.warn("Failed to load master players", e);
         masterPlayers = deepClone(DEFAULT_PLAYERS);
         saveMasterPlayers();
+        saveSharedStateDebounced();
     }
 }
 
@@ -365,6 +623,7 @@ function movePlayer(playerId, targetCategory, shouldRender = true) {
 
     normalizeState();
     saveState();
+    saveSharedStateDebounced();
     if (shouldRender) render();
 }
 
@@ -377,6 +636,7 @@ function clearTeamsOnly() {
     state.pool.push(...allBack);
     normalizeState();
     saveState();
+    saveSharedStateDebounced();
     render();
     showToast("Teams cleared");
 }
@@ -384,6 +644,7 @@ function clearTeamsOnly() {
 function resetAll() {
     initializeDefaultState();
     saveState();
+    saveSharedStateDebounced();
     render();
     showToast("Reset complete");
 }
@@ -410,6 +671,7 @@ function randomSplit() {
     });
 
     saveState();
+    saveSharedStateDebounced();
     render();
     showToast("Random split complete");
 }
@@ -454,6 +716,7 @@ function smartSplit() {
     }
 
     saveState();
+    saveSharedStateDebounced();
     render();
     showToast("Smart split complete");
 }
@@ -461,6 +724,7 @@ function smartSplit() {
 function sortAllTeamsByPower() {
     for (const cat of CATEGORIES) sortPlayersByPower(state.categories[cat]);
     saveState();
+    saveSharedStateDebounced();
     render();
     showToast("Sorted by power");
 }
@@ -468,6 +732,7 @@ function sortAllTeamsByPower() {
 function sortAllTeamsByName() {
     for (const cat of CATEGORIES) sortPlayersByName(state.categories[cat]);
     saveState();
+    saveSharedStateDebounced();
     render();
     showToast("Sorted by name");
 }
@@ -936,6 +1201,7 @@ function renderPlayerManagerList() {
 
             saveMasterPlayers();
             saveState();
+            saveSharedStateDebounced();
             renderPlayerManagerList();
             render();
 
@@ -986,6 +1252,7 @@ function addOrUpdatePlayer() {
         normalizeState();
         saveMasterPlayers();
         saveState();
+        saveSharedStateDebounced();
         renderPlayerManagerList();
         render();
         resetPlayerForm();
@@ -1046,6 +1313,7 @@ function addOrUpdatePlayer() {
     normalizeState();
     saveMasterPlayers();
     saveState();
+    saveSharedStateDebounced();
     renderPlayerManagerList();
     render();
     resetPlayerForm();
@@ -1167,6 +1435,7 @@ if (pmResetDefaultBtn) {
         saveMasterPlayers();
         initializeDefaultState();
         saveState();
+        saveSharedStateDebounced();
         renderPlayerManagerList();
         render();
         resetPlayerForm();
@@ -1225,3 +1494,6 @@ if (mobileRandomSplitBtn) {
 loadMasterPlayers();
 loadState();
 render();
+loadSharedStateOnStartup().finally(() => {
+    startSharedSyncPolling();
+});

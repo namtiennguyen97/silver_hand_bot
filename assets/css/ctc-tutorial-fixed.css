@@ -1,0 +1,81 @@
+#tutorial-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    background: transparent; /* QUAN TRỌNG: bỏ lớp tối ở đây */
+    pointer-events: auto;
+}
+#spotlight {
+    position: fixed;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow:
+        0 0 0 9999px rgba(2, 6, 23, 0.62), /* chỉ tối vừa phải */
+        0 0 0 2px rgba(34, 211, 238, 0.9),
+        0 0 18px rgba(34, 211, 238, 0.28),
+        inset 0 0 14px rgba(34, 211, 238, 0.08);
+    transition: all 0.25s ease;
+    pointer-events: none;
+    z-index: 20001;
+}
+.tutorial-active {
+    position: relative !important;
+    z-index: 20002 !important;
+    border-radius: 14px;
+    outline: 2px solid rgba(34, 211, 238, 0.95);
+    outline-offset: 3px;
+    animation: tutorialPulse 1.6s ease-in-out infinite;
+    filter: brightness(1.18) saturate(1.12);
+    box-shadow:
+        0 0 14px rgba(34, 211, 238, 0.22),
+        0 0 36px rgba(34, 211, 238, 0.14);
+}
+.tutorial-active {
+    position: relative !important;
+    z-index: 20002 !important;
+    border-radius: 14px;
+    outline: 2px solid rgba(34, 211, 238, 0.95);
+    outline-offset: 3px;
+    animation: tutorialPulse 1.6s ease-in-out infinite;
+    filter: brightness(1.18) saturate(1.12);
+    box-shadow:
+        0 0 14px rgba(34, 211, 238, 0.22),
+        0 0 36px rgba(34, 211, 238, 0.14);
+}
+@keyframes tutorialPulse {
+    0%, 100% {
+        box-shadow:
+            0 0 10px rgba(34, 211, 238, 0.16),
+            0 0 24px rgba(34, 211, 238, 0.10);
+    }
+    50% {
+        box-shadow:
+            0 0 18px rgba(34, 211, 238, 0.24),
+            0 0 42px rgba(34, 211, 238, 0.16);
+    }
+}
+#tooltip {
+    position: fixed;
+    z-index: 20003;
+    width: min(92vw, 360px);
+    background: rgba(10, 20, 38, 0.88);
+    color: #fff;
+    border: 1px solid rgba(34, 211, 238, 0.18);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow:
+        0 12px 32px rgba(0,0,0,0.28),
+        0 0 20px rgba(34, 211, 238, 0.08);
+    backdrop-filter: blur(8px);
+}
+#tutorial-overlay {
+    background: transparent;
+}
+
+html.tutorial-lock,
+body.tutorial-lock {
+    overflow: hidden !important;
+    overscroll-behavior: none;
+    touch-action: none;
+}

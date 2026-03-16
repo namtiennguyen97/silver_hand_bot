@@ -9,8 +9,54 @@
   <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
   <link rel="stylesheet" href="assets/css/ctc.css">
   <link rel="stylesheet" href="assets/css/ctc-footer.css">
+  <style>
+    #tutorialHelpBtn{
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      z-index: 99999;
+    }
+    #tutorialHelpBtn {
+      background: transparent;
+      border: 1px solid #00ffd5;
+      color: #00ffd5;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      font-size: 13px;
+      font-weight: bold;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      box-shadow: 0 0 6px rgba(0, 255, 213, 0.6);
+      transition: all 0.25s ease;
+    }
+
+    #tutorialHelpBtn:hover {
+      background: #00ffd5;
+      color: #000;
+      box-shadow: 0 0 12px rgba(0, 255, 213, 0.9);
+    }
+  </style>
+  <link rel="stylesheet" href="assets/css/ctc-tutorial-fixed.css">
+
+  <!--  <link rel="stylesheet" href="assets/css/ctc-tutorial-fixed.css">-->
 </head>
 <body>
+<div id="tutorial-overlay">
+  <div id="spotlight"></div>
+
+  <div id="tooltip">
+    <div id="tooltip-text"></div>
+    <div class="tutorial-actions">
+      <button id="tutorial-skip" class="tutorial-skip-btn">Skip</button>
+      <button id="tutorial-next">Next</button>
+    </div>
+  </div>
+</div>
 <div id="loadingOverlay">
   <div class="loading-wrapper">
     <div class="loading-text">
@@ -32,90 +78,99 @@
 <div class="app">
   <div class="topbar">
     <section class="hero">
-      <div class="hero-row">
-        <span class="badge">CTC SAO-DEM Planner</span>
-        <h1 class="hero-title">SAO-DEM TACTICAL TEAM ASSIGNMENT</h1>
+      <div class="hero-head">
+        <div class="hero-left">
+          <span class="badge">CTC SAO-DEM Planner</span>
+          <h1 class="hero-title">SAO-DEM TACTICAL TEAM ASSIGNMENT</h1>
+        </div>
+
+        <div class="hero-actions">
+          <a href="index.html" class="home-btn">← Back to Lobby <i class="fa-solid fa-microscope"></i></a>
+        </div>
       </div>
+
       <p class="hero-sub">
         PC: drag and drop players between teams • Mobile: tap <b>+</b> for multi-select •
         (Trên pc thì kéo thả, còn ở màn mobile thì bấm dấu cộng để thêm mọi người nhé!)
       </p>
     </section>
 
-    <div class="toolbar">
-      <!-- Desktop / always visible important buttons -->
-      <button class="btn toolbar-secondary" id="smartSplitBtn" type="button">
-        <span class="btn-icon"><i class="fa-solid fa-brain"></i></span>
-        <span>Smart Split</span>
-      </button>
-
-      <button class="btn toolbar-secondary" id="randomSplitBtn" type="button">
-        <span class="btn-icon"><i class="fa-solid fa-dice"></i></span>
-        <span>Random Split</span>
-      </button>
-
-      <button class="btn toolbar-secondary" id="sortPowerBtn" type="button">
-        <span class="btn-icon"><i class="fa-solid fa-bolt"></i></span>
-        <span>Sort by Level</span>
-      </button>
-
-      <button class="btn toolbar-secondary" id="sortNameBtn" type="button">
-        <span class="btn-icon"><i class="fa-solid fa-arrow-down-a-z"></i></span>
-        <span>Sort by Name</span>
-      </button>
-
-      <button id="managePlayersBtn" class="btn btn-important" type="button">
-        <span class="btn-icon"><i class="fa-solid fa-users-gear"></i></span>
-        <span>Manage Players</span>
-      </button>
-
-      <button class="btn btn-important btn-copy" id="copyBtn" type="button">
-        <span class="btn-icon"><i class="fa-solid fa-copy"></i></span>
-        <span>Copy Plan</span>
-      </button>
-
-      <button class="btn warn toolbar-secondary" id="resetBtn" type="button">
-        <span class="btn-icon"><i class="fa-solid fa-rotate-left"></i></span>
-        <span>Reset All</span>
-      </button>
-
-      <button class="btn btn-important btn-video" id="viewVideoBtn" type="button">
-        <span class="btn-icon"><i class="fa-solid fa-circle-play"></i></span>
-        <span>View Plan Video</span>
-      </button>
-
-      <!-- Mobile only More Options -->
-      <div class="more-options-wrap" id="moreOptionsWrap">
-        <button class="btn more-options-btn" id="moreOptionsBtn" type="button">
-          <span class="btn-icon"><i class="fa-solid fa-ellipsis"></i></span>
-          <span>More Options</span>
+    <div class="toolbar-shell">
+      <div class="toolbar">
+        <!-- Desktop / always visible important buttons -->
+        <button class="btn toolbar-secondary" id="smartSplitBtn" type="button">
+          <span class="btn-icon"><i class="fa-solid fa-brain"></i></span>
+          <span>Smart Split</span>
         </button>
 
-        <div class="more-options-menu" id="moreOptionsMenu">
-          <button class="btn more-item" id="mobileSmartSplitBtn" type="button">
-            <span class="btn-icon"><i class="fa-solid fa-brain"></i></span>
-            <span>Smart Split</span>
+        <button class="btn toolbar-secondary" id="randomSplitBtn" type="button">
+          <span class="btn-icon"><i class="fa-solid fa-dice"></i></span>
+          <span>Random Split</span>
+        </button>
+
+        <button class="btn toolbar-secondary" id="sortPowerBtn" type="button">
+          <span class="btn-icon"><i class="fa-solid fa-bolt"></i></span>
+          <span>Sort by Level</span>
+        </button>
+
+        <button class="btn toolbar-secondary" id="sortNameBtn" type="button">
+          <span class="btn-icon"><i class="fa-solid fa-arrow-down-a-z"></i></span>
+          <span>Sort by Name</span>
+        </button>
+
+        <button id="managePlayersBtn" class="btn btn-important" type="button">
+          <span class="btn-icon"><i class="fa-solid fa-users-gear"></i></span>
+          <span>Manage Players</span>
+        </button>
+
+        <button class="btn btn-important btn-copy" id="copyBtn" type="button">
+          <span class="btn-icon"><i class="fa-solid fa-copy"></i></span>
+          <span>Copy Plan</span>
+        </button>
+
+        <button class="btn warn toolbar-secondary" id="resetBtn" type="button">
+          <span class="btn-icon"><i class="fa-solid fa-rotate-left"></i></span>
+          <span>Reset All</span>
+        </button>
+
+        <button class="btn btn-important btn-video" id="viewVideoBtn" type="button">
+          <span class="btn-icon"><i class="fa-solid fa-circle-play"></i></span>
+          <span>View Plan Video</span>
+        </button>
+
+        <!-- Mobile only More Options -->
+        <div class="more-options-wrap" id="moreOptionsWrap">
+          <button class="btn more-options-btn" id="moreOptionsBtn" type="button">
+            <span class="btn-icon"><i class="fa-solid fa-ellipsis"></i></span>
+            <span>More Options</span>
           </button>
 
-          <button class="btn more-item" id="mobileRandomSplitBtn" type="button">
-            <span class="btn-icon"><i class="fa-solid fa-dice"></i></span>
-            <span>Random Split</span>
-          </button>
+          <div class="more-options-menu" id="moreOptionsMenu">
+            <button class="btn more-item" id="mobileSmartSplitBtn" type="button">
+              <span class="btn-icon"><i class="fa-solid fa-brain"></i></span>
+              <span>Smart Split</span>
+            </button>
 
-          <button class="btn more-item" id="mobileSortPowerBtn" type="button">
-            <span class="btn-icon"><i class="fa-solid fa-bolt"></i></span>
-            <span>Sort by Level</span>
-          </button>
+            <button class="btn more-item" id="mobileRandomSplitBtn" type="button">
+              <span class="btn-icon"><i class="fa-solid fa-dice"></i></span>
+              <span>Random Split</span>
+            </button>
 
-          <button class="btn more-item" id="mobileSortNameBtn" type="button">
-            <span class="btn-icon"><i class="fa-solid fa-arrow-down-a-z"></i></span>
-            <span>Sort by Name</span>
-          </button>
+            <button class="btn more-item" id="mobileSortPowerBtn" type="button">
+              <span class="btn-icon"><i class="fa-solid fa-bolt"></i></span>
+              <span>Sort by Level</span>
+            </button>
 
-          <button class="btn warn more-item" id="mobileResetBtn" type="button">
-            <span class="btn-icon"><i class="fa-solid fa-rotate-left"></i></span>
-            <span>Reset All</span>
-          </button>
+            <button class="btn more-item" id="mobileSortNameBtn" type="button">
+              <span class="btn-icon"><i class="fa-solid fa-arrow-down-a-z"></i></span>
+              <span>Sort by Name</span>
+            </button>
+
+            <button class="btn warn more-item" id="mobileResetBtn" type="button">
+              <span class="btn-icon"><i class="fa-solid fa-rotate-left"></i></span>
+              <span>Reset All</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -182,7 +237,7 @@
             </div>
             <div class="team-meta">
               <div class="team-count" data-count-for="Attack team 1">0</div>
-              <button class="add-btn" data-open-modal="Attack team 1">+</button>
+              <button class="add-btn" id="tutorial-add-team" data-open-modal="Attack team 1">+</button>
             </div>
           </div>
           <div class="team-body">
@@ -334,7 +389,7 @@
           </div>
 
           <div class="pm-field">
-            <label for="pmPower">Power</label>
+            <label for="pmPower">Combat Level</label>
             <input id="pmPower" type="number" class="input" placeholder="147" />
           </div>
 
@@ -372,8 +427,14 @@
   </div>
 </div>
 <div class="toast" id="toast">Saved</div>
+<button id="tutorialHelpBtn" class="tutorial-help-btn" title="View tutorial">
+  <i class="fa-solid fa-circle-question"></i>
+</button>
 <script src="assets/js/loading.js"></script>
 <script src="assets/js/ctc.js"></script>
+<script src="assets/js/ctc-tutorial.js"></script>
+
+</body>
 <footer class="site-credit">
   <span class="credit-line">
     <i class="fa-solid fa-crosshairs"></i>
@@ -386,5 +447,4 @@
     <span class="credit-text">the Mayor</span>
   </span>
 </footer>
-</body>
 </html>

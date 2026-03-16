@@ -672,6 +672,7 @@
     "Chat": () => {
       window.location.href = "chat.html";
     },
+    "CTC-PLAN editor": () => window.location.href = "ctc-planer.html",
     "Tutorial": () => showRPGChat("Tutorial is coming soon 👀"),
     "Settings": () => showRPGChat("Settings is under development")
   };
@@ -688,7 +689,8 @@
     controlOptions: [
       "Event Time",
       "Heart Lock Zone Code",
-      "Cert Details"
+      "Cert Details",
+      "CTC-PLAN editor"
     ]
   };
 
@@ -729,7 +731,7 @@
 
             // 👉 GỌI ACTION TƯƠNG ỨNG
             optionActions[text]?.() ??
-            showRPGChat(`"${text}" chưa được hỗ trợ`);
+            showRPGChat(`"${text}" is not avaiable yet`);
           });
 
           cyberOverlay.appendChild(optionEl);

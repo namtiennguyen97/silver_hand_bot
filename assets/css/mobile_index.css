@@ -67,7 +67,31 @@
     position: absolute;
     z-index: 1;
 }
+/* ===============================
+   VIDEO TRANSITION MASK (BLINK EFFECT)
+================================ */
+#videoTransitionMask {
+    position: absolute;
+    inset: 0;
+    z-index: 4; /* nằm trên video, dưới hotspot-layer (hotspot-layer z-index: 5) */
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+    transition: none;
+    will-change: opacity;
+}
 
+/* Chớp mắt: tối rất nhanh */
+#videoTransitionMask.blink-in {
+    opacity: 1;
+    transition: opacity 120ms ease-in;
+}
+
+/* Mở mắt dần: sáng từ từ */
+#videoTransitionMask.fade-out {
+    opacity: 0;
+    transition: opacity 550ms ease-out;
+}
 
 
 #hotspot-layer {
@@ -361,7 +385,7 @@
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(2px);
 }
 
 /* List các option dạng ul li */
@@ -588,4 +612,27 @@
 }
 .rpg-chat-content::-webkit-scrollbar-track {
     background: rgba(0,0,0,0.2);
+}
+/* ===============================
+   DOUBLE VIDEO LAYER
+================================ */
+.bg-video {
+    pointer-events: none;
+    position: absolute;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 420ms ease;
+    will-change: opacity;
+}
+
+.bg-video.active {
+    opacity: 1;
+}
+#hotspot-layer {
+    transition: opacity 220ms ease;
+}
+
+#hotspot-layer.is-hidden {
+    opacity: 0;
+    pointer-events: none;
 }

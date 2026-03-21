@@ -1,16 +1,16 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const body = document.body;
-
-    // --- PC: di chuyển theo chuột ---
-    document.addEventListener("mousemove", (e) => {
-        if (window.innerWidth > 980) { // chỉ áp dụng cho PC
-            const x = e.clientX / window.innerWidth;
-            const y = e.clientY / window.innerHeight;
-            const moveX = (x - 0.5) * 20; // biên độ 20px
-            const moveY = (y - 0.5) * 20;
-            body.style.backgroundPosition = `calc(50% + ${moveX}px) calc(50% + ${moveY}px)`;
-        }
-    });
+// document.addEventListener("DOMContentLoaded", () => {
+//     const body = document.body;
+//
+//     // --- PC: di chuyển theo chuột ---
+//     document.addEventListener("mousemove", (e) => {
+//         if (window.innerWidth > 980) { // chỉ áp dụng cho PC
+//             const x = e.clientX / window.innerWidth;
+//             const y = e.clientY / window.innerHeight;
+//             const moveX = (x - 0.5) * 20; // biên độ 20px
+//             const moveY = (y - 0.5) * 20;
+//             body.style.backgroundPosition = `calc(50% + ${moveX}px) calc(50% + ${moveY}px)`;
+//         }
+//     });
 
     // --- Mobile: di chuyển theo cảm biến ---
     // if (window.DeviceOrientationEvent) {
@@ -24,4 +24,4 @@ document.addEventListener("DOMContentLoaded", () => {
     //         }
     //     });
     // }
-});
+// });

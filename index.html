@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="assets/css/heartlock_zone_info.css">
   <link rel="stylesheet" href="assets/css/cert_info.css">
   <link rel="stylesheet" href="assets/css/mobile_index.css">
+	<link rel="preload" as="video" href="assets/videos/merged_control_panel.mp4">
 
 
 </head>
@@ -24,8 +25,33 @@
 
 
 <div id="stage">
-  <div id="ambient"></div>
-  <video id="video" src="assets/videos/mobile_workspace_mayor.mp4" autoplay muted loop playsinline></video>
+	<div id="ambient"></div>
+	
+	<!-- Video nền mặc định -->
+	<video
+		id="videoMain"
+		class="bg-video active"
+		src="assets/videos/mobile_workspace_mayor.mp4"
+		autoplay
+		muted
+		loop
+		playsinline
+		preload="auto"
+	></video>
+	
+	<!-- Video control panel preload sẵn -->
+	<video
+		id="videoAlt"
+		class="bg-video"
+		src="assets/videos/merged_control_panel.mp4"
+		autoplay
+		muted
+		loop
+		playsinline
+		preload="auto"
+	></video>
+	
+	<div id="videoTransitionMask"></div>
 </div>
 
 <div id="hotspot-layer">
@@ -401,8 +427,22 @@
   /* ===============================
      ELEMENTS
   ================================ */
-  const video        = document.getElementById('video');
-  const hotspotLayer = document.getElementById('hotspot-layer');
+	const videoMain = document.getElementById('videoMain');
+	const videoAlt = document.getElementById('videoAlt');
+	const hotspotLayer = document.getElementById('hotspot-layer');
+	const videoTransitionMask = document.getElementById('videoTransitionMask');
+	function hideHotspots() {
+		if (!hotspotLayer) return;
+		hotspotLayer.classList.add('is-hidden');
+	}
+
+	function showHotspots() {
+		if (!hotspotLayer) return;
+		hotspotLayer.classList.remove('is-hidden');
+	}
+
+	// Giữ tên "video" để không phá toàn bộ code cũ (layout/hotspot đang dùng biến này)
+	let video = videoMain;
 
   /* ===============================
      DEVICE CHECK
@@ -425,15 +465,19 @@
 		const renderW = VIDEO_W * scale;
 		const renderH = VIDEO_H * scale;
 	
-		video.style.width  = renderW + 'px';
-		video.style.height = renderH + 'px';
-	
 		const contentCenterX = (VIDEO_W / 2) * scale;
-	
 		const screenCenter = window.innerWidth / 2;
 	
-		video.style.left = (screenCenter - contentCenterX) + 'px';
-		video.style.top  = (vh - renderH) / 2 + 'px';
+		const left = (screenCenter - contentCenterX) + 'px';
+		const top  = (vh - renderH) / 2 + 'px';
+	
+		[videoMain, videoAlt].forEach((v) => {
+			if (!v) return;
+			v.style.width  = renderW + 'px';
+			v.style.height = renderH + 'px';
+			v.style.left   = left;
+			v.style.top    = top;
+		});
 	}
 
   /* ===============================
@@ -493,10 +537,24 @@
   /* ===============================
      BOOTSTRAP
   ================================ */
-	video.src = '/assets/videos/mobile_workspace_mayor.mp4';
-	video.load();
+	function warmupVideo(videoEl) {
+		if (!videoEl) return;
+	
+		// ép browser bắt đầu tải sớm hơn
+		videoEl.load();
+	
+		const p = videoEl.play();
+		if (p && typeof p.then === "function") {
+			p.then(() => {
+				// giữ play luôn vì opacity 0 vẫn preload / decode tốt hơn
+			}).catch(() => {});
+		}
+	}
 
 	window.addEventListener('load', () => {
+		warmupVideo(videoMain);
+		warmupVideo(videoAlt);
+	
 		hotspotEngine.collect();
 		syncLayout();
 	});
@@ -654,6 +712,109 @@
      CYBER OVERLAY OPTION HANDLER
   ================================ */
   const cyberOverlay = document.getElementById("cyberOverlay");
+	/* ===============================
+	 BACKGROUND VIDEO SWITCHER (DOUBLE VIDEO CROSSFADE)
+================================ */
+	let currentVideoKey = "main"; // "main" | "alt"
+	let isVideoTransitioning = false;
+	let pendingVideoKey = null;
+
+	function ensurePlaying(videoEl) {
+		if (!videoEl) return;
+	
+		const playPromise = videoEl.play();
+		if (playPromise && typeof playPromise.then === "function") {
+			playPromise.catch(() => {});
+		}
+	}
+
+	async function crossfadeTo(targetKey) {
+		if (targetKey === currentVideoKey && !isVideoTransitioning) return;
+	
+		if (isVideoTransitioning) {
+			pendingVideoKey = targetKey;
+			return;
+		}
+	
+		isVideoTransitioning = true;
+	
+		try {
+			const nextVideo = targetKey === "main" ? videoMain : videoAlt;
+			const prevVideo = currentVideoKey === "main" ? videoMain : videoAlt;
+		
+			// đảm bảo video target đang chạy
+			ensurePlaying(nextVideo);
+		
+			// đồng bộ currentTime nhẹ để chuyển tự nhiên hơn
+			try {
+				const prevTime = prevVideo.currentTime || 0;
+				const nextDuration = nextVideo.duration || 0;
+			
+				if (nextDuration > 0) {
+					nextVideo.currentTime = prevTime % nextDuration;
+				}
+			} catch (e) {
+				// ignore nếu browser chưa cho set currentTime
+			}
+		
+			// blink nhanh kiểu game
+			if (videoTransitionMask) {
+				videoTransitionMask.classList.remove("fade-out");
+				void videoTransitionMask.offsetWidth;
+				videoTransitionMask.classList.add("blink-in");
+				await new Promise((resolve) => setTimeout(resolve, 100));
+			}
+			// Ẩn hotspot ngay khi bắt đầu vào video 2
+			if (targetKey === "alt") {
+				hideHotspots();
+			}
+		
+			// đổi lớp active
+			prevVideo.classList.remove("active");
+			nextVideo.classList.add("active");
+			
+			// cập nhật video active cho hotspot engine bám đúng video đang hiển thị
+			video = nextVideo;
+			hotspotEngine.video = nextVideo;
+
+			// Chỉ update + hiện hotspot khi quay về main
+			if (targetKey === "main") {
+				hotspotEngine.update();
+				showHotspots();
+			}
+		
+			// mở mắt từ từ
+			if (videoTransitionMask) {
+				videoTransitionMask.classList.remove("blink-in");
+				void videoTransitionMask.offsetWidth;
+				videoTransitionMask.classList.add("fade-out");
+				await new Promise((resolve) => setTimeout(resolve, 520));
+				videoTransitionMask.classList.remove("fade-out");
+			} else {
+				await new Promise((resolve) => setTimeout(resolve, 420));
+			}
+		
+			currentVideoKey = targetKey;
+		} finally {
+			isVideoTransitioning = false;
+		
+			if (pendingVideoKey && pendingVideoKey !== currentVideoKey) {
+				const nextPending = pendingVideoKey;
+				pendingVideoKey = null;
+				crossfadeTo(nextPending);
+			} else {
+				pendingVideoKey = null;
+			}
+		}
+	}
+
+	function setDefaultBackgroundVideo() {
+		crossfadeTo("main");
+	}
+
+	function setControlPanelBackgroundVideo() {
+		crossfadeTo("alt");
+	}
 
   /* Map option text → modal key */
   const optionActions = {
@@ -694,9 +855,13 @@
     ]
   };
 
+	
+
   tooltipBoxes.forEach((box) => {
     box.addEventListener("click", (e) => {
       e.stopPropagation();
+			// 🔥 đổi background video khi mở option
+			setControlPanelBackgroundVideo();
 
       showRPGChat(
           "You’ve accessed the control panel. Choose an option."
@@ -723,16 +888,19 @@
           optionEl.style.animation =
               "slideIn 0.5s ease forwards";
           optionEl.style.animationDelay = `${index * 0.1}s`;
-
-          optionEl.addEventListener("click", (ev) => {
-            ev.stopPropagation();
-
-            cyberOverlay.style.display = "none";
-
-            // 👉 GỌI ACTION TƯƠNG ỨNG
-            optionActions[text]?.() ??
-            showRPGChat(`"${text}" is not avaiable yet`);
-          });
+	
+					optionEl.addEventListener("click", (ev) => {
+						ev.stopPropagation();
+		
+						cyberOverlay.style.display = "none";
+		
+						// 🔥 trả background video về mặc định khi đóng option
+						setDefaultBackgroundVideo();
+		
+						// 👉 GỌI ACTION TƯƠNG ỨNG
+						optionActions[text]?.() ??
+						showRPGChat(`"${text}" is not avaiable yet`);
+					});
 
           cyberOverlay.appendChild(optionEl);
         });
@@ -743,10 +911,14 @@
   });
 
   /* Click ngoài overlay để đóng */
-  cyberOverlay.addEventListener("click", (e) => {
-    if (e.target === cyberOverlay)
-      cyberOverlay.style.display = "none";
-  });
+	cyberOverlay.addEventListener("click", (e) => {
+		if (e.target === cyberOverlay) {
+			cyberOverlay.style.display = "none";
+		
+			// 🔥 click ra ngoài => trả lại background cũ
+			setDefaultBackgroundVideo();
+		}
+	});
 
 </script>
 <script>

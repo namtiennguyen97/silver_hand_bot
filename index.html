@@ -579,9 +579,11 @@
 	document.addEventListener('click', (e) => {
 		const chatOverlay = document.getElementById('rpgChatOverlay');
 	
-		// Nếu chat đang hiển thị và click không phải trong overlay
+		// 🔥 vừa mới mở chat xong thì bỏ qua click hiện tại
+		if (suppressChatOutsideClose) return;
+	
 		if (chatOverlay.style.display === 'block' && !chatOverlay.contains(e.target)) {
-			chatOverlay.style.display = 'none';
+			hideRPGChat();
 		}
 	});
 
@@ -592,58 +594,106 @@
 
 </script>
 <script>
+	// ===============================
+	// RPG CHAT SAFE TYPEWRITER
+	// ===============================
+	let chatTypeInterval = null;
+	let currentChatFullText = '';
+	let isChatTyping = false;
+	
 	/**
 	 * Hiển thị text từng chữ (typewriter) trong chat
 	 * @param {string} text Nội dung chat
 	 * @param {HTMLElement} container Container để render text
 	 * @param {number} speed Tốc độ từng chữ (ms)
 	 */
+	let suppressChatOutsideClose = false;
 	function typewriterChat(text, container, speed = 30) {
+		// 🔥 clear interval cũ trước khi tạo interval mới
+		if (chatTypeInterval) {
+			clearInterval(chatTypeInterval);
+			chatTypeInterval = null;
+		}
+		
 		container.textContent = '';
 		container.dataset.skip = 'false';
 		
+		currentChatFullText = String(text || '');
+		isChatTyping = true;
+		
 		let i = 0;
-		const interval = setInterval(() => {
+		
+		chatTypeInterval = setInterval(() => {
+			// Nếu skip -> hiện full text luôn
 			if (container.dataset.skip === 'true') {
-				// Skip: show tất cả
-				container.textContent = text;
-				clearInterval(interval);
+				container.textContent = currentChatFullText;
+				clearInterval(chatTypeInterval);
+				chatTypeInterval = null;
+				isChatTyping = false;
 				return;
 			}
 			
-			container.textContent += text[i];
-			i++;
-			container.scrollTop = container.scrollHeight; // auto scroll
-			
-			if (i >= text.length) {
-				clearInterval(interval);
+			// Nếu đã hết text thì dừng
+			if (i >= currentChatFullText.length) {
+				clearInterval(chatTypeInterval);
+				chatTypeInterval = null;
+				isChatTyping = false;
+				return;
 			}
+			
+			container.textContent += currentChatFullText.charAt(i);
+			i++;
+			container.scrollTop = container.scrollHeight;
 		}, speed);
 		
-		// Click vào container sẽ skip
+		// Click vào container sẽ skip nếu đang gõ
 		container.onclick = () => {
-			container.dataset.skip = 'true';
+			if (isChatTyping) {
+				container.dataset.skip = 'true';
+			}
 		};
 	}
 	
 	/* Hàm mở chat */
-	function showRPGChat(chatText, avatarSrc='assets/img/mayor_5.png') {
+	function showRPGChat(chatText, avatarSrc = 'assets/img/mayor_5.png') {
 		const chatContent = document.getElementById('rpgChatContent');
 		const avatarImg = chatOverlay.querySelector('.rpg-avatar img');
 		
+		// clear typing cũ
+		if (chatTypeInterval) {
+			clearInterval(chatTypeInterval);
+			chatTypeInterval = null;
+		}
+		
 		avatarImg.src = avatarSrc;
+		
+		// 🔥 chặn auto-close do click hiện tại
+		suppressChatOutsideClose = true;
+		
 		chatOverlay.style.display = 'block';
 		
+		// reset trước khi type
+		chatContent.textContent = '';
+		chatContent.dataset.skip = 'false';
 		
-		// Typewriter effect
 		typewriterChat(chatText, chatContent, 30);
+		
+		// nhả khóa sau 1 tick event loop
+		setTimeout(() => {
+			suppressChatOutsideClose = false;
+		}, 0);
 	}
 	
 	/* Ẩn chat */
 	function hideRPGChat() {
+		if (chatTypeInterval) {
+			clearInterval(chatTypeInterval);
+			chatTypeInterval = null;
+		}
+		
+		isChatTyping = false;
 		document.getElementById('rpgChatOverlay').style.display = 'none';
 	}
-
 </script>
 
 
@@ -758,12 +808,12 @@
 			}
 		
 			// blink nhanh kiểu game
-			if (videoTransitionMask) {
-				videoTransitionMask.classList.remove("fade-out");
-				void videoTransitionMask.offsetWidth;
-				videoTransitionMask.classList.add("blink-in");
-				await new Promise((resolve) => setTimeout(resolve, 100));
-			}
+			// if (videoTransitionMask) {
+			// 	videoTransitionMask.classList.remove("fade-out");
+			// 	void videoTransitionMask.offsetWidth;
+			// 	videoTransitionMask.classList.add("blink-in");
+			// 	await new Promise((resolve) => setTimeout(resolve, 100));
+			// }
 			// Ẩn hotspot ngay khi bắt đầu vào video 2
 			if (targetKey === "alt") {
 				hideHotspots();
@@ -831,7 +881,8 @@
 
     // Option khác (không mở modal)
     "Chat": () => {
-      window.location.href = "chat.html";
+			showRPGChat("AI chat is currently under maintenance. (2026/03/20)");
+      // window.location.href = "chat.html";
     },
     "CTC-PLAN editor": () => window.location.href = "ctc-planer.html",
     "Tutorial": () => showRPGChat("Tutorial is coming soon 👀"),
@@ -898,15 +949,18 @@
 						setDefaultBackgroundVideo();
 		
 						// 👉 GỌI ACTION TƯƠNG ỨNG
-						optionActions[text]?.() ??
-						showRPGChat(`"${text}" is not avaiable yet`);
+						if (optionActions[text]) {
+							optionActions[text]();
+						} else {
+							showRPGChat(`"${text}" is now active`);
+						}
 					});
 
           cyberOverlay.appendChild(optionEl);
         });
 
         cyberOverlay.style.display = "flex";
-      }, 500);
+      }, 20);
     });
   });
 

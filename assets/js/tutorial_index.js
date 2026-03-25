@@ -207,7 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
-    const helpBtn = document.getElementById("tutorialHelpBtn");
+    const helpBtn = document.querySelector("#help-system .tooltip-box");
 
     if (helpBtn) {
         helpBtn.addEventListener("click", () => {
@@ -228,6 +228,9 @@ document.addEventListener("DOMContentLoaded", () => {
         overlay.style.display = "block";
         showStep(currentStep);
     }
+    
+    // Export globally to be called from hotspot options
+    window.startTutorial = startTutorial;
 
 });
 

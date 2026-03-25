@@ -37,7 +37,7 @@
 		loop
 		playsinline
 		preload="auto"
-		style="will-change: opacity, transform; transform: translateZ(0);"
+		style="will-change: opacity"
 	></video>
 	
 	<!-- Video control panel preload sẵn -->
@@ -50,7 +50,7 @@
 		loop
 		playsinline
 		preload="auto"
-		style="will-change: opacity, transform; transform: translateZ(0);"
+		style="will-change: opacity"
 	></video>
 	
 	<div id="videoTransitionMask"></div>
@@ -80,6 +80,16 @@
       </div>
     </div>
   </div>
+
+  <div class="hotspot" data-x="690" data-y="50">
+
+    <div class="hotspot-tooltip" id="help-system">
+      <div class="tooltip-box pulse-help">
+        <div class="tooltip-title">HELP</div>
+        <div class="tooltip-text">Tutorial</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Overlay chat, ẩn mặc định -->
@@ -101,11 +111,6 @@
 		<span id="clock"></span>
 	</span>
 </div>
-
-<button id="tutorialHelpBtn" class="tutorial"
-        title="Xem lại hướng dẫn">
-  ❔
-</button>
 
 <div id="loadingOverlay">
   <div class="loading-wrapper">

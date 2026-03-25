@@ -296,13 +296,20 @@ const optionActions = {
     },
     "Chat": () => showRPGChat("AI chat is currently under maintenance. (2026/03/20)"),
     "CTC-PLAN editor": () => window.location.href = "ctc-planer.html",
-    "Tutorial": () => showRPGChat("Tutorial is coming soon 👀"),
+    "Tutorial": () => {
+        if (window.startTutorial) {
+            window.startTutorial();
+        } else {
+            showRPGChat("Tutorial is coming soon 👀");
+        }
+    },
     "Settings": () => showRPGChat("Settings is under development")
 };
 
 const tooltipOptionsData = {
     mayorOptions: ["Chat", "Tutorial", "Settings"],
-    controlOptions: ["Event Time", "Heart Lock Zone Code", "Cert Details", "CTC-PLAN editor"]
+    controlOptions: ["Event Time", "Heart Lock Zone Code", "Cert Details", "CTC-PLAN editor"],
+    helpOptions: ["Tutorial"]
 };
 
 /* ===============================
@@ -329,6 +336,10 @@ chatOverlay.addEventListener('click', (e) => e.stopPropagation());
 document.querySelectorAll(".hotspot-tooltip .tooltip-box").forEach((box) => {
     box.addEventListener("click", (e) => {
         e.stopPropagation();
+        
+        const key = box.dataset.options;
+        if (!key) return; // Nếu hộp thoại không có data-options (như HELP), bỏ qua để luồng khác xử lý
+
         setControlPanelBackgroundVideo();
         showRPGChat("You’ve accessed the control panel. Choose an option.");
         box.classList.add("tooltip-pulse-border");

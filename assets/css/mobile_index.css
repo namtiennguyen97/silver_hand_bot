@@ -25,12 +25,6 @@
         rgba(0,0,0,0.35) 100%
     );
 }
-#stage {
-    position: fixed;
-    inset: 0;
-    overflow: hidden;
-    background: #000;
-}
 
 #ambient {
     position: absolute;
@@ -110,12 +104,13 @@
     width: 16px; /* tăng kích thước 1 chút */
     height: 16px;
     border-radius: 50%;
-    background: #00ffff; /* neon cyan sáng */
+    background: #ffffff; /* Lõi trắng sáng */
     box-shadow:
-            0 0 8px #00ffff,
-            0 0 16px #00ffff,
-            0 0 24px rgba(0,255,255,0.6),
-            0 0 32px rgba(0,255,255,0.4);
+            0 0 4px #ffffff,
+            0 0 10px #00ffff,
+            0 0 20px #00ffff,
+            0 0 30px rgba(0,255,255,0.8),
+            0 0 40px rgba(0,255,255,0.4);
     z-index: 2;
 }
 
@@ -231,18 +226,39 @@
     left: 14px;
     top: 6px;
     width: 42px;
-    height: 2px;
+    height: 3px; /* Tăng độ dày lên 3px */
     background: linear-gradient(
             90deg,
-            #00ffff,
-            rgba(0,255,255,0.15)
+            #ffffff 0%,
+            #00ffff 40%,
+            rgba(0, 255, 255, 0.4) 100% /* Tăng độ đậm ở cuối */
     );
     box-shadow:
-            0 0 6px #00ffff,
-            0 0 12px #00ffff,
-            0 0 18px rgba(0,255,255,0.5);
+            0 0 4px #ffffff,
+            0 0 10px #00ffff,
+            0 0 15px rgba(0, 255, 255, 0.8);
     transform-origin: left center;
     transform: rotate(-18deg);
+    
+    /* Thêm hiệu ứng quét sáng nhẹ */
+    overflow: hidden;
+}
+
+.hotspot-line::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+    animation: line-scan 3s infinite linear;
+}
+
+@keyframes line-scan {
+    0% { left: -100%; }
+    30% { left: 100%; }
+    100% { left: 100%; }
 }
 
 
@@ -252,7 +268,8 @@
 .hotspot-tooltip {
     position: absolute;
     left: 58px;       /* sau line */
-    top: -26px;
+    top: -7px;        /* Căn giữa với điểm cuối của đường kẻ đã xoay */
+    transform: translateY(-50%);
 }
 /* Nếu hotspot hướng left */
 .hotspot[data-dir="left"] .hotspot-line {
@@ -260,8 +277,9 @@
     right: 14px;
     background: linear-gradient(
             270deg,
-            #00ffff,
-            rgba(0,255,255,0.15)
+            #ffffff 0%,
+            #00ffff 40%,
+            rgba(0, 255, 255, 0.4) 100%
     );
     transform-origin: right center;
     transform: rotate(18deg);
@@ -271,6 +289,7 @@
     left: auto;
     right: 58px;
     text-align: left;
+    transform: translateY(-50%);
 }
 
 @keyframes tooltip-in {
@@ -329,14 +348,19 @@
 .hotspot-tooltip .tooltip-box {
     position: relative;
     display: inline-block;
-    color: #eaffff;
-    background: rgba(0,20,25,0.75);
-    border: 2px solid rgba(94,242,214,0.5);
+    color: #ffffff;
+    background: rgba(0,20,30,0.85);
+    border: 2px solid #5ef2d6;
     border-radius: 10px;
     padding: 10px 14px;
     z-index: 10;
     cursor: pointer;
     overflow: visible; /* để ánh sáng tỏa ra */
+    box-shadow: 
+        0 0 4px #ffffff,
+        inset 0 0 12px rgba(94,242,214,0.6),
+        0 0 16px rgba(94,242,214,0.8);
+    backdrop-filter: blur(8px);
 }
 
 /* Pseudo-element cho hiệu ứng viền tỏa sáng */
@@ -348,8 +372,8 @@
     right: -4px;
     bottom: -4px;
     border-radius: 12px; /* vừa với border radius tooltip */
-    border: 2px solid #5ef2d6;
-    box-shadow: 0 0 8px #5ef2d6, 0 0 16px #5ef2d6 inset;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 6px #ffffff, 0 0 12px #5ef2d6, 0 0 20px #5ef2d6 inset;
     opacity: 0;
     transform: scale(1);
     pointer-events: none;
@@ -360,16 +384,16 @@
 @keyframes borderPulse {
     0% {
         transform: scale(1);
-        opacity: 0.8;
-        box-shadow: 0 0 8px #5ef2d6, 0 0 16px #5ef2d6 inset;
+        opacity: 0.9;
+        box-shadow: 0 0 6px #ffffff, 0 0 12px #5ef2d6, 0 0 20px #5ef2d6 inset;
     }
     70% {
-        transform: scale(1.5);
+        transform: scale(1.4);
         opacity: 0;
-        box-shadow: 0 0 20px #5ef2d6, 0 0 30px #5ef2d6 inset;
+        box-shadow: 0 0 15px #ffffff, 0 0 30px #5ef2d6, 0 0 40px #5ef2d6 inset;
     }
     100% {
-        transform: scale(1.5);
+        transform: scale(1.4);
         opacity: 0;
     }
 }
@@ -613,15 +637,16 @@
 /* hover */
 #cyberOverlay .cyber-option:hover {
     background:
-            linear-gradient(135deg, rgba(0, 28, 40, 0.95), rgba(0, 42, 58, 0.84));
-    border-color: #00ffff;
+            linear-gradient(135deg, rgba(0, 48, 68, 0.95), rgba(0, 62, 88, 0.9));
+    border-color: #ffffff;
     color: #ffffff;
 
     box-shadow:
-            0 0 14px rgba(0,255,255,0.48),
-            0 0 28px rgba(94,242,214,0.28),
-            inset 0 0 14px rgba(0,255,255,0.10),
-            inset 0 0 0 1px rgba(255,255,255,0.05);
+            0 0 6px #ffffff,
+            0 0 16px rgba(0,255,255,0.6),
+            0 0 32px rgba(94,242,214,0.4),
+            inset 0 0 20px rgba(0,255,255,0.2),
+            inset 0 0 0 2px rgba(255,255,255,0.15);
 
     /* JS đang animate translateX bằng inline transform,
        nên hover KHÔNG set transform kiểu scale mạnh để tránh conflict */
@@ -702,14 +727,17 @@
     align-items: flex-start;
     width: 400px;
     max-width: 90%;
-    background: rgba(0,20,30,0.85);
-    border: 2px solid #00ffff;
-    border-radius: 12px;
-    box-shadow: 0 0 12px #00ffff, 0 0 24px rgba(0,255,255,0.5) inset;
-    padding: 10px;
+    background: rgba(0,20,30,0.9);
+    border: 2px solid #5ef2d6;
+    border-radius: 14px;
+    box-shadow: 
+        0 0 4px #ffffff,
+        inset 0 0 16px rgba(0,255,255,0.6),
+        0 0 20px rgba(0,255,255,0.8);
+    padding: 12px;
     pointer-events: auto; /* cho phép click */
     font-family: 'Orbitron', sans-serif;
-    color: #e0ffff;
+    color: #ffffff;
 }
 
 /* Avatar */

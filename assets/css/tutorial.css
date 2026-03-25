@@ -67,11 +67,38 @@
 .tutorial-active {
     position: relative;
     z-index: 100000;
-    filter: brightness(1.25);
+    
+    /* 🌟 Cường độ neon mạnh hơn */
+    filter: brightness(1.4) contrast(1.1);
+    
+    /* 🌟 Glow đa lớp (lõi trắng + quầng sáng rộng) */
     box-shadow:
-        0 0 15px rgba(0, 255, 213, 0.8),
-        0 0 35px rgba(0, 255, 213, 0.5);
+        0 0 10px #ffffff,
+        0 0 20px rgba(0, 255, 213, 0.9),
+        0 0 40px rgba(0, 255, 213, 0.6),
+        0 0 70px rgba(0, 255, 213, 0.3);
+        
+    /* 🌟 Hiệu ứng nhịp thở */
+    animation: tutorial-pulse 2s infinite ease-in-out;
     transition: all 0.3s ease;
+}
+
+@keyframes tutorial-pulse {
+    0%, 100% {
+        box-shadow:
+            0 0 10px #ffffff,
+            0 0 20px rgba(0, 255, 213, 0.9),
+            0 0 40px rgba(0, 255, 213, 0.6);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow:
+            0 0 15px #ffffff,
+            0 0 30px rgba(0, 255, 213, 1),
+            0 0 60px rgba(0, 255, 213, 0.8),
+            0 0 90px rgba(0, 255, 213, 0.4);
+        transform: scale(1.02);
+    }
 }
 
 /* Với button / clickable thì nổi hơn chút */

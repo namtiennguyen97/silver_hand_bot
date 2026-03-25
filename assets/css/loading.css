@@ -1,5 +1,12 @@
+@font-face {
+    font-family: 'Conthrax';
+    src: url('../fonts/Conthrax-SemiBold.otf') format('opentype');
+    font-display: swap;
+}
+
 /* FULLSCREEN LOADING */
 #loadingOverlay {
+    font-family: 'Conthrax', sans-serif;
     position: fixed;
     inset: 0;
     z-index: 99999;

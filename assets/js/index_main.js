@@ -199,32 +199,45 @@ function warmupVideo(videoEl, isPrimary = false) {
 ================================ */
 let chatTypeInterval = null;
 let currentChatFullText = '';
-let isChatTyping = false;
+window.isChatTyping = false;
 let suppressChatOutsideClose = false;
 
 function typewriterChat(text, container, speed = 25) {
     if (chatTypeInterval) clearInterval(chatTypeInterval);
 
-    container.textContent = '';
+    container.innerHTML = '';
     container.dataset.skip = 'false';
     currentChatFullText = String(text || '');
-    isChatTyping = true;
+    window.isChatTyping = true;
 
     let i = 0;
+    let isTag = false;
+    let textHTML = "";
+
     chatTypeInterval = setInterval(() => {
         if (container.dataset.skip === 'true' || i >= currentChatFullText.length) {
-            container.textContent = currentChatFullText;
+            container.innerHTML = currentChatFullText;
             clearInterval(chatTypeInterval);
             chatTypeInterval = null;
-            isChatTyping = false;
+            window.isChatTyping = false;
             return;
         }
-        container.textContent += currentChatFullText.charAt(i);
+        
+        let char = currentChatFullText.charAt(i);
+        textHTML += char;
+        
+        if (char === '<') isTag = true;
+        if (char === '>') isTag = false;
+        
         i++;
-        container.scrollTop = container.scrollHeight;
+        
+        if (!isTag) {
+            container.innerHTML = textHTML;
+            container.scrollTop = container.scrollHeight;
+        }
     }, speed);
 
-    container.onclick = () => { if (isChatTyping) container.dataset.skip = 'true'; };
+    container.onclick = () => { if (window.isChatTyping) container.dataset.skip = 'true'; };
 }
 
 function showRPGChat(chatText, avatarSrc = 'assets/img/mayor_5.png') {
@@ -244,7 +257,7 @@ function showRPGChat(chatText, avatarSrc = 'assets/img/mayor_5.png') {
 
 function hideRPGChat() {
     if (chatTypeInterval) clearInterval(chatTypeInterval);
-    isChatTyping = false;
+    window.isChatTyping = false;
     chatOverlay.style.display = 'none';
 }
 

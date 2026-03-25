@@ -1,5 +1,46 @@
 document.addEventListener("DOMContentLoaded", () => {
     let activeElement = null;
+    let svgLine = null;
+    let lineEl = null;
+
+    function initNeonLine() {
+        if (!document.getElementById("tutorial-neon-line-svg")) {
+            svgLine = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svgLine.id = "tutorial-neon-line-svg";
+            svgLine.style.position = "fixed";
+            svgLine.style.top = "0";
+            svgLine.style.left = "0";
+            svgLine.style.width = "100%";
+            svgLine.style.height = "100%";
+            svgLine.style.pointerEvents = "none";
+            svgLine.style.zIndex = "100000"; // below chat, above overlay
+            svgLine.style.display = "none";
+            
+            svgLine.innerHTML = `
+                <defs>
+                    <filter id="neon-glow-filter" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <line id="tutorial-line" x1="0" y1="0" x2="0" y2="0" stroke="#00ffd5" stroke-width="2" filter="url(#neon-glow-filter)" stroke-dasharray="6,6" />
+            `;
+            document.body.appendChild(svgLine);
+            lineEl = document.getElementById("tutorial-line");
+
+            // Animation cho line flowing
+            let offset = 0;
+            setInterval(() => {
+                if (svgLine.style.display !== "none" && lineEl) {
+                    offset -= 1;
+                    lineEl.style.strokeDashoffset = offset;
+                }
+            }, 30);
+        }
+    }
 
     const steps = [
         {
@@ -29,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextBtn = document.getElementById("tutorial-next");
 
     function showStep(index) {
+        initNeonLine();
         const step = steps[index];
 
         // Gỡ highlight cũ
@@ -43,20 +85,13 @@ document.addEventListener("DOMContentLoaded", () => {
         // Set nội dung trước để đo size chính xác
         tooltipText.innerHTML = step.text;
 
-        // RESET vị trí tooltip
-        tooltip.style.top = "auto";
-        tooltip.style.left = "auto";
-        tooltip.style.bottom = "auto";
-        tooltip.style.transform = "none";
+        tooltip.style.display = "none"; // Hide old tooltip completely
 
         if (!step.selector) {
             // ===== WELCOME STEP =====
             spotlight.style.display = "none";
-            tooltip.classList.add("welcome");
-
-            tooltip.style.top = "50%";
-            tooltip.style.left = "50%";
-            tooltip.style.transform = "translate(-50%, -50%)";
+            if (svgLine) svgLine.style.display = "none";
+            showRPGChat(step.text);
             return;
         }
 
@@ -74,39 +109,40 @@ document.addEventListener("DOMContentLoaded", () => {
         spotlight.style.width = rect.width + 16 + "px";
         spotlight.style.height = rect.height + 16 + "px";
 
-        // ⚠️ Đợi browser render tooltip xong rồi mới đo
+        showRPGChat(step.text);
+
+        // Update Line
         requestAnimationFrame(() => {
-            const tooltipRect = tooltip.getBoundingClientRect();
-            const padding = 16;
+            const chatOverlayElement = document.getElementById("rpgChatOverlay");
+            if (chatOverlayElement && lineEl && svgLine) {
+                svgLine.style.display = "block";
+                const chatRect = chatOverlayElement.getBoundingClientRect();
+                const rect = el.getBoundingClientRect(); // Target element rect
 
-            const viewportHeight = window.innerHeight;
-            const viewportWidth = window.innerWidth;
+                // Vì spotlight được padding thêm 8px, ta phải tính luôn 8px này để tia dừng đúng ở viền spotlight
+                const spotTop = rect.top - 8;
+                const spotBottom = rect.bottom + 8;
 
-            // Mặc định: đặt dưới element
-            let top = rect.bottom + padding;
-            let left = rect.left;
+                const startX = chatRect.left + chatRect.width / 2;
+                const startY = chatRect.top; // Rút về đúng mép trên của chat box
 
-            // ❗ Nếu tràn xuống dưới → đưa lên trên
-            if (top + tooltipRect.height > viewportHeight) {
-                top = rect.top - tooltipRect.height - padding;
+                // Tìm điểm nối vào viền spotlight
+                const endX = rect.left + rect.width / 2;
+                let endY = spotBottom;
+                
+                if (startY < spotTop) {
+                    endY = spotTop;
+                } else if (startY > spotBottom) {
+                    endY = spotBottom;
+                } else {
+                    endY = rect.top + rect.height / 2; // Nếu đè vạch
+                }
+
+                lineEl.setAttribute("x1", startX);
+                lineEl.setAttribute("y1", startY);
+                lineEl.setAttribute("x2", endX);
+                lineEl.setAttribute("y2", endY);
             }
-
-            // ❗ Nếu vẫn tràn (element quá cao – mobile)
-            if (top < padding) {
-                top = viewportHeight / 2 - tooltipRect.height / 2;
-                left = viewportWidth / 2 - tooltipRect.width / 2;
-            }
-
-            // Chống tràn ngang
-            if (left + tooltipRect.width > viewportWidth - padding) {
-                left = viewportWidth - tooltipRect.width - padding;
-            }
-            if (left < padding) {
-                left = padding;
-            }
-
-            tooltip.style.top = `${top}px`;
-            tooltip.style.left = `${left}px`;
         });
     }
 
@@ -119,23 +155,46 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             overlay.style.display = "none";
+            if (svgLine) svgLine.style.display = "none";
             document.body.classList.remove("tutorial-lock");
+            hideRPGChat(); // Hide chat when tutorial ends
 
             localStorage.setItem("sao-dem-main-tutorial-done", "1");
             return;
         }
 
-
         showStep(currentStep);
     }
 
-    nextBtn.addEventListener("click", nextStep);
+    // nextBtn.addEventListener("click", nextStep); // Not needed anymore
 
+    // Click anywhere on overlay to skip text or go next
     overlay.addEventListener("click", (e) => {
-        if (!tooltip.contains(e.target)) {
+        e.stopPropagation(); // QUAN TRỌNG: chặn sự kiện click lan ra ngoài gây đóng chat box!
+        
+        if (typeof window.isChatTyping !== 'undefined' && window.isChatTyping) {
+            const container = document.getElementById("rpgChatContent");
+            if (container) container.dataset.skip = 'true';
+        } else {
             nextStep();
         }
     });
+
+    // Also support clicking the chat box itself to advance
+    const chatOverlayElement = document.getElementById("rpgChatOverlay");
+    if (chatOverlayElement) {
+        chatOverlayElement.addEventListener("click", (e) => {
+            if (document.body.classList.contains("tutorial-lock")) {
+                e.stopPropagation(); // Cũng chặn luôn khi bấm vào tooltip
+                if (typeof window.isChatTyping !== 'undefined' && window.isChatTyping) {
+                    const container = document.getElementById("rpgChatContent");
+                    if (container) container.dataset.skip = 'true';
+                } else {
+                    nextStep();
+                }
+            }
+        });
+    }
 
     // 🚀 CHỈ START TUTORIAL SAU KHI LOADING XONG
     window.addEventListener("app:loaded", () => {

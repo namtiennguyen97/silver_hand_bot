@@ -136,11 +136,18 @@ body.tutorial-lock * {
     pointer-events: none;
 }
 
-/* Cho phép click tooltip + nút next */
+/* Cho phép click tooltip + nút next + rpgChatOverlay + tutorial overlay */
+body.tutorial-lock #tutorial-overlay,
 body.tutorial-lock #tooltip,
 body.tutorial-lock #tutorial-next,
-body.tutorial-lock #tutorial-prev {
+body.tutorial-lock #tutorial-prev,
+body.tutorial-lock #rpgChatOverlay,
+body.tutorial-lock #rpgChatOverlay * {
     pointer-events: auto;
+}
+
+body.tutorial-lock #rpgChatOverlay {
+    z-index: 100001 !important;
 }
 
 /* Spotlight chỉ để nhìn */

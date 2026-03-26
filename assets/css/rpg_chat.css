@@ -1,0 +1,165 @@
+/* =========================================
+   PREMIUM RPG CHAT SYSTEM - SHARED
+========================================= */
+
+#rpgChatOverlay {
+    display: none;
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100001; /* Above almost anything */
+    width: 92%;
+    max-width: 440px;
+    pointer-events: auto;
+    animation: rpgChatEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes rpgChatEntrance {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 40px) scale(0.95);
+        clip-path: inset(100% 0 0 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+.rpg-chat-box {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    background: linear-gradient(135deg, rgba(0, 15, 20, 0.95) 0%, rgba(0, 30, 40, 0.85) 100%);
+    border: 1px solid rgba(94, 242, 214, 0.4);
+    border-radius: 12px;
+    padding: 16px;
+    color: #ffffff;
+    font-family: 'Orbitron', sans-serif;
+    box-shadow: 
+        0 0 20px rgba(0, 0, 0, 0.5),
+        inset 0 0 15px rgba(94, 242, 214, 0.1);
+    backdrop-filter: blur(12px);
+    overflow: visible;
+}
+
+/* Speaker Name Tag */
+.rpg-speaker-tag {
+    position: absolute;
+    top: -14px;
+    left: 20px;
+    background: #5ef2d6;
+    color: #000;
+    font-size: 10px;
+    font-weight: 900;
+    padding: 3px 12px;
+    letter-spacing: 0.15em;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 8px 100%);
+    box-shadow: 0 0 10px rgba(94, 242, 214, 0.6);
+    text-transform: uppercase;
+    z-index: 2;
+}
+
+/* HUD Corners */
+.rpg-corner {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #5ef2d6;
+    pointer-events: none;
+}
+.rpg-corner.top-left {
+    top: -2px;
+    left: -2px;
+    border-right: none;
+    border-bottom: none;
+}
+.rpg-corner.bottom-right {
+    bottom: -2px;
+    right: -2px;
+    border-left: none;
+    border-top: none;
+}
+
+/* Avatar Styling */
+.rpg-avatar {
+    flex: 0 0 64px;
+    height: 64px;
+    margin-right: 16px;
+    position: relative;
+    border: 1px solid rgba(94, 242, 214, 0.5);
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.rpg-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(1.1) contrast(1.1);
+}
+
+.avatar-scanline {
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background: linear-gradient(to bottom, transparent, rgba(94, 242, 214, 0.3), transparent);
+    animation: avatarScan 3s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes avatarScan {
+    0% { top: -100%; }
+    30% { top: 100%; }
+    100% { top: 100%; }
+}
+
+/* Chat Content Wrapper */
+.rpg-chat-content-wrapper {
+    flex: 1;
+    position: relative;
+    min-height: 64px;
+    display: flex;
+    flex-direction: column;
+}
+
+.rpg-chat-content {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #d8ffff;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.2);
+    word-break: break-word;
+    margin-bottom: 8px;
+}
+
+/* Next Indicator */
+.rpg-next-indicator {
+    align-self: flex-end;
+    color: #5ef2d6;
+    font-size: 12px;
+    opacity: 0;
+    animation: bounceIndicator 1.5s infinite;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.rpg-next-indicator.visible {
+    opacity: 1;
+}
+
+@keyframes bounceIndicator {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-5px); }
+    60% { transform: translateY(-3px); }
+}
+
+/* Hide scrollbar */
+.rpg-chat-content::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
+}

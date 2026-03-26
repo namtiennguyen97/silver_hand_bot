@@ -41,21 +41,32 @@
       box-shadow: 0 0 12px rgba(0, 255, 213, 0.9);
     }
   </style>
-  <link rel="stylesheet" href="assets/css/ctc-tutorial-fixed.css">
-
-  <!--  <link rel="stylesheet" href="assets/css/ctc-tutorial-fixed.css">-->
+  <link rel="stylesheet" href="assets/css/tutorial.css">
+  <link rel="stylesheet" href="assets/css/rpg_chat.css">
 </head>
 <body>
 <div id="tutorial-overlay">
   <div id="spotlight"></div>
+</div>
 
-  <div id="tooltip">
-    <div id="tooltip-text"></div>
-    <div class="tutorial-actions">
-      <button id="tutorial-skip" class="tutorial-skip-btn">Skip</button>
-      <button id="tutorial-next">Next</button>
-    </div>
-  </div>
+<!-- Overlay chat, ẩn mặc định -->
+<div id="rpgChatOverlay">
+	<div class="rpg-chat-box">
+		<div class="rpg-corner top-left"></div>
+		<div class="rpg-corner bottom-right"></div>
+		
+		<div class="rpg-speaker-tag" id="rpgSpeakerName">Silver-Hand</div>
+		
+		<div class="rpg-avatar">
+			<img src="assets/img/mayor_5.png" alt="Avatar">
+			<div class="avatar-scanline"></div>
+		</div>
+		
+		<div class="rpg-chat-content-wrapper">
+			<div class="rpg-chat-content" id="rpgChatContent"></div>
+			<div class="rpg-next-indicator" id="rpgNextIndicator">▼</div>
+		</div>
+	</div>
 </div>
 <div id="loadingOverlay">
   <div class="loading-wrapper">
@@ -435,6 +446,7 @@
 </button>
 <script src="assets/js/loading.js"></script>
 <script src="assets/js/ctc.js"></script>
+<script src="assets/js/rpg_chat.js"></script>
 <script src="assets/js/ctc-tutorial.js"></script>
 
 </body>

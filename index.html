@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="assets/css/heartlock_zone_info.css">
   <link rel="stylesheet" href="assets/css/cert_info.css">
   <link rel="stylesheet" href="assets/css/mobile_index.css">
+  <link rel="stylesheet" href="assets/css/about_me.css">
   <link rel="stylesheet" href="assets/css/rpg_chat.css">
 	<link rel="preload" as="video" href="assets/videos/merged_control_panel.mp4">
 
@@ -189,11 +190,12 @@
 <!-- MODAL -->
 <div class="modal" id="infoModal">
   <div class="modal-content ai-modal-content">
+    <div class="hud-br-corner"></div>
     <h2 id="modalTitle"></h2>
     <div class="ai-training-box">
       <div class="ai-content" id="modalContent"></div>
     </div>
-    <button id="closeModal" class="close-btn">Đóng</button>
+    <button id="closeModal" class="close-btn">Close</button>
   </div>
 </div>
 
@@ -201,15 +203,65 @@
 <!-- ================== MODAL TEMPLATES ================== -->
 
 <template id="tpl-infoA">
-  <div class="ai-title">
-    Lưu ý: Đây là giờ VN, không phải giờ Ingame
+  <div class="event-schedule">
+
+    <div class="event-note">
+      <span class="event-note-icon">⚠</span>
+      <span>Đây là giờ <b>Việt Nam</b>, không phải giờ In-game</span>
+    </div>
+
+    <div class="event-list">
+
+      <div class="event-row">
+        <div class="event-row-icon">📦</div>
+        <div class="event-row-body">
+          <div class="event-row-label">Resource Scramble</div>
+          <div class="event-row-desc">Nhặt hòm tiếp tế</div>
+        </div>
+        <div class="event-row-time">
+          <span class="event-day">T.2</span>
+          <span class="event-hour">19:00 – 20:30</span>
+        </div>
+      </div>
+
+      <div class="event-row">
+        <div class="event-row-icon">🛡️</div>
+        <div class="event-row-body">
+          <div class="event-row-label">Patrol</div>
+          <div class="event-row-desc">Tuần tra hàng ngày</div>
+        </div>
+        <div class="event-row-time">
+          <span class="event-day">Hằng ngày</span>
+          <span class="event-hour">19:00</span>
+        </div>
+      </div>
+
+      <div class="event-row">
+        <div class="event-row-icon">⚔️</div>
+        <div class="event-row-body">
+          <div class="event-row-label">Camp Invasion</div>
+          <div class="event-row-desc">Def camp – phòng thủ căn cứ</div>
+        </div>
+        <div class="event-row-time">
+          <span class="event-day">T.3</span>
+          <span class="event-hour">21:30</span>
+        </div>
+      </div>
+
+      <div class="event-row">
+        <div class="event-row-icon">💀</div>
+        <div class="event-row-body">
+          <div class="event-row-label">Boss Camp</div>
+          <div class="event-row-desc">Raid boss camp lớn</div>
+        </div>
+        <div class="event-row-time">
+          <span class="event-day">T.5</span>
+          <span class="event-hour">22:00</span>
+        </div>
+      </div>
+
+    </div>
   </div>
-  <div>+ <span style="color: orange">Thứ 2 (19h – 20h30):</span> Nhặt hòm (Resource Scramble)</div>
-  <div>+ <span style="color: orange">19h hằng ngày:</span> Patrol</div>
-  <div>+ <span style="color: orange">21h30 tối thứ 3:</span> Def camp (Camp Invasion)</div>
-  <div>+ <span style="color: orange">22h tối thứ 5:</span> Boss camp</div>
-
-
 </template>
 
 <template id="tpl-infoB">
@@ -318,19 +370,18 @@
   <div class="ai-content">
 
     <div class="map-block">
-      <div class="map-title">🗺️ Map: Silent Plain:</div>
+      <div class="map-title">SILENT PLAIN</div>
       <div class="code-list">
         <span class="code-chip">006</span>
         <span class="code-chip">1205</span>
         <span class="code-chip">3326</span>
         <span class="code-chip">8254</span>
       </div>
-      <button class="copy-map-btn" title="Copy toàn bộ code">
-        📋 Copy
-      </button>
+      <button class="copy-map-btn" title="Copy toàn bộ code">📋 COPY</button>
     </div>
+
     <div class="map-block">
-      <div class="map-title">🗺️ Map: Mount Gray Bear:</div>
+      <div class="map-title">MOUNT GRAY BEAR</div>
       <div class="code-list">
         <span class="code-chip">96</span>
         <span class="code-chip">222</span>
@@ -340,12 +391,11 @@
         <span class="code-chip">0000</span>
         <span class="code-chip">0524</span>
       </div>
-      <button class="copy-map-btn" title="Copy toàn bộ code">
-        📋 Copy
-      </button>
+      <button class="copy-map-btn" title="Copy toàn bộ code">📋 COPY</button>
     </div>
+
     <div class="map-block">
-      <div class="map-title">🗺️ Map: Santopany:</div>
+      <div class="map-title">SANTOPANY</div>
       <div class="code-list">
         <span class="code-chip">13</span>
         <span class="code-chip">24</span>
@@ -356,11 +406,8 @@
         <span class="code-chip">1114</span>
         <span class="code-chip">4222</span>
       </div>
-      <button class="copy-map-btn" title="Copy toàn bộ code">
-        📋 Copy
-      </button>
+      <button class="copy-map-btn" title="Copy toàn bộ code">📋 COPY</button>
     </div>
-
 
   </div>
 </template>
@@ -420,9 +467,133 @@
   </div>
 </template>
 
+<template id="tpl-aboutMe">
+  <div class="bio-container">
+    <div class="bio-header">
+      <div class="bio-avatar-wrapper" style="cursor:pointer" id="bioAvatarTrigger">
+        <div class="bio-avatar-clip">
+            <img src="assets/img/mayor_5.png" alt="Avatar">
+            <div class="bio-avatar-scan"></div>
+        </div>
+        <div class="avatar-tooltip">CLICK HERE</div>
+      </div>
+      <div class="bio-main-info">
+        <div class="bio-name">Silver-Hand</div>
+        <div class="bio-title">Game ID: 30197479</div>
+        
+        <div class="bio-stats-grid">
+            <div class="bio-stat-item">
+                <div class="bio-stat-label">Gender</div>
+                <div class="bio-stat-value">Male</div>
+            </div>
+            <div class="bio-stat-item">
+                <div class="bio-stat-label">Birth Date</div>
+                <div class="bio-stat-value">10-10-1997</div>
+            </div>
+            <div class="bio-stat-item">
+                <div class="bio-stat-label">Join Date</div>
+                <div class="bio-stat-value">15-03-2023</div>
+            </div>
+            <div class="bio-stat-item">
+                <div class="bio-stat-label">Server</div>
+                <div class="bio-stat-value">Labyrinth</div>
+            </div>
+            <div class="bio-stat-item">
+                <div class="bio-stat-label">Camp</div>
+                <div class="bio-stat-value">SAO-ĐÊM</div>
+            </div>
+            <div class="bio-stat-item">
+                <div class="bio-stat-label">Position</div>
+                <div class="bio-stat-value">Mayor</div>
+            </div>
+      
+        </div>
+      </div>
+    </div>
+
+    <div class="bio-section">
+      <div class="bio-section-title">
+        <span>Mission Statement</span>
+        <span style="opacity:0.4; font-size:9px">ACCESSED: 2026.03.26</span>
+      </div>
+      <div class="bio-text">
+        Vốn dĩ không phải là người chơi giỏi trong những tựa game bắn súng, tuy nhiên vẫn gắn bó vì nhiều lý do khác nhau. Quan điểm trong việc tranh chấp đó là nhẫn nhịn. Lợi ích camp luôn được đặt lên hàng đầu.
+      </div>
+    </div>
+
+    <div class="bio-section">
+      <div class="bio-section-title">
+        <span>History Chronicle</span>
+        <span style="opacity:0.4; font-size:9px">ARCHIVE_01: STATUS_CORE</span>
+      </div>
+      
+      <div class="bio-chronicle">
+          <div class="chronicle-item">
+              <div class="chronicle-date">15-03-2023</div>
+              <div class="chronicle-event">Lần đầu đăng nhập game. Thuộc hệ người chơi <b>Chill</b> (Xây nhà & PVE). <i>(Tạo acc trễ 6 tháng so với server)</i>.</div>
+          </div>
+          <div class="chronicle-item">
+              <div class="chronicle-date">17-03-2023</div>
+              <div class="chronicle-event">Gia nhập camp <b>SAO-ĐÊM</b> (Member). Chỉ chơi PVE và không quan tâm thế sự.</div>
+          </div>
+          <div class="chronicle-item">
+              <div class="chronicle-date">03-07-2023</div>
+              <div class="chronicle-event">Bổ nhiệm làm <b>Official Camp</b>. Tập trung hoạt động nhỏ lẻ, ẩn mình và không dính drama server.</div>
+          </div>
+          <div class="chronicle-item">
+              <div class="chronicle-date">CUỐI NĂM 2023</div>
+              <div class="chronicle-event">Lần đầu đạt danh hiệu <b>Golden Knight</b>.</div>
+          </div>
+          <div class="chronicle-item">
+              <div class="chronicle-date">NĂM 2024</div>
+              <div class="chronicle-event">Mở rộng quan hệ với dàn Official & Mayor. Bắt đầu hỗ trợ giúp đỡ các thành viên trong camp.</div>
+          </div>
+          <div class="chronicle-item">
+              <div class="chronicle-date">THÁNG 10-2024</div>
+              <div class="chronicle-event">Camp chiến thắng <b>Shelter Land</b> đầu tiên và vẻ vang nhất server.</div>
+          </div>
+          <div class="chronicle-item">
+              <div class="chronicle-date">CUỐI THÁNG 12-2024</div>
+              <div class="chronicle-event">Chính thức trở thành <b>Mayor (Thị trưởng)</b>. Tập trung phát triển camp. Đạt hạng <b>Diamond Knight</b>.</div>
+          </div>
+          <div class="chronicle-item">
+              <div class="chronicle-date">NĂM 2025</div>
+              <div class="chronicle-event">Bắt đầu tham gia đóng góp ý kiến về đồng minh, nhưng vẫn ưu tiên <b>Camp SAO-ĐÊM</b> lên hàng đầu.</div>
+          </div>
+          <div class="chronicle-item">
+              <div class="chronicle-date">THÁNG 08-2025</div>
+              <div class="chronicle-event"><b>Mở cửa Quốc tế</b>: Cho phép người nước ngoài gia nhập để chuẩn bị cho Shelter Land.</div>
+          </div>
+          <div class="chronicle-item">
+              <div class="chronicle-date">ĐẦU NĂM 2026</div>
+              <div class="chronicle-event">Camp SAO-ĐÊM đạt danh hiệu <b>Shelter Land</b> lần thứ 2.</div>
+          </div>
+      </div>
+    </div>
+
+    <div class="bio-footer">
+      SYSTEM_ID: SN-120597-REV | AUTHORIZED BY MAYOR_AI
+    </div>
+  </div>
+</template>
+
 <!-- Tutorial Overlay -->
 <div id="tutorial-overlay">
   <div id="spotlight"></div>
+</div>
+
+<!-- Bio Gallery Overlay -->
+<div class="bio-gallery-overlay" id="bioGallery">
+    <div class="gallery-screen">
+        <div class="gallery-close" id="closeGallery">Close System</div>
+        <div class="gallery-nav prev" id="prevGallery">
+            <svg viewBox="0 0 100 100"><polygon points="80,10 20,50 80,90" /></svg>
+        </div>
+        <img src="" class="gallery-image" id="galleryImg">
+        <div class="gallery-nav next" id="nextGallery">
+            <svg viewBox="0 0 100 100"><polygon points="20,10 80,50 20,90" /></svg>
+        </div>
+    </div>
 </div>
 
 <script src="assets/js/loading.js"></script>

@@ -659,6 +659,148 @@
     }
 }
 
+/* ===============================
+   CYBER OPTION SELECTION STATES
+================================ */
+
+/* Option bị dismiss: dạt sang phải và mờ đi */
+#cyberOverlay .cyber-option--dismissed {
+    animation: optionDismiss 0.35s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+    pointer-events: none;
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+}
+
+@keyframes optionDismiss {
+    0%   { opacity: 1;   transform: translateX(0)     skewX(0deg);  }
+    40%  { opacity: 0.4; transform: translateX(20px)  skewX(-4deg); }
+    100% { opacity: 0;   transform: translateX(80px)  skewX(-8deg); }
+}
+
+/* Option được chọn: sáng lên + pulse tỏa neon */
+#cyberOverlay .cyber-option--selected {
+    background: linear-gradient(90deg, #5ef2d6 0%, #00ffff 100%) !important;
+    color: #000 !important;
+    border-left-color: #ffffff !important;
+    box-shadow: 0 0 24px rgba(0, 255, 255, 0.7), 0 0 48px rgba(94, 242, 214, 0.4) !important;
+    animation: optionNeonPulse 1s ease-in-out infinite alternate !important;
+    pointer-events: none;
+    overflow: visible; /* Để tỏa neon ra ngoài */
+    z-index: 10;
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+}
+
+#cyberOverlay .cyber-option--selected::before {
+    color: #000 !important;
+}
+
+#cyberOverlay .cyber-option--selected::after {
+    border-color: #000 !important;
+}
+
+/* Scan line quét qua option đang chọn */
+#cyberOverlay .cyber-option--selected .option-scan-line {
+    display: block !important;
+}
+
+.option-scan-line {
+    display: none;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    background: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(255, 255, 255, 0.35) 50%,
+        transparent 100%
+    );
+    animation: optionScanSweep 0.45s ease-out forwards;
+}
+
+@keyframes optionScanSweep {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(200%);  }
+}
+
+/* Pulse tỏa ra neon: sáng rực → nhạt dần → biến mất */
+@keyframes optionNeonPulse {
+    0% {
+        box-shadow: 0 0 15px rgba(94, 242, 214, 0.6), 0 0 30px rgba(0, 255, 255, 0.3);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(94, 242, 214, 0.9), 0 0 80px rgba(0, 255, 255, 0.5);
+        transform: scale(1.03);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(94, 242, 214, 0.7), 0 0 40px rgba(0, 255, 255, 0.4);
+        transform: scale(1.01);
+    }
+}
+
+/* Hiệu ứng sóng neon tỏa ra từ element riêng */
+.option-pulse-ring {
+    display: none;
+    position: absolute;
+    inset: -2px;
+    border: 3px solid #5ef2d6;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(2px);
+    box-shadow: 0 0 20px #5ef2d6, inset 0 0 10px #5ef2d6;
+}
+
+#cyberOverlay .cyber-option--selected .option-pulse-ring {
+    display: block;
+    animation: neonRingOut 0.8s ease-out infinite;
+}
+
+@keyframes neonRingOut {
+    0% {
+        transform: scale(1);
+        opacity: 0.9;
+        box-shadow: 0 0 10px #5ef2d6;
+    }
+    100% {
+        transform: scale(1.4, 2.2);
+        opacity: 0;
+        box-shadow: 0 0 40px #5ef2d6;
+    }
+}
+
+/* Loading dots xuất hiện ở cuối option được chọn */
+#cyberOverlay .cyber-option--selected .option-loading-dots {
+    display: inline-flex !important;
+}
+
+.option-loading-dots {
+    display: none;
+    gap: 3px;
+    margin-left: auto;
+}
+
+.option-loading-dots span {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #000;
+    animation: dotBlink 0.5s infinite alternate;
+}
+
+.option-loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+.option-loading-dots span:nth-child(3) { animation-delay: 0.30s; }
+
+@keyframes dotBlink {
+    from { opacity: 0.2; transform: scale(0.8); }
+    to   { opacity: 1;   transform: scale(1.2); }
+}
+
+.option-label {
+    flex: 1;
+}
 
 /* ===============================
    DOUBLE VIDEO LAYER

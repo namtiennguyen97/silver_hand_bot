@@ -8,10 +8,16 @@ document.addEventListener("click", (e) => {
         .join("-");
 
     navigator.clipboard.writeText(codes).then(() => {
-        btn.textContent = "✅ Đã copy";
+        btn.textContent = "✓ COPIED";
+        btn.classList.add("copied");
         setTimeout(() => {
-            btn.textContent = "📋 Copy";
+            btn.textContent = "📋 COPY";
+            btn.classList.remove("copied");
+        }, 1800);
+    }).catch(() => {
+        btn.textContent = "✗ FAILED";
+        setTimeout(() => {
+            btn.textContent = "📋 COPY";
         }, 1500);
     });
 });
-

@@ -45,20 +45,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const steps = [
         {
             selector: null,
-            text: "👋 Chào mừng bạn đến với <b>Life After VN- SAO-ĐÊM</b>.<br><br>Mình sẽ hướng dẫn bạn nhanh cách sử dụng nhé!"
+            text: "👋 Welcome to <b>Life After VN- SAO-ĐÊM</b>.<br><br>Here is every quick and easy use!"
         },
         {
             selector: "#control-panel",
-            text: "💬 Đây là <b>khung thông tin</b> để bạn bấm vào xem thông tin nhé."
+            text: "💬 This is <b>privacy</b> to talk or choose chat mayor AI."
         },
         {
             selector: "#mayor-chat",
-            text: "❓ Bạn có thể <b>giao tiếp với trợ lý AI Mayor</b> những câu hỏi cơ bản, không cần gõ tay."
+            text: "❓ Choose control panel <b>To see common options</b> and simple info."
         },
         {
             selector: "#clock",
-            text: "⏰ Đây là <b>thời gian trong game LifeAfter</b> (Hope 101 time zone).<br><br>Đôi lúc bạn cần theo dõi để <b>tham gia các sự kiện ingame đúng giờ</b>."
-        }
+            text: "⏰ This is <b>time in game LifeAfter</b> (Hope 101 time zone).<br><br>Some time you need to check in-game time."
+        },
+        {
+            selector: null,
+            text: "And good luck, having fun here!"
+        },
     ];
 
     let currentStep = 0;

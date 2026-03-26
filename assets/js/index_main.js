@@ -207,7 +207,8 @@ const modalData = {
     infoA: { title: "Thời gian event camp", template: "tpl-infoA" },
     infoB: { title: "⚔️ Giới thiệu về Cert", template: "tpl-infoB" },
     infoC: { title: "🔐 Code Heart Lock Zone", template: "tpl-infoC" },
-    infoD: { title: "🛠️ Chi tiết Cert", template: "tpl-infoD" }
+    infoD: { title: "🛠️ Chi tiết Cert", template: "tpl-infoD" },
+    aboutMe: { title: "Personal Profile", template: "tpl-aboutMe" }
 };
 
 function openModalByKey(key) {
@@ -227,6 +228,10 @@ const optionActions = {
         openModalByKey("infoD");
         if (window.initCertSkill) window.initCertSkill(modalContent);
     },
+    "About me": () => {
+        openModalByKey("aboutMe");
+        if (window.initAboutMeGallery) window.initAboutMeGallery(modalContent);
+    },
     "Chat": () => showRPGChat("AI chat is currently under maintenance. Please check back later.", 'assets/img/mayor_5.png' ),
     "CTC-PLAN editor": () => window.location.href = "ctc-planer.html",
     "Tutorial": () => {
@@ -240,7 +245,7 @@ const optionActions = {
 };
 
 const tooltipOptionsData = {
-    mayorOptions: ["Chat", "Tutorial", "Settings"],
+    mayorOptions: ["Chat", "About me", "Tutorial", "Settings"],
     controlOptions: ["Event Time", "Heart Lock Zone Code", "Cert Details", "CTC-PLAN editor"],
     helpOptions: ["Tutorial"]
 };
@@ -314,7 +319,7 @@ document.querySelectorAll(".hotspot-tooltip .tooltip-box").forEach((box) => {
         }
 
         setControlPanelBackgroundVideo();
-        showRPGChat("Security clearance granted. Control panel access synchronized.", 'assets/img/mayor_5.png');
+        showRPGChat("Security clearance granted. Choose an option.", 'assets/img/mayor_5.png');
         box.classList.add("tooltip-pulse-border");
 
         setTimeout(() => {
@@ -326,20 +331,76 @@ document.querySelectorAll(".hotspot-tooltip .tooltip-box").forEach((box) => {
             options.forEach((text, index) => {
                 const optionEl = document.createElement("div");
                 optionEl.className = "cyber-option";
-                optionEl.textContent = text;
-                
+
+                // Wrap label so flex layout works with extra children
+                const labelSpan = document.createElement('span');
+                labelSpan.className = 'option-label';
+                labelSpan.textContent = text;
+                optionEl.appendChild(labelSpan);
+
                 // Add index number for HUD feel [01], [02] etc.
                 const displayIndex = (index + 1).toString().padStart(2, '0');
                 optionEl.setAttribute('data-index', `[${displayIndex}]`);
-                
+
+                // Inject scan-line element (hidden by default, shown on --selected)
+                const scanLine = document.createElement('div');
+                scanLine.className = 'option-scan-line';
+                optionEl.appendChild(scanLine);
+
+                // Inject loading dots (hidden by default, shown on --selected)
+                const dots = document.createElement('div');
+                dots.className = 'option-loading-dots';
+                dots.innerHTML = '<span></span><span></span><span></span>';
+                optionEl.appendChild(dots);
+
+                // Inject a dedicated pulse ring element to avoid pseudo-element conflicts
+                const pulseRing = document.createElement('div');
+                pulseRing.className = 'option-pulse-ring';
+                optionEl.appendChild(pulseRing);
+
                 // Trigger sequential reveal animation
                 optionEl.style.animation = `cyberReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards ${index * 0.08}s`;
-                
+
                 optionEl.addEventListener("click", (ev) => {
                     ev.stopPropagation();
-                    cyberOverlay.style.display = "none";
-                    setDefaultBackgroundVideo();
-                    if (optionActions[text]) optionActions[text]();
+
+                    // Optional haptic vibration for mobile (short pulse)
+                    if (navigator.vibrate) navigator.vibrate(40);
+
+                    // Hide RPG chat to free up screen space (especially for small mobile screens)
+                    if (typeof hideRPGChat === 'function') hideRPGChat();
+
+                    // Get all sibling options
+                    const allOptions = Array.from(cyberOverlay.querySelectorAll('.cyber-option'));
+
+                    // Mark selected & dismiss others
+                    allOptions.forEach(opt => {
+                        // Clear the inline reveal animation so class-based animations can take over
+                        opt.style.animation = '';
+                        // Ensure it stays visible (avoid reverting to default opacity 0)
+                        opt.style.opacity = '1';
+                        opt.style.transform = 'translateX(0)';
+                        
+                        // Force reflow
+                        void opt.offsetWidth;
+
+                        if (opt === optionEl) {
+                            opt.classList.add('cyber-option--selected');
+                        } else {
+                            opt.classList.add('cyber-option--dismissed');
+                        }
+                    });
+
+                    // After selection animation (~950ms), execute action
+                    setTimeout(() => {
+                        cyberOverlay.style.display = "none";
+                        // Clean up classes for next open
+                        allOptions.forEach(opt => {
+                            opt.classList.remove('cyber-option--selected', 'cyber-option--dismissed');
+                        });
+                        setDefaultBackgroundVideo();
+                        if (optionActions[text]) optionActions[text]();
+                    }, 950);
                 });
                 cyberOverlay.appendChild(optionEl);
             });
@@ -362,3 +423,129 @@ if (modal) modal.onclick = (e) => { if (e.target === modal) modal.style.display 
 document.addEventListener("contextmenu", (e) => e.preventDefault());
 document.addEventListener("touchstart", (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 document.addEventListener("gesturestart", (e) => e.preventDefault());
+
+/* ===============================
+   PERFORMANCE CHECK
+================================ */
+window.addEventListener('app:loaded', () => {
+    let frameCount = 0;
+    let lastTime = performance.now();
+    let isChecking = true;
+
+    function countFrames() {
+        if (!isChecking) return;
+        frameCount++;
+        requestAnimationFrame(countFrames);
+    }
+
+    // Start counting right after loading
+    countFrames();
+
+    // Measure FPS over 2.5 seconds
+    setTimeout(() => {
+        isChecking = false;
+        let elapsed = performance.now() - lastTime;
+        let fps = (frameCount * 1000) / elapsed;
+
+        // If average FPS is lower than typical 60 (e.g., < 40)
+        if (fps < 40) {
+            // Wait until intro animations finish
+            setTimeout(() => {
+                if (typeof showRPGChat === 'function') {
+                    const sequence = [
+                        { text: "Cảnh báo hệ thống: Thiết bị của bạn cấu hình khá thấp để xử lý đồ họa cấp cao. Trải nghiệm có thể bị giật lag trên giao diện này.", avatar: 'assets/img/worker_silver.png', speaker: 'System' },
+                        { text: "Hmmm.... is that so..", avatar: 'assets/img/mayor_5.png', speaker: 'Silver-Hand' }
+                    ];
+                    
+                    let currentIndex = 0;
+                    const container = document.getElementById('rpgChatContent');
+                    
+                    function playNext() {
+                        if (currentIndex >= sequence.length) {
+                            if (typeof hideRPGChat === 'function') hideRPGChat();
+                            return;
+                        }
+                        
+                        const step = sequence[currentIndex];
+                        showRPGChat(step.text, step.avatar, step.speaker);
+                        
+                        if (container) {
+                            setTimeout(() => {
+                                const originalOnClick = container.onclick;
+                                container.onclick = (e) => {
+                                    e.stopPropagation();
+                                    if (window.isChatTyping) {
+                                        if (originalOnClick) originalOnClick(e);
+                                    } else {
+                                        currentIndex++;
+                                        playNext();
+                                    }
+                                };
+                            }, 50);
+                        }
+                    }
+                    
+                    playNext();
+                }
+            }, 3500);
+        }
+    }, 2500);
+});
+// BIO GALLERY LOGIC
+window.initAboutMeGallery = function(container) {
+    const trigger = container.querySelector("#bioAvatarTrigger");
+    const gallery = document.getElementById("bioGallery");
+    const galleryImg = document.getElementById("galleryImg");
+    const closeBtn = document.getElementById("closeGallery");
+    const prevBtn = document.getElementById("prevGallery");
+    const nextBtn = document.getElementById("nextGallery");
+
+    if (!trigger || !gallery) return;
+
+    const images = [
+        "assets/img/mayor_profile/img.png",
+        "assets/img/mayor_profile/img_1.png",
+        "assets/img/mayor_profile/img_2.png",
+        "assets/img/mayor_profile/img_3.png",
+        "assets/img/mayor_profile/img_4.png",
+        "assets/img/mayor_profile/img_5.png",
+        "assets/img/mayor_profile/img_7.png",
+        "assets/img/mayor_profile/img_8.png",
+        "assets/img/mayor_profile/img_9.png"
+    ];
+    let currentIndex = 0;
+
+    function updateImage() {
+        galleryImg.src = images[currentIndex];
+        // Digital glitch effect on change
+        galleryImg.style.filter = "hue-rotate(90deg) brightness(2)";
+        setTimeout(() => galleryImg.style.filter = "brightness(1.1)", 100);
+    }
+
+    trigger.addEventListener("click", () => {
+        currentIndex = 0;
+        updateImage();
+        gallery.style.display = "flex";
+    });
+
+    closeBtn.addEventListener("click", () => {
+        gallery.style.display = "none";
+    });
+
+    prevBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        updateImage();
+    });
+
+    nextBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        currentIndex = (currentIndex + 1) % images.length;
+        updateImage();
+    });
+
+    // Close on click outside the screen
+    gallery.addEventListener("click", (e) => {
+        if (e.target === gallery) gallery.style.display = "none";
+    });
+};

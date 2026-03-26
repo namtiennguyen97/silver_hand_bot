@@ -25,6 +25,7 @@
         0 0 24px rgba(94, 242, 214, 0.35);
 
     /* Smooth movement */
+    will-change: top, left, width, height;
     transition:
         top 0.25s ease,
         left 0.25s ease,
@@ -33,29 +34,11 @@
         box-shadow 0.25s ease;
 }
 
-#tooltip {
-    position: absolute;
-    background: #0b0b0b;
-    color: #00ffd5;
-    padding: 16px 18px;
-    border-radius: 12px;
-    max-width: 260px;
-    box-shadow:
-        0 0 15px rgba(0, 255, 213, 0.6),
-        inset 0 0 10px rgba(0, 255, 213, 0.15);
-    font-size: 14px;
-    line-height: 1.5;
+#tutorial-neon-line-svg {
+    will-change: transform;
 }
 
-#tutorial-next {
-    margin-top: 12px;
-    background: #00ffd5;
-    border: none;
-    padding: 8px 16px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 6px;
-}
+/* Welcome step handled via RPG Chat or Spotlight center logic */
 
 /* Welcome step */
 #tooltip.welcome {

@@ -50,11 +50,17 @@ function typewriterChat(text, container, speed = 25, onComplete = null) {
     }, speed);
 
     container.onclick = (e) => {
-        e.stopPropagation();
         if (window.isChatTyping) {
+            e.stopPropagation();
             container.dataset.skip = 'true';
         } else {
-            hideRPGChat();
+            // If in tutorial mode, let it bubble so the tutorial-overlay catches it
+            if (document.body.classList.contains('tutorial-lock')) {
+                // Don't hideRPGChat, don't stop propagation
+            } else {
+                e.stopPropagation();
+                hideRPGChat();
+            }
         }
     };
 }
@@ -96,6 +102,8 @@ function hideRPGChat() {
 // Global click handler for closing chat
 document.addEventListener('click', (e) => {
     if (suppressChatOutsideClose) return;
+    if (document.body.classList.contains('tutorial-lock')) return; // Guard for tutorials
+    
     const chatOverlay = document.getElementById('rpgChatOverlay');
     if (chatOverlay && chatOverlay.style.display === 'block' && !chatOverlay.contains(e.target)) {
         hideRPGChat();

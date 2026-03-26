@@ -82,61 +82,73 @@ document.addEventListener("DOMContentLoaded", () => {
     const overlay = document.getElementById("tutorial-overlay");
     const spotlight = document.getElementById("spotlight");
     let trackerId = null;
+    let trackerStartTime = 0;
 
-    function startCoordinateTracker(el) {
-        if (trackerId) cancelAnimationFrame(trackerId);
+    function updateCoords() {
+        if (!activeElement || spotlight.style.display === "none") return;
         
-        const update = () => {
-            if (!activeElement || activeElement !== el) return;
-            
-            const rect = el.getBoundingClientRect();
-            spotlight.style.top = rect.top - 8 + "px";
-            spotlight.style.left = rect.left - 8 + "px";
-            spotlight.style.width = rect.width + 16 + "px";
-            spotlight.style.height = rect.height + 16 + "px";
+        const rect = activeElement.getBoundingClientRect();
+        spotlight.style.top = rect.top - 8 + "px";
+        spotlight.style.left = rect.left - 8 + "px";
+        spotlight.style.width = rect.width + 16 + "px";
+        spotlight.style.height = rect.height + 16 + "px";
 
-            const chatOverlayElement = document.getElementById("rpgChatOverlay");
-            if (chatOverlayElement && lineEl && svgLine && chatOverlayElement.style.display === 'block') {
-                const chatRect = chatOverlayElement.getBoundingClientRect();
+        const chatOverlayElement = document.getElementById("rpgChatOverlay");
+        if (chatOverlayElement && lineEl && svgLine && chatOverlayElement.style.display === 'block') {
+            const chatRect = chatOverlayElement.getBoundingClientRect();
+            
+            if (chatRect.width > 0 && chatRect.height > 0) {
+                svgLine.style.display = "block";
                 
-                // Ensure line is only shown if chat has valid coordinates
-                if (chatRect.width > 0 && chatRect.height > 0) {
-                    svgLine.style.display = "block";
-                    
-                    const spotTop = rect.top - 8;
-                    const spotBottom = rect.bottom + 8;
-                    const spotCenterX = rect.left + rect.width / 2;
+                const spotTop = rect.top - 8;
+                const spotBottom = rect.bottom + 8;
+                const spotCenterX = rect.left + rect.width / 2;
 
-                    // Start point: Center top of chat box
-                    const startX = chatRect.left + chatRect.width / 2;
-                    const startY = chatRect.top;
+                const startX = chatRect.left + chatRect.width / 2;
+                const startY = chatRect.top;
 
-                    // End point: Bottom (or top) of spotlight
-                    const endX = spotCenterX;
-                    let endY = spotBottom;
-                    
-                    if (startY < spotTop) {
-                        endY = spotTop;
-                    } else if (startY > spotBottom) {
-                        endY = spotBottom;
-                    } else {
-                        endY = rect.top + rect.height / 2;
-                    }
-
-                    lineEl.setAttribute("x1", startX);
-                    lineEl.setAttribute("y1", startY);
-                    lineEl.setAttribute("x2", endX);
-                    lineEl.setAttribute("y2", endY);
+                const endX = spotCenterX;
+                let endY = spotBottom;
+                
+                if (startY < spotTop) {
+                    endY = spotTop;
+                } else if (startY > spotBottom) {
+                    endY = spotBottom;
+                } else {
+                    endY = rect.top + rect.height / 2;
                 }
-            } else if (svgLine) {
-                svgLine.style.display = "none";
+
+                lineEl.setAttribute("x1", startX);
+                lineEl.setAttribute("y1", startY);
+                lineEl.setAttribute("x2", endX);
+                lineEl.setAttribute("y2", endY);
             }
-            
-            trackerId = requestAnimationFrame(update);
-        };
-        
-        trackerId = requestAnimationFrame(update);
+        } else if (svgLine) {
+            svgLine.style.display = "none";
+        }
     }
+
+    function startCoordinateTracker() {
+        if (trackerId) cancelAnimationFrame(trackerId);
+        trackerStartTime = Date.now();
+        
+        const loop = () => {
+            if (!activeElement) return;
+            updateCoords();
+            
+            // Only run the loop for 1 second after a step change to catch smooth scrolls
+            if (Date.now() - trackerStartTime < 1000) {
+                trackerId = requestAnimationFrame(loop);
+            } else {
+                trackerId = null;
+            }
+        };
+        trackerId = requestAnimationFrame(loop);
+    }
+
+    // Event listeners for scroll/resize
+    window.addEventListener("scroll", updateCoords, { passive: true });
+    window.addEventListener("resize", updateCoords, { passive: true });
 
     function showStep(index) {
         initNeonLine();
@@ -180,8 +192,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // Scroll to element
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-        // Start tracking coordinates immediately and continuously
-        startCoordinateTracker(el);
+        // Start tracking coordinates for a short duration and via events
+        startCoordinateTracker();
         
         // Show chat text
         showRPGChat(step.text);

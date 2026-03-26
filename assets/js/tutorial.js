@@ -32,10 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const overlay = document.getElementById("tutorial-overlay");
     const spotlight = document.getElementById("spotlight");
-    const tooltip = document.getElementById("tooltip");
-    const tooltipText = document.getElementById("tooltip-text");
-    const nextBtn = document.getElementById("tutorial-next");
-
     function showStep(index) {
         const step = steps[index];
 
@@ -45,26 +41,11 @@ document.addEventListener("DOMContentLoaded", () => {
             activeElement = null;
         }
 
-        tooltip.classList.remove("welcome");
         spotlight.style.display = "block";
-
-        // Set nội dung trước để đo size chính xác
-        tooltipText.innerHTML = step.text;
-
-        // RESET vị trí tooltip
-        tooltip.style.top = "auto";
-        tooltip.style.left = "auto";
-        tooltip.style.bottom = "auto";
-        tooltip.style.transform = "none";
 
         if (!step.selector) {
             // ===== WELCOME STEP =====
             spotlight.style.display = "none";
-            tooltip.classList.add("welcome");
-
-            tooltip.style.top = "50%";
-            tooltip.style.left = "50%";
-            tooltip.style.transform = "translate(-50%, -50%)";
             return;
         }
 
@@ -81,41 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
         spotlight.style.left = rect.left - 8 + "px";
         spotlight.style.width = rect.width + 16 + "px";
         spotlight.style.height = rect.height + 16 + "px";
-
-        // ⚠️ Đợi browser render tooltip xong rồi mới đo
-        requestAnimationFrame(() => {
-            const tooltipRect = tooltip.getBoundingClientRect();
-            const padding = 16;
-
-            const viewportHeight = window.innerHeight;
-            const viewportWidth = window.innerWidth;
-
-            // Mặc định: đặt dưới element
-            let top = rect.bottom + padding;
-            let left = rect.left;
-
-            // ❗ Nếu tràn xuống dưới → đưa lên trên
-            if (top + tooltipRect.height > viewportHeight) {
-                top = rect.top - tooltipRect.height - padding;
-            }
-
-            // ❗ Nếu vẫn tràn (element quá cao – mobile)
-            if (top < padding) {
-                top = viewportHeight / 2 - tooltipRect.height / 2;
-                left = viewportWidth / 2 - tooltipRect.width / 2;
-            }
-
-            // Chống tràn ngang
-            if (left + tooltipRect.width > viewportWidth - padding) {
-                left = viewportWidth - tooltipRect.width - padding;
-            }
-            if (left < padding) {
-                left = padding;
-            }
-
-            tooltip.style.top = `${top}px`;
-            tooltip.style.left = `${left}px`;
-        });
     }
 
     function nextStep() {
@@ -133,16 +79,11 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-
         showStep(currentStep);
     }
 
-    nextBtn.addEventListener("click", nextStep);
-
     overlay.addEventListener("click", (e) => {
-        if (!tooltip.contains(e.target)) {
-            nextStep();
-        }
+        nextStep();
     });
 
     // 🚀 CHỈ START TUTORIAL SAU KHI LOADING XONG

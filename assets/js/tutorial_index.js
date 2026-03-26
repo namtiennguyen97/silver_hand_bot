@@ -62,33 +62,92 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
 
     let currentStep = 0;
-
     const overlay = document.getElementById("tutorial-overlay");
     const spotlight = document.getElementById("spotlight");
-    const tooltip = document.getElementById("tooltip");
-    const tooltipText = document.getElementById("tooltip-text");
-    const nextBtn = document.getElementById("tutorial-next");
+
+    let trackerId = null;
+    let trackerStartTime = 0;
+
+    function updateCoords() {
+        if (!activeElement || spotlight.style.display === "none") return;
+        
+        const rect = activeElement.getBoundingClientRect();
+        spotlight.style.top = rect.top - 8 + "px";
+        spotlight.style.left = rect.left - 8 + "px";
+        spotlight.style.width = rect.width + 16 + "px";
+        spotlight.style.height = rect.height + 16 + "px";
+
+        const chatOverlayElement = document.getElementById("rpgChatOverlay");
+        if (chatOverlayElement && lineEl && svgLine && chatOverlayElement.classList.contains('active')) {
+            const chatRect = chatOverlayElement.getBoundingClientRect();
+            
+            if (chatRect.width > 0 && chatRect.height > 0) {
+                svgLine.style.display = "block";
+                
+                const spotTop = rect.top - 8;
+                const spotBottom = rect.bottom + 8;
+                const spotCenterX = rect.left + rect.width / 2;
+
+                const startX = chatRect.left + chatRect.width / 2;
+                const startY = chatRect.top;
+
+                const endX = spotCenterX;
+                let endY = spotBottom;
+                
+                if (startY < spotTop) {
+                    endY = spotTop;
+                } else if (startY > spotBottom) {
+                    endY = spotBottom;
+                } else {
+                    endY = rect.top + rect.height / 2;
+                }
+
+                lineEl.setAttribute("x1", startX);
+                lineEl.setAttribute("y1", startY);
+                lineEl.setAttribute("x2", endX);
+                lineEl.setAttribute("y2", endY);
+            }
+        } else if (svgLine) {
+            svgLine.style.display = "none";
+        }
+    }
+
+    function startCoordinateTracker() {
+        if (trackerId) cancelAnimationFrame(trackerId);
+        trackerStartTime = Date.now();
+        
+        const loop = () => {
+            if (!activeElement) return;
+            updateCoords();
+            
+            if (Date.now() - trackerStartTime < 1000) {
+                trackerId = requestAnimationFrame(loop);
+            } else {
+                trackerId = null;
+            }
+        };
+        trackerId = requestAnimationFrame(loop);
+    }
+
+    window.addEventListener("scroll", updateCoords, { passive: true });
+    window.addEventListener("resize", updateCoords, { passive: true });
 
     function showStep(index) {
         initNeonLine();
         const step = steps[index];
 
-        // Gỡ highlight cũ
         if (activeElement) {
             activeElement.classList.remove("tutorial-active");
             activeElement = null;
         }
+        if (trackerId) {
+            cancelAnimationFrame(trackerId);
+            trackerId = null;
+        }
 
-        tooltip.classList.remove("welcome");
         spotlight.style.display = "block";
 
-        // Set nội dung trước để đo size chính xác
-        tooltipText.innerHTML = step.text;
-
-        tooltip.style.display = "none"; // Hide old tooltip completely
-
         if (!step.selector) {
-            // ===== WELCOME STEP =====
             spotlight.style.display = "none";
             if (svgLine) svgLine.style.display = "none";
             showRPGChat(step.text);
@@ -100,79 +159,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
         activeElement = el;
         el.classList.add("tutorial-active");
+        
+        // Use smooth scroll
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-        const rect = el.getBoundingClientRect();
-
-        // Spotlight
-        spotlight.style.top = rect.top - 8 + "px";
-        spotlight.style.left = rect.left - 8 + "px";
-        spotlight.style.width = rect.width + 16 + "px";
-        spotlight.style.height = rect.height + 16 + "px";
-
+        startCoordinateTracker();
         showRPGChat(step.text);
-
-        // Update Line
-        requestAnimationFrame(() => {
-            const chatOverlayElement = document.getElementById("rpgChatOverlay");
-            if (chatOverlayElement && lineEl && svgLine) {
-                svgLine.style.display = "block";
-                const chatRect = chatOverlayElement.getBoundingClientRect();
-                const rect = el.getBoundingClientRect(); // Target element rect
-
-                // Vì spotlight được padding thêm 8px, ta phải tính luôn 8px này để tia dừng đúng ở viền spotlight
-                const spotTop = rect.top - 8;
-                const spotBottom = rect.bottom + 8;
-
-                const startX = chatRect.left + chatRect.width / 2;
-                const startY = chatRect.top; // Rút về đúng mép trên của chat box
-
-                // Tìm điểm nối vào viền spotlight
-                const endX = rect.left + rect.width / 2;
-                let endY = spotBottom;
-                
-                if (startY < spotTop) {
-                    endY = spotTop;
-                } else if (startY > spotBottom) {
-                    endY = spotBottom;
-                } else {
-                    endY = rect.top + rect.height / 2; // Nếu đè vạch
-                }
-
-                lineEl.setAttribute("x1", startX);
-                lineEl.setAttribute("y1", startY);
-                lineEl.setAttribute("x2", endX);
-                lineEl.setAttribute("y2", endY);
-            }
-        });
     }
 
     function nextStep() {
         currentStep++;
-
         if (currentStep >= steps.length) {
-            if (activeElement) {
-                activeElement.classList.remove("tutorial-active");
-            }
-
-            overlay.style.display = "none";
-            if (svgLine) svgLine.style.display = "none";
-            document.body.classList.remove("tutorial-lock");
-            hideRPGChat(); // Hide chat when tutorial ends
-
-            localStorage.setItem("sao-dem-main-tutorial-done", "1");
+            finishTutorial();
             return;
         }
-
         showStep(currentStep);
     }
 
-    // nextBtn.addEventListener("click", nextStep); // Not needed anymore
+    function finishTutorial() {
+        if (activeElement) activeElement.classList.remove("tutorial-active");
+        overlay.style.display = "none";
+        if (svgLine) svgLine.style.display = "none";
+        document.body.classList.remove("tutorial-lock");
+        hideRPGChat();
+        localStorage.setItem("sao-dem-main-tutorial-done", "1");
+    }
 
-    // Click anywhere on overlay to skip text or go next
     overlay.addEventListener("click", (e) => {
-        e.stopPropagation(); // QUAN TRỌNG: chặn sự kiện click lan ra ngoài gây đóng chat box!
-        
-        if (typeof window.isChatTyping !== 'undefined' && window.isChatTyping) {
+        e.stopPropagation();
+        if (window.isChatTyping) {
             const container = document.getElementById("rpgChatContent");
             if (container) container.dataset.skip = 'true';
         } else {
@@ -180,13 +195,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Also support clicking the chat box itself to advance
     const chatOverlayElement = document.getElementById("rpgChatOverlay");
     if (chatOverlayElement) {
         chatOverlayElement.addEventListener("click", (e) => {
             if (document.body.classList.contains("tutorial-lock")) {
-                e.stopPropagation(); // Cũng chặn luôn khi bấm vào tooltip
-                if (typeof window.isChatTyping !== 'undefined' && window.isChatTyping) {
+                e.stopPropagation();
+                if (window.isChatTyping) {
                     const container = document.getElementById("rpgChatContent");
                     if (container) container.dataset.skip = 'true';
                 } else {
@@ -196,41 +210,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 🚀 CHỈ START TUTORIAL SAU KHI LOADING XONG
     window.addEventListener("app:loaded", () => {
         if (localStorage.getItem("sao-dem-main-tutorial-done")) return;
-
         setTimeout(() => {
             overlay.style.display = "block";
             showStep(currentStep);
         }, 200);
     });
 
-
-    const helpBtn = document.querySelector("#help-system .tooltip-box");
-
-    if (helpBtn) {
-        helpBtn.addEventListener("click", () => {
-            startTutorial();
-        });
-    }
-
     function startTutorial() {
         currentStep = 0;
-
         document.body.classList.add("tutorial-lock");
-
-        if (activeElement) {
-            activeElement.classList.remove("tutorial-active");
-            activeElement = null;
-        }
-
         overlay.style.display = "block";
         showStep(currentStep);
     }
-    
-    // Export globally to be called from hotspot options
     window.startTutorial = startTutorial;
-
 });
-

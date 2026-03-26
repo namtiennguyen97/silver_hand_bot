@@ -42,7 +42,17 @@
         0 0 20px rgba(0, 0, 0, 0.5),
         inset 0 0 15px rgba(94, 242, 214, 0.1);
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     overflow: visible;
+}
+
+/* Optimization for low-end mobile: remove expensive blur */
+@media (max-width: 768px) {
+    .rpg-chat-box {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(0, 15, 20, 0.98); /* Slightly more opaque to compensaste */
+    }
 }
 
 /* Speaker Name Tag */
@@ -75,6 +85,12 @@
     left: -2px;
     border-right: none;
     border-bottom: none;
+}
+#spotlight {
+    position: fixed;
+    z-index: 10001;
+    pointer-events: none;
+    will-change: top, left, width, height;
 }
 .rpg-corner.bottom-right {
     bottom: -2px;

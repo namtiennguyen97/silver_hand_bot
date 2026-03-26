@@ -259,6 +259,8 @@ window.addEventListener('resize', syncLayout);
 
 document.addEventListener('click', (e) => {
     if (suppressChatOutsideClose) return;
+    if (document.body.classList.contains('tutorial-lock')) return; 
+
     if (chatOverlay.style.display === 'block' && !chatOverlay.contains(e.target)) {
         hideRPGChat();
     }
@@ -271,7 +273,17 @@ document.querySelectorAll(".hotspot-tooltip .tooltip-box").forEach((box) => {
         e.stopPropagation();
         
         const key = box.dataset.options;
-        if (!key) return; // Nếu hộp thoại không có data-options (như HELP), bỏ qua để luồng khác xử lý
+        if (!key) {
+            // Check if it's the HELP button
+            if (box.classList.contains("pulse-help")) {
+                if (window.startTutorial) {
+                    window.startTutorial();
+                } else {
+                    showRPGChat("Tutorial sequence is being recalibrated. Coming soon 👀", 'assets/img/mayor_5.png');
+                }
+            }
+            return; 
+        }
 
         setControlPanelBackgroundVideo();
         showRPGChat("Security clearance granted. Control panel access synchronized.", 'assets/img/mayor_5.png');

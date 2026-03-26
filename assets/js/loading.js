@@ -28,9 +28,10 @@ if (loadingProgressBar) {
         }
         
         if (loadingStatus) {
-            if (p < 30) loadingStatus.textContent = "INITIALIZING CORE...";
-            else if (p < 60) loadingStatus.textContent = "LOADING ASSETS...";
-            else if (p < 90) loadingStatus.textContent = "SYNCHRONIZING DATA...";
+            if (p < 20) loadingStatus.textContent = "INITIALIZING CORE...";
+            else if (p < 30) loadingStatus.textContent = "LOADING ASSETS...";
+            else if (p < 50) loadingStatus.textContent = "LOADING MODELS...";
+            else if (p < 80) loadingStatus.textContent = "SYNCHRONIZING DATA...";
             else loadingStatus.textContent = "DONE";
         }
     }

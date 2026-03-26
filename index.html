@@ -95,11 +95,22 @@
 <!-- Overlay chat, ẩn mặc định -->
 <div id="rpgChatOverlay">
 	<div class="rpg-chat-box">
+		<!-- HUD Corner decorations -->
+		<div class="rpg-corner top-left"></div>
+		<div class="rpg-corner bottom-right"></div>
+		
+		<div class="rpg-speaker-tag" id="rpgSpeakerName">Silver-Hand</div>
+		
 		<div class="rpg-avatar">
 			<img src="assets/img/mayor_5.png" alt="Avatar">
+			<div class="avatar-scanline"></div>
 		</div>
-		<div class="rpg-chat-content" id="rpgChatContent">
-			<!-- Text sẽ render từng chữ bằng JS -->
+		
+		<div class="rpg-chat-content-wrapper">
+			<div class="rpg-chat-content" id="rpgChatContent">
+				<!-- Text sẽ render từng chữ bằng JS -->
+			</div>
+			<div class="rpg-next-indicator" id="rpgNextIndicator">▼</div>
 		</div>
 	</div>
 </div>

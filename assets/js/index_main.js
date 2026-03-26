@@ -202,24 +202,35 @@ let currentChatFullText = '';
 window.isChatTyping = false;
 let suppressChatOutsideClose = false;
 
-function typewriterChat(text, container, speed = 25) {
+const rpgSpeakerName = document.getElementById('rpgSpeakerName');
+const rpgNextIndicator = document.getElementById('rpgNextIndicator');
+
+function typewriterChat(text, container, speed = 25, onComplete = null) {
     if (chatTypeInterval) clearInterval(chatTypeInterval);
 
     container.innerHTML = '';
     container.dataset.skip = 'false';
     currentChatFullText = String(text || '');
     window.isChatTyping = true;
+    
+    if (rpgNextIndicator) rpgNextIndicator.classList.remove('visible');
 
     let i = 0;
     let isTag = false;
     let textHTML = "";
 
+    const finishTyping = () => {
+        container.innerHTML = currentChatFullText;
+        clearInterval(chatTypeInterval);
+        chatTypeInterval = null;
+        window.isChatTyping = false;
+        if (rpgNextIndicator) rpgNextIndicator.classList.add('visible');
+        if (onComplete) onComplete();
+    };
+
     chatTypeInterval = setInterval(() => {
         if (container.dataset.skip === 'true' || i >= currentChatFullText.length) {
-            container.innerHTML = currentChatFullText;
-            clearInterval(chatTypeInterval);
-            chatTypeInterval = null;
-            window.isChatTyping = false;
+            finishTyping();
             return;
         }
         
@@ -237,22 +248,31 @@ function typewriterChat(text, container, speed = 25) {
         }
     }, speed);
 
-    container.onclick = () => { if (window.isChatTyping) container.dataset.skip = 'true'; };
+    container.onclick = (e) => {
+        e.stopPropagation();
+        if (window.isChatTyping) {
+            container.dataset.skip = 'true';
+        } else {
+            hideRPGChat();
+        }
+    };
 }
 
-function showRPGChat(chatText, avatarSrc = 'assets/img/mayor_5.png') {
+function showRPGChat(chatText, avatarSrc = 'assets/img/mayor_5.png', speaker = 'Silver-Hand') {
     if (chatTypeInterval) clearInterval(chatTypeInterval);
     
     const avatarImg = chatOverlay.querySelector('.rpg-avatar img');
     if (avatarImg) avatarImg.src = avatarSrc;
+    
+    if (rpgSpeakerName) rpgSpeakerName.textContent = speaker;
 
     suppressChatOutsideClose = true;
     chatOverlay.style.display = 'block';
-    rpgChatContent.textContent = '';
+    rpgChatContent.innerHTML = '';
     rpgChatContent.dataset.skip = 'false';
 
-    typewriterChat(chatText, rpgChatContent, 25);
-    setTimeout(() => { suppressChatOutsideClose = false; }, 50);
+    typewriterChat(chatText, rpgChatContent, 20);
+    setTimeout(() => { suppressChatOutsideClose = false; }, 100);
 }
 
 function hideRPGChat() {
@@ -294,16 +314,16 @@ const optionActions = {
         openModalByKey("infoD");
         if (window.initCertSkill) window.initCertSkill(modalContent);
     },
-    "Chat": () => showRPGChat("AI chat is currently under maintenance. (2026/03/20)"),
+    "Chat": () => showRPGChat("AI chat is currently under maintenance. Please check back later.", 'assets/img/mayor_5.png' ),
     "CTC-PLAN editor": () => window.location.href = "ctc-planer.html",
     "Tutorial": () => {
         if (window.startTutorial) {
             window.startTutorial();
         } else {
-            showRPGChat("Tutorial is coming soon 👀");
+            showRPGChat("Tutorial sequence is being recalibrated. Coming soon 👀", 'assets/img/mayor_5.png');
         }
     },
-    "Settings": () => showRPGChat("Settings is under development")
+    "Settings": () => showRPGChat("Configuration module is currently locked.", 'assets/img/mayor_5.png')
 };
 
 const tooltipOptionsData = {
@@ -341,7 +361,7 @@ document.querySelectorAll(".hotspot-tooltip .tooltip-box").forEach((box) => {
         if (!key) return; // Nếu hộp thoại không có data-options (như HELP), bỏ qua để luồng khác xử lý
 
         setControlPanelBackgroundVideo();
-        showRPGChat("You’ve accessed the control panel. Choose an option.");
+        showRPGChat("Security clearance granted. Control panel access synchronized.", 'assets/img/mayor_5.png');
         box.classList.add("tooltip-pulse-border");
 
         setTimeout(() => {

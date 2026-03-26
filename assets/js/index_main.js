@@ -232,7 +232,7 @@ const optionActions = {
         openModalByKey("aboutMe");
         if (window.initAboutMeGallery) window.initAboutMeGallery(modalContent);
     },
-    "Chat": () => showRPGChat("AI chat is currently under maintenance. Please check back later.", 'assets/img/mayor_5.png' ),
+    "Chat": () => window.location.href = "chat.html",
     "CTC-PLAN editor": () => window.location.href = "ctc-planer.html",
     "Tutorial": () => {
         if (window.startTutorial) {

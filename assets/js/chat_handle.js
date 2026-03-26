@@ -4,15 +4,16 @@
 const conversationList = [];
 let currentConversation = { id: genId(), title: 'Cuộc trò chuyện mới', messages: [] };
 
-const isMobile = window.matchMedia("(max-width: 980px)").matches;
-const historyListEl = isMobile
-    ? document.getElementById('historyListMobile')
-    : document.getElementById('historyList');
+const historyListEl = document.getElementById('historyList');
 
 const messagesBox = document.getElementById('messagesBox');
 const statusEl = document.getElementById('status');
 const promptInput = document.getElementById('promptInput');
 const sendBtn = document.getElementById('sendBtn');
+const quickSuggestions = document.getElementById('quickSuggestions');
+const faqTrigger = document.getElementById('faqTrigger');
+const newChatBtn = document.getElementById('newChatBtn');
+const clearBtn = document.getElementById('clear');
 
 /*************************************************
  * UTIL
@@ -91,7 +92,7 @@ function renderHistory() {
     historyListEl.innerHTML = '';
     conversationList.forEach(conv => {
         const item = document.createElement('div');
-        item.className = 'chat-item';
+        item.className = 'history-item';
 
         if (conv.id === currentConversation.id) {
             item.classList.add('active');
@@ -125,6 +126,7 @@ function loadConversation(id) {
  * RENDER MESSAGES
  *************************************************/
 function renderMessages() {
+    if (!messagesBox) return;
     messagesBox.innerHTML = '';
 
     currentConversation.messages.forEach(m => {
@@ -132,30 +134,26 @@ function renderMessages() {
         row.className = 'msg-row ' + (m.role === 'user' ? 'user' : 'assistant');
 
         if (m.role === 'assistant') {
-            const botBlock = document.createElement('div');
-            botBlock.className = 'bot-block';
-
-            const header = document.createElement('div');
-            header.className = 'bot-header';
-            header.innerHTML = `
-              <div class="avatar-bot">
-                <img src="assets/img/mayor_avatar.jpg" alt="Bot">
-              </div>
-              <div class="bot-name">Silver-Hand</div>
+            const rpgBox = document.createElement('div');
+            rpgBox.className = 'bot-rpg-box';
+            
+            // Defensively check content
+            const displayContent = m.content || '...';
+            
+            rpgBox.innerHTML = `
+                <div class="bot-avatar-sq">
+                    <img src="assets/img/mayor_avatar.jpg" alt="Bot">
+                </div>
+                <div class="bot-text-content">
+                    ${displayContent.includes('chat-loading') ? displayContent : sanitizeHTML(displayContent)}
+                </div>
             `;
-
-            const msgEl = document.createElement('div');
-            msgEl.className = 'msg assistant';
-            msgEl.innerHTML = sanitizeHTML(m.content);
-
-            botBlock.appendChild(header);
-            botBlock.appendChild(msgEl);
-            row.appendChild(botBlock);
+            row.appendChild(rpgBox);
         } else {
-            const msgEl = document.createElement('div');
-            msgEl.className = 'msg user';
-            msgEl.textContent = m.content;
-            row.appendChild(msgEl);
+            const bubble = document.createElement('div');
+            bubble.className = 'msg-bubble';
+            bubble.textContent = m.content;
+            row.appendChild(bubble);
         }
 
         messagesBox.appendChild(row);
@@ -190,7 +188,7 @@ async function sendMessage() {
     const stopLoading = startChatLoading(loading.id);
 
     try {
-        statusEl.textContent = 'Kết nối...';
+        if (statusEl) statusEl.textContent = 'Kết nối...';
 
         const resp = await fetch('/api/chat', {
             method: 'POST',
@@ -217,7 +215,7 @@ async function sendMessage() {
     } finally {
         if (typeof stopLoading === "function") stopLoading();
 
-        statusEl.textContent = 'Online';
+        if (statusEl) statusEl.textContent = 'Online';
 
         const exists = conversationList.find(c => c.id === currentConversation.id);
         if (!exists) {
@@ -244,38 +242,32 @@ promptInput.addEventListener('keydown', e => {
     }
 });
 
-document.getElementById('newConv').addEventListener('click', () => {
-    currentConversation = { id: genId(), title: 'Cuộc trò chuyện mới', messages: [] };
-    renderMessages();
+
+/*************************************************
+ * NEW CHAT
+ *************************************************/
+function startNewChat() {
+    currentConversation = { id: genId(), title: 'Luồng dữ liệu mới', messages: [] };
+    initFirstMessage();
+    renderHistory();
+}
+
+newChatBtn?.addEventListener('click', () => {
+    startNewChat();
+    // Auto-close sidebar on mobile/narrow
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) sidebar.classList.remove('active');
 });
 
 /*************************************************
- * CLEAR HISTORY MODAL
+ * CLEAR DATA
  *************************************************/
-const confirmModal = document.getElementById("confirmModal");
-const confirmYes = document.getElementById("confirmYes");
-const confirmNo = document.getElementById("confirmNo");
-const clearBtn = document.getElementById("clear");
-
-clearBtn.addEventListener("click", () => {
-    confirmModal.style.display = "flex";
-});
-
-confirmYes.addEventListener("click", () => {
-    conversationList.length = 0;
-    renderHistory();
-    currentConversation = { id: genId(), title: 'Cuộc trò chuyện mới', messages: [] };
-    renderMessages();
-    confirmModal.style.display = "none";
-});
-
-confirmNo.addEventListener("click", () => {
-    confirmModal.style.display = "none";
-});
-
-confirmModal.addEventListener("click", (e) => {
-    if (e.target === confirmModal) {
-        confirmModal.style.display = "none";
+clearBtn?.addEventListener("click", () => {
+    const ok = confirm("CẢNH BÁO: Bạn có chắc chắn muốn XÓA TOÀN BỘ dữ liệu hội thoại? Thao tác này không thể hoàn tác.");
+    if (ok) {
+        conversationList.length = 0;
+        localStorage.removeItem('chat_history'); // Clear persistence if exists
+        startNewChat();
     }
 });
 
@@ -294,24 +286,64 @@ document.getElementById('export')?.addEventListener('click', () => {
 });
 
 /*************************************************
- * INIT
+ * QUICK SUGGESTIONS (FAQ POPUP)
  *************************************************/
-function init() {
-    currentConversation.messages.push({
-        role: 'assistant',
-        content: `Xin chào! Mình là Chatbot <b style="color: orange">Silver-Hand</b> của SAO-ĐÊM hỗ trợ newbies.<br>Hãy hỏi mình những câu hỏi xoay quanh <b style="color: orange">LifeAfter</b> nhé.
-            <video 
-                src="assets/videos/mayor_confuse_3d.mp4"
-                autoplay
-                loop
-                muted
-                playsinline
-                style="width:100px;height:100px;border-radius:8px;"
-            ></video>
-        `
+function renderQuickSuggestions() {
+    const questions = [
+        "Sự kiện camp hôm nay có gì?",
+        "Làm sao để lên cấp nhanh?",
+        "Nhiệm vụ Shelter Land",
+        "Nghề nào kiếm tiền tốt?",
+        "Cách nạp thẻ an toàn"
+    ];
+
+    quickSuggestions.innerHTML = `
+        <div class="sidebar-header" style="margin-bottom:30px">
+            <h1>SELECT_NEURAL_QUERY</h1>
+        </div>
+        <div class="suggestions-grid"></div>
+        <button class="hud-action-btn wipe-btn" style="margin-top:30px; width:auto; padding:10px 30px" onclick="toggleFAQ()">CANCEL</button>
+    `;
+    
+    const grid = quickSuggestions.querySelector('.suggestions-grid');
+
+    questions.forEach(q => {
+        const chip = document.createElement('div');
+        chip.className = 'suggestion-chip';
+        chip.textContent = q;
+        chip.onclick = () => {
+            promptInput.value = q;
+            toggleFAQ();
+            sendMessage();
+        };
+        grid.appendChild(chip);
     });
+}
+
+function toggleFAQ() {
+    quickSuggestions.classList.toggle('active');
+}
+
+faqTrigger?.addEventListener('click', toggleFAQ);
+
+// Close FAQ on backdrop click
+quickSuggestions?.addEventListener('click', (e) => {
+    if (e.target === quickSuggestions) toggleFAQ();
+});
+
+function initFirstMessage() {
+    currentConversation.messages = [{
+        role: 'assistant',
+        content: `NEURAL LINK ESTABLISHED. <b style="color: #5ef2d6">SILVER-HAND NODE</b> READY FOR INQUIRIES.<br>WELCOME BACK, CITIZEN.`
+    }];
     renderMessages();
-    statusEl.textContent = 'Online';
+}
+
+function init() {
+    initFirstMessage();
+    renderQuickSuggestions();
+    if (statusEl) statusEl.textContent = 'ONLINE';
+    if(renderHistory) renderHistory();
 }
 
 init();

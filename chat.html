@@ -1,191 +1,111 @@
 <!doctype html>
 <html lang="vi">
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width,initial-scale=1" />
-	<title>Silver-Hand Chatbot- SAO-ĐÊM</title>
-	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-	<link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
-	
-	<link rel="stylesheet" href="assets/css/loading.css">
-	<link rel="stylesheet" href="assets/css/index.css">
-	<link rel="stylesheet" href="assets/css/modal_faq.css">
-	<link rel="stylesheet" href="assets/css/tutorial.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Silver-Hand | Neural Chat Node</title>
+    
+    <!-- Design System Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/chat_gamer.css">
+    <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
 </head>
 <body>
 
+<div id="loadingOverlay" style="display:none"></div>
 
-<div id="loadingOverlay">
-	<div class="loading-wrapper">
-		<div class="loading-text">
-			<span class="sao">SAO &nbsp;</span><span class="dem"> ĐÊM</span>
-		</div>
+<div class="chat-container">
+    <!-- REFACTORED SIDEBAR -->
+    <aside class="chat-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h1>NEURAL_CONTROL</h1>
+        </div>
+        
+        <button id="newChatBtn" class="hud-action-btn">INITIALIZE_NEW_LINK</button>
+        
+        <div class="sidebar-header" style="margin-top: 25px">
+            <h1>HISTORY_LOGS</h1>
+        </div>
+        
+        <div class="sidebar-content" id="historyList">
+            <!-- Dynamically populated -->
+        </div>
 
-		<!-- 🔽 PROGRESS BAR -->
-		<div class="loading-progress">
-			<div class="progress-bar" id="loadingProgress"></div>
-			<div class="loading-info">
-				<span id="loadingStatus">INITIALIZING...</span>
-				<span id="loadingPercentage">0%</span>
-			</div>
-		</div>
+        <div class="sidebar-footer" style="margin-top:20px; border-top: 1px solid var(--border-dim); padding-top:15px">
+            <button id="clear" class="hud-action-btn wipe-btn">WIPE_OUT_DATA</button>
+            <div id="clock" style="font-family:'Orbitron'; font-size:14px; margin-top:10px; color:var(--neon-cyan); text-align:center">00:00:00</div>
+        </div>
+    </aside>
 
-		<div class="line top"></div>
-		<div class="line bottom"></div>
-	</div>
+    <!-- QUICK SUGGESTIONS OVERLAY (HIDDEN BY DEFAULT) -->
+    <div class="quick-suggestions" id="quickSuggestions">
+        <!-- FAQ items injected here -->
+    </div>
+
+    <main class="chat-main">
+        <div class="chat-topbar">
+            <div class="topbar-left">
+                <button id="toggleSidebar" class="menu-trigger-btn">NEURAL_MENU</button>
+                <button id="faqTrigger" class="faq-trigger-btn" title="Quick Queries">?</button>
+            </div>
+            
+            <div class="topbar-right">
+                <button onclick="window.location.href='index.html'" class="hud-back-btn">EXIT_NODE</button>
+            </div>
+        </div>
+        
+        <div class="chat-topbar" style="height:30px; background:transparent; border:none; justify-content:center; opacity:0.4">
+             <span style="font-size:9px; letter-spacing:3px">NODE: SILVER_HAND_V4.0</span>
+        </div>
+
+        <!-- CHAT MESSAGES PANEL -->
+        <div class="messages-area" id="messagesBox">
+            <!-- Messages appear here -->
+        </div>
+
+        <!-- REFACTORED COMPOSER -->
+        <div class="chat-composer">
+            <div class="input-wrapper">
+                <textarea id="promptInput" rows="1" placeholder="ENTER_NEURAL_COMMAND..."></textarea>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                <div class="status-indicator" style="position:static; padding:0; background:transparent">
+                    <div class="status-dot"></div>
+                    <span id="status" style="font-size: 8px; letter-spacing: 1px; color: var(--neon-cyan); opacity:0.7">ACTIVE</span>
+                </div>
+                <button id="sendBtn">EXECUTE</button>
+            </div>
+        </div>
+    </main>
 </div>
 
-<!-- Sidebar di động -->
-<div class="mobile-sidebar" id="mobileSidebar">
-	<div class="brand">
-		<div class="logo"><img src="assets/img/mayor_avatar.jpg"></div>
-		<div>
-			<h1>Lịch sử chat</h1>
-			<p class="subtitle">Danh sách</p>
-		</div>
-	</div>
-	
-	<div class="history history-content-list" id="historyListMobile">
-
-	</div>
-</div>
-
-
-<!--main content-->
-
-<div class="container">
-	<aside class="sidebar">
-		<div class="brand home-brand" id="homeBtn" title="Quay về màn hình chính">
-			<div class="logo">
-				<img src="assets/img/mayor_avatar.jpg">
-			</div>
-			<div>
-				<h1>SAO-ĐÊM</h1>
-				<p class="subtitle">Back to Home</p>
-			</div>
-		</div>
-		<div class="controls">
-			<button class="btn" id="newConv">+ Tạo mới</button>
-<!--			<button class="btn" id="export">Xuất</button>-->
-			<button id="toggleSidebar" class="btn">☴ Lịch sử</button>
-			<button class="btn" id="clear">Xóa</button>
-		</div>
-		
-		<div class="history" id="historyList"></div>
-<!--		<div class="small">Note: Hỏi đáp về Life After</div>-->
-		<div class="small" style="display: flex; justify-content: space-between; align-items: center">
-			<span>
-				InGame Time: <span id="clock" style="font-size: 20px; font-weight: bold;
-				color: #00ffff; font-family: 'Digital-Custom', sans-serif;
-				"></span>
-			</span>
-
-
-<!--			<button id="scheduleInfoBtn" title="AI Training Info">-->
-<!--				Event 📢-->
-<!--			</button>-->
-			<button id="tutorialHelpBtn"
-					title="Xem lại hướng dẫn">
-				❔
-			</button>
-		</div>
-	</aside>
-
-
-	<div id="aiModal" class="modal ai-modal">
-		<div class="modal-content ai-modal-content">
-			<h2>Lịch event camp</h2>
-
-			<div class="ai-training-box">
-				<div class="ai-title">Lưu ý: Đây là giờ VN, không phải giờ Ingame</div>
-
-				<pre class="ai-content">
-+ Thứ 2 giờ ngẫu nhiên trong phạm vi 19h - 20h30: Nhặt hòm (resource scramble)
-+ 19h hằng ngày sẽ là Patrol.
-+ 21h30 tối thứ 3: Def camp (camp invasion)
-+ 22h tối thứ 5: Boss camp.
-            </pre>
-
-				<img
-					src="assets/img/mayor_emote/mayor_notice.png"
-					class="ai-note-img"
-					alt="AI Notice"
-				/>
-			</div>
-
-			<button id="aiModalClose" class="close-btn">Đóng</button>
-		</div>
-	</div>
-
-
-	<!-- Modal hiển thị FAQ -->
-	<div id="faqModal" class="modal">
-		<div class="modal-content">
-			<h2>Câu hỏi thường gặp</h2>
-			<div class="faq-search-wrapper">
-				<input type="text" id="faqSearch" placeholder="🔍 Tìm câu hỏi..." />
-				<button id="faqClear" class="faq-clear">x</button>
-			</div>
-			<ul id="faqList">
-				<li data-question="Thời gian của sự kiện camp">Thời gian của sự kiện camp</li>
-				<li data-question="Camp SAO-ĐÊM hoạt động ra sao?">Camp SAO-ĐÊM hoạt động ra sao?</li>
-				<li data-question="Thông tin cơ bản về nghề trong Life After">Thông tin cơ bản về nghề (Cert)</li>
-				<li data-question="Chọn nghề nào phù hợp khi là newbie?">Chọn nghề nào phù hợp khi là newbie?</li>
-				<li data-question="Thông tin về nông trại (farm)">Thông tin về nông trại (farm)</li>
-			</ul>
-			<button id="faqClose" class="close-btn">Đóng</button>
-		</div>
-	</div>
-
-
-	<!-- Modal xác nhận xóa -->
-	<div id="confirmModal" class="modal">
-		<div class="modal-content">
-			<h3 class="modal-warning-title">Xóa toàn bộ lịch sử?</h3>
-			<p>Bạn có chắc muốn xóa mọi cuộc trò chuyện không?</p>
-			<div class="modal-actions">
-				<button id="confirmYes" class="btn neon-btn">Có</button>
-				<button id="confirmNo" class="btn neon-btn cancel">Không</button>
-			</div>
-		</div>
-	</div>
-
-
-	<main class="panel">
-		<div class="topbar">
-			<div id="faqBtn" class="title">Click hỏi nhanh <span class="neon-q">?</span></div>
-			<div class="status" id="status">Online </div>
-		</div>
-		
-		<div class="chat-area">
-			<div class="messages" id="messagesBox"></div>
-			<div class="composer">
-				<textarea id="promptInput" rows="2" placeholder="Nhập câu hỏi... (Shift+Enter để xuống dòng)"></textarea>
-				<button id="sendBtn">Gửi</button>
-			</div>
-		</div>
-	</main>
-</div>
-
-<!-- Tutorial Overlay -->
-<div id="tutorial-overlay">
-	<div id="spotlight"></div>
-</div>
-
-<script src="assets/js/tutorial.js"></script>
-<script>
-
-	document.getElementById("homeBtn")?.addEventListener("click", () => {
-		window.location.href = "index.html"; // hoặc overview.html
-	});
-</script>
-
-
+<!-- Scripts -->
 <script src="assets/js/hope101_time.js"></script>
-<script src="assets/js/index.js"></script>
 <script src="assets/js/chat_handle.js"></script>
 <script src="assets/js/loading.js"></script>
-<script src="assets/js/side_bar.js"></script>
-<script src="assets/js/faq.js"></script>
+<script>
+    // Simple side bar toggle
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.getElementById('toggleSidebar');
+    
+    toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sidebar.classList.toggle('active');
+    });
+    
+    // Close sidebar on click outside
+    document.addEventListener('click', (e) => {
+        if (!sidebar.contains(e.target) && e.target !== toggle) {
+            sidebar.classList.remove('active');
+        }
+    });
+
+    // Auto-resize textarea
+    const textarea = document.getElementById('promptInput');
+    textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+    });
+</script>
 </body>
 </html>

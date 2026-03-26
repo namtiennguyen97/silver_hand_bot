@@ -253,6 +253,34 @@ window.addEventListener('load', () => {
     warmupVideo(videoAlt, false); // Keep alt paused initially
     hotspotEngine.collect();
     syncLayout();
+    
+    // HUD SYNC EFFECT - triggered when loading is finished
+    window.addEventListener('app:loaded', () => {
+        const hudSync = document.createElement('div');
+        hudSync.id = 'hud-sync-overlay';
+        hudSync.innerHTML = `
+            <div class="hud-sync-text">HUD SYNCHRONIZING...</div>
+            <div class="hud-scan-line"></div>
+        `;
+        document.body.appendChild(hudSync);
+        
+        setTimeout(() => {
+            hudSync.classList.add('fade-out');
+            setTimeout(() => {
+                hudSync.remove();
+                // Reveal hotspots with a slight delay for dramatic effect
+                document.querySelectorAll('.hotspot').forEach((hs, i) => {
+                    hs.style.opacity = '0';
+                    hs.style.transform = 'scale(0.5)';
+                    hs.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    setTimeout(() => {
+                        hs.style.opacity = '1';
+                        hs.style.transform = 'scale(1)';
+                    }, 300 + (i * 100));
+                });
+            }, 500);
+        }, 1200);
+    });
 });
 
 window.addEventListener('resize', syncLayout);
@@ -299,7 +327,13 @@ document.querySelectorAll(".hotspot-tooltip .tooltip-box").forEach((box) => {
                 const optionEl = document.createElement("div");
                 optionEl.className = "cyber-option";
                 optionEl.textContent = text;
-                optionEl.style.animation = `slideIn 0.4s ease forwards ${index * 0.08}s`;
+                
+                // Add index number for HUD feel [01], [02] etc.
+                const displayIndex = (index + 1).toString().padStart(2, '0');
+                optionEl.setAttribute('data-index', `[${displayIndex}]`);
+                
+                // Trigger sequential reveal animation
+                optionEl.style.animation = `cyberReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards ${index * 0.08}s`;
                 
                 optionEl.addEventListener("click", (ev) => {
                     ev.stopPropagation();

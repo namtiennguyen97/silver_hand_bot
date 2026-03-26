@@ -1,3 +1,9 @@
+@font-face {
+    font-family: 'Conthrax';
+    src: url('../fonts/Conthrax-SemiBold.otf') format('opentype');
+    font-display: swap;
+}
+
 #stage {
     position: fixed;
     inset: 0;
@@ -9,6 +15,7 @@
     -webkit-touch-callout: none; /* iOS: chặn popup */
     -webkit-user-select: none;
     user-select: none;
+    font-family: 'Conthrax', 'Orbitron', sans-serif;
 }
 
 /* QUAN TRỌNG */
@@ -190,29 +197,64 @@
     filter: drop-shadow(0 0 6px #5ef2d6);
 }
 .tooltip-box {
-    background: rgba(0, 20, 25, 0.75);
-    border: 1px solid rgba(94,242,214,0.5);
-    border-radius: 10px;
-    padding: 10px 14px;
-
+    position: relative;
+    background: linear-gradient(135deg, rgba(0, 20, 25, 0.85) 0%, rgba(0, 35, 45, 0.7) 100%);
+    border: 1px solid rgba(94, 242, 214, 0.4);
+    border-radius: 4px; /* Shorter radius for game feel */
+    padding: 10px 16px;
     box-shadow:
-        0 0 12px rgba(94,242,214,0.4),
-        inset 0 0 10px rgba(94,242,214,0.15);
-
-    backdrop-filter: blur(6px);
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 0 10px rgba(94, 242, 214, 0.2),
+        inset 0 0 15px rgba(94, 242, 214, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     color: #eaffff;
     font-size: 13px;
+    overflow: visible;
+}
+
+/* HUD corners for tooltip */
+.tooltip-box::before,
+.tooltip-box::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border: 1px solid #5ef2d6;
+    pointer-events: none;
+}
+.tooltip-box::before {
+    top: -1px;
+    left: -1px;
+    border-right: none;
+    border-bottom: none;
+}
+.tooltip-box::after {
+    bottom: -1px;
+    right: -1px;
+    border-left: none;
+    border-top: none;
 }
 
 .tooltip-title {
-    font-size: 11px;
-    letter-spacing: 0.12em;
+    font-size: 10px;
+    letter-spacing: 0.15em;
     color: #5ef2d6;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    font-weight: 900;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
 
-    /*white-space: nowrap;*/
-    /*overflow: hidden;*/
-    /*text-overflow: ellipsis;*/
+.tooltip-title::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background: #5ef2d6;
+    display: inline-block;
+    box-shadow: 0 0 4px #5ef2d6;
 }
 
 
@@ -459,240 +501,88 @@
 #cyberOverlay {
     position: fixed;
     inset: 0;
-
-    /* giảm độ tối rất nhiều để thấy video 2 phía sau */
-    background:
-            radial-gradient(
-                    circle at center,
-                    rgba(0, 255, 255, 0.03) 0%,
-                    rgba(0, 18, 28, 0.18) 45%,
-                    rgba(0, 0, 0, 0.28) 100%
-            );
-
+    background: radial-gradient(circle at center, rgba(0, 15, 25, 0.75) 0%, rgba(0, 0, 0, 0.9) 100%);
     display: none;
-    align-items: center;
-    justify-content: center;
     flex-direction: column;
-    z-index: 50;
-    overflow-y: auto;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     padding: 20px;
-
-    /* blur nhẹ để tạo game feel, nhưng không che video */
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
 }
 
-/* OPTION - GIỮ NGUYÊN CÁCH JS CŨ ANIMATE */
+/* OPTION HUD CONTAINER */
 #cyberOverlay .cyber-option {
     position: relative;
-    width: min(82vw, 320px);
-    min-height: 56px;
-    margin: 10px 0;
-    padding: 14px 20px 14px 22px;
-
+    width: min(85vw, 340px);
+    min-height: 52px;
+    margin: 12px 0;
+    padding: 14px 24px;
+    background: linear-gradient(90deg, rgba(0, 48, 68, 0.9) 0%, rgba(0, 20, 28, 0.8) 100%);
+    border-left: 4px solid #5ef2d6;
+    color: #d8ffff;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    overflow: hidden;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
-    justify-content: center;
-    text-align: center;
-
-    font-family: 'Orbitron', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #d8ffff;
-
-    cursor: pointer;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    overflow: hidden;
-    isolation: isolate;
-
-    background:
-            linear-gradient(135deg, rgba(0, 18, 28, 0.92), rgba(0, 32, 44, 0.78));
-    border: 2px solid rgba(94, 242, 214, 0.75);
-
-    /* góc vát kiểu game */
-    clip-path: polygon(
-            14px 0,
-            100% 0,
-            100% calc(100% - 14px),
-            calc(100% - 14px) 100%,
-            0 100%,
-            0 14px
-    );
-
-    box-shadow:
-            0 0 8px rgba(94,242,214,0.45),
-            0 0 18px rgba(0,255,255,0.18),
-            inset 0 0 10px rgba(94,242,214,0.12),
-            inset 0 0 0 1px rgba(255,255,255,0.03);
-
-    transition:
-            transform 0.24s ease,
-            box-shadow 0.24s ease,
-            border-color 0.24s ease,
-            color 0.24s ease,
-            background 0.24s ease;
+    gap: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
 
-/* viền glow + scan */
+/* Index Number Marker [01] */
 #cyberOverlay .cyber-option::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-
-    background:
-            linear-gradient(
-                    90deg,
-                    rgba(0,255,255,0.18) 0%,
-                    rgba(0,255,255,0.05) 18%,
-                    rgba(255,255,255,0.02) 50%,
-                    rgba(0,255,255,0.05) 82%,
-                    rgba(0,255,255,0.18) 100%
-            );
-
-    opacity: 0.55;
-    animation: flicker 1.6s infinite alternate;
+    content: attr(data-index);
+    font-family: 'Conthrax', sans-serif;
+    color: #5ef2d6;
+    font-size: 11px;
+    opacity: 0.6;
 }
 
-/* scanline overlay */
-#cyberOverlay .cyber-option::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-
-    background:
-            repeating-linear-gradient(
-                    to bottom,
-                    rgba(255,255,255,0.04) 0px,
-                    rgba(255,255,255,0.04) 1px,
-                    transparent 1px,
-                    transparent 4px
-            );
-
-    opacity: 0.12;
-    mix-blend-mode: screen;
-}
-
-/* text nằm trên pseudo */
-#cyberOverlay .cyber-option {
-    z-index: 1;
-}
-
-/* mũi tên cyber bên trái */
-#cyberOverlay .cyber-option {
-    padding-left: 34px;
-}
-
-#cyberOverlay .cyber-option > * {
-    position: relative;
-    z-index: 2;
-}
-
-/* vì text đang là textContent trực tiếp, dùng pseudo riêng để giả icon */
-#cyberOverlay .cyber-option::marker {
-    content: '';
-}
-
-/* thêm mũi tên bằng span giả qua background layer */
-#cyberOverlay .cyber-option {
-    text-shadow:
-            0 0 6px rgba(0,255,255,0.15);
-}
-
-#cyberOverlay .cyber-option::selection {
-    background: transparent;
-}
-
-/* icon tam giác */
-#cyberOverlay .cyber-option {
-    position: relative;
-}
-
-#cyberOverlay .cyber-option span {
-    position: relative;
-    z-index: 2;
-}
-
-/* tạo icon trái bằng extra pseudo trên inner layer */
-#cyberOverlay .cyber-option {
-    --arrow-left: 14px;
-}
-
-#cyberOverlay .cyber-option {
-    background-image:
-            linear-gradient(135deg, rgba(0, 18, 28, 0.92), rgba(0, 32, 44, 0.78));
-}
-
-/* dùng 1 pseudo nhỏ cho arrow */
-#cyberOverlay .cyber-option .dummy {
-    display: none;
-}
-
-/* hover */
 #cyberOverlay .cyber-option:hover {
-    background:
-            linear-gradient(135deg, rgba(0, 48, 68, 0.95), rgba(0, 62, 88, 0.9));
-    border-color: #ffffff;
-    color: #ffffff;
-
-    box-shadow:
-            0 0 6px #ffffff,
-            0 0 16px rgba(0,255,255,0.6),
-            0 0 32px rgba(94,242,214,0.4),
-            inset 0 0 20px rgba(0,255,255,0.2),
-            inset 0 0 0 2px rgba(255,255,255,0.15);
-
-    /* JS đang animate translateX bằng inline transform,
-       nên hover KHÔNG set transform kiểu scale mạnh để tránh conflict */
+    background: linear-gradient(90deg, #5ef2d6 0%, #00ffff 100%);
+    color: #000;
+    transform: translateX(8px);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+    border-left-color: #ffffff;
 }
 
-/* active */
-#cyberOverlay .cyber-option:active {
-    box-shadow:
-            0 0 8px rgba(94,242,214,0.35),
-            inset 0 0 18px rgba(0,255,255,0.14);
-    filter: brightness(0.96);
+#cyberOverlay .cyber-option:hover::before {
+    color: #000;
 }
 
-/* shimmer quét ngang */
-#cyberOverlay .cyber-option::before {
-    background:
-            linear-gradient(
-                    90deg,
-                    rgba(0,255,255,0.16) 0%,
-                    rgba(0,255,255,0.06) 16%,
-                    rgba(255,255,255,0.03) 50%,
-                    rgba(0,255,255,0.06) 84%,
-                    rgba(0,255,255,0.16) 100%
-            );
+/* HUD corners */
+.cyber-option::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 6px;
+    height: 6px;
+    border-right: 2px solid rgba(94, 242, 214, 0.5);
+    border-top: 2px solid rgba(94, 242, 214, 0.5);
+    transition: inherit;
 }
 
-/* thêm line nhỏ bên trái kiểu HUD */
-#cyberOverlay .cyber-option {
-    box-sizing: border-box;
+#cyberOverlay .cyber-option:hover::after {
+    border-color: #000;
 }
 
-#cyberOverlay .cyber-option::after {
-    background:
-            linear-gradient(
-                    180deg,
-                    rgba(0,255,255,0.0) 0%,
-                    rgba(0,255,255,0.20) 50%,
-                    rgba(0,255,255,0.0) 100%
-            ),
-            repeating-linear-gradient(
-                    to bottom,
-                    rgba(255,255,255,0.03) 0px,
-                    rgba(255,255,255,0.03) 1px,
-                    transparent 1px,
-                    transparent 4px
-            );
+@keyframes cyberReveal {
+    from {
+        opacity: 0;
+        transform: translateX(30px) skewX(-10deg);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) skewX(0);
+    }
 }
 
 /* mobile */
@@ -730,4 +620,58 @@
 #hotspot-layer.is-hidden {
     opacity: 0;
     pointer-events: none;
+}
+
+/* HUD SYNC OVERLAY */
+#hud-sync-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100002;
+    background: rgba(0, 5, 10, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+}
+
+#hud-sync-overlay.fade-out {
+    opacity: 0;
+}
+
+.hud-sync-text {
+    font-family: 'Conthrax', sans-serif;
+    color: #5ef2d6;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    text-shadow: 0 0 10px rgba(94, 242, 214, 0.6);
+    animation: textFlicker 1.5s infinite;
+}
+
+.hud-scan-line {
+    position: absolute;
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(to bottom, transparent, rgba(94, 242, 214, 0.1), transparent);
+    top: -100px;
+    animation: hudScan 1.2s infinite linear;
+}
+
+@keyframes hudScan {
+    to { top: 100%; }
+}
+
+@keyframes textFlicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+    55% { opacity: 1; }
+    56% { opacity: 0.3; }
+    57% { opacity: 1; }
+}
+
+/* FIX HOTSPOT INITIAL STATE FOR ANIMATION */
+.hotspot {
+    opacity: 0; /* JS will reveal it */
 }

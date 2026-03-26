@@ -44,7 +44,7 @@ function sanitizeHTML(str) {
  *************************************************/
 function createChatLoading() {
     const id = "loading-" + Math.random().toString(36).slice(2, 7);
-    const TOTAL_CHUNKS = 8;
+    const TOTAL_CHUNKS = 10;
 
     let html = `
       <div class="chat-loading" data-loading-id="${id}">
@@ -57,6 +57,7 @@ function createChatLoading() {
 
     html += `
         </div>
+        <div class="loading-status-text">INITIALIZING_SEARCH...</div>
       </div>
     `;
 
@@ -68,16 +69,38 @@ function startChatLoading(id) {
     if (!wrapper) return;
 
     const chunks = wrapper.querySelectorAll(".chunk");
+    const statusText = wrapper.querySelector(".loading-status-text");
+    
+    const messages = [
+        "SEARCHING_NEURAL_DATABASE...",
+        "SYNCHRONIZING_COGNITIVE_NODES...",
+        "FILTERING_TOP_ANSWERS...",
+        "ANALYZING_CONTEXT_VECTORS...",
+        "ASSEMBLING_RESPONSE_STREAM...",
+        "ALMOST_DONE..."
+    ];
+    
     let index = 0;
+    let msgIndex = 0;
 
-    const timer = setInterval(() => {
+    const chunkTimer = setInterval(() => {
         chunks.forEach((c, i) => {
             c.classList.toggle("active", i <= index);
         });
         index = (index + 1) % chunks.length;
     }, 120);
 
-    return () => clearInterval(timer);
+    const textTimer = setInterval(() => {
+        if (statusText) {
+            statusText.textContent = messages[msgIndex];
+            msgIndex = (msgIndex + 1) % messages.length;
+        }
+    }, 1500);
+
+    return () => {
+        clearInterval(chunkTimer);
+        clearInterval(textTimer);
+    };
 }
 
 /*************************************************

@@ -239,7 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 500);
     });
 
-    const helpBtn = document.getElementById("tutorialHelpBtn");
+    const helpBtn = document.getElementById("startTutorialBtn");
     if (helpBtn) {
         helpBtn.addEventListener("click", (e) => {
             e.stopPropagation();

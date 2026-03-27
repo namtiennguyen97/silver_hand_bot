@@ -208,7 +208,8 @@ const modalData = {
     infoB: { title: "⚔️ Giới thiệu về Cert", template: "tpl-infoB" },
     infoC: { title: "🔐 Code Heart Lock Zone", template: "tpl-infoC" },
     infoD: { title: "🛠️ Chi tiết Cert", template: "tpl-infoD" },
-    aboutMe: { title: "Personal Profile", template: "tpl-aboutMe" }
+    aboutMe: { title: "Personal Profile", template: "tpl-aboutMe" },
+    news: { title: "LATEST NEWS", template: "tpl-news" }
 };
 
 function openModalByKey(key) {
@@ -234,6 +235,10 @@ const optionActions = {
     },
     "Chat": () => window.location.href = "chat.html",
     "CTC-PLAN editor": () => window.location.href = "ctc-planer.html",
+    "NEWS": () => {
+        openModalByKey("news");
+        fetchNews();
+    },
     "Tutorial": () => {
         if (window.startTutorial) {
             window.startTutorial();
@@ -246,7 +251,7 @@ const optionActions = {
 
 const tooltipOptionsData = {
     mayorOptions: ["Chat", "About me", "Tutorial", "Settings"],
-    controlOptions: ["Event Time", "Heart Lock Zone Code", "Cert Details", "CTC-PLAN editor"],
+    controlOptions: ["Event Time", "Heart Lock Zone Code", "Cert Details", "CTC-PLAN editor", "NEWS"],
     helpOptions: ["Tutorial"]
 };
 
@@ -549,3 +554,73 @@ window.initAboutMeGallery = function(container) {
         if (e.target === gallery) gallery.style.display = "none";
     });
 };
+
+async function fetchNews() {
+    const container = document.getElementById("newsContainer");
+    if (!container) return;
+
+    // Check if running via file:// protocol
+    const isLocalFile = window.location.protocol === 'file:';
+
+    try {
+        // If local, /api/news will fail. Suggest a local server.
+        const apiUrl = isLocalFile ? "api/news.js" : "/api/news"; // Just to trigger the catch with a better message
+        
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error("HTTP Status " + response.status);
+        
+        const data = await response.json();
+        console.log("MAYOR AI - News Data:", data);
+
+        if (data.news && data.news.length > 0) {
+            container.innerHTML = "";
+            data.news.forEach((item, index) => {
+                const itemEl = document.createElement("a");
+                itemEl.className = "news-item reveal";
+                itemEl.href = item.link;
+                itemEl.target = "_blank";
+                itemEl.style.animationDelay = `${index * 0.1}s`;
+                
+                // Using innerHTML with a clean template to ensure classes are correctly applied and rendered
+                const titleText = item.title || "NO TITLE DATA";
+                itemEl.innerHTML = `
+                    <div class="news-item-overlay"></div>
+                    <div class="news-scan-line"></div>
+                    <div class="news-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; position: relative; z-index: 2;">
+                        <span class="news-category">${item.category || 'NEWS'}</span>
+                        <span class="news-date">${item.date || ''}</span>
+                    </div>
+                    <div class="news-title" style="color: #ffffff !important; display: block !important; visibility: visible !important; opacity: 1 !important; z-index: 10 !important; font-weight: bold !important; font-size: 16px !important; margin: 8px 0 !important; font-family: 'Conthrax', 'Orbitron', Arial, sans-serif !important;">${titleText}</div>
+                    <div class="news-summary" style="display: block !important; color: rgba(216, 255, 255, 0.8) !important;">${item.summary || ''}</div>
+                `;
+
+                container.appendChild(itemEl);
+            });
+        } else {
+            container.innerHTML = `
+                <div class="news-loading-text" style="padding: 20px; text-align: center;">
+                    NO DATA ACCESSED. SYSTEM CLEAR.
+                </div>
+            `;
+        }
+    } catch (err) {
+        console.error("News fetch error:", err);
+        
+        let errorMessage = "CRITICAL ERROR: CONNECTION TIMEOUT";
+        let subMessage = "The neural link to the news database was severed.";
+        
+        if (isLocalFile) {
+            errorMessage = "PROTOCOL RESTRICTION: CORS BLOCK";
+            subMessage = "System detected local file access (file://). To access live news, please use a local server (e.g., 'npx vercel dev' or VS Code Live Server).";
+        }
+
+        container.innerHTML = `
+            <div class="news-loading-text" style="padding: 20px; text-align: center; color: var(--danger);">
+                <div>${errorMessage}</div>
+                <div style="font-size: 10px; margin-top: 10px; color: var(--muted); text-transform: none; font-family: sans-serif;">
+                    ${subMessage}
+                </div>
+            </div>
+        `;
+    }
+}

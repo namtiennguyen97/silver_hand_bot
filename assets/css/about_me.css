@@ -1,0 +1,426 @@
+/* ABOUT ME MODAL - GAMER CV STYLE */
+
+.bio-container {
+    padding: 10px;
+    font-family: 'Conthrax', 'Orbitron', sans-serif;
+    color: #d1f7ff;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Header with Avatar and Basic Info */
+.bio-header {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    border-bottom: 2px solid rgba(94, 242, 214, 0.3);
+    padding-bottom: 15px;
+}
+
+.bio-avatar-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border: 2px solid #5ef2d6;
+    padding: 3px;
+    background: rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+}
+
+.bio-avatar-clip {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden; /* Clips the scanning effect safely */
+}
+
+.bio-avatar-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(1.2) contrast(1.1) saturate(1.2);
+}
+
+/* Scanning effect on avatar */
+.bio-avatar-scan {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(94, 242, 214, 0.4) 50%, transparent 100%);
+    background-size: 100% 20px;
+    animation: bioScan 2s infinite linear;
+    pointer-events: none;
+}
+
+@keyframes bioScan {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(100%); }
+}
+
+.bio-main-info {
+    flex: 1;
+}
+
+.bio-name {
+    font-size: 20px;
+    font-weight: 900;
+    color: #5ef2d6;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+    text-shadow: 0 0 10px rgba(94, 242, 214, 0.5);
+}
+
+.bio-title {
+    font-size: 11px;
+    color: #00ffff;
+    opacity: 0.8;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+/* Stats Grid */
+.bio-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.bio-stat-item {
+    background: rgba(94, 242, 214, 0.05);
+    border-left: 3px solid #5ef2d6;
+    padding: 8px 12px;
+    position: relative;
+}
+
+.bio-stat-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    color: rgba(94, 242, 214, 0.6);
+    margin-bottom: 4px;
+}
+
+.bio-stat-value {
+    font-size: 13px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+/* Mission/Bio Section */
+.bio-section {
+    margin-top: 10px;
+}
+
+.bio-section-title {
+    font-size: 12px;
+    color: #5ef2d6;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(94, 242, 214, 0.2);
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.bio-text {
+    font-size: 12px;
+    line-height: 1.6;
+    color: #e0ffff;
+    background: rgba(0, 20, 30, 0.4);
+    padding: 12px;
+    border: 1px dashed rgba(94, 242, 214, 0.3);
+    position: relative;
+}
+
+/* Decorative HUD corners for bio text */
+.bio-text::before {
+    content: '[';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    color: #5ef2d6;
+    font-size: 10px;
+}
+
+.bio-text::after {
+    content: ']';
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    color: #5ef2d6;
+    font-size: 10px;
+}
+
+/* Footer Info */
+.bio-footer {
+    font-size: 9px;
+    text-align: right;
+    opacity: 0.5;
+    font-style: italic;
+    margin-top: 10px;
+}
+
+/* Avatar Tooltip */
+.avatar-tooltip {
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #5ef2d6;
+    color: #000;
+    font-size: 8px;
+    padding: 2px 6px;
+    white-space: nowrap;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 10px #5ef2d6;
+    animation: tooltipPulse 1.5s infinite alternate;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.avatar-tooltip::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 4px solid #5ef2d6;
+}
+
+@keyframes tooltipPulse {
+    from { opacity: 0.7; transform: translateX(-50%) scale(0.95); }
+    to { opacity: 1; transform: translateX(-50%) scale(1.05); }
+}
+
+/* Bio Gallery Overlay - Digital Screen Style */
+.bio-gallery-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
+    display: none; /* Shown via JS */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+    border: 2px solid rgba(94, 242, 214, 0.2);
+}
+
+.gallery-screen {
+    position: relative;
+    max-width: 90vw;
+    max-height: 80vh;
+    border: 2px solid #5ef2d6;
+    padding: 5px;
+    background: #000;
+    box-shadow: 0 0 30px rgba(94, 242, 214, 0.3);
+}
+
+.gallery-image {
+    width: 100%;
+    height: 100%;
+    max-width: 800px;
+    max-height: 600px;
+    object-fit: contain;
+    display: block;
+    filter: brightness(1.1);
+}
+
+/* Scan lines for the gallery screen */
+.gallery-screen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+}
+
+.gallery-nav,
+.gallery-nav:hover,
+.gallery-nav:active,
+.gallery-nav:focus {
+    background: transparent !important;
+    background-color: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+.gallery-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    user-select: none;
+}
+
+.gallery-nav svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: rgba(94, 242, 214, 0.4);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 5px rgba(94, 242, 214, 0.3));
+    transition: all 0.3s;
+}
+
+.gallery-nav:hover svg {
+    stroke: #5ef2d6;
+    stroke-width: 4;
+    filter: drop-shadow(0 0 15px #5ef2d6);
+    transform: scale(1.1);
+}
+
+.gallery-nav.prev { left: -100px; }
+.gallery-nav.next { right: -100px; }
+
+.gallery-nav:active svg {
+    transform: scale(0.9);
+    filter: brightness(2);
+}
+
+.gallery-close {
+    position: absolute;
+    top: -40px;
+    right: -10px;
+    color: #5ef2d6;
+    font-size: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 2px solid #5ef2d6;
+    padding-bottom: 2px;
+}
+
+/* Mobile Gallery Overrides */
+@media (max-width: 1024px) {
+    .gallery-nav.prev { left: 10px; top: auto; bottom: -80px; transform: none; }
+    .gallery-nav.next { right: 10px; top: auto; bottom: -80px; transform: none; }
+    .gallery-nav { width: 60px; height: 60px; }
+    .gallery-close { right: 0; top: -30px; }
+}
+
+/* Chronicle / Timeline Section */
+.bio-chronicle {
+    margin-top: 15px;
+    padding-left: 10px;
+    position: relative;
+}
+
+.bio-chronicle::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 5px;
+    bottom: 5px;
+    width: 2px;
+    background: linear-gradient(to bottom, #5ef2d6, transparent);
+    box-shadow: 0 0 8px rgba(94, 242, 214, 0.5);
+}
+
+.chronicle-item {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+.chronicle-item::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 4px;
+    width: 8px;
+    height: 8px;
+    background: #5ef2d6;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #5ef2d6;
+}
+
+.chronicle-date {
+    font-size: 10px;
+    font-weight: bold;
+    color: #5ef2d6;
+    margin-bottom: 3px;
+    opacity: 0.9;
+}
+
+.chronicle-event {
+    font-size: 11px;
+    line-height: 1.4;
+    color: #ffffff;
+    opacity: 0.85;
+}
+
+.chronicle-event b {
+    color: #ff9d00;
+    text-shadow: 0 0 5px rgba(255, 157, 0, 0.4);
+}
+
+/* Mobile Adjustments - Keeping horizontal layout */
+@media (max-width: 480px) {
+    .bio-container {
+        padding: 8px; /* Slightly tighter */
+    }
+
+    .bio-header {
+        flex-direction: row; /* Force horizontal */
+        align-items: flex-start;
+        text-align: left;
+        gap: 10px; /* Reduced gap */
+    }
+    
+    .bio-stats-grid {
+        grid-template-columns: repeat(2, 1fr); /* Force 2 columns */
+        gap: 6px; /* Tighter grid */
+    }
+    
+    .bio-avatar-wrapper {
+        width: 70px; /* Smaller avatar to give more space to info */
+        height: 70px;
+    }
+
+    .bio-avatar-clip {
+        width: 100%;
+        height: 100%;
+    }
+
+    .bio-name {
+        font-size: 15px; /* Smaller name */
+        letter-spacing: 1px;
+    }
+
+    .bio-title {
+        font-size: 9px;
+    }
+
+    .bio-stat-item {
+        padding: 5px 8px; /* Compact padding */
+    }
+
+    .bio-stat-label {
+        font-size: 7.5px; /* Very small labels */
+        margin-bottom: 2px;
+    }
+
+    .bio-stat-value {
+        font-size: 9.5px; /* Small but readable values */
+        white-space: nowrap; /* Prevent ugly wrapping */
+    }
+
+    .chronicle-event {
+        font-size: 10px;
+    }
+}

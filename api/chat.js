@@ -32,72 +32,61 @@ export default async function handler(req, res) {
     if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
     try {
-        const { messages } = req.body || {};
+        const { messages, systemOverride } = req.body || {};
         if (!messages || !Array.isArray(messages)) {
             return res.status(400).json({ error: "Invalid request: messages array required" });
         }
 
-        const userMessage = getLastUserMessage(messages);
-        if (!userMessage) return res.status(400).json({ error: "No user message found" });
+        let mergedSystem;
 
-        // ===== Debug logs (will appear in Vercel function logs) =====
-        console.log("[chat] userMessage:", userMessage.slice(0, 500));
+        if (systemOverride) {
+            // 1) Use override if specified (skip knowledge search)
+            mergedSystem = { role: "system", content: systemOverride };
+        } else {
+            // 2) Original RPG Chat flows: search knowledge
+            const userMessage = getLastUserMessage(messages);
+            if (!userMessage) return res.status(400).json({ error: "No user message found" });
+            
+            console.log("[chat] userMessage:", userMessage.slice(0, 500));
 
-        // 1) create embedding for user message
-        const embResp = await fetch("https://api.openai.com/v1/embeddings", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
-            },
-            body: JSON.stringify({
-                model: "text-embedding-3-small",
-                input: userMessage
-            })
-        });
+            // a) create embedding
+            const embResp = await fetch("https://api.openai.com/v1/embeddings", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: "text-embedding-3-small",
+                    input: userMessage
+                })
+            });
 
-        if (!embResp.ok) {
-            const t = await embResp.text();
-            console.error("[chat] Embedding API error:", t);
-            return res.status(502).json({ error: "Embedding API error", details: t });
+            if (!embResp.ok) {
+                const t = await embResp.text();
+                return res.status(502).json({ error: "Embedding API error", details: t });
+            }
+            const embJson = await embResp.json();
+            const userEmbedding = embJson?.data?.[0]?.embedding;
+
+            // b) score knowledge
+            const scored = knowledge.map(item => {
+                const score = Array.isArray(item.embedding) ? cosineSim(userEmbedding, item.embedding) : 0;
+                return { ...item, score };
+            });
+            const top = scored.sort((a, b) => b.score - a.score).slice(0, 3);
+
+            // c) threshold & merge
+            const SCORE_THRESHOLD = 0.10;
+            const includeKnowledge = top[0] && top[0].score >= SCORE_THRESHOLD;
+            const knowledgeText = includeKnowledge ? top.map(k => `• ${k.title}\n${k.content}`).join("\n\n") : "";
+            
+            mergedSystem = {
+                role: "system",
+                content: includeKnowledge ? `${systemPrompt.content}\n\nKIẾN THỨC LIÊN QUAN:\n${knowledgeText}` : systemPrompt.content
+            };
         }
-        const embJson = await embResp.json();
-        const userEmbedding = embJson?.data?.[0]?.embedding;
-        if (!userEmbedding) {
-            console.error("[chat] embedding missing in response:", JSON.stringify(embJson).slice(0, 500));
-            return res.status(502).json({ error: "Invalid embedding response", details: embJson });
-        }
 
-        // 2) score knowledge items
-        const scored = knowledge.map(item => {
-            const score = Array.isArray(item.embedding) ? cosineSim(userEmbedding, item.embedding) : 0;
-            return { ...item, score };
-        });
-
-        // sort and pick top N
-        const topN = 3;
-        const top = scored.sort((a, b) => b.score - a.score).slice(0, topN);
-
-        console.log("[chat] top matches (title -> score):");
-        top.forEach(ti => console.log(`  - ${ti.title} -> ${ti.score.toFixed(4)}`));
-
-        // 3) threshold: if top score too low, don't include knowledge
-        const SCORE_THRESHOLD = 0.10; // adjust if needed (0.1 is conservative)
-        const includeKnowledge = top[0] && top[0].score >= SCORE_THRESHOLD;
-
-        const knowledgeText = includeKnowledge ? top.map(k => `• ${k.title}\n${k.content}`).join("\n\n") : "";
-        console.log("[chat] includeKnowledge:", includeKnowledge);
-
-        // debug: log snippet of knowledgeText
-        if (includeKnowledge) console.log("[chat] knowledgeText snippet:", knowledgeText.slice(0, 600));
-
-        // 4) merge into single system message (systemPrompt + knowledge)
-        const mergedSystem = {
-            role: "system",
-            content: includeKnowledge ? `${systemPrompt.content}\n\nKIẾN THỨC LIÊN QUAN:\n${knowledgeText}` : systemPrompt.content
-        };
-
-        // 5) build final messages: mergedSystem + conversation
         const finalMessages = [mergedSystem, ...messages];
 
         // 6) send to chat completions
@@ -110,7 +99,7 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 model: "gpt-4o-mini",
                 messages: finalMessages,
-                max_tokens: 800
+                max_tokens: 4000
             })
         });
 

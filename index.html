@@ -84,12 +84,11 @@
     </div>
   </div>
 
-  <div class="hotspot" data-x="690" data-y="50">
-
-    <div class="hotspot-tooltip" id="help-system">
-      <div class="tooltip-box pulse-help">
-        <div class="tooltip-title">HELP</div>
-        <div class="tooltip-text">Tutorial</div>
+  <div class="hotspot" data-x="680" data-y="50">
+    <div class="hotspot-tooltip" id="news-system">
+      <div class="tooltip-box news-btn-diagonal" data-modal="news">
+        <div class="tooltip-title">CITY NEWS</div>
+<!--        <div class="tooltip-text">Latest Updates</div>-->
       </div>
     </div>
   </div>
@@ -172,10 +171,6 @@
 <!--        <span>Code Heart lock Zone</span>-->
 <!--      </div>-->
 
-<!--      <div class="info-card" data-modal="infoD">-->
-<!--        🛠️-->
-<!--        <span>Chi tiết skills Cert</span>-->
-<!--      </div>-->
 <!--    </div>-->
 <!--  </div>-->
 
@@ -413,60 +408,6 @@
   </div>
 </template>
 
-<template id="tpl-infoD">
-  <div class="skill-section" data-skill-root>
-
-    <!-- JOB LIST (WHEEL VERSION) -->
-    <div class="job-list job-wheel" data-job-wheel>
-      <div class="job-wheel-track">
-
-        <div class="job-item" data-job="rifle">
-          <img src="assets/img/guide/cert_skills/rifle/rifle_symbol.png">
-          <span>Rifle</span>
-        </div>
-
-        <div class="job-item" data-job="virus">
-          <img src="https://picsum.photos/200?2">
-          <span>Virus</span>
-        </div>
-
-        <div class="job-item" data-job="warrior">
-          <img src="https://picsum.photos/200?3">
-          <span>Warrior</span>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- SKILL LIST -->
-    <div class="skill-zone">
-      <!-- BASIC SKILL -->
-      <div class="skill-basic">
-        <div class="skill-basic-label">Basic Skills</div>
-        <div class="skill-list"></div>
-      </div>
-
-      <!-- SKILL TRAIT -->
-      <div class="skill-trait">
-        <div class="skill-trait-label">Skill Trait</div>
-
-        <!-- CHỈ render vào đây -->
-        <div class="skill-trait-content">
-          <div class="skill-trait-placeholder">
-            Skill phụ sẽ hiển thị ở đây
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 🔥 PANEL CHI TIẾT -->
-  <div class="skill-detail-panel">
-    <div class="skill-detail-placeholder">
-      Chọn một skill để xem thông tin
-    </div>
-  </div>
-</template>
 
 <template id="tpl-aboutMe">
   <div class="bio-container">
@@ -579,13 +520,38 @@
 </template>
 
 <template id="tpl-news">
+    <div class="news-lang-wrapper" id="newsLangWrapper" style="display: none;">
+        <div class="news-lang-label">NEURAL_TRANS_LINK</div>
+        <select id="newsLangSelect" class="news-lang-select">
+            <option value="en">🇺🇸 ENGLISH [ORIGINAL]</option>
+            <option value="vi">🇻🇳 VIETNAMESE [DECRYPT]</option>
+            <option value="id">🇮🇩 INDONESIAN [DECRYPT]</option>
+            <option value="th">🇹🇭 THAI [DECRYPT]</option>
+            <option value="ph">🇵🇭 FILIPINO [DECRYPT]</option>
+        </select>
+    </div>
+
     <div class="news-container" id="newsContainer">
         <div class="news-loading">
             <div class="news-spinner"></div>
             <div class="news-loading-text">SYNCING DATA...</div>
         </div>
     </div>
-    <div class="news-source-link" style="text-align: center; margin-top: 15px; font-size: 10px; opacity: 0.8; font-family: 'Conthrax', sans-serif; color: #9aa5b1;">
+    
+    <div class="news-detail-view" id="newsDetail">
+        <div class="news-detail-header">
+            <button class="news-back-btn" id="newsBackBtn">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to List
+            </button>
+            <div class="news-detail-title-small" style="font-family: 'Ethnocentric'; font-size: 10px; color: #5ef2d6; opacity: 0.6; display: none;">READING ARTICLE...</div>
+        </div>
+        <div class="news-detail-body" id="newsDetailBody">
+            <!-- Article content will be injected here -->
+        </div>
+    </div>
+
+    <div class="news-source-link" id="newsSourceLink" style="text-align: center; margin-top: 15px; font-size: 10px; opacity: 0.8; font-family: 'Conthrax', sans-serif; color: #9aa5b1;">
         SOURCE FROM: <a href="https://www.lifeafter.game/news/" target="_blank" style="color: #5ef2d6; text-decoration: none; border-bottom: 1px solid rgba(94, 242, 214, 0.3);">LIFEAFTER.GAME</a>
     </div>
 </template>
@@ -613,7 +579,6 @@
 <script src="assets/js/tutorial_index.js"></script>
 <script src="assets/js/hope101_time.js"></script>
 <script src="assets/js/heartlock_zone_info.js"></script>
-<script src="assets/js/cert_detail_info_clone.js"></script>
 <script src="assets/js/rpg_chat.js"></script>
 <script src="assets/js/index_main.js"></script>
 

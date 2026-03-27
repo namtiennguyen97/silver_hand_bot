@@ -207,7 +207,6 @@ const modalData = {
     infoA: { title: "Thời gian event camp", template: "tpl-infoA" },
     infoB: { title: "⚔️ Giới thiệu về Cert", template: "tpl-infoB" },
     infoC: { title: "🔐 Code Heart Lock Zone", template: "tpl-infoC" },
-    infoD: { title: "🛠️ Chi tiết Cert", template: "tpl-infoD" },
     aboutMe: { title: "Personal Profile", template: "tpl-aboutMe" },
     news: { title: "LATEST NEWS", template: "tpl-news" }
 };
@@ -225,10 +224,6 @@ function openModalByKey(key) {
 const optionActions = {
     "Event Time": () => openModalByKey("infoA"),
     "Heart Lock Zone Code": () => openModalByKey("infoC"),
-    "Cert Details": () => {
-        openModalByKey("infoD");
-        if (window.initCertSkill) window.initCertSkill(modalContent);
-    },
     "About me": () => {
         openModalByKey("aboutMe");
         if (window.initAboutMeGallery) window.initAboutMeGallery(modalContent);
@@ -251,7 +246,7 @@ const optionActions = {
 
 const tooltipOptionsData = {
     mayorOptions: ["Chat", "About me", "Tutorial", "Settings"],
-    controlOptions: ["Event Time", "Heart Lock Zone Code", "Cert Details", "CTC-PLAN editor", "NEWS"],
+    controlOptions: ["Event Time", "Heart Lock Zone Code", "CTC-PLAN editor"],
     helpOptions: ["Tutorial"]
 };
 
@@ -311,8 +306,20 @@ document.querySelectorAll(".hotspot-tooltip .tooltip-box").forEach((box) => {
         e.stopPropagation();
         
         const key = box.dataset.options;
+        const targetModal = box.dataset.modal;
+
+        if (targetModal) {
+            if (targetModal === 'news') {
+                openModalByKey("news");
+                fetchNews();
+            } else {
+                openModalByKey(targetModal);
+            }
+            return;
+        }
+
         if (!key) {
-            // Check if it's the HELP button
+            // Check if it's the HELP button (Legacy / Alternate)
             if (box.classList.contains("pulse-help")) {
                 if (window.startTutorial) {
                     window.startTutorial();
@@ -559,67 +566,334 @@ async function fetchNews() {
     const container = document.getElementById("newsContainer");
     if (!container) return;
 
-    // Check if running via file:// protocol
-    const isLocalFile = window.location.protocol === 'file:';
-
     try {
-        // If local, /api/news will fail. Suggest a local server.
-        const apiUrl = isLocalFile ? "api/news.js" : "/api/news"; // Just to trigger the catch with a better message
-        
+        const apiUrl = "/api/news"; 
         const response = await fetch(apiUrl);
         if (!response.ok) throw new Error("HTTP Status " + response.status);
         
         const data = await response.json();
-        console.log("MAYOR AI - News Data:", data);
-
+        
         if (data.news && data.news.length > 0) {
             container.innerHTML = "";
+            
+            // 1) Add Broadcast Header
+            const headerEl = document.createElement("div");
+            headerEl.className = "news-broadcast-header";
+            headerEl.innerHTML = `
+                <div class="news-live-tag">
+                    <div class="news-live-dot"></div>
+                    LIVE BROADCAST
+                </div>
+<!--                <div class="news-station-name">SAO-ĐÊM NETWORK</div>-->
+            `;
+            container.appendChild(headerEl);
+
+            // 2) Render News Cards
             data.news.forEach((item, index) => {
-                const itemEl = document.createElement("a");
-                itemEl.className = "news-item reveal";
-                itemEl.href = item.link;
-                itemEl.target = "_blank";
+                const itemEl = document.createElement("div");
+                itemEl.className = "news-broadcast-card";
                 itemEl.style.animationDelay = `${index * 0.1}s`;
                 
-                // Using innerHTML with a clean template to ensure classes are correctly applied and rendered
-                const titleText = item.title || "NO TITLE DATA";
+                const isFirst = index === 0;
+                
                 itemEl.innerHTML = `
-                    <div class="news-item-overlay"></div>
-                    <div class="news-scan-line"></div>
-                    <div class="news-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; position: relative; z-index: 2;">
-                        <span class="news-category">${item.category || 'NEWS'}</span>
-                        <span class="news-date">${item.date || ''}</span>
+                    ${isFirst ? '<div class="news-card-breaking">BREAKING</div>' : ''}
+                    <div class="news-card-body">
+                        <div class="news-card-meta">
+                            <span class="news-card-category">${item.category || 'URGENT'}</span>
+                            <span class="news-card-date">${item.date || ''}</span>
+                        </div>
+                        <div class="news-card-title">${item.title}</div>
+                        <div class="news-card-summary">${item.summary || ''}</div>
                     </div>
-                    <div class="news-title" style="color: #ffffff !important; display: block !important; visibility: visible !important; opacity: 1 !important; z-index: 10 !important; font-weight: bold !important; font-size: 16px !important; margin: 8px 0 !important; font-family: 'Conthrax', 'Orbitron', Arial, sans-serif !important;">${titleText}</div>
-                    <div class="news-summary" style="display: block !important; color: rgba(216, 255, 255, 0.8) !important;">${item.summary || ''}</div>
                 `;
 
+                itemEl.onclick = () => loadNewsDetail(item.link);
                 container.appendChild(itemEl);
             });
-        } else {
-            container.innerHTML = `
-                <div class="news-loading-text" style="padding: 20px; text-align: center;">
-                    NO DATA ACCESSED. SYSTEM CLEAR.
+
+            // 3) Add Scrolling Ticker
+            const tickerWrap = document.createElement("div");
+            tickerWrap.className = "news-ticker-wrap";
+            
+            const tickerItems = data.news.slice(0, 5).map(n => `<span class="news-ticker-item">${n.title}</span>`).join("");
+            
+            tickerWrap.innerHTML = `
+                <div class="news-ticker-label">TICKER</div>
+                <div class="news-ticker-content">
+                    ${tickerItems} ${tickerItems}
                 </div>
             `;
+            container.appendChild(tickerWrap);
+
+        } else {
+            container.innerHTML = `<div class="news-loading-text">NO BROADCAST DATA FOUND.</div>`;
         }
     } catch (err) {
         console.error("News fetch error:", err);
+        container.innerHTML = `
+            <div class="news-loading-text" style="color: var(--danger);">
+                BROADCAST OFFLINE
+                <div style="font-size: 10px; margin-top: 10px; opacity: 0.6; text-transform: none;">
+                    ${err.message}
+                </div>
+            </div>
+        `;
+    }
+}
+
+// State for translations
+let newsTranslations = {};
+let currentOriginalNews = null;
+
+let newsLoadingInterval = null;
+
+/**
+ * Loads and renders the detailed content of a news article
+ */
+async function loadNewsDetail(url) {
+    const container = document.getElementById("newsContainer");
+    const detailView = document.getElementById("newsDetail");
+    const detailBody = document.getElementById("newsDetailBody");
+    const backBtn = document.getElementById("newsBackBtn");
+    const sourceLink = document.getElementById("newsSourceLink");
+    const langWrapper = document.getElementById("newsLangWrapper");
+    const langSelect = document.getElementById("newsLangSelect");
+
+    if (!container || !detailView || !detailBody) return;
+
+    // Show Language Selector only in Detail View
+    if (langWrapper) {
+        langWrapper.style.display = "block";
+        langWrapper.style.opacity = "1";
+    }
+
+    // Reset language to English for new article
+    if (langSelect) {
+        langSelect.value = "en";
+        langSelect.onchange = (e) => translateNewsDetail(e.target.value, url);
+    }
+
+    // Show detail view and hide list
+    container.classList.add("hidden");
+    if (sourceLink) sourceLink.style.display = "none";
+    detailView.style.display = "flex";
+    
+    // Show loading state
+    detailBody.innerHTML = `
+        <div class="news-loading">
+            <div class="news-spinner"></div>
+            <div class="news-loading-text">DECRYPTING CONTENT...</div>
+        </div>
+    `;
+
+    // Setup Back Button
+    backBtn.onclick = () => {
+        detailView.style.display = "none";
+        container.classList.remove("hidden");
+        if (sourceLink) sourceLink.style.display = "block";
+        if (langWrapper) langWrapper.style.display = "none";
+    };
+
+    try {
+        const apiUrl = `/api/news?url=${encodeURIComponent(url)}&t=${Date.now()}`;
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error("Status " + response.status);
         
-        let errorMessage = "CRITICAL ERROR: CONNECTION TIMEOUT";
-        let subMessage = "The neural link to the news database was severed.";
+        const data = await response.json();
+        currentOriginalNews = data; // Store original for English/Reference
+
+        renderArticleContent(data);
+
+    } catch (err) {
+        console.error("Detail fetch error:", err);
+        detailBody.innerHTML = `
+            <div class="news-loading-text" style="padding: 20px; text-align: center; color: var(--danger);">
+                FAILED TO SYNC ARTICLE.
+                <div style="font-size: 10px; margin-top: 10px; text-transform: none; font-family: sans-serif; color: var(--muted);">
+                    Connection to server lost. [Error: ${err.message}]
+                </div>
+                <button class="news-back-btn" onclick="document.getElementById('newsBackBtn').click()" style="margin-top: 20px; display: inline-flex;">Back to Dashboard</button>
+            </div>
+        `;
+    }
+}
+
+/**
+ * Creates the immersive chunk loading animation
+ */
+function startNewsLoading(lang) {
+    const detailBody = document.getElementById("newsDetailBody");
+    if (!detailBody) return;
+
+    detailBody.innerHTML = `
+        <div class="news-chunk-loading">
+            <div class="news-status-text">CONNECTED_TO_MAYOR_NODE</div>
+            <div class="news-loading-bar">
+                <div class="chunk"></div>
+                <div class="chunk"></div>
+                <div class="chunk"></div>
+                <div class="chunk"></div>
+                <div class="chunk"></div>
+                <div class="chunk"></div>
+                <div class="chunk"></div>
+                <div class="chunk"></div>
+            </div>
+            <div class="news-status-text" id="newsLoadingStep" style="font-size: 8px; opacity: 0.8;">RECOGNIZING LANGUAGE: ${lang.toUpperCase()}...</div>
+        </div>
+    `;
+
+    const chunks = detailBody.querySelectorAll(".chunk");
+    let activeIndex = 0;
+    const steps = [
+        `ESTABLISHING_NEURAL_LINK...`,
+        `INJECTING_MAYOR_CONTEXT...`,
+        `DECRYPTING_STREAM... [${lang.toUpperCase()}]`,
+        `RECONSTRUCTING_DOM...`,
+        `SYNCING_GAME_TERMINOLOGY...`,
+        `FINALIZING_CONTENT...`
+    ];
+    let stepIndex = 0;
+
+    newsLoadingInterval = setInterval(() => {
+        chunks.forEach((c, i) => {
+            c.classList.toggle("active", i === activeIndex);
+        });
+        activeIndex = (activeIndex + 1) % chunks.length;
         
-        if (isLocalFile) {
-            errorMessage = "PROTOCOL RESTRICTION: CORS BLOCK";
-            subMessage = "System detected local file access (file://). To access live news, please use a local server (e.g., 'npx vercel dev' or VS Code Live Server).";
+        if (activeIndex === 0) {
+            const stepEl = document.getElementById("newsLoadingStep");
+            if (stepEl) {
+                stepEl.textContent = steps[stepIndex % steps.length];
+                stepIndex++;
+            }
+        }
+    }, 150);
+}
+
+function stopNewsLoading() {
+    if (newsLoadingInterval) {
+        clearInterval(newsLoadingInterval);
+        newsLoadingInterval = null;
+    }
+}
+
+/**
+ * Renders the article data into the detail body
+ */
+function renderArticleContent(data, isTranslated = false) {
+    const detailBody = document.getElementById("newsDetailBody");
+    if (!detailBody) return;
+
+    detailBody.innerHTML = `
+        <div class="news-detail-content reveal">
+            <div class="news-header" style="margin-bottom: 20px; border-bottom: 2px solid rgba(94, 242, 214, 0.2); padding-bottom: 12px; ${isTranslated ? 'color: #ffab40;' : ''}">
+               <div style="display: flex; justify-content: space-between; align-items: center;">
+                 <span class="news-date" style="font-size: 14px; opacity: 0.7;">${isTranslated ? '🛰️ NEURAL_TRANS' : '📡 ORIGINAL_LINK'}</span>
+                 <span class="news-date" style="font-size: 14px;">${data.date || ''}</span>
+               </div>
+            </div>
+            <h1 style="color: #ffffff; font-family: 'Conthrax'; font-size: 22px; margin: 20px 0 30px 0; line-height: 1.3; text-shadow: 0 0 15px rgba(94, 242, 214, 0.3);">${data.title}</h1>
+            <div class="article-text-content" style="font-size: 15px; line-height: 1.7;">
+                ${data.content}
+            </div>
+            <div style="margin-top: 50px; padding: 20px; border: 1px dashed rgba(94, 242, 214, 0.2); text-align: center; opacity: 0.6; font-size: 10px; font-family: 'Ethnocentric';">
+                ${isTranslated ? '=== END OF TRANSLATED STREAM ===' : '=== END OF ENCRYPTED DATASTREAM ==='}
+            </div>
+        </div>
+    `;
+
+    // Ensure all links in the content open in new tabs
+    detailBody.querySelectorAll("a").forEach(a => a.target = "_blank");
+}
+
+/**
+ * Handles the AI translation logic
+ */
+async function translateNewsDetail(lang, url) {
+    const detailBody = document.getElementById("newsDetailBody");
+    if (!detailBody || !currentOriginalNews) return;
+
+    if (lang === "en") {
+        renderArticleContent(currentOriginalNews);
+        return;
+    }
+
+    const cacheKey = `${url}_${lang}`;
+    if (newsTranslations[cacheKey]) {
+        renderArticleContent(newsTranslations[cacheKey], true);
+        return;
+    }
+
+    // Show Immersive Loading state
+    startNewsLoading(lang);
+
+    try {
+        const systemPromptOverride = `You are a neural translation engine for LifeAfter (LA).
+Task: Translate the article into language: ${lang}.
+Format: You MUST separate the title and content using these exact markers:
+===TITLE===
+[Translated Title]
+===CONTENT===
+[Translated HTML Content]
+
+Rules:
+1. Preserve all HTML structure.
+2. If truncated, ensure the most important information is translated first.
+3. No JSON, no chatter, just the markers and content.`;
+
+        const userContent = `TITLE: ${currentOriginalNews.title}\n\nCONTENT: ${currentOriginalNews.content}`;
+
+        const resp = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                messages: [{ role: 'user', content: userContent }],
+                systemOverride: systemPromptOverride
+            })
+        });
+
+        if (!resp.ok) throw new Error("AI Node Failure: " + resp.status);
+        const data = await resp.json();
+        
+        let aiContent = data.choices?.[0]?.message?.content || data.reply || "";
+        
+        // Robust Extraction using Markers
+        let title = "";
+        let content = "";
+        
+        if (aiContent.includes("===TITLE===") && aiContent.includes("===CONTENT===")) {
+            const parts = aiContent.split("===CONTENT===");
+            title = parts[0].replace("===TITLE===", "").trim();
+            content = parts[1] || "";
+        } else {
+            // Fallback if markers are missing but content exists
+            title = currentOriginalNews.title; // Keep original title
+            content = aiContent; 
         }
 
-        container.innerHTML = `
+        const translatedData = {
+            title: title || currentOriginalNews.title,
+            content: content || "Neural stream truncated prematurely.",
+            date: currentOriginalNews.date
+        };
+        
+        // Save to cache
+        newsTranslations[cacheKey] = translatedData;
+        
+        stopNewsLoading();
+        renderArticleContent(translatedData, true);
+
+    } catch (err) {
+        stopNewsLoading();
+        console.error("Translation error:", err);
+        detailBody.innerHTML = `
             <div class="news-loading-text" style="padding: 20px; text-align: center; color: var(--danger);">
-                <div>${errorMessage}</div>
-                <div style="font-size: 10px; margin-top: 10px; color: var(--muted); text-transform: none; font-family: sans-serif;">
-                    ${subMessage}
+                NEURAL LINK FAILED.
+                <div style="font-size: 10px; margin-top: 10px; color: var(--muted); text-transform: none;">
+                    ${err.message.includes('JSON_PARSE_ERROR') ? 'The AI node returned a malformed data stream. Try again.' : 'Unable to reach the Mayor AI node.'}
                 </div>
+                <button class="news-back-btn" onclick="document.getElementById('newsLangSelect').value='en'; renderArticleContent(currentOriginalNews);" style="margin-top: 20px;">Return to Original</button>
             </div>
         `;
     }

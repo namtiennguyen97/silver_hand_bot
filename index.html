@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="assets/css/modal_faq.css">
   <link rel="stylesheet" href="assets/css/main_clone_mobile.css">
   <link rel="stylesheet" href="assets/css/loading.css">
-  <link rel="stylesheet" href="assets/css/tutorial.css">
   <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
   <link rel="stylesheet" href="assets/css/heartlock_zone_info.css">
   <link rel="stylesheet" href="assets/css/cert_info.css">
@@ -19,8 +18,6 @@
   <link rel="stylesheet" href="assets/css/news.css">
   <link rel="stylesheet" href="assets/css/index_hud.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-	<link rel="preload" as="video" href="assets/videos/merged_control_panel.mp4">
-
 
 </head>
 <body>
@@ -80,8 +77,8 @@
                 <span class="btn-sub-label">// DRAMA_ARCHIVE.EXE</span>
             </button>
             <button class="hud-action-btn" id="hudBtnMembers">
-                <span class="btn-main-label">CHARACTER</span>
-                <span class="btn-sub-label">SURVIVOR_PROFILE_ACCESS</span>
+                <span class="btn-main-label">NEWS</span>
+                <span class="btn-sub-label">OFFICIAL_BROADCAST_SYNC</span>
             </button>
             <button class="hud-action-btn" id="hudBtnTasks">
                 <span class="btn-main-label">TASKS</span>
@@ -143,7 +140,7 @@
 <div id="stage">
 	<div id="ambient"></div>
 	
-	<!-- Video nền mặc định -->
+	<!-- Video nền duy nhất (Đã tối ưu) -->
 	<video
 		id="videoMain"
 		class="bg-video active"
@@ -156,56 +153,7 @@
 		style="will-change: opacity"
 	></video>
 	
-	<!-- Video control panel preload sẵn -->
-	<video
-		id="videoAlt"
-		class="bg-video"
-		src="assets/videos/merged_control_panel.mp4"
-		autoplay
-		muted
-		loop
-		playsinline
-		preload="auto"
-		style="will-change: opacity"
-	></video>
-	
 	<div id="videoTransitionMask"></div>
-</div>
-
-<!-- LEGACY HOTSPOTS (HIDDEN) -->
-<div id="hotspot-layer" style="display: none;">
-  <div class="hotspot" data-x="620" data-y="360" >
-    <div class="hotspot-dot"></div>
-
-    <div class="hotspot-line"></div>
-
-    <div class="hotspot-tooltip" id="control-panel">
-      <div class="tooltip-box" data-options="mayorOptions">
-        <div class="tooltip-title">MAYOR</div>
-        <div class="tooltip-text">Talk</div>
-      </div>
-    </div>
-  </div>
-  <div class="hotspot" data-x="620" data-y="100" data-dir="left">
-    <div class="hotspot-dot"></div>
-    <div class="hotspot-line"></div>
-
-    <div class="hotspot-tooltip" id="mayor-chat">
-      <div class="tooltip-box" data-options="controlOptions">
-        <div class="tooltip-title">CONTROL PANEL ACCESS</div>
-        <div class="tooltip-text">Access</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="hotspot" data-x="680" data-y="50">
-    <div class="hotspot-tooltip" id="news-system">
-      <div class="tooltip-box news-btn-diagonal" data-modal="news">
-        <div class="tooltip-title">CITY NEWS</div>
-<!--        <div class="tooltip-text">Latest Updates</div>-->
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- Overlay chat, ẩn mặc định -->
@@ -231,9 +179,6 @@
 	</div>
 </div>
 
-
-<!-- Legacy clock removed to prevent overlap with Gaming HUD -->
-
 <div id="loadingOverlay">
   <div class="loading-wrapper">
     <div class="loading-text">
@@ -253,45 +198,6 @@
   </div>
 </div>
 
-<!--<div class="overview-container">-->
-
-<!--  &lt;!&ndash; MAYOR AVATAR &ndash;&gt;-->
-<!--  <div class="mayor-hero">-->
-<!--    <img src="assets/img/mayor_avatar.jpg" alt="Mayor AI">-->
-<!--    <h1>SAO-ĐÊM</h1>-->
-<!--    <p class="subtitle">LifeAfter VN Assistant</p>-->
-<!--  </div>-->
-
-  <!-- INFO BLOCKS -->
-<!--  <div class="info-grid-wrapper">-->
-<!--    <div id="info-grid" class="info-grid">-->
-<!--      <div class="info-card" data-modal="infoA">-->
-<!--        📢-->
-<!--        <span>Thời gian sự kiện camp</span>-->
-<!--      </div>-->
-
-<!--      <div class="info-card" data-modal="infoB">-->
-<!--        ⚔️-->
-<!--        <span>Giới thiệu về Cert</span>-->
-<!--      </div>-->
-
-<!--      <div class="info-card" data-modal="infoC">-->
-<!--        🔐-->
-<!--        <span>Code Heart lock Zone</span>-->
-<!--      </div>-->
-
-<!--    </div>-->
-<!--  </div>-->
-
-
-<!--  &lt;!&ndash; ENTER CHAT BUTTON &ndash;&gt;-->
-<!--  <a id="mayor-chat" href="chat.html" class="enter-chat-btn round-focus">-->
-<!--    <img src="assets/img/mayor_avatar.jpg">-->
-<!--    <span>Bắt đầu chat với Mayor</span>-->
-<!--  </a>-->
-
-<!--</div>-->
-
 <!-- MODAL -->
 <div class="modal" id="infoModal">
   <div class="modal-content ai-modal-content">
@@ -307,36 +213,6 @@
 
 <!-- ================== MODAL TEMPLATES ================== -->
 
-<template id="tpl-setting">
-  <div class="setting-container">
-    <div class="setting-row">
-      <div class="setting-info">
-        <span class="setting-label">BACKGROUND MUSIC (BGM)</span>
-        <span class="setting-desc">SYSTEM AMBIENCE</span>
-      </div>
-      <div class="setting-control">
-        <input type="range" id="bgmSlider" class="cyber-slider" min="0" max="100" value="40">
-        <span id="bgmValue" class="setting-val">40%</span>
-      </div>
-    </div>
-    
-    <div class="setting-row">
-      <div class="setting-info">
-        <span class="setting-label">SYSTEM EFFECTS (SFX)</span>
-        <span class="setting-desc">INTERFACE FEEDBACK</span>
-      </div>
-      <div class="setting-control">
-        <input type="range" id="sfxSlider" class="cyber-slider" min="0" max="100" value="60">
-        <span id="sfxValue" class="setting-val">60%</span>
-      </div>
-    </div>
-  </div>
-</template>
-
-
-<!-- =============================================
-     SETTING TEMPLATE
-============================================= -->
 <template id="tpl-setting">
     <div class="setting-container">
         <div class="setting-row">
@@ -354,14 +230,11 @@
 
 <template id="tpl-infoA">
   <div class="event-schedule">
-
     <div class="event-note">
       <span class="event-note-icon">⚠</span>
       <span>Đây là giờ <b>Việt Nam</b>, không phải giờ In-game</span>
     </div>
-
     <div class="event-list">
-
       <div class="event-row">
         <div class="event-row-icon">📦</div>
         <div class="event-row-body">
@@ -373,7 +246,6 @@
           <span class="event-hour">19:00 – 20:30</span>
         </div>
       </div>
-
       <div class="event-row">
         <div class="event-row-icon">🛡️</div>
         <div class="event-row-body">
@@ -385,7 +257,6 @@
           <span class="event-hour">19:00</span>
         </div>
       </div>
-
       <div class="event-row">
         <div class="event-row-icon">⚔️</div>
         <div class="event-row-body">
@@ -397,7 +268,6 @@
           <span class="event-hour">21:30</span>
         </div>
       </div>
-
       <div class="event-row">
         <div class="event-row-icon">💀</div>
         <div class="event-row-body">
@@ -409,24 +279,20 @@
           <span class="event-hour">22:00</span>
         </div>
       </div>
-
     </div>
   </div>
 </template>
 
 <template id="tpl-infoB">
   <div class="ai-section">
-
     <p class="ai-paragraph">
       📌 <b>Sau bản update ngày <span class="highlight">31/12/2025</span></b>, hệ thống
       <b>Cert</b> trong LifeAfter đã được <b>chia rõ rệt</b> và có nhiều cải tiến mới.
     </p>
-
     <p class="ai-paragraph">
       Ngoài <b>Cert chính</b>, người chơi giờ đây có thể chọn thêm
       <b class="neon-text">Cert Part-time (Cert phụ)</b>.
     </p>
-
     <div class="ai-warning">
       ⚠️ <b>Lưu ý quan trọng:</b><br>
       Cert phụ <u>không mở toàn bộ kỹ năng</u> của nghề đó.
@@ -434,91 +300,16 @@
       <br><br>
       👉 Ví dụ: Không thể vừa chơi nghề súng, vừa chế tạo giáp – súng như nghề chế.
     </div>
-
-    <!-- ===== NGHỀ CƠ BẢN ===== -->
     <h3 class="ai-title">⚔️ Nghề cơ bản</h3>
-    <p class="ai-paragraph">
-      Vẫn hoạt động như hệ thống cũ – cộng chỉ số trực tiếp và là nền tảng chính của nhân vật.
-    </p>
-
-    <img
-        src="assets/img/guide/cert/basic_skill.png"
-        class="ai-img"
-        alt="Basic Cert Skill"
-    >
-
-    <p class="ai-paragraph">
-      Các nhánh kỹ năng sẽ được lựa chọn <b>theo lối chơi của bạn</b>.
-    </p>
-
-    <img
-        src="assets/img/guide/cert/skill_path.png"
-        class="ai-img"
-        alt="Cert Skill Path"
-    >
-
-    <!-- ===== NGHỀ PHỤ ===== -->
+    <img src="assets/img/guide/cert/basic_skill.png" class="ai-img" alt="Basic Cert Skill">
+    <img src="assets/img/guide/cert/skill_path.png" class="ai-img" alt="Cert Skill Path">
     <h3 class="ai-title">🧩 Nghề phụ (Cert Part-time)</h3>
-
-    <p class="ai-paragraph">
-      Người chơi được chọn <b>một nghề phụ</b> trong danh sách để hỗ trợ lối build.
-    </p>
-
-    <img
-        src="assets/img/guide/cert/additional_skill.png"
-        class="ai-img"
-        alt="Additional Cert Skill"
-    >
-
-    <!-- ===== TÓM TẮT NGHỀ ===== -->
-    <h3 class="ai-title">📋 Tóm tắt các nhóm nghề</h3>
-
-    <div class="ai-list-block">
-      <h4 class="ai-subtitle">🌿 Nghề Farm (thu thập nguyên liệu)</h4>
-      <ul class="ai-list">
-        <li>🌲 Logger – Nghề gỗ</li>
-        <li>🌿 Hemp Picker – Hái lụm</li>
-        <li>⛏️ Miner – Khai thác đá</li>
-      </ul>
-    </div>
-
-    <div class="ai-list-block">
-      <h4 class="ai-subtitle">🔥 Nghề Chiến Đấu</h4>
-      <ul class="ai-list">
-        <li>
-          🔫 <b>Rifle</b> – Thuần chiến đấu, dame cao nhất hiện tại
-        </li>
-        <li>
-          🧬 <b>Virus</b> – Vừa đánh vừa hỗ trợ, buff dame & hồi phục
-        </li>
-        <li>
-          🛡️ <b>Warrior</b> – Cận chiến, tanky nhất trong PvP
-        </li>
-        <li class="dim">
-          ⚔️ Ark Knight – Hỗ trợ là chính, dame thấp (❌ không khuyến nghị)
-        </li>
-      </ul>
-    </div>
-
-    <div class="ai-list-block">
-      <h4 class="ai-subtitle">🛠️ Nghề Chế Tạo</h4>
-      <ul class="ai-list">
-        <li>
-          Armor / Gun Maker / Upholstery – Chế nguyên liệu súng & giáp
-        </li>
-        <li class="note">
-          👉 Phụ thuộc nguồn nguyên liệu từ nghề farm
-        </li>
-      </ul>
-    </div>
-
+    <img src="assets/img/guide/cert/additional_skill.png" class="ai-img" alt="Additional Cert Skill">
   </div>
 </template>
 
-
 <template id="tpl-infoC">
   <div class="ai-content">
-
     <div class="map-block">
       <div class="map-title">SILENT PLAIN</div>
       <div class="code-list">
@@ -527,9 +318,7 @@
         <span class="code-chip">3326</span>
         <span class="code-chip">8254</span>
       </div>
-      <button class="copy-map-btn" title="Copy toàn bộ code">📋 COPY</button>
     </div>
-
     <div class="map-block">
       <div class="map-title">MOUNT GRAY BEAR</div>
       <div class="code-list">
@@ -538,30 +327,10 @@
         <span class="code-chip">333</span>
         <span class="code-chip">451</span>
         <span class="code-chip">777</span>
-        <span class="code-chip">0000</span>
-        <span class="code-chip">0524</span>
       </div>
-      <button class="copy-map-btn" title="Copy toàn bộ code">📋 COPY</button>
     </div>
-
-    <div class="map-block">
-      <div class="map-title">SANTOPANY</div>
-      <div class="code-list">
-        <span class="code-chip">13</span>
-        <span class="code-chip">24</span>
-        <span class="code-chip">98</span>
-        <span class="code-chip">232</span>
-        <span class="code-chip">997</span>
-        <span class="code-chip">1010</span>
-        <span class="code-chip">1114</span>
-        <span class="code-chip">4222</span>
-      </div>
-      <button class="copy-map-btn" title="Copy toàn bộ code">📋 COPY</button>
-    </div>
-
   </div>
 </template>
-
 
 <template id="tpl-aboutMe">
   <div class="bio-container">
@@ -571,7 +340,6 @@
             <img src="assets/img/mayor_profile.gif" alt="Avatar">
             <div class="bio-avatar-scan"></div>
         </div>
-        <div class="avatar-tooltip">CLICK HERE</div>
       </div>
       <div class="bio-main-info">
         <div class="bio-name">Silver-Hand</div>
@@ -675,62 +443,29 @@
 
 <template id="tpl-news">
     <div class="news-lang-wrapper" id="newsLangWrapper" style="display: none;">
-        <div class="news-lang-label">NEURAL_TRANS_LINK</div>
         <select id="newsLangSelect" class="news-lang-select">
-            <option value="en">🇺🇸 ENGLISH [ORIGINAL]</option>
-            <option value="vi">🇻🇳 VIETNAMESE [DECRYPT]</option>
-            <option value="id">🇮🇩 INDONESIAN [DECRYPT]</option>
-            <option value="th">🇹🇭 THAI [DECRYPT]</option>
-            <option value="ph">🇵🇭 FILIPINO [DECRYPT]</option>
+            <option value="en">🇺🇸 ENGLISH</option>
+            <option value="vi">🇻🇳 VIETNAMESE</option>
         </select>
     </div>
-
-    <div class="news-container" id="newsContainer">
-        <div class="news-loading">
-            <div class="news-spinner"></div>
-            <div class="news-loading-text">SYNCING DATA...</div>
-        </div>
-    </div>
-    
+    <div class="news-container" id="newsContainer"></div>
     <div class="news-detail-view" id="newsDetail">
-        <div class="news-detail-header">
-            <button class="news-back-btn" id="newsBackBtn">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                Back to List
-            </button>
-            <div class="news-detail-title-small" style="font-family: 'Ethnocentric'; font-size: 10px; color: #5ef2d6; opacity: 0.6; display: none;">READING ARTICLE...</div>
-        </div>
-        <div class="news-detail-body" id="newsDetailBody">
-            <!-- Article content will be injected here -->
-        </div>
-    </div>
-
-    <div class="news-source-link" id="newsSourceLink" style="text-align: center; margin-top: 15px; font-size: 10px; opacity: 0.8; font-family: 'Conthrax', sans-serif; color: #9aa5b1;">
-        SOURCE FROM: <a href="https://www.lifeafter.game/news/" target="_blank" style="color: #5ef2d6; text-decoration: none; border-bottom: 1px solid rgba(94, 242, 214, 0.3);">LIFEAFTER.GAME</a>
+        <button class="news-back-btn" id="newsBackBtn">Back</button>
+        <div class="news-detail-body" id="newsDetailBody"></div>
     </div>
 </template>
-
-<!-- Tutorial Overlay -->
-<div id="tutorial-overlay">
-  <div id="spotlight"></div>
-</div>
 
 <!-- Bio Gallery Overlay -->
 <div class="bio-gallery-overlay" id="bioGallery">
     <div class="gallery-screen">
         <div class="gallery-close" id="closeGallery">Close System</div>
-        <div class="gallery-nav prev" id="prevGallery">
-            <svg viewBox="0 0 100 100"><polygon points="80,10 20,50 80,90" /></svg>
-        </div>
+        <div class="gallery-nav prev" id="prevGallery">Prev</div>
         <img src="" class="gallery-image" id="galleryImg">
-        <div class="gallery-nav next" id="nextGallery">
-            <svg viewBox="0 0 100 100"><polygon points="20,10 80,50 20,90" /></svg>
-        </div>
+        <div class="gallery-nav next" id="nextGallery">Next</div>
     </div>
 </div>
 
 <script src="assets/js/loading.js"></script>
-<script src="assets/js/tutorial_index.js"></script>
 <script src="assets/js/heartlock_zone_info.js"></script>
 <script src="assets/js/rpg_chat.js"></script>
 <script src="assets/js/index_main.js"></script>

@@ -9,64 +9,13 @@ const CONTENT_W = 475;
    ELEMENTS
 ================================ */
 const videoMain = document.getElementById('videoMain');
-const videoAlt = document.getElementById('videoAlt');
-const hotspotLayer = document.getElementById('hotspot-layer');
-const videoTransitionMask = document.getElementById('videoTransitionMask');
 const chatOverlay = document.getElementById('rpgChatOverlay');
 const rpgChatContent = document.getElementById('rpgChatContent');
 
 let video = videoMain;
 
 /* ===============================
-   HOTSPOT ENGINE
-================================ */
-class HotspotEngine {
-    constructor(videoEl, layerEl, videoW, videoH) {
-        this.video  = videoEl;
-        this.layer  = layerEl;
-        this.videoW = videoW;
-        this.videoH = videoH;
-        this.items  = [];
-    }
-
-    collect() {
-        this.items = Array.from(this.layer.querySelectorAll('.hotspot'));
-    }
-
-    update() {
-        if (!this.video || !this.items.length) return;
-
-        const rect = this.video.getBoundingClientRect();
-
-        this.items.forEach(hs => {
-            const x = parseFloat(hs.dataset.x);
-            const y = parseFloat(hs.dataset.y);
-
-            if (isNaN(x) || isNaN(y)) return;
-
-            const px = rect.left + (x / this.videoW) * rect.width;
-            const py = rect.top  + (y / this.videoH) * rect.height;
-
-            hs.style.left = px + 'px';
-            hs.style.top  = py + 'px';
-        });
-    }
-}
-
-const hotspotEngine = new HotspotEngine(video, hotspotLayer, VIDEO_W, VIDEO_H);
-
-function hideHotspots() {
-    if (!hotspotLayer) return;
-    hotspotLayer.classList.add('is-hidden');
-}
-
-function showHotspots() {
-    if (!hotspotLayer) return;
-    hotspotLayer.classList.remove('is-hidden');
-}
-
-/* ===============================
-   VIDEO LAYOUT
+   VIDEO LAYOUT (OPTIMIZED)
 ================================ */
 function layoutVideo() {
     const vw = window.innerWidth;
@@ -98,108 +47,16 @@ function layoutVideo() {
         top  = '0px';
     }
 
-    [videoMain, videoAlt].forEach((v) => {
-        if (!v) return;
-        v.style.width  = renderW + 'px';
-        v.style.height = renderH + 'px';
-        v.style.left   = left;
-        v.style.top    = top;
-    });
+    if (videoMain) {
+        videoMain.style.width  = renderW + 'px';
+        videoMain.style.height = renderH + 'px';
+        videoMain.style.left   = left;
+        videoMain.style.top    = top;
+    }
 }
 
 function syncLayout() {
     layoutVideo();
-    hotspotEngine.update();
-}
-
-/* ===============================
-   VIDEO PERFORMANCE OPTIMIZATIONS
-================================ */
-function ensurePlaying(videoEl) {
-    if (!videoEl) return;
-    const p = videoEl.play();
-    if (p && typeof p.then === "function") {
-        p.catch(() => {});
-    }
-}
-
-function ensurePaused(videoEl) {
-    if (!videoEl) return;
-    videoEl.pause();
-}
-
-let currentVideoKey = "main";
-let isVideoTransitioning = false;
-let pendingVideoKey = null;
-
-async function crossfadeTo(targetKey) {
-    if (targetKey === currentVideoKey && !isVideoTransitioning) return;
-
-    if (isVideoTransitioning) {
-        pendingVideoKey = targetKey;
-        return;
-    }
-
-    isVideoTransitioning = true;
-
-    try {
-        const nextVideo = targetKey === "main" ? videoMain : videoAlt;
-        const prevVideo = currentVideoKey === "main" ? videoMain : videoAlt;
-
-        ensurePlaying(nextVideo);
-
-        try {
-            const prevTime = prevVideo.currentTime || 0;
-            const nextDuration = nextVideo.duration || 0;
-            if (nextDuration > 0) {
-                nextVideo.currentTime = prevTime % nextDuration;
-            }
-        } catch (e) {}
-
-        if (targetKey === "alt") hideHotspots();
-
-        prevVideo.classList.remove("active");
-        nextVideo.classList.add("active");
-
-        video = nextVideo;
-        hotspotEngine.video = nextVideo;
-
-        if (targetKey === "main") {
-            hotspotEngine.update();
-            showHotspots();
-        }
-
-        if (videoTransitionMask) {
-            videoTransitionMask.classList.add("fade-out");
-            await new Promise((resolve) => setTimeout(resolve, 520));
-            videoTransitionMask.classList.remove("fade-out");
-        } else {
-            await new Promise((resolve) => setTimeout(resolve, 420));
-        }
-
-        ensurePaused(prevVideo);
-        currentVideoKey = targetKey;
-    } finally {
-        isVideoTransitioning = false;
-        if (pendingVideoKey && pendingVideoKey !== currentVideoKey) {
-            const nextPending = pendingVideoKey;
-            pendingVideoKey = null;
-            crossfadeTo(nextPending);
-        }
-    }
-}
-
-function setDefaultBackgroundVideo() { crossfadeTo("main"); }
-function setControlPanelBackgroundVideo() { crossfadeTo("alt"); }
-
-function warmupVideo(videoEl, isPrimary = false) {
-    if (!videoEl) return;
-    videoEl.load();
-    if (isPrimary) {
-        ensurePlaying(videoEl);
-    } else {
-        ensurePaused(videoEl);
-    }
 }
 
 /* ===============================
@@ -244,20 +101,7 @@ const optionActions = {
         openModalByKey("news");
         fetchNews();
     },
-    "Tutorial": () => {
-        if (window.startTutorial) {
-            window.startTutorial();
-        } else {
-            showRPGChat("Tutorial sequence is being recalibrated. Coming soon 👀", 'assets/img/mayor_5.png');
-        }
-    },
     "Settings": () => showRPGChat("Configuration module is currently locked.", 'assets/img/mayor_5.png')
-};
-
-const tooltipOptionsData = {
-    mayorOptions: ["Chat", "About me", "Tutorial", "Settings"],
-    controlOptions: ["Event Time", "Heart Lock Zone Code", "CTC-PLAN editor", "Drama"],
-    helpOptions: ["Tutorial"]
 };
 
 /* ===============================
@@ -289,7 +133,7 @@ function initGamingHUD() {
     };
 
     const btnBattle = document.getElementById('hudBtnBattle');
-    const btnMembers = document.getElementById('hudBtnMembers');
+    const btnNews = document.getElementById('hudBtnMembers'); // Re-named "News" in HTML
     const btnTasks = document.getElementById('hudBtnTasks');
     const btnRD = document.getElementById('hudBtnRD');
     const btnSetting = document.getElementById('hudBtnSetting');
@@ -304,8 +148,9 @@ function initGamingHUD() {
     }
 
     withEffect(btnBattle, () => window.location.href = 'drama.html');
-    withEffect(btnMembers, () => {
-        if (window.startTutorial) window.startTutorial();
+    withEffect(btnNews, () => {
+        openModalByKey("news");
+        fetchNews();
     });
     withEffect(btnTasks, () => openModalByKey("infoA"));
     withEffect(btnRD, () => window.location.href = 'ctc-planer.html');
@@ -392,16 +237,10 @@ function initGamingHUD() {
         if (batteryVal) batteryVal.textContent = '100%';
     }
 
-    const hTimeTop = document.getElementById('hudTimeTop');
     const hTimeBottom = document.getElementById('hudTimeBottom');
 
     function updateHUDTime() {
         const now = new Date();
-        const lH = String(now.getHours()).padStart(2, '0');
-        const lM = String(now.getMinutes()).padStart(2, '0');
-        const lS = String(now.getSeconds()).padStart(2, '0');
-        if (hTimeTop) hTimeTop.textContent = `${lH}:${lM}:${lS}`;
-
         const hopeT = new Intl.DateTimeFormat('en-GB', {
             timeZone: 'Asia/Singapore',
             hour: '2-digit',
@@ -419,12 +258,10 @@ function initGamingHUD() {
    INIT & EVENTS
 ================================ */
 window.addEventListener('load', () => {
-    warmupVideo(videoMain, true);
-    warmupVideo(videoAlt, false); // Keep alt paused initially
-    hotspotEngine.collect();
+    if (videoMain) videoMain.play().catch(()=>{});
     syncLayout();
     
-    // HUD SYNC EFFECT - triggered when loading is finished
+    // HUD SYNC EFFECT
     window.addEventListener('app:loaded', () => {
         const hudSync = document.createElement('div');
         hudSync.id = 'hud-sync-overlay';
@@ -434,7 +271,6 @@ window.addEventListener('load', () => {
         `;
         document.body.appendChild(hudSync);
         
-        // Initialize the new HUD
         initGamingHUD();
 
         setTimeout(() => {
@@ -452,120 +288,14 @@ document.addEventListener('click', (e) => {
     if (typeof suppressChatOutsideClose !== 'undefined' && suppressChatOutsideClose) return;
     if (document.body.classList.contains('tutorial-lock')) return; 
 
-    if (chatOverlay.style.display === 'block' && !chatOverlay.contains(e.target)) {
+    if (chatOverlay && chatOverlay.style.display === 'block' && !chatOverlay.contains(e.target)) {
         hideRPGChat();
     }
 });
 
-chatOverlay.addEventListener('click', (e) => e.stopPropagation());
+if (chatOverlay) chatOverlay.addEventListener('click', (e) => e.stopPropagation());
 
-document.querySelectorAll(".hotspot-tooltip .tooltip-box").forEach((box) => {
-    box.addEventListener("click", (e) => {
-        e.stopPropagation();
-        
-        const key = box.dataset.options;
-        const targetModal = box.dataset.modal;
-
-        if (targetModal) {
-            if (targetModal === 'news') {
-                openModalByKey("news");
-                fetchNews();
-            } else {
-                openModalByKey(targetModal);
-            }
-            return;
-        }
-
-        if (!key) {
-            if (box.classList.contains("pulse-help")) {
-                if (window.startTutorial) {
-                    window.startTutorial();
-                } else {
-                    showRPGChat("Tutorial sequence is being recalibrated. Coming soon 👀", 'assets/img/mayor_5.png');
-                }
-            }
-            return; 
-        }
-
-        setControlPanelBackgroundVideo();
-        showRPGChat("Security clearance granted. Choose an option.", 'assets/img/mayor_5.png');
-        box.classList.add("tooltip-pulse-border");
-
-        setTimeout(() => {
-            box.classList.remove("tooltip-pulse-border");
-            const key = box.dataset.options;
-            const options = tooltipOptionsData[key] || [];
-            cyberOverlay.innerHTML = "";
-
-            options.forEach((text, index) => {
-                const optionEl = document.createElement("div");
-                optionEl.className = "cyber-option";
-
-                const labelSpan = document.createElement('span');
-                labelSpan.className = 'option-label';
-                labelSpan.textContent = text;
-                optionEl.appendChild(labelSpan);
-
-                const displayIndex = (index + 1).toString().padStart(2, '0');
-                optionEl.setAttribute('data-index', `[${displayIndex}]`);
-
-                const scanLine = document.createElement('div');
-                scanLine.className = 'option-scan-line';
-                optionEl.appendChild(scanLine);
-
-                const dots = document.createElement('div');
-                dots.className = 'option-loading-dots';
-                dots.innerHTML = '<span></span><span></span><span></span>';
-                optionEl.appendChild(dots);
-
-                const pulseRing = document.createElement('div');
-                pulseRing.className = 'option-pulse-ring';
-                optionEl.appendChild(pulseRing);
-
-                optionEl.style.animation = `cyberReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards ${index * 0.08}s`;
-
-                optionEl.addEventListener("click", (ev) => {
-                    ev.stopPropagation();
-                    if (navigator.vibrate) navigator.vibrate(40);
-                    if (typeof hideRPGChat === 'function') hideRPGChat();
-                    const allOptions = Array.from(cyberOverlay.querySelectorAll('.cyber-option'));
-
-                    allOptions.forEach(opt => {
-                        opt.style.animation = '';
-                        opt.style.opacity = '1';
-                        opt.style.transform = 'translateX(0)';
-                        void opt.offsetWidth;
-
-                        if (opt === optionEl) {
-                            opt.classList.add('cyber-option--selected');
-                        } else {
-                            opt.classList.add('cyber-option--dismissed');
-                        }
-                    });
-
-                    setTimeout(() => {
-                        cyberOverlay.style.display = "none";
-                        allOptions.forEach(opt => {
-                            opt.classList.remove('cyber-option--selected', 'cyber-option--dismissed');
-                        });
-                        setDefaultBackgroundVideo();
-                        if (optionActions[text]) optionActions[text]();
-                    }, 950);
-                });
-                cyberOverlay.appendChild(optionEl);
-            });
-            cyberOverlay.style.display = "flex";
-        }, 100);
-    });
-});
-
-cyberOverlay.addEventListener("click", (e) => {
-    if (e.target === cyberOverlay) {
-        cyberOverlay.style.display = "none";
-        setDefaultBackgroundVideo();
-    }
-});
-
+/* Modal close logic */
 if (closeModal) {
     closeModal.onclick = (e) => {
         if (e) {
@@ -595,68 +325,6 @@ if (modal) {
 document.addEventListener("contextmenu", (e) => e.preventDefault());
 document.addEventListener("touchstart", (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 document.addEventListener("gesturestart", (e) => e.preventDefault());
-
-/* ===============================
-   PERFORMANCE CHECK
-================================ */
-window.addEventListener('app:loaded', () => {
-    let frameCount = 0;
-    let lastTime = performance.now();
-    let isChecking = true;
-
-    function countFrames() {
-        if (!isChecking) return;
-        frameCount++;
-        requestAnimationFrame(countFrames);
-    }
-    countFrames();
-
-    setTimeout(() => {
-        isChecking = false;
-        let elapsed = performance.now() - lastTime;
-        let fps = (frameCount * 1000) / elapsed;
-
-        if (fps < 40) {
-            setTimeout(() => {
-                if (typeof showRPGChat === 'function') {
-                    const sequence = [
-                        { text: "Cảnh báo hệ thống: Thiết bị của bạn cấu hình khá thấp để xử lý đồ họa cấp cao. Trải nghiệm có thể bị giật lag trên giao diện này.", avatar: 'assets/img/worker_silver.png', speaker: 'System' },
-                        { text: "Hmmm.... is that so..", avatar: 'assets/img/mayor_5.png', speaker: 'Silver-Hand' }
-                    ];
-                    
-                    let currentIndex = 0;
-                    const container = document.getElementById('rpgChatContent');
-                    
-                    function playNext() {
-                        if (currentIndex >= sequence.length) {
-                            if (typeof hideRPGChat === 'function') hideRPGChat();
-                            return;
-                        }
-                        
-                        const step = sequence[currentIndex];
-                        showRPGChat(step.text, step.avatar, step.speaker);
-                        
-                        if (container) {
-                            setTimeout(() => {
-                                const originalOnClick = container.onclick;
-                                container.onclick = (e) => {
-                                    e.stopPropagation();
-                                    if (window.isChatTyping) {
-                                        if (originalOnClick) originalOnClick(e);
-                                    } else {
-                                        currentIndex++;
-                                        playNext();
-                                    }
-                                };
-                            }, 50);
-                        }
-                    }
-                    playNext();
-                }
-            }, 3500);
-        }
-    }, 2500);
-});
 
 // BIO GALLERY LOGIC
 window.initAboutMeGallery = function(container) {
@@ -715,6 +383,7 @@ window.initAboutMeGallery = function(container) {
     });
 };
 
+/* NEWS SYSTEM */
 async function fetchNews() {
     const container = document.getElementById("newsContainer");
     if (!container) return;
@@ -729,12 +398,7 @@ async function fetchNews() {
             container.innerHTML = "";
             const headerEl = document.createElement("div");
             headerEl.className = "news-broadcast-header";
-            headerEl.innerHTML = `
-                <div class="news-live-tag">
-                    <div class="news-live-dot"></div>
-                    LIVE BROADCAST
-                </div>
-            `;
+            headerEl.innerHTML = `<div class="news-live-tag"><div class="news-live-dot"></div>LIVE BROADCAST</div>`;
             container.appendChild(headerEl);
 
             data.news.forEach((item, index) => {
@@ -760,17 +424,10 @@ async function fetchNews() {
             const tickerWrap = document.createElement("div");
             tickerWrap.className = "news-ticker-wrap";
             const tickerItems = data.news.slice(0, 5).map(n => `<span class="news-ticker-item">${n.title}</span>`).join("");
-            tickerWrap.innerHTML = `
-                <div class="news-ticker-label">TICKER</div>
-                <div class="news-ticker-content">
-                    ${tickerItems} ${tickerItems}
-                </div>
-            `;
+            tickerWrap.innerHTML = `<div class="news-ticker-label">TICKER</div><div class="news-ticker-content">${tickerItems} ${tickerItems}</div>`;
             container.appendChild(tickerWrap);
 
-        } else {
-            container.innerHTML = `<div class="news-loading-text">NO BROADCAST DATA FOUND.</div>`;
-        }
+        } else { container.innerHTML = `<div class="news-loading-text">NO BROADCAST DATA FOUND.</div>`; }
     } catch (err) {
         console.error("News fetch error:", err);
         container.innerHTML = `<div class="news-loading-text" style="color: var(--danger);">BROADCAST OFFLINE</div>`;
@@ -786,7 +443,6 @@ async function loadNewsDetail(url) {
     const detailView = document.getElementById("newsDetail");
     const detailBody = document.getElementById("newsDetailBody");
     const backBtn = document.getElementById("newsBackBtn");
-    const sourceLink = document.getElementById("newsSourceLink");
     const langWrapper = document.getElementById("newsLangWrapper");
     const langSelect = document.getElementById("newsLangSelect");
 
@@ -799,14 +455,12 @@ async function loadNewsDetail(url) {
     }
 
     container.classList.add("hidden");
-    if (sourceLink) sourceLink.style.display = "none";
     detailView.style.display = "flex";
     detailBody.innerHTML = `<div class="news-loading"><div class="news-spinner"></div><div class="news-loading-text">DECRYPTING CONTENT...</div></div>`;
 
     backBtn.onclick = () => {
         detailView.style.display = "none";
         container.classList.remove("hidden");
-        if (sourceLink) sourceLink.style.display = "block";
         if (langWrapper) langWrapper.style.display = "none";
     };
 
@@ -848,23 +502,15 @@ function startNewsLoading(lang) {
     }, 150);
 }
 
-function stopNewsLoading() {
-    if (newsLoadingInterval) { clearInterval(newsLoadingInterval); newsLoadingInterval = null; }
-}
+function stopNewsLoading() { if (newsLoadingInterval) { clearInterval(newsLoadingInterval); newsLoadingInterval = null; } }
 
 function renderArticleContent(data, isTranslated = false) {
     const detailBody = document.getElementById("newsDetailBody");
     if (!detailBody) return;
     detailBody.innerHTML = `
         <div class="news-detail-content reveal">
-            <div class="news-header">
-               <div style="display: flex; justify-content: space-between; align-items: center;">
-                 <span class="news-date">${isTranslated ? '🛰️ NEURAL_TRANS' : '📡 ORIGINAL_LINK'}</span>
-                 <span class="news-date">${data.date || ''}</span>
-               </div>
-            </div>
-            <h1>${data.title}</h1>
-            <div class="article-text-content">${data.content}</div>
+            <div class="news-header"><div style="display: flex; justify-content: space-between; align-items: center;"><span class="news-date">${isTranslated ? '🛰️ NEURAL_TRANS' : '📡 ORIGINAL_LINK'}</span><span class="news-date">${data.date || ''}</span></div></div>
+            <h1>${data.title}</h1><div class="article-text-content">${data.content}</div>
         </div>
     `;
     detailBody.querySelectorAll("a").forEach(a => a.target = "_blank");
@@ -893,10 +539,7 @@ async function translateNewsDetail(lang, url) {
         newsTranslations[cacheKey] = translatedData;
         stopNewsLoading();
         renderArticleContent(translatedData, true);
-    } catch (err) {
-        stopNewsLoading();
-        detailBody.innerHTML = `<div class="news-loading-text">NEURAL LINK FAILED.</div>`;
-    }
+    } catch (err) { stopNewsLoading(); detailBody.innerHTML = `<div class="news-loading-text">NEURAL LINK FAILED.</div>`; }
 }
 
 const clickAudio = new Audio('assets/sounds/nierMail.mp3');

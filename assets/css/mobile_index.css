@@ -35,27 +35,7 @@
 }
 
 #ambient {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-
-    background-image: url('/assets/img/mayor_mobile_workspace.png');
-    background-size: cover;
-    background-position: center;
-
-    filter:
-        blur(14px) brightness(0.75) contrast(0.85) saturate(1.1);
-
-    transform: scale(1.08);
-}
-
-#ambient::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: url('/assets/img/mayor_mobile_workspace.png');
-    opacity: 0.05;
-    pointer-events: none;
+    display: none;
 }
 
 

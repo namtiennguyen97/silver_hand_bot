@@ -69,21 +69,36 @@ function showHotspots() {
    VIDEO LAYOUT
 ================================ */
 function layoutVideo() {
-    const vw = Math.min(window.innerWidth, CONTENT_W);
+    const vw = window.innerWidth;
     const vh = window.innerHeight;
 
-    const scaleContent = vw / CONTENT_W;
-    const scaleVideo   = vw / VIDEO_W;
-    const scale        = Math.max(scaleContent, scaleVideo);
+    const isMobile = vw <= CONTENT_W;
 
-    const renderW = VIDEO_W * scale;
-    const renderH = VIDEO_H * scale;
+    let renderW, renderH, left, top;
 
-    const contentCenterX = (VIDEO_W / 2) * scale;
-    const screenCenter = window.innerWidth / 2;
+    if (isMobile) {
+        // Mobile: scale content to fill width, center horizontally
+        const scaleContent = vw / CONTENT_W;
+        const scaleVideo   = vw / VIDEO_W;
+        const scale        = Math.max(scaleContent, scaleVideo);
 
-    const left = (screenCenter - contentCenterX) + 'px';
-    const top  = (vh - renderH) / 2 + 'px';
+        renderW = VIDEO_W * scale;
+        renderH = VIDEO_H * scale;
+
+        const contentCenterX = (VIDEO_W / 2) * scale;
+        const screenCenter   = vw / 2;
+
+        left = (screenCenter - contentCenterX) + 'px';
+        top  = (vh - renderH) / 2 + 'px';
+    } else {
+        // Desktop: fit video to max-height, center horizontally, black on sides
+        const scaleByH = vh / VIDEO_H;
+        renderH = VIDEO_H * scaleByH;
+        renderW = VIDEO_W * scaleByH;
+
+        left = (vw - renderW) / 2 + 'px';
+        top  = '0px';
+    }
 
     [videoMain, videoAlt].forEach((v) => {
         if (!v) return;
@@ -230,6 +245,7 @@ const optionActions = {
     },
     "Chat": () => window.location.href = "chat.html",
     "CTC-PLAN editor": () => window.location.href = "ctc-planer.html",
+    "Drama": () => window.location.href = "drama.html",
     "NEWS": () => {
         openModalByKey("news");
         fetchNews();
@@ -246,7 +262,7 @@ const optionActions = {
 
 const tooltipOptionsData = {
     mayorOptions: ["Chat", "About me", "Tutorial", "Settings"],
-    controlOptions: ["Event Time", "Heart Lock Zone Code", "CTC-PLAN editor"],
+    controlOptions: ["Event Time", "Heart Lock Zone Code", "CTC-PLAN editor", "Drama"],
     helpOptions: ["Tutorial"]
 };
 

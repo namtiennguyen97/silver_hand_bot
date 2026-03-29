@@ -17,13 +17,116 @@
   <link rel="stylesheet" href="assets/css/about_me.css">
   <link rel="stylesheet" href="assets/css/rpg_chat.css">
   <link rel="stylesheet" href="assets/css/news.css">
+  <link rel="stylesheet" href="assets/css/index_hud.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 	<link rel="preload" as="video" href="assets/videos/merged_control_panel.mp4">
 
 
 </head>
 <body>
-<!-- CYBER LIST OVERLAY -->
+<!-- CYBER LIST OVERLAY (LEGACY) -->
 <div id="cyberOverlay" class="cyber-overlay">
+</div>
+
+<!-- =============================================
+     GAMING HUD - NEW OVERLAY
+============================================= -->
+<div id="hud-root">
+  <!-- TOP ROW: Profile & Resources -->
+    <div class="hud-top-row">
+        <!-- TOP LEFT: Profile -->
+        <div class="hud-section">
+            <div class="hud-profile">
+                <div class="hud-level-circle">
+                    <span class="hud-level-val">146</span>
+                    <span class="hud-level-label">LEVEL</span>
+                </div>
+                <div class="hud-profile-info">
+                    <div class="hud-profile-name">Silver Hand</div>
+                    <div class="hud-profile-id">ID: 30197479</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOP RIGHT: Resources -->
+        <div class="hud-section">
+            <div class="hud-resources">
+                <div class="hud-resource-item">
+                    <div class="hud-res-icon"></div>
+                    <div class="hud-res-val">2,674,938</div>
+                </div>
+                <div class="hud-resource-item">
+                    <div class="hud-res-icon" style="background:var(--hud-pink)"></div>
+                    <div class="hud-res-val">SYNC: 100%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MIDDLE ROW: Action Menu -->
+    <div class="hud-mid-row">
+        <div class="hud-action-menu">
+            <button class="hud-action-btn btn-battle" id="hudBtnBattle">
+                <span class="btn-main-label">BATTLE</span>
+                <span class="btn-sub-label">// DRAMA_ARCHIVE.EXE</span>
+            </button>
+            <button class="hud-action-btn" id="hudBtnMembers">
+                <span class="btn-main-label">MEMBERS</span>
+                <span class="btn-sub-label">PROFILE_DATABASE_ACCESS</span>
+            </button>
+            <button class="hud-action-btn" id="hudBtnTasks">
+                <span class="btn-main-label">TASKS</span>
+                <span class="btn-sub-label">DAILY_OBJECTIVE_SYNC</span>
+            </button>
+            <button class="hud-action-btn" id="hudBtnRD">
+                <span class="btn-main-label">R&D</span>
+                <span class="btn-sub-label">DEVELOPMENT_MODULE</span>
+            </button>
+            <button class="hud-action-btn" id="hudBtnPurchase">
+                <span class="btn-main-label">PURCHASE</span>
+                <span class="btn-sub-label">RESOURCE_ACQUISITION</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- BOTTOM ROW: Utilities & Status -->
+    <div class="hud-bottom-row">
+        <!-- BOTTOM LEFT: Utility & Promo -->
+        <div class="hud-bottom-left">
+            <div class="hud-utility-icons">
+                <div class="hud-util-btn" id="hudBtnNotice" title="Notice">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+                <div class="hud-util-btn" id="hudBtnMail" title="Mail">
+                    <i class="fa-solid fa-envelope"></i>
+                    <div class="hud-cyan-glow" style="position:absolute; top:-2px; right:-2px; width:8px; height:8px; background:var(--hud-cyan); border-radius:50%"></div>
+                </div>
+                <div class="hud-util-btn" id="hudBtnActivities" title="Activities">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <div class="hud-util-btn" id="hudBtnGuide" title="Guide">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+            </div>
+            <div class="hud-promo-banner" id="hudPromoBanner">
+                <div class="banner-tag">OFFICIAL_BROADCAST</div>
+                <img src="assets/img/drama/smirk.png" alt="Promo" style="object-position: top center;">
+            </div>
+        </div>
+
+        <!-- BOTTOM RIGHT: System Status -->
+        <div class="hud-section">
+            <div class="hud-system-status">
+                <div class="hud-battery-wrap">
+                    <span id="hudBatteryVal">...%</span>
+                    <div class="battery-icon-outer">
+                        <div class="battery-level-bar" id="hudBatteryBar"></div>
+                    </div>
+                </div>
+                <div class="hud-time-val" id="hudTime">00:00:00</div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -59,7 +162,8 @@
 	<div id="videoTransitionMask"></div>
 </div>
 
-<div id="hotspot-layer">
+<!-- LEGACY HOTSPOTS (HIDDEN) -->
+<div id="hotspot-layer" style="display: none;">
   <div class="hotspot" data-x="620" data-y="360" >
     <div class="hotspot-dot"></div>
 

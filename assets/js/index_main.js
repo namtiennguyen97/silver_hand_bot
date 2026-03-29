@@ -267,6 +267,77 @@ const tooltipOptionsData = {
 };
 
 /* ===============================
+   GAMING HUD LOGIC
+================================ */
+function initGamingHUD() {
+    // 1. Action Menu Buttons
+    const btnBattle = document.getElementById('hudBtnBattle');
+    const btnMembers = document.getElementById('hudBtnMembers');
+    const btnTasks = document.getElementById('hudBtnTasks');
+    const btnRD = document.getElementById('hudBtnRD');
+    const btnPurchase = document.getElementById('hudBtnPurchase');
+
+    if (btnBattle) btnBattle.onclick = () => window.location.href = 'drama.html';
+    if (btnMembers) btnMembers.onclick = () => {
+        openModalByKey("aboutMe");
+        if (window.initAboutMeGallery) window.initAboutMeGallery(modalContent);
+    };
+    if (btnTasks) btnTasks.onclick = () => openModalByKey("infoA");
+    
+    // R&D and Purchase are placeholders
+    if (btnRD) btnRD.onclick = () => showRPGChat("R&D module is scanning for hardware updates. Status: STABLE.", 'assets/img/worker_silver.png', 'System');
+    if (btnPurchase) btnPurchase.onclick = () => showRPGChat("Marketplace link is currently encrypted. Check back later.", 'assets/img/mayor_5.png', 'Silver-Hand');
+
+    // 2. Utility Buttons
+    const btnNotice = document.getElementById('hudBtnNotice');
+    const btnMail = document.getElementById('hudBtnMail');
+    const btnActivities = document.getElementById('hudBtnActivities');
+    const btnGuide = document.getElementById('hudBtnGuide');
+
+    if (btnNotice) btnNotice.onclick = () => { openModalByKey("news"); fetchNews(); };
+    if (btnMail) btnMail.onclick = () => showRPGChat("No new tactical messages in your decrypted inbox.", 'assets/img/mayor_5.png', 'Silver-Hand');
+    if (btnActivities) btnActivities.onclick = () => openModalByKey("infoA");
+    if (btnGuide) btnGuide.onclick = () => openModalByKey("infoB");
+
+    // 3. System Status: Battery
+    const batteryVal = document.getElementById('hudBatteryVal');
+    const batteryBar = document.getElementById('hudBatteryBar');
+
+    if (navigator.getBattery) {
+        navigator.getBattery().then(battery => {
+            const updateBattery = () => {
+                const level = Math.round(battery.level * 100);
+                if (batteryVal) batteryVal.textContent = level + '%';
+                if (batteryBar) batteryBar.style.width = level + '%';
+                
+                // Change color if low
+                if (level <= 20) {
+                    batteryBar.style.background = 'var(--hud-pink)';
+                } else {
+                    batteryBar.style.background = 'var(--hud-cyan)';
+                }
+            };
+            updateBattery();
+            battery.onlevelchange = updateBattery;
+        });
+    } else {
+        if (batteryVal) batteryVal.textContent = '100%';
+    }
+
+    // 4. System Status: Clock (Sync with hope101_time.js)
+    const hudTime = document.getElementById('hudTime');
+    function updateHUDTime() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2, '0');
+        const m = String(now.getMinutes()).padStart(2, '0');
+        const s = String(now.getSeconds()).padStart(2, '0');
+        if (hudTime) hudTime.textContent = `${h}:${m}:${s}`;
+    }
+    setInterval(updateHUDTime, 1000);
+    updateHUDTime();
+}
+
+/* ===============================
    INIT & EVENTS
 ================================ */
 window.addEventListener('load', () => {
@@ -285,20 +356,14 @@ window.addEventListener('load', () => {
         `;
         document.body.appendChild(hudSync);
         
+        // Initialize the new HUD
+        initGamingHUD();
+
         setTimeout(() => {
             hudSync.classList.add('fade-out');
             setTimeout(() => {
                 hudSync.remove();
-                // Reveal hotspots with a slight delay for dramatic effect
-                document.querySelectorAll('.hotspot').forEach((hs, i) => {
-                    hs.style.opacity = '0';
-                    hs.style.transform = 'scale(0.5)';
-                    hs.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                    setTimeout(() => {
-                        hs.style.opacity = '1';
-                        hs.style.transform = 'scale(1)';
-                    }, 300 + (i * 100));
-                });
+                // We keep the logic for hotspots but they are hidden by style="display:none" in HTML
             }, 500);
         }, 1200);
     });

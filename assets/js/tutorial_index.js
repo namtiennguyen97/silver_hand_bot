@@ -45,25 +45,42 @@ document.addEventListener("DOMContentLoaded", () => {
     const steps = [
         {
             selector: null,
-            text: "👋 Welcome to <b>Life After VN- SAO-ĐÊM</b>.<br><br>Here is every quick and easy use!"
+            text: "👋 <b>COMMUNICATIONS_SYNC_ESTABLISHED.</b><br><br>Commander, welcome to the Tactical HUD. I will guide you through the operational sectors."
         },
         {
-            selector: "#control-panel",
-            text: "💬 This is <b>privacy</b> to talk or choose chat mayor AI."
+            selector: "#hudProfile",
+            text: "👤 <b>SURVIVOR_PROFILE_READOUT:</b><br><br>Access your level, EXP, and personal records here. Clicking this will expand your detailed dossier."
         },
         {
-            selector: "#mayor-chat",
-            text: "❓ Choose control panel <b>To see common options</b> and simple info."
+            selector: "#hudBtnBattle",
+            text: "⚔️ <b>COMBAT_ARCHIVE_DATA:</b><br><br>Direct link to the <b>Drama Archive</b>. Access historical records and mission logs."
         },
         {
-            selector: "#clock",
-            text: "⏰ This is <b>time in game LifeAfter</b> (Hope 101 time zone).<br><br>Some time you need to check in-game time."
+            selector: "#hudBtnMembers",
+            text: "🔍 <b>TACTICAL_SUPPORT_MOD:</b><br><br>This is your guidance node. Trigger this sequence anytime you need a refresher on HUD operations."
+        },
+        {
+            selector: "#hudBtnTasks",
+            text: "📅 <b>OBJECTIVE_TRACKER:</b><br><br>Monitor daily directives and the <b>SAO-ĐÊM Event Schedule</b> to maximize efficiency."
+        },
+        {
+            selector: "#hudBtnRD",
+            text: "🗺️ <b>STRATEGIC_PLANNER:</b><br><br>Deploy the <b>CTC Tactical Plan</b> module for field operations and team logistics."
+        },
+        {
+            selector: "#hudBtnSetting",
+            text: "⚙️ <b>SYSTEM_PREFERENCES:</b><br><br>Adjust audio streams, neural link sensitivity, and HUD visual settings."
+        },
+        {
+            selector: ".hud-bottom-left",
+            text: "📦 <b>UTILITY_ARRAY:</b><br><br>Check your local mail, camp notifications, and system field guides here."
         },
         {
             selector: null,
-            text: "And good luck, having fun here!"
+            text: "<b>TUTORIAL_COMPLETE.</b><br><br>Field operations are now under your command. Good luck, Survivor."
         },
     ];
+
 
     let currentStep = 0;
     const overlay = document.getElementById("tutorial-overlay");

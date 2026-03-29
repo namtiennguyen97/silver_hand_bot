@@ -96,6 +96,7 @@ function hideRPGChat() {
     if (chatOverlay) {
         chatOverlay.style.display = 'none';
         chatOverlay.classList.remove('active');
+        if (window.toggleHUD) window.toggleHUD(true);
     }
 }
 

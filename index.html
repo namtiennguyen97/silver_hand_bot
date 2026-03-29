@@ -36,18 +36,27 @@
     <div class="hud-top-row">
         <!-- TOP LEFT: Profile -->
         <div class="hud-section">
-            <div class="hud-profile">
-                <div class="hud-level-circle">
-                    <span class="hud-level-val">146</span>
-                    <span class="hud-level-label">LEVEL</span>
+            <div class="hud-profile" id="hudProfile">
+                <div class="hud-level-wrap">
+                    <div class="hud-level-circle">
+                        <span class="hud-level-val">146</span>
+                        <span class="hud-level-label">LEVEL</span>
+                    </div>
+                    <div class="level-ring-rotate"></div>
                 </div>
                 <div class="hud-profile-info">
                     <div class="hud-profile-name">Silver Hand</div>
+                    <div class="hud-exp-bar-wrap">
+                        <div class="hud-exp-bar-fill" style="width: 75%"></div>
+                        <div class="hud-exp-val">EXP 75%</div>
+                    </div>
+
                     <div class="hud-profile-id">ID: 30197479</div>
                 </div>
             </div>
         </div>
 
+        <!-- TOP CENTER: Removed time sync per request -->
         <!-- TOP RIGHT: Resources -->
         <div class="hud-section">
             <div class="hud-resources">
@@ -71,20 +80,20 @@
                 <span class="btn-sub-label">// DRAMA_ARCHIVE.EXE</span>
             </button>
             <button class="hud-action-btn" id="hudBtnMembers">
-                <span class="btn-main-label">MEMBERS</span>
-                <span class="btn-sub-label">PROFILE_DATABASE_ACCESS</span>
+                <span class="btn-main-label">CHARACTER</span>
+                <span class="btn-sub-label">SURVIVOR_PROFILE_ACCESS</span>
             </button>
             <button class="hud-action-btn" id="hudBtnTasks">
                 <span class="btn-main-label">TASKS</span>
                 <span class="btn-sub-label">DAILY_OBJECTIVE_SYNC</span>
             </button>
             <button class="hud-action-btn" id="hudBtnRD">
-                <span class="btn-main-label">R&D</span>
-                <span class="btn-sub-label">DEVELOPMENT_MODULE</span>
+                <span class="btn-main-label">CTC PLAN</span>
+                <span class="btn-sub-label">CTC_PLANER_ACCESS</span>
             </button>
-            <button class="hud-action-btn" id="hudBtnPurchase">
-                <span class="btn-main-label">PURCHASE</span>
-                <span class="btn-sub-label">RESOURCE_ACQUISITION</span>
+            <button class="hud-action-btn" id="hudBtnSetting">
+                <span class="btn-main-label">SETTING</span>
+                <span class="btn-sub-label">SYSTEM_PREFERENCES</span>
             </button>
         </div>
     </div>
@@ -123,7 +132,8 @@
                         <div class="battery-level-bar" id="hudBatteryBar"></div>
                     </div>
                 </div>
-                <div class="hud-time-val" id="hudTime">00:00:00</div>
+                <div class="hud-time-val" id="hudTimeBottom">00:00:00</div>
+                <div style="font-family: var(--hud-font); font-size: 8px; color: var(--hud-cyan); opacity: 0.8; letter-spacing: 1px; margin-top: -5px;">HOPE 101 TIME</div>
             </div>
         </div>
     </div>
@@ -222,12 +232,7 @@
 </div>
 
 
-<div id="hope-clock" class="home-clock">
-	<span>
-		Hope 101 time:
-		<span id="clock"></span>
-	</span>
-</div>
+<!-- Legacy clock removed to prevent overlap with Gaming HUD -->
 
 <div id="loadingOverlay">
   <div class="loading-wrapper">
@@ -301,6 +306,51 @@
 
 
 <!-- ================== MODAL TEMPLATES ================== -->
+
+<template id="tpl-setting">
+  <div class="setting-container">
+    <div class="setting-row">
+      <div class="setting-info">
+        <span class="setting-label">BACKGROUND MUSIC (BGM)</span>
+        <span class="setting-desc">SYSTEM AMBIENCE</span>
+      </div>
+      <div class="setting-control">
+        <input type="range" id="bgmSlider" class="cyber-slider" min="0" max="100" value="40">
+        <span id="bgmValue" class="setting-val">40%</span>
+      </div>
+    </div>
+    
+    <div class="setting-row">
+      <div class="setting-info">
+        <span class="setting-label">SYSTEM EFFECTS (SFX)</span>
+        <span class="setting-desc">INTERFACE FEEDBACK</span>
+      </div>
+      <div class="setting-control">
+        <input type="range" id="sfxSlider" class="cyber-slider" min="0" max="100" value="60">
+        <span id="sfxValue" class="setting-val">60%</span>
+      </div>
+    </div>
+  </div>
+</template>
+
+
+<!-- =============================================
+     SETTING TEMPLATE
+============================================= -->
+<template id="tpl-setting">
+    <div class="setting-container">
+        <div class="setting-row">
+            <span class="setting-label">BACKGROUND MUSIC (BGM)</span>
+            <input type="range" id="bgmSlider" class="cyber-slider" min="0" max="100" value="40">
+            <span id="bgmValue" class="setting-val">40%</span>
+        </div>
+        <div class="setting-row">
+            <span class="setting-label">SYSTEM EFFECTS (SFX)</span>
+            <input type="range" id="sfxSlider" class="cyber-slider" min="0" max="100" value="60">
+            <span id="sfxValue" class="setting-val">60%</span>
+        </div>
+    </div>
+</template>
 
 <template id="tpl-infoA">
   <div class="event-schedule">
@@ -681,10 +731,11 @@
 
 <script src="assets/js/loading.js"></script>
 <script src="assets/js/tutorial_index.js"></script>
-<script src="assets/js/hope101_time.js"></script>
 <script src="assets/js/heartlock_zone_info.js"></script>
 <script src="assets/js/rpg_chat.js"></script>
 <script src="assets/js/index_main.js"></script>
+
+<audio id="bgmAudio" loop src="assets/sounds/pgr_to_our_destiny.mp3" preload="auto"></audio>
 
 </body>
 </html>

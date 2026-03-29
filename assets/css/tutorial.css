@@ -88,9 +88,13 @@
     filter: brightness(1.3);
 }
 
-/* Khi tutorial đang chạy → khóa toàn bộ interaction */
-body.tutorial-lock * {
-    pointer-events: none;
+/* Khi tutorial đang chạy → khóa các phần tử không liên quan */
+body.tutorial-lock #hud-root * {
+    pointer-events: none !important;
+}
+
+body.tutorial-lock #stage * {
+    pointer-events: none !important;
 }
 
 /* Cho phép click tooltip + nút next + rpgChatOverlay + tutorial overlay */
@@ -100,7 +104,7 @@ body.tutorial-lock #tutorial-next,
 body.tutorial-lock #tutorial-prev,
 body.tutorial-lock #rpgChatOverlay,
 body.tutorial-lock #rpgChatOverlay * {
-    pointer-events: auto;
+    pointer-events: auto !important;
 }
 
 body.tutorial-lock #rpgChatOverlay {

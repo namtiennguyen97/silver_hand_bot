@@ -77,7 +77,6 @@ function layoutVideo() {
     let renderW, renderH, left, top;
 
     if (isMobile) {
-        // Mobile: scale content to fill width, center horizontally
         const scaleContent = vw / CONTENT_W;
         const scaleVideo   = vw / VIDEO_W;
         const scale        = Math.max(scaleContent, scaleVideo);
@@ -91,7 +90,6 @@ function layoutVideo() {
         left = (screenCenter - contentCenterX) + 'px';
         top  = (vh - renderH) / 2 + 'px';
     } else {
-        // Desktop: fit video to max-height, center horizontally, black on sides
         const scaleByH = vh / VIDEO_H;
         renderH = VIDEO_H * scaleByH;
         renderW = VIDEO_W * scaleByH;
@@ -130,7 +128,7 @@ function ensurePaused(videoEl) {
     videoEl.pause();
 }
 
-let currentVideoKey = "main"; // "main" | "alt"
+let currentVideoKey = "main";
 let isVideoTransitioning = false;
 let pendingVideoKey = null;
 
@@ -148,10 +146,8 @@ async function crossfadeTo(targetKey) {
         const nextVideo = targetKey === "main" ? videoMain : videoAlt;
         const prevVideo = currentVideoKey === "main" ? videoMain : videoAlt;
 
-        // Start playing next video before transition
         ensurePlaying(nextVideo);
 
-        // Sync playback time for seamless transition
         try {
             const prevTime = prevVideo.currentTime || 0;
             const nextDuration = nextVideo.duration || 0;
@@ -162,7 +158,6 @@ async function crossfadeTo(targetKey) {
 
         if (targetKey === "alt") hideHotspots();
 
-        // Crossfade
         prevVideo.classList.remove("active");
         nextVideo.classList.add("active");
 
@@ -182,9 +177,7 @@ async function crossfadeTo(targetKey) {
             await new Promise((resolve) => setTimeout(resolve, 420));
         }
 
-        // OPTIMIZATION: Pause the video that is no longer visible to save resources
         ensurePaused(prevVideo);
-        
         currentVideoKey = targetKey;
     } finally {
         isVideoTransitioning = false;
@@ -223,7 +216,8 @@ const modalData = {
     infoB: { title: "⚔️ Giới thiệu về Cert", template: "tpl-infoB" },
     infoC: { title: "🔐 Code Heart Lock Zone", template: "tpl-infoC" },
     aboutMe: { title: "Personal Profile", template: "tpl-aboutMe" },
-    news: { title: "LATEST NEWS", template: "tpl-news" }
+    news: { title: "LATEST NEWS", template: "tpl-news" },
+    setting: { title: "SYSTEM SETTINGS", template: "tpl-setting" }
 };
 
 function openModalByKey(key) {
@@ -270,36 +264,112 @@ const tooltipOptionsData = {
    GAMING HUD LOGIC
 ================================ */
 function initGamingHUD() {
-    // 1. Action Menu Buttons
+    const hudRoot = document.getElementById('hud-root');
+    
+    const toggleHUD = (visible) => {
+        if (!hudRoot) return;
+        if (visible) {
+            hudRoot.classList.remove('hud-hidden');
+        } else {
+            hudRoot.classList.add('hud-hidden');
+        }
+    };
+    window.toggleHUD = toggleHUD;
+
+    const withEffect = (btn, action) => {
+        if (!btn) return;
+        btn.addEventListener('click', (e) => {
+            btn.classList.add('selected-neon');
+            setTimeout(() => {
+                btn.classList.remove('selected-neon');
+                toggleHUD(false);
+                if (action) action(e);
+            }, 500);
+        });
+    };
+
     const btnBattle = document.getElementById('hudBtnBattle');
     const btnMembers = document.getElementById('hudBtnMembers');
     const btnTasks = document.getElementById('hudBtnTasks');
     const btnRD = document.getElementById('hudBtnRD');
-    const btnPurchase = document.getElementById('hudBtnPurchase');
+    const btnSetting = document.getElementById('hudBtnSetting');
+    const btnProfile = document.getElementById('hudProfile');
 
-    if (btnBattle) btnBattle.onclick = () => window.location.href = 'drama.html';
-    if (btnMembers) btnMembers.onclick = () => {
-        openModalByKey("aboutMe");
-        if (window.initAboutMeGallery) window.initAboutMeGallery(modalContent);
-    };
-    if (btnTasks) btnTasks.onclick = () => openModalByKey("infoA");
-    
-    // R&D and Purchase are placeholders
-    if (btnRD) btnRD.onclick = () => showRPGChat("R&D module is scanning for hardware updates. Status: STABLE.", 'assets/img/worker_silver.png', 'System');
-    if (btnPurchase) btnPurchase.onclick = () => showRPGChat("Marketplace link is currently encrypted. Check back later.", 'assets/img/mayor_5.png', 'Silver-Hand');
+    if (btnProfile) {
+        btnProfile.addEventListener('click', () => {
+            toggleHUD(false);
+            openModalByKey("aboutMe");
+            if (window.initAboutMeGallery) window.initAboutMeGallery(modalContent);
+        });
+    }
 
-    // 2. Utility Buttons
+    withEffect(btnBattle, () => window.location.href = 'drama.html');
+    withEffect(btnMembers, () => {
+        if (window.startTutorial) window.startTutorial();
+    });
+    withEffect(btnTasks, () => openModalByKey("infoA"));
+    withEffect(btnRD, () => window.location.href = 'ctc-planer.html');
+    withEffect(btnSetting, () => {
+        openModalByKey("setting");
+        const bgmSlider = document.getElementById('bgmSlider');
+        const sfxSlider = document.getElementById('sfxSlider');
+        const bgmValue = document.getElementById('bgmValue');
+        const sfxValue = document.getElementById('sfxValue');
+        
+        if (bgmSlider) {
+            bgmSlider.value = window.bgmVolume !== undefined ? window.bgmVolume * 100 : 40;
+            if (bgmValue) bgmValue.textContent = bgmSlider.value + "%";
+            bgmSlider.oninput = (e) => {
+                const v = parseInt(e.target.value);
+                if (bgmValue) bgmValue.textContent = v + "%";
+                window.bgmVolume = v / 100;
+                localStorage.setItem('pgrBgmVolume', window.bgmVolume);
+                const a = document.getElementById('bgmAudio');
+                if (a) {
+                    a.volume = window.bgmVolume;
+                    if (v > 0 && a.paused) a.play().catch(()=>{});
+                    else if (v === 0) a.pause();
+                }
+            };
+        }
+        
+        if (sfxSlider) {
+            sfxSlider.value = window.sfxVolume !== undefined ? window.sfxVolume * 100 : 60;
+            if (sfxValue) sfxValue.textContent = sfxSlider.value + "%";
+            sfxSlider.oninput = (e) => {
+                const v = parseInt(e.target.value);
+                if (sfxValue) sfxValue.textContent = v + "%";
+                window.sfxVolume = v / 100;
+                localStorage.setItem('pgrSfxVolume', window.sfxVolume);
+            };
+        }
+    });
+
     const btnNotice = document.getElementById('hudBtnNotice');
     const btnMail = document.getElementById('hudBtnMail');
     const btnActivities = document.getElementById('hudBtnActivities');
     const btnGuide = document.getElementById('hudBtnGuide');
 
-    if (btnNotice) btnNotice.onclick = () => { openModalByKey("news"); fetchNews(); };
-    if (btnMail) btnMail.onclick = () => showRPGChat("No new tactical messages in your decrypted inbox.", 'assets/img/mayor_5.png', 'Silver-Hand');
-    if (btnActivities) btnActivities.onclick = () => openModalByKey("infoA");
-    if (btnGuide) btnGuide.onclick = () => openModalByKey("infoB");
+    withEffect(btnNotice, () => { openModalByKey("news"); fetchNews(); });
+    withEffect(btnMail, () => showRPGChat("No new tactical messages in your decrypted inbox.", 'assets/img/mayor_5.png', 'Silver-Hand'));
+    withEffect(btnActivities, () => openModalByKey("infoA"));
+    withEffect(btnGuide, () => openModalByKey("infoB"));
 
-    // 3. System Status: Battery
+    window.bgmVolume = parseFloat(localStorage.getItem('pgrBgmVolume') || '0.4');
+    window.sfxVolume = parseFloat(localStorage.getItem('pgrSfxVolume') || '0.6');
+    const bgmAudio = document.getElementById('bgmAudio');
+
+    if (bgmAudio) {
+        bgmAudio.volume = window.bgmVolume;
+        const autoPlayOnInteract = () => {
+            if (bgmAudio.paused && window.bgmVolume > 0) {
+                bgmAudio.play().catch(e => console.log('Waiting for interaction'));
+            }
+            document.removeEventListener('click', autoPlayOnInteract);
+        };
+        document.addEventListener('click', autoPlayOnInteract);
+    }
+
     const batteryVal = document.getElementById('hudBatteryVal');
     const batteryBar = document.getElementById('hudBatteryBar');
 
@@ -309,8 +379,6 @@ function initGamingHUD() {
                 const level = Math.round(battery.level * 100);
                 if (batteryVal) batteryVal.textContent = level + '%';
                 if (batteryBar) batteryBar.style.width = level + '%';
-                
-                // Change color if low
                 if (level <= 20) {
                     batteryBar.style.background = 'var(--hud-pink)';
                 } else {
@@ -324,14 +392,24 @@ function initGamingHUD() {
         if (batteryVal) batteryVal.textContent = '100%';
     }
 
-    // 4. System Status: Clock (Sync with hope101_time.js)
-    const hudTime = document.getElementById('hudTime');
+    const hTimeTop = document.getElementById('hudTimeTop');
+    const hTimeBottom = document.getElementById('hudTimeBottom');
+
     function updateHUDTime() {
         const now = new Date();
-        const h = String(now.getHours()).padStart(2, '0');
-        const m = String(now.getMinutes()).padStart(2, '0');
-        const s = String(now.getSeconds()).padStart(2, '0');
-        if (hudTime) hudTime.textContent = `${h}:${m}:${s}`;
+        const lH = String(now.getHours()).padStart(2, '0');
+        const lM = String(now.getMinutes()).padStart(2, '0');
+        const lS = String(now.getSeconds()).padStart(2, '0');
+        if (hTimeTop) hTimeTop.textContent = `${lH}:${lM}:${lS}`;
+
+        const hopeT = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Asia/Singapore',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        });
+        if (hTimeBottom) hTimeBottom.textContent = hopeT.format(now);
     }
     setInterval(updateHUDTime, 1000);
     updateHUDTime();
@@ -363,7 +441,6 @@ window.addEventListener('load', () => {
             hudSync.classList.add('fade-out');
             setTimeout(() => {
                 hudSync.remove();
-                // We keep the logic for hotspots but they are hidden by style="display:none" in HTML
             }, 500);
         }, 1200);
     });
@@ -372,7 +449,7 @@ window.addEventListener('load', () => {
 window.addEventListener('resize', syncLayout);
 
 document.addEventListener('click', (e) => {
-    if (suppressChatOutsideClose) return;
+    if (typeof suppressChatOutsideClose !== 'undefined' && suppressChatOutsideClose) return;
     if (document.body.classList.contains('tutorial-lock')) return; 
 
     if (chatOverlay.style.display === 'block' && !chatOverlay.contains(e.target)) {
@@ -400,7 +477,6 @@ document.querySelectorAll(".hotspot-tooltip .tooltip-box").forEach((box) => {
         }
 
         if (!key) {
-            // Check if it's the HELP button (Legacy / Alternate)
             if (box.classList.contains("pulse-help")) {
                 if (window.startTutorial) {
                     window.startTutorial();
@@ -425,56 +501,39 @@ document.querySelectorAll(".hotspot-tooltip .tooltip-box").forEach((box) => {
                 const optionEl = document.createElement("div");
                 optionEl.className = "cyber-option";
 
-                // Wrap label so flex layout works with extra children
                 const labelSpan = document.createElement('span');
                 labelSpan.className = 'option-label';
                 labelSpan.textContent = text;
                 optionEl.appendChild(labelSpan);
 
-                // Add index number for HUD feel [01], [02] etc.
                 const displayIndex = (index + 1).toString().padStart(2, '0');
                 optionEl.setAttribute('data-index', `[${displayIndex}]`);
 
-                // Inject scan-line element (hidden by default, shown on --selected)
                 const scanLine = document.createElement('div');
                 scanLine.className = 'option-scan-line';
                 optionEl.appendChild(scanLine);
 
-                // Inject loading dots (hidden by default, shown on --selected)
                 const dots = document.createElement('div');
                 dots.className = 'option-loading-dots';
                 dots.innerHTML = '<span></span><span></span><span></span>';
                 optionEl.appendChild(dots);
 
-                // Inject a dedicated pulse ring element to avoid pseudo-element conflicts
                 const pulseRing = document.createElement('div');
                 pulseRing.className = 'option-pulse-ring';
                 optionEl.appendChild(pulseRing);
 
-                // Trigger sequential reveal animation
                 optionEl.style.animation = `cyberReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards ${index * 0.08}s`;
 
                 optionEl.addEventListener("click", (ev) => {
                     ev.stopPropagation();
-
-                    // Optional haptic vibration for mobile (short pulse)
                     if (navigator.vibrate) navigator.vibrate(40);
-
-                    // Hide RPG chat to free up screen space (especially for small mobile screens)
                     if (typeof hideRPGChat === 'function') hideRPGChat();
-
-                    // Get all sibling options
                     const allOptions = Array.from(cyberOverlay.querySelectorAll('.cyber-option'));
 
-                    // Mark selected & dismiss others
                     allOptions.forEach(opt => {
-                        // Clear the inline reveal animation so class-based animations can take over
                         opt.style.animation = '';
-                        // Ensure it stays visible (avoid reverting to default opacity 0)
                         opt.style.opacity = '1';
                         opt.style.transform = 'translateX(0)';
-                        
-                        // Force reflow
                         void opt.offsetWidth;
 
                         if (opt === optionEl) {
@@ -484,10 +543,8 @@ document.querySelectorAll(".hotspot-tooltip .tooltip-box").forEach((box) => {
                         }
                     });
 
-                    // After selection animation (~950ms), execute action
                     setTimeout(() => {
                         cyberOverlay.style.display = "none";
-                        // Clean up classes for next open
                         allOptions.forEach(opt => {
                             opt.classList.remove('cyber-option--selected', 'cyber-option--dismissed');
                         });
@@ -509,10 +566,32 @@ cyberOverlay.addEventListener("click", (e) => {
     }
 });
 
-if (closeModal) closeModal.onclick = () => (modal.style.display = "none");
-if (modal) modal.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+if (closeModal) {
+    closeModal.onclick = (e) => {
+        if (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
+        modal.style.display = "none";
+        if (window.toggleHUD) window.toggleHUD(true);
+    };
+}
 
-// Block context menu
+if (modal) {
+    const closeModalSafely = (e) => {
+        if (e.target === modal) {
+            if (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+            modal.style.display = "none";
+            if (window.toggleHUD) window.toggleHUD(true);
+        }
+    };
+    modal.addEventListener("click", closeModalSafely);
+    modal.addEventListener("touchend", closeModalSafely, { passive: false });
+}
+
 document.addEventListener("contextmenu", (e) => e.preventDefault());
 document.addEventListener("touchstart", (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 document.addEventListener("gesturestart", (e) => e.preventDefault());
@@ -530,19 +609,14 @@ window.addEventListener('app:loaded', () => {
         frameCount++;
         requestAnimationFrame(countFrames);
     }
-
-    // Start counting right after loading
     countFrames();
 
-    // Measure FPS over 2.5 seconds
     setTimeout(() => {
         isChecking = false;
         let elapsed = performance.now() - lastTime;
         let fps = (frameCount * 1000) / elapsed;
 
-        // If average FPS is lower than typical 60 (e.g., < 40)
         if (fps < 40) {
-            // Wait until intro animations finish
             setTimeout(() => {
                 if (typeof showRPGChat === 'function') {
                     const sequence = [
@@ -577,13 +651,13 @@ window.addEventListener('app:loaded', () => {
                             }, 50);
                         }
                     }
-                    
                     playNext();
                 }
             }, 3500);
         }
     }, 2500);
 });
+
 // BIO GALLERY LOGIC
 window.initAboutMeGallery = function(container) {
     const trigger = container.querySelector("#bioAvatarTrigger");
@@ -610,7 +684,6 @@ window.initAboutMeGallery = function(container) {
 
     function updateImage() {
         galleryImg.src = images[currentIndex];
-        // Digital glitch effect on change
         galleryImg.style.filter = "hue-rotate(90deg) brightness(2)";
         setTimeout(() => galleryImg.style.filter = "brightness(1.1)", 100);
     }
@@ -637,7 +710,6 @@ window.initAboutMeGallery = function(container) {
         updateImage();
     });
 
-    // Close on click outside the screen
     gallery.addEventListener("click", (e) => {
         if (e.target === gallery) gallery.style.display = "none";
     });
@@ -651,13 +723,10 @@ async function fetchNews() {
         const apiUrl = "/api/news"; 
         const response = await fetch(apiUrl);
         if (!response.ok) throw new Error("HTTP Status " + response.status);
-        
         const data = await response.json();
         
         if (data.news && data.news.length > 0) {
             container.innerHTML = "";
-            
-            // 1) Add Broadcast Header
             const headerEl = document.createElement("div");
             headerEl.className = "news-broadcast-header";
             headerEl.innerHTML = `
@@ -665,18 +734,14 @@ async function fetchNews() {
                     <div class="news-live-dot"></div>
                     LIVE BROADCAST
                 </div>
-<!--                <div class="news-station-name">SAO-ĐÊM NETWORK</div>-->
             `;
             container.appendChild(headerEl);
 
-            // 2) Render News Cards
             data.news.forEach((item, index) => {
                 const itemEl = document.createElement("div");
                 itemEl.className = "news-broadcast-card";
                 itemEl.style.animationDelay = `${index * 0.1}s`;
-                
                 const isFirst = index === 0;
-                
                 itemEl.innerHTML = `
                     ${isFirst ? '<div class="news-card-breaking">BREAKING</div>' : ''}
                     <div class="news-card-body">
@@ -688,17 +753,13 @@ async function fetchNews() {
                         <div class="news-card-summary">${item.summary || ''}</div>
                     </div>
                 `;
-
                 itemEl.onclick = () => loadNewsDetail(item.link);
                 container.appendChild(itemEl);
             });
 
-            // 3) Add Scrolling Ticker
             const tickerWrap = document.createElement("div");
             tickerWrap.className = "news-ticker-wrap";
-            
             const tickerItems = data.news.slice(0, 5).map(n => `<span class="news-ticker-item">${n.title}</span>`).join("");
-            
             tickerWrap.innerHTML = `
                 <div class="news-ticker-label">TICKER</div>
                 <div class="news-ticker-content">
@@ -712,26 +773,14 @@ async function fetchNews() {
         }
     } catch (err) {
         console.error("News fetch error:", err);
-        container.innerHTML = `
-            <div class="news-loading-text" style="color: var(--danger);">
-                BROADCAST OFFLINE
-                <div style="font-size: 10px; margin-top: 10px; opacity: 0.6; text-transform: none;">
-                    ${err.message}
-                </div>
-            </div>
-        `;
+        container.innerHTML = `<div class="news-loading-text" style="color: var(--danger);">BROADCAST OFFLINE</div>`;
     }
 }
 
-// State for translations
 let newsTranslations = {};
 let currentOriginalNews = null;
-
 let newsLoadingInterval = null;
 
-/**
- * Loads and renders the detailed content of a news article
- */
 async function loadNewsDetail(url) {
     const container = document.getElementById("newsContainer");
     const detailView = document.getElementById("newsDetail");
@@ -743,32 +792,17 @@ async function loadNewsDetail(url) {
 
     if (!container || !detailView || !detailBody) return;
 
-    // Show Language Selector only in Detail View
-    if (langWrapper) {
-        langWrapper.style.display = "block";
-        langWrapper.style.opacity = "1";
-    }
-
-    // Reset language to English for new article
+    if (langWrapper) langWrapper.style.display = "block";
     if (langSelect) {
         langSelect.value = "en";
         langSelect.onchange = (e) => translateNewsDetail(e.target.value, url);
     }
 
-    // Show detail view and hide list
     container.classList.add("hidden");
     if (sourceLink) sourceLink.style.display = "none";
     detailView.style.display = "flex";
-    
-    // Show loading state
-    detailBody.innerHTML = `
-        <div class="news-loading">
-            <div class="news-spinner"></div>
-            <div class="news-loading-text">DECRYPTING CONTENT...</div>
-        </div>
-    `;
+    detailBody.innerHTML = `<div class="news-loading"><div class="news-spinner"></div><div class="news-loading-text">DECRYPTING CONTENT...</div></div>`;
 
-    // Setup Back Button
     backBtn.onclick = () => {
         detailView.style.display = "none";
         container.classList.remove("hidden");
@@ -780,202 +814,98 @@ async function loadNewsDetail(url) {
         const apiUrl = `/api/news?url=${encodeURIComponent(url)}&t=${Date.now()}`;
         const response = await fetch(apiUrl);
         if (!response.ok) throw new Error("Status " + response.status);
-        
         const data = await response.json();
-        currentOriginalNews = data; // Store original for English/Reference
-
+        currentOriginalNews = data;
         renderArticleContent(data);
-
     } catch (err) {
         console.error("Detail fetch error:", err);
-        detailBody.innerHTML = `
-            <div class="news-loading-text" style="padding: 20px; text-align: center; color: var(--danger);">
-                FAILED TO SYNC ARTICLE.
-                <div style="font-size: 10px; margin-top: 10px; text-transform: none; font-family: sans-serif; color: var(--muted);">
-                    Connection to server lost. [Error: ${err.message}]
-                </div>
-                <button class="news-back-btn" onclick="document.getElementById('newsBackBtn').click()" style="margin-top: 20px; display: inline-flex;">Back to Dashboard</button>
-            </div>
-        `;
+        detailBody.innerHTML = `<div class="news-loading-text" style="color: var(--danger);">FAILED TO SYNC ARTICLE.</div>`;
     }
 }
 
-/**
- * Creates the immersive chunk loading animation
- */
 function startNewsLoading(lang) {
     const detailBody = document.getElementById("newsDetailBody");
     if (!detailBody) return;
-
     detailBody.innerHTML = `
         <div class="news-chunk-loading">
             <div class="news-status-text">CONNECTED_TO_MAYOR_NODE</div>
-            <div class="news-loading-bar">
-                <div class="chunk"></div>
-                <div class="chunk"></div>
-                <div class="chunk"></div>
-                <div class="chunk"></div>
-                <div class="chunk"></div>
-                <div class="chunk"></div>
-                <div class="chunk"></div>
-                <div class="chunk"></div>
-            </div>
+            <div class="news-loading-bar"><div class="chunk"></div><div class="chunk"></div><div class="chunk"></div><div class="chunk"></div><div class="chunk"></div><div class="chunk"></div><div class="chunk"></div><div class="chunk"></div></div>
             <div class="news-status-text" id="newsLoadingStep" style="font-size: 8px; opacity: 0.8;">RECOGNIZING LANGUAGE: ${lang.toUpperCase()}...</div>
         </div>
     `;
-
     const chunks = detailBody.querySelectorAll(".chunk");
     let activeIndex = 0;
-    const steps = [
-        `ESTABLISHING_NEURAL_LINK...`,
-        `INJECTING_MAYOR_CONTEXT...`,
-        `DECRYPTING_STREAM... [${lang.toUpperCase()}]`,
-        `RECONSTRUCTING_DOM...`,
-        `SYNCING_GAME_TERMINOLOGY...`,
-        `FINALIZING_CONTENT...`
-    ];
+    const steps = ["ESTABLISHING_NEURAL_LINK...", "INJECTING_MAYOR_CONTEXT...", "DECRYPTING_STREAM...", "RECONSTRUCTING_DOM...", "SYNCING_GAME_TERMINOLOGY...", "FINALIZING_CONTENT..."];
     let stepIndex = 0;
-
     newsLoadingInterval = setInterval(() => {
-        chunks.forEach((c, i) => {
-            c.classList.toggle("active", i === activeIndex);
-        });
+        chunks.forEach((c, i) => c.classList.toggle("active", i === activeIndex));
         activeIndex = (activeIndex + 1) % chunks.length;
-        
         if (activeIndex === 0) {
             const stepEl = document.getElementById("newsLoadingStep");
-            if (stepEl) {
-                stepEl.textContent = steps[stepIndex % steps.length];
-                stepIndex++;
-            }
+            if (stepEl) stepEl.textContent = steps[stepIndex % steps.length];
+            stepIndex++;
         }
     }, 150);
 }
 
 function stopNewsLoading() {
-    if (newsLoadingInterval) {
-        clearInterval(newsLoadingInterval);
-        newsLoadingInterval = null;
-    }
+    if (newsLoadingInterval) { clearInterval(newsLoadingInterval); newsLoadingInterval = null; }
 }
 
-/**
- * Renders the article data into the detail body
- */
 function renderArticleContent(data, isTranslated = false) {
     const detailBody = document.getElementById("newsDetailBody");
     if (!detailBody) return;
-
     detailBody.innerHTML = `
         <div class="news-detail-content reveal">
-            <div class="news-header" style="margin-bottom: 20px; border-bottom: 2px solid rgba(94, 242, 214, 0.2); padding-bottom: 12px; ${isTranslated ? 'color: #ffab40;' : ''}">
+            <div class="news-header">
                <div style="display: flex; justify-content: space-between; align-items: center;">
-                 <span class="news-date" style="font-size: 14px; opacity: 0.7;">${isTranslated ? '🛰️ NEURAL_TRANS' : '📡 ORIGINAL_LINK'}</span>
-                 <span class="news-date" style="font-size: 14px;">${data.date || ''}</span>
+                 <span class="news-date">${isTranslated ? '🛰️ NEURAL_TRANS' : '📡 ORIGINAL_LINK'}</span>
+                 <span class="news-date">${data.date || ''}</span>
                </div>
             </div>
-            <h1 style="color: #ffffff; font-family: 'Conthrax'; font-size: 22px; margin: 20px 0 30px 0; line-height: 1.3; text-shadow: 0 0 15px rgba(94, 242, 214, 0.3);">${data.title}</h1>
-            <div class="article-text-content" style="font-size: 15px; line-height: 1.7;">
-                ${data.content}
-            </div>
-            <div style="margin-top: 50px; padding: 20px; border: 1px dashed rgba(94, 242, 214, 0.2); text-align: center; opacity: 0.6; font-size: 10px; font-family: 'Ethnocentric';">
-                ${isTranslated ? '=== END OF TRANSLATED STREAM ===' : '=== END OF ENCRYPTED DATASTREAM ==='}
-            </div>
+            <h1>${data.title}</h1>
+            <div class="article-text-content">${data.content}</div>
         </div>
     `;
-
-    // Ensure all links in the content open in new tabs
     detailBody.querySelectorAll("a").forEach(a => a.target = "_blank");
 }
 
-/**
- * Handles the AI translation logic
- */
 async function translateNewsDetail(lang, url) {
     const detailBody = document.getElementById("newsDetailBody");
     if (!detailBody || !currentOriginalNews) return;
-
-    if (lang === "en") {
-        renderArticleContent(currentOriginalNews);
-        return;
-    }
-
+    if (lang === "en") { renderArticleContent(currentOriginalNews); return; }
     const cacheKey = `${url}_${lang}`;
-    if (newsTranslations[cacheKey]) {
-        renderArticleContent(newsTranslations[cacheKey], true);
-        return;
-    }
-
-    // Show Immersive Loading state
+    if (newsTranslations[cacheKey]) { renderArticleContent(newsTranslations[cacheKey], true); return; }
     startNewsLoading(lang);
-
     try {
-        const systemPromptOverride = `You are a neural translation engine for LifeAfter (LA).
-Task: Translate the article into language: ${lang}.
-Format: You MUST separate the title and content using these exact markers:
-===TITLE===
-[Translated Title]
-===CONTENT===
-[Translated HTML Content]
-
-Rules:
-1. Preserve all HTML structure.
-2. If truncated, ensure the most important information is translated first.
-3. No JSON, no chatter, just the markers and content.`;
-
+        const systemPromptOverride = `You are a neural translation engine. Translate to ${lang}. Preserve HTML. Use markers ===TITLE=== and ===CONTENT===.`;
         const userContent = `TITLE: ${currentOriginalNews.title}\n\nCONTENT: ${currentOriginalNews.content}`;
-
-        const resp = await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                messages: [{ role: 'user', content: userContent }],
-                systemOverride: systemPromptOverride
-            })
-        });
-
-        if (!resp.ok) throw new Error("AI Node Failure: " + resp.status);
+        const resp = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [{ role: 'user', content: userContent }], systemOverride: systemPromptOverride }) });
         const data = await resp.json();
-        
         let aiContent = data.choices?.[0]?.message?.content || data.reply || "";
-        
-        // Robust Extraction using Markers
-        let title = "";
-        let content = "";
-        
+        let title = "", content = "";
         if (aiContent.includes("===TITLE===") && aiContent.includes("===CONTENT===")) {
             const parts = aiContent.split("===CONTENT===");
             title = parts[0].replace("===TITLE===", "").trim();
             content = parts[1] || "";
-        } else {
-            // Fallback if markers are missing but content exists
-            title = currentOriginalNews.title; // Keep original title
-            content = aiContent; 
-        }
-
-        const translatedData = {
-            title: title || currentOriginalNews.title,
-            content: content || "Neural stream truncated prematurely.",
-            date: currentOriginalNews.date
-        };
-        
-        // Save to cache
+        } else { title = currentOriginalNews.title; content = aiContent; }
+        const translatedData = { title: title || currentOriginalNews.title, content: content || "Neural stream truncated.", date: currentOriginalNews.date };
         newsTranslations[cacheKey] = translatedData;
-        
         stopNewsLoading();
         renderArticleContent(translatedData, true);
-
     } catch (err) {
         stopNewsLoading();
-        console.error("Translation error:", err);
-        detailBody.innerHTML = `
-            <div class="news-loading-text" style="padding: 20px; text-align: center; color: var(--danger);">
-                NEURAL LINK FAILED.
-                <div style="font-size: 10px; margin-top: 10px; color: var(--muted); text-transform: none;">
-                    ${err.message.includes('JSON_PARSE_ERROR') ? 'The AI node returned a malformed data stream. Try again.' : 'Unable to reach the Mayor AI node.'}
-                </div>
-                <button class="news-back-btn" onclick="document.getElementById('newsLangSelect').value='en'; renderArticleContent(currentOriginalNews);" style="margin-top: 20px;">Return to Original</button>
-            </div>
-        `;
+        detailBody.innerHTML = `<div class="news-loading-text">NEURAL LINK FAILED.</div>`;
     }
 }
+
+const clickAudio = new Audio('assets/sounds/nierMail.mp3');
+clickAudio.volume = 0.6;
+document.addEventListener('click', (e) => {
+    const isClickable = e.target.closest('button, a, .hud-action-btn, .hud-util-btn, .hud-promo-banner, .cyber-option, .hotspot, .close-btn, #faqBtn, .faq-btn, .ai-info-btn, .rpg-next-indicator');
+    if (isClickable) {
+        const soundClone = clickAudio.cloneNode();
+        soundClone.volume = window.sfxVolume !== undefined ? window.sfxVolume : 0.6;
+        if (soundClone.volume > 0) soundClone.play().catch(()=>{});
+    }
+});

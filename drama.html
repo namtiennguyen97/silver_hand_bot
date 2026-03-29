@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DRAMA ARCHIVE – SAO-ĐÊM</title>
+  <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/loading.css">
+  <link rel="stylesheet" href="assets/css/drama.css">
+  <link rel="stylesheet" href="assets/css/vn_overlay.css">
+</head>
+<body>
+
+<!-- VISUAL NOVEL INTRO OVERLAY -->
+<div id="vnOverlay">
+  <!-- Choice UI -->
+  <div id="vnChoiceOverlay" class="vn-choice-overlay"></div>
+
+  <!-- Character stage -->
+  <div class="vn-stage">
+    <!-- Left: opponent -->
+    <div class="vn-char left dim" id="vnCharLeft">
+      <img src="assets/img/drama/smirk.png" alt="opponent" id="vnImgLeft">
+    </div>
+    <!-- Right: Silver-Hand -->
+    <div class="vn-char right active" id="vnCharRight">
+      <img src="assets/img/drama/smirk.png" alt="Silver-Hand" id="vnImgRight">
+    </div>
+  </div>
+
+  <!-- Dialogue box -->
+  <div class="vn-dialogue" id="vnDialogue">
+    <div class="vn-speaker-tag" id="vnSpeakerTag">SILVER-HAND</div>
+    <div class="vn-text" id="vnText"></div>
+    <div class="vn-controls">
+      <div class="vn-progress" id="vnProgress"></div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="vn-skip-btn" id="vnSkipBtn">⏩ SKIP ALL</button>
+        <span class="vn-next-indicator" id="vnNextIndicator">▼</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING SCREEN -->
+<div id="loadingOverlay">
+  <div class="loading-wrapper">
+    <div class="loading-text">
+      <span class="sao">SAO &nbsp;</span><span class="dem"> ĐÊM</span>
+    </div>
+    <div class="loading-progress">
+      <div class="progress-bar" id="loadingProgress"></div>
+      <div class="loading-info">
+        <span id="loadingStatus">INITIALIZING...</span>
+        <span id="loadingPercentage">0%</span>
+      </div>
+    </div>
+    <div class="line top"></div>
+    <div class="line bottom"></div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<header class="drama-topbar">
+  <div class="topbar-brand">
+    <div class="brand-icon">⚡</div>
+    <div class="brand-label">
+      <div class="brand-title">DRAMA ARCHIVE</div>
+      <div class="brand-sub">CLASSIFIED INCIDENT LOG // SAO-ĐÊM</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="hud-back-btn" onclick="window.location.href='index.html'">← EXIT_NODE</button>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="drama-main">
+
+  <!-- HEADER -->
+  <div class="drama-header">
+    <div class="drama-header-tag">// INCIDENT DATABASE // RESTRICTED ACCESS //</div>
+    <h1>SERVER <span>DRAMA</span> LOG</h1>
+    <div class="drama-header-line"></div>
+    <div class="drama-header-stats">
+      <div class="drama-stat">
+        <div class="drama-stat-val" id="statTotal">0</div>
+        <div class="drama-stat-label">TOTAL CASES</div>
+      </div>
+      <div class="drama-stat">
+        <div class="drama-stat-val" style="color:#ff6b6b" id="statActive">0</div>
+        <div class="drama-stat-label">ACTIVE</div>
+      </div>
+      <div class="drama-stat">
+        <div class="drama-stat-val" style="color:#ffb74d" id="statOngoing">0</div>
+        <div class="drama-stat-label">ONGOING</div>
+      </div>
+      <div class="drama-stat">
+        <div class="drama-stat-val" style="color:rgba(94,242,214,0.4)" id="statClosed">0</div>
+        <div class="drama-stat-label">CLOSED</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="drama-filters">
+    <button class="filter-btn active" data-filter="all">ALL CASES</button>
+    <button class="filter-btn" data-filter="active">🔴 ACTIVE</button>
+    <button class="filter-btn" data-filter="ongoing">🟠 ONGOING</button>
+    <button class="filter-btn" data-filter="closed">⚫ CLOSED</button>
+  </div>
+
+  <!-- LIST -->
+  <div class="drama-list" id="dramaList">
+    <!-- Rendered by JS -->
+  </div>
+
+  <div class="drama-empty" id="dramaEmpty">[ NO RECORDS FOUND ]</div>
+
+</main>
+
+<script src="assets/js/loading.js"></script>
+<script src="assets/js/vn_engine.js"></script>
+<script src="assets/js/drama_list.js"></script>
+<script>
+/**
+ * DRAMA VN INTRO CONFIG
+ */
+const VN_SCRIPT = {
+    'start': {
+        speaker: 'UNKNOWN',
+        side: 'left',
+        text: '... Tưởng rằng không ai biết chuyện này. Hóa ra mày cũng nhúng tay vào?',
+        next: 'line2'
+    },
+    'line2': {
+        speaker: 'SILVER-HAND',
+        side: 'right',
+        text: 'Nhúng tay? Tao chỉ đang ghi chép lại. Mọi incident đều cần một người chứng kiến.',
+        next: 'choice1'
+    },
+    'choice1': {
+        choices: [
+            { text: 'CHẤP NHẬN ĐỐI ĐẦU', next: 'path_fight' },
+            { text: 'GIỮ THÁI ĐỘ TRUNG LẬP', next: 'path_neutral' }
+        ]
+    },
+    'path_fight': {
+        speaker: 'UNKNOWN',
+        side: 'left',
+        effect: 'shake',
+        text: 'Mạnh mồm đấy. Server này không thiếu kẻ muốn đâm sau lưng kẻ tự phụ như mày.',
+        next: 'final'
+    },
+    'path_neutral': {
+        speaker: 'UNKNOWN',
+        side: 'left',
+        text: 'Khôn ngoan đấy. Ở đây, kẻ im lặng thường là kẻ sống sót cuối cùng.',
+        next: 'final'
+    },
+    'final': {
+        speaker: 'SILVER-HAND',
+        side: 'right',
+        effect: 'flash',
+        text: 'Chào mừng đến với DRAMA ARCHIVE. Tất cả đều đã được lưu lại.'
+    }
+};
+
+window.addEventListener('app:loaded', () => {
+    const engine = new VNEngine();
+    engine.setBGM('assets/sounds/pgr_to_our_destiny.mp3');
+    
+    setTimeout(() => {
+        engine.start(VN_SCRIPT);
+    }, 800);
+});
+</script>
+
+</body>
+</html>

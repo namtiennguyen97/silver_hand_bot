@@ -14,6 +14,28 @@ const rpgChatContent = document.getElementById('rpgChatContent');
 
 let video = videoMain;
 
+window.bgMode = localStorage.getItem('pgrBgMode') || '3D';
+window.setBgMode = function(mode) {
+    window.bgMode = mode;
+    localStorage.setItem('pgrBgMode', mode);
+    const v = document.getElementById('videoMain');
+    const img = document.getElementById('imageMain');
+    
+    if (mode === '2D') {
+        if (v) {
+            v.pause();
+            v.style.display = 'none';
+        }
+        if (img) img.style.display = 'block';
+    } else {
+        if (v) {
+            v.style.display = 'block';
+            v.play().catch(()=>{});
+        }
+        if (img) img.style.display = 'none';
+    }
+};
+
 /* ===============================
    VIDEO LAYOUT (OPTIMIZED)
 ================================ */
@@ -188,6 +210,28 @@ function initGamingHUD() {
                 localStorage.setItem('pgrSfxVolume', window.sfxVolume);
             };
         }
+        
+        const btnMode3D = document.getElementById('btnMode3D');
+        const btnMode2D = document.getElementById('btnMode2D');
+        
+        if (btnMode3D && btnMode2D) {
+            const updateBgModeUI = () => {
+                if (window.bgMode === '2D') {
+                    btnMode2D.style.background = 'var(--hud-cyan, #00ffff)';
+                    btnMode2D.style.color = '#000';
+                    btnMode3D.style.background = 'transparent';
+                    btnMode3D.style.color = 'var(--hud-cyan, #00ffff)';
+                } else {
+                    btnMode3D.style.background = 'var(--hud-cyan, #00ffff)';
+                    btnMode3D.style.color = '#000';
+                    btnMode2D.style.background = 'transparent';
+                    btnMode2D.style.color = 'var(--hud-cyan, #00ffff)';
+                }
+            };
+            updateBgModeUI();
+            btnMode3D.onclick = () => { window.setBgMode('3D'); updateBgModeUI(); };
+            btnMode2D.onclick = () => { window.setBgMode('2D'); updateBgModeUI(); };
+        }
     });
 
     const btnNotice = document.getElementById('hudBtnNotice');
@@ -258,7 +302,7 @@ function initGamingHUD() {
    INIT & EVENTS
 ================================ */
 window.addEventListener('load', () => {
-    if (videoMain) videoMain.play().catch(()=>{});
+    window.setBgMode(window.bgMode);
     syncLayout();
     
     // HUD SYNC EFFECT
@@ -290,6 +334,7 @@ document.addEventListener('click', (e) => {
 
     if (chatOverlay && chatOverlay.style.display === 'block' && !chatOverlay.contains(e.target)) {
         hideRPGChat();
+        if (window.playSfx && window.cancelAudio) window.playSfx(window.cancelAudio);
     }
 });
 
@@ -304,6 +349,7 @@ if (closeModal) {
         }
         modal.style.display = "none";
         if (window.toggleHUD) window.toggleHUD(true);
+        if (window.playSfx && window.cancelAudio) window.playSfx(window.cancelAudio);
     };
 }
 
@@ -316,6 +362,7 @@ if (modal) {
             }
             modal.style.display = "none";
             if (window.toggleHUD) window.toggleHUD(true);
+            window.playSfx(window.cancelAudio);
         }
     };
     modal.addEventListener("click", closeModalSafely);
@@ -379,7 +426,10 @@ window.initAboutMeGallery = function(container) {
     });
 
     gallery.addEventListener("click", (e) => {
-        if (e.target === gallery) gallery.style.display = "none";
+        if (e.target === gallery) {
+            gallery.style.display = "none";
+            window.playSfx(window.cancelAudio);
+        }
     });
 };
 
@@ -543,12 +593,22 @@ async function translateNewsDetail(lang, url) {
 }
 
 const clickAudio = new Audio('assets/sounds/nierMail.mp3');
-clickAudio.volume = 0.6;
+window.cancelAudio = new Audio('assets/sounds/nierMenu.wav');
+
+window.playSfx = function(audio) {
+    if (!audio) return;
+    const soundClone = audio.cloneNode();
+    soundClone.volume = window.sfxVolume !== undefined ? window.sfxVolume : 0.6;
+    if (soundClone.volume > 0) soundClone.play().catch(()=>{});
+}
+
 document.addEventListener('click', (e) => {
-    const isClickable = e.target.closest('button, a, .hud-action-btn, .hud-util-btn, .hud-promo-banner, .cyber-option, .hotspot, .close-btn, #faqBtn, .faq-btn, .ai-info-btn, .rpg-next-indicator');
-    if (isClickable) {
-        const soundClone = clickAudio.cloneNode();
-        soundClone.volume = window.sfxVolume !== undefined ? window.sfxVolume : 0.6;
-        if (soundClone.volume > 0) soundClone.play().catch(()=>{});
+    const cancelTarget = e.target.closest('.close-btn, #closeGallery, .news-back-btn, .gallery-close');
+    const clickTarget = e.target.closest('button, a, .hud-action-btn, .hud-util-btn, .hud-promo-banner, .cyber-option, .hotspot, #faqBtn, .faq-btn, .ai-info-btn, .rpg-next-indicator');
+
+    if (cancelTarget) {
+        window.playSfx(window.cancelAudio);
+    } else if (clickTarget) {
+        window.playSfx(clickAudio);
     }
 });

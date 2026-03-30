@@ -97,6 +97,7 @@ function hideRPGChat() {
         chatOverlay.style.display = 'none';
         chatOverlay.classList.remove('active');
         if (window.toggleHUD) window.toggleHUD(true);
+        if (window.playSfx && window.cancelAudio) window.playSfx(window.cancelAudio);
     }
 }
 

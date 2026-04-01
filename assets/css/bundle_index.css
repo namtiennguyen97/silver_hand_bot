@@ -1,3 +1,9 @@
+@font-face {
+    font-family: 'Conthrax';
+    src: url('../fonts/Conthrax-SemiBold.otf') format('opentype');
+    font-display: swap;
+}
+
 /*modal faq*/
 #faqBtn{
     cursor: pointer;
@@ -5191,7 +5197,7 @@ body.finished #hud-root {
 
 /* Dialogue text area */
 .vn-text {
-  font-family: 'Inter', 'Orbitron', sans-serif;
+  font-family: 'Conthrax', 'Orbitron', sans-serif;
   font-size: 14px;
   line-height: 1.65;
   color: #d8ffff;

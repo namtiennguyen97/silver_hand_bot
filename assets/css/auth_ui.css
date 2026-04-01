@@ -57,11 +57,12 @@
 
 .auth-title {
   font-family: 'Orbitron', sans-serif;
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 900;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   color: var(--neon-cyan);
   text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.8), 0 0 20px rgba(0, 255, 255, 0.4);
 }
 
 /* Avatar Section */
@@ -70,9 +71,16 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px;
-  background: rgba(0, 255, 255, 0.03);
+  background: rgba(0, 255, 255, 0.08);
   margin-bottom: 25px;
-  border: 1px dashed rgba(0, 255, 255, 0.2);
+  border: 1px dashed rgba(0, 255, 255, 0.6);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.1) inset;
+  transition: all 0.3s;
+}
+
+.avatar-upload-box:hover {
+  background: rgba(0, 255, 255, 0.12);
+  border-color: var(--neon-cyan);
 }
 
 .avatar-preview {
@@ -81,7 +89,7 @@
   border-radius: 4px;
   border: 1px solid var(--neon-cyan);
   object-fit: cover;
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
 }
 
 .upload-info {
@@ -90,15 +98,30 @@
 }
 
 .upload-btn {
-  background: transparent;
+  background: rgba(0, 255, 255, 0.1);
   border: 1px solid var(--neon-cyan);
-  color: var(--neon-cyan);
-  padding: 6px 12px;
+  color: #fff;
+  padding: 8px 14px;
   cursor: pointer;
   font-family: 'Orbitron', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
+  font-weight: bold;
   text-transform: uppercase;
-  clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  text-shadow: 0 0 5px var(--neon-cyan);
+  box-shadow: inset 0 0 8px rgba(0, 255, 255, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.upload-btn:hover {
+  background: var(--neon-cyan);
+  color: #000;
+  box-shadow: 0 0 20px var(--neon-cyan);
+  text-shadow: none;
+}
+
+.upload-btn:active {
+  transform: scale(0.95);
 }
 
 /* Passcode Display */
@@ -108,10 +131,12 @@
 
 #authStatus {
     font-family: 'Orbitron', sans-serif;
-    font-size: 9px;
-    color: rgba(0, 255, 255, 0.6);
-    letter-spacing: 1px;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--neon-cyan);
+    letter-spacing: 1.5px;
     margin-bottom: 12px;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
 }
 
 .passcode-display {
@@ -144,9 +169,11 @@
 
 .num-btn {
   height: 54px;
-  background: rgba(0, 255, 255, 0.04);
-  border: 1px solid rgba(0, 255, 255, 0.15);
+  background: rgba(0, 255, 255, 0.08);
+  border: 1px solid rgba(0, 255, 255, 0.3);
   color: #fff;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.05);
   font-family: 'Share Tech Mono', monospace;
   font-size: 24px;
   position: relative;
@@ -165,36 +192,48 @@
     bottom: 4px;
     font-size: 7px;
     font-family: 'Orbitron', sans-serif;
-    opacity: 0.4;
+    opacity: 0.8;
     letter-spacing: 1px;
 }
 
 .num-btn:hover {
-  background: rgba(0, 255, 255, 0.12);
+  background: rgba(0, 255, 255, 0.2);
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.4), inset 0 0 15px rgba(0, 255, 255, 0.2);
 }
 
 .num-btn:active {
-  transform: scale(0.96);
+  transform: scale(0.94);
   background: var(--neon-cyan);
   color: #000;
+  box-shadow: 0 0 30px var(--neon-cyan), inset 0 0 20px #fff;
+  text-shadow: none;
 }
 
 .num-btn.special {
-    font-size: 14px;
+    font-size: 16px;
     color: var(--neon-pink);
-    border-color: rgba(255, 0, 255, 0.2);
+    border-color: rgba(255, 0, 255, 0.4);
+    background: rgba(255, 0, 255, 0.05);
+    text-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
 }
 
 .num-btn.special::after {
     color: var(--neon-pink);
-    opacity: 0.6;
+    opacity: 0.8;
 }
 
 .num-btn.special:hover {
-    box-shadow: 0 0 15px rgba(255, 0, 255, 0.2);
+    background: rgba(255, 0, 255, 0.15);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.4), inset 0 0 15px rgba(255, 0, 255, 0.2);
     border-color: var(--neon-pink);
+}
+
+.num-btn.special:active {
+    background: var(--neon-pink);
+    color: #000;
+    box-shadow: 0 0 30px var(--neon-pink), inset 0 0 20px #fff;
+    text-shadow: none;
 }
 
 /* Footer Section */
@@ -205,23 +244,32 @@
 .submit-btn {
     width: 100%;
     padding: 16px;
-    background: transparent;
+    background: rgba(0, 255, 255, 0.08);
     border: 1px solid var(--neon-cyan);
     color: var(--neon-cyan);
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.6);
+    box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.2);
     font-family: 'Orbitron', sans-serif;
     font-weight: 700;
-    font-size: 12px;
-    letter-spacing: 2px;
+    font-size: 14px;
+    letter-spacing: 3px;
     cursor: pointer;
     text-transform: uppercase;
-    transition: all 0.3s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
 }
 
 .submit-btn:not(:disabled):hover {
     background: var(--neon-cyan);
     color: #000;
-    box-shadow: 0 0 25px var(--neon-cyan);
+    box-shadow: 0 0 30px var(--neon-cyan);
+    text-shadow: none;
+}
+
+.submit-btn:not(:disabled):active {
+    transform: scale(0.98);
+    background: var(--neon-cyan);
+    box-shadow: 0 0 40px var(--neon-cyan), inset 0 0 20px #fff;
 }
 
 .submit-btn:disabled {

@@ -9,8 +9,6 @@
   <!-- CSS dùng lại (Bundled for Performance) -->
   <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
   <link rel="stylesheet" href="assets/css/bundle_index.css">
-  <link rel="stylesheet" href="assets/css/vn_overlay.css">
-  <link rel="stylesheet" href="assets/css/auth_ui.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 </head>
@@ -24,10 +22,10 @@
   <div id="vnChoiceOverlay" class="vn-choice-overlay"></div>
   <div class="vn-stage">
     <div class="vn-char left dim" id="vnCharLeft">
-      <img src="assets/img/drama/smirk.png" alt="opponent" id="vnImgLeft" style="display:none">
+      <img src="assets/img/mayor_dialogue_1.png" alt="opponent" id="vnImgLeft" style="display:none">
     </div>
     <div class="vn-char right active" id="vnCharRight">
-      <img src="assets/img/drama/smirk.png" alt="Mayor" id="vnImgRight">
+      <img src="assets/img/mayor_dialogue_1.png" alt="Mayor" id="vnImgRight">
     </div>
   </div>
   <div class="vn-dialogue" id="vnDialogue">
@@ -51,7 +49,7 @@
         <div class="auth-title">ESTABLISH_IDENTITY</div>
       </div>
       <div class="avatar-upload-box">
-        <img src="assets/img/mayor_avatar.jpg" alt="Avatar" class="avatar-preview" id="avatarPreview">
+        <img src="assets/img/unknown_avatar.png" alt="Avatar" class="avatar-preview" id="avatarPreview">
         <div class="upload-info">
             <input type="file" id="avatarInput" hidden accept="image/*">
             <button class="upload-btn" onclick="document.getElementById('avatarInput').click()">UPLOAD_BIO_IMAGE</button>
@@ -312,11 +310,15 @@
             <span class="setting-label">BACKGROUND MODE</span>
             <div class="bg-mode-controls" style="display: flex; gap: 10px;">
                 <button id="btnMode3D" class="mode-btn" style="padding: 5px 15px; border: 1px solid var(--hud-cyan, #00ffff); background: var(--hud-cyan, #00ffff); color: #000; cursor: pointer; font-weight: bold;">3D</button>
+                <button id="btnMode2D" class="mode-btn" style="padding: 5px 15px; border: 1px solid var(--hud-cyan, #00ffff); background: transparent; color: var(--hud-cyan, #00ffff); cursor: pointer; font-weight: bold;">2D</button>
             </div>
         </div>
         <div class="setting-row" id="settingAccountRow" style="margin-top: 15px; border-top: 1px solid rgba(0,255,255,0.1); padding-top: 15px;">
             <span class="setting-label">ACCOUNT IDENTITY</span>
-            <button id="btnManageAccount" class="mode-btn" style="padding: 5px 12px; border: 1px solid var(--hud-cyan, #00ffff); background: transparent; color: var(--hud-cyan, #00ffff); cursor: pointer; font-size: 10px;">ESTABLISH_ID</button>
+            <div style="display: flex; gap: 10px;">
+                <button id="btnManageAccount" class="mode-btn" style="padding: 5px 12px; border: 1px solid var(--hud-cyan, #00ffff); background: transparent; color: var(--hud-cyan, #00ffff); cursor: pointer; font-size: 10px;">ESTABLISH_ID</button>
+                <button onclick="localStorage.removeItem('silverhand_user'); window.location.reload();" class="mode-btn" style="padding: 5px 12px; border: 1px solid #ff3366; background: transparent; color: #ff3366; cursor: pointer; font-size: 10px;">DEBUG: CLEAR AUTH</button>
+            </div>
         </div>
     </div>
 </template>

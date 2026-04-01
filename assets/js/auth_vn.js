@@ -5,21 +5,23 @@
 
 const VN_AUTH_SCRIPT = {
     'start': {
-        speaker: 'MAYOR AI',
+        speaker: 'Silver-Hand',
         side: 'right',
+        image: 'assets/img/mayor_dialogue_1.png',
         text: '... Đang quét sinh trắc học. Nhận diện Tactician mới trong khu vực Node Hope 101.',
         next: 'line2'
     },
     'line2': {
-        speaker: 'MAYOR AI',
+        speaker: 'Silver-Hand',
         side: 'right',
         effect: 'flash',
         text: 'Chào mừng bạn. Tôi là MAYOR AI, người quản lý giao diện trung tâm này. Dữ liệu của bạn chưa có trong bản lưu trữ vĩnh viễn.',
         next: 'line3'
     },
     'line3': {
-        speaker: 'MAYOR AI',
+        speaker: 'Silver-Hand',
         side: 'right',
+        image: 'assets/img/mayor_dialogue_2.png',
         text: 'Để tránh việc mất dữ liệu quá trình tham chiến, bạn có muốn thiết lập một Identity ID riêng cho mình không?',
         next: 'choice_auth'
     },
@@ -30,13 +32,14 @@ const VN_AUTH_SCRIPT = {
         ]
     },
     'path_guest': {
-        speaker: 'MAYOR AI',
+        speaker: 'Silver-Hand',
         side: 'right',
+        image: 'assets/img/mayor_dialogue_5.png',
         text: 'Đã rõ. Chế độ Khách (Guest) đã được ghi nhận. Bạn có thể thiết lập danh tính sau này trong mục SETTING của HUD.',
         next: 'finalize_guest'
     },
     'path_register': {
-        speaker: 'MAYOR AI',
+        speaker: 'Silver-Hand',
         side: 'right',
         effect: 'shake',
         text: 'Quyết định sáng suốt. Khởi tạo quy trình thiết lập Identity Protocol... Vui lòng upload ảnh đại diện và nhập mã passcode.',
@@ -44,7 +47,8 @@ const VN_AUTH_SCRIPT = {
     },
     'finalize_guest': {
         speaker: 'SYSTEM',
-        text: 'SYSTEM: GUEST_MODE_ACTIVE. Chúc bạn một ngày tốt lành.'
+        text: 'SYSTEM: GUEST_MODE_ACTIVE. Chúc bạn một ngày tốt lành.',
+        image: 'assets/img/mayor_dialogue_3.png',
     },
     'trigger_register': {
         speaker: 'SYSTEM',
@@ -54,13 +58,14 @@ const VN_AUTH_SCRIPT = {
 
 const VN_THANKS_SCRIPT = {
     'start': {
-        speaker: 'MAYOR AI',
+        speaker: 'Silver-Hand',
         side: 'right',
+        image: 'assets/img/mayor_dialogue_2.png',
         text: 'Cám ơn Tactician. Mật mã thiết lập thành công. Hệ thống đã mã hóa lớp bảo mật cấp cao nhất.',
         next: 'ask_name'
     },
     'ask_name': {
-        speaker: 'MAYOR AI',
+        speaker: 'Silver-Hand',
         side: 'right',
         text: 'Trước khi hoàn tất, hãy cho tôi biết biệt danh (Nickname) của bạn. Hệ thống cần định danh để phục vụ các giao thức tương lai.',
         next: null
@@ -75,13 +80,13 @@ class AuthVN {
             passcode: '',
         };
         this.currentInput = '';
-        this.inputMode = 'passcode'; 
-        
+        this.inputMode = 'passcode';
+
         this.modal = document.getElementById('authModal');
         this.authStep1 = document.getElementById('authStep1');
         this.authStep2 = document.getElementById('authStep2');
         this.nicknameInput = document.getElementById('nicknameInput');
-        
+
         this.passDots = document.querySelectorAll('.pass-dot');
         this.numBtns = document.querySelectorAll('.num-btn');
         this.submitBtn = document.getElementById('mainSubmitBtn');
@@ -188,7 +193,7 @@ class AuthVN {
                 this.updateDisplay();
                 return;
             }
-            
+
             // Passcode Confirmed!
             this.modal.style.display = 'none';
             // Use setTimeout to ensure the click event propagation is finished
@@ -232,7 +237,7 @@ class AuthVN {
                     localStorage.setItem('silverhand_user', JSON.stringify(res.user));
                     setTimeout(() => {
                         this.modal.style.display = 'none';
-                        window.location.reload(); 
+                        window.location.reload();
                     }, 1000);
                 } else {
                     alert('ERROR: ' + (res.error || 'FAILED'));
@@ -263,7 +268,7 @@ class AuthVN {
 function initAuth() {
     const auth = new AuthVN();
     const storedUser = localStorage.getItem('silverhand_user');
-    
+
     if (!storedUser) {
         setTimeout(() => {
             auth.startAuthFlow();

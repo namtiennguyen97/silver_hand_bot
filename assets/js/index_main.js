@@ -58,28 +58,38 @@ function layoutVideo() {
         const contentCenterX = (VIDEO_W / 2) * scale;
         const screenCenter   = vw / 2;
 
-        left = (screenCenter - contentCenterX) + 'px';
-        top  = (vh - renderH) / 2 + 'px';
+        left = (screenCenter - contentCenterX);
+        top  = (vh - renderH) / 2;
     } else {
         const scaleByH = vh / VIDEO_H;
         renderH = VIDEO_H * scaleByH;
         renderW = VIDEO_W * scaleByH;
 
-        left = (vw - renderW) / 2 + 'px';
-        top  = '0px';
+        left = (vw - renderW) / 2;
+        top  = 0;
     }
 
     if (videoMain) {
+        // Use translate3d for better performance (GPU acceleration)
         videoMain.style.width  = renderW + 'px';
         videoMain.style.height = renderH + 'px';
-        videoMain.style.left   = left;
-        videoMain.style.top    = top;
+        videoMain.style.transform = `translate3d(${left}px, ${top}px, 0)`;
+        // Reset top/left in case they were set
+        videoMain.style.top = '0';
+        videoMain.style.left = '0';
     }
 }
 
-function syncLayout() {
-    layoutVideo();
+// Debounce function to limit layout calls
+function debounce(fn, ms) {
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), ms);
+    };
 }
+
+const syncLayout = debounce(layoutVideo, 100);
 
 /* ===============================
    MODAL & OPTIONS
@@ -107,6 +117,11 @@ function openModalByKey(key) {
     const tpl = document.getElementById(data.template);
     if (tpl) modalContent.appendChild(tpl.content.cloneNode(true));
     modal.style.display = "flex";
+    
+    // Performance optimization: pause video when opening modal
+    if (videoMain && window.bgMode !== '2D') {
+        videoMain.pause();
+    }
 }
 
 const optionActions = {
@@ -149,7 +164,10 @@ function initGamingHUD() {
             setTimeout(() => {
                 btn.classList.remove('selected-neon');
                 toggleHUD(false);
-                if (action) action(e);
+                // Wait for HUD transition (0.4s) to complete before showing content
+                setTimeout(() => {
+                    if (action) action(e);
+                }, 400);
             }, 500);
         });
     };
@@ -164,8 +182,10 @@ function initGamingHUD() {
     if (btnProfile) {
         btnProfile.addEventListener('click', () => {
             toggleHUD(false);
-            openModalByKey("aboutMe");
-            if (window.initAboutMeGallery) window.initAboutMeGallery(modalContent);
+            setTimeout(() => {
+                openModalByKey("aboutMe");
+                if (window.initAboutMeGallery) window.initAboutMeGallery(modalContent);
+            }, 400); // Wait for HUD transition
         });
     }
 
@@ -350,6 +370,11 @@ if (closeModal) {
         modal.style.display = "none";
         if (window.toggleHUD) window.toggleHUD(true);
         if (window.playSfx && window.cancelAudio) window.playSfx(window.cancelAudio);
+        
+        // Performance optimization: resume video when closing modal
+        if (videoMain && window.bgMode !== '2D') {
+            videoMain.play().catch(()=>{});
+        }
     };
 }
 
@@ -363,6 +388,11 @@ if (modal) {
             modal.style.display = "none";
             if (window.toggleHUD) window.toggleHUD(true);
             window.playSfx(window.cancelAudio);
+            
+            // Performance optimization: resume video when closing modal
+            if (videoMain && window.bgMode !== '2D') {
+                videoMain.play().catch(()=>{});
+            }
         }
     };
     modal.addEventListener("click", closeModalSafely);

@@ -15,6 +15,12 @@
   --hud-text: 'Inter', sans-serif;
 }
 
+@media (max-width: 800px) {
+  :root {
+    --hud-blur: none !important; /* Disable blur on mobile for performance */
+  }
+}
+
 /* --- HUD Root Layout --- */
 #hud-root {
   position: fixed;
@@ -124,6 +130,10 @@ body.finished #hud-root {
 @keyframes hudRotate {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+.level-ring-rotate, .hud-exp-bar-fill::before {
+  will-change: transform;
 }
 
 .hud-level-val {
@@ -302,6 +312,10 @@ body.finished #hud-root {
   opacity: 0.5;
   margin-top: 2px;
   pointer-events: none;
+}
+
+.hud-action-btn {
+  will-change: transform, opacity, background;
 }
 
 .hud-action-btn:hover {

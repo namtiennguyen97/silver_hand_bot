@@ -205,8 +205,8 @@
         0 8px 32px rgba(0, 0, 0, 0.4),
         0 0 10px rgba(94, 242, 214, 0.2),
         inset 0 0 15px rgba(94, 242, 214, 0.1);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: var(--hud-blur, blur(8px));
+    -webkit-backdrop-filter: var(--hud-blur, blur(8px));
     color: #eaffff;
     font-size: 13px;
     overflow: visible;
@@ -419,7 +419,8 @@
         0 0 4px #ffffff,
         inset 0 0 12px rgba(94, 242, 214, 0.6),
         0 0 16px rgba(94, 242, 214, 0.8);
-    backdrop-filter: blur(8px);
+    backdrop-filter: var(--hud-blur, blur(8px));
+    border-width: 2px;
 }
 
 .hotspot-tooltip .tooltip-box::before {
@@ -490,7 +491,7 @@
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    backdrop-filter: blur(2px);
+    backdrop-filter: var(--hud-blur, blur(2px));
 }
 
 /* List các option dạng ul li */
@@ -549,7 +550,7 @@
     align-items: center;
     z-index: 10000;
     backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: var(--hud-blur, blur(0px));
     padding: 20px;
 }
 

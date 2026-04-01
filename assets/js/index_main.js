@@ -252,6 +252,14 @@ function initGamingHUD() {
             btnMode3D.onclick = () => { window.setBgMode('3D'); updateBgModeUI(); };
             btnMode2D.onclick = () => { window.setBgMode('2D'); updateBgModeUI(); };
         }
+
+        const btnManageAccount = document.getElementById('btnManageAccount');
+        if (btnManageAccount) {
+            btnManageAccount.onclick = () => {
+                closeModalFunc();
+                if (window.openAuthRegistration) window.openAuthRegistration();
+            };
+        }
     });
 
     const btnNotice = document.getElementById('hudBtnNotice');

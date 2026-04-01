@@ -1,0 +1,275 @@
+/* =============================================
+   AUTH & NUMBER PAD STYLES (SCI-FI / GAME MODE)
+============================================= */
+
+:root {
+  --neon-cyan: #00ffff;
+  --neon-pink: #ff00ff;
+  --auth-bg: #00050a;
+  --tech-border: rgba(0, 255, 255, 0.4);
+}
+
+#authModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  background: var(--auth-bg);
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(0, 100, 150, 0.15) 0%, transparent 80%),
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,255,0.02) 2px, rgba(0,255,255,0.02) 4px);
+  backdrop-filter: blur(8px);
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.auth-container {
+  width: min(100%, 380px);
+  background: rgba(0, 12, 24, 0.95);
+  border: 1px solid var(--tech-border);
+  padding: 35px 25px;
+  position: relative;
+  box-shadow: 
+    0 0 40px rgba(0, 0, 0, 0.8),
+    inset 0 0 20px rgba(0, 255, 255, 0.05);
+}
+
+/* Sci-fi Brackets */
+.auth-container::before, .auth-container::after {
+  content: '';
+  position: absolute;
+  width: 20px; height: 20px;
+  border-style: solid;
+  border-color: var(--neon-cyan);
+  pointer-events: none;
+}
+.auth-container::before { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+.auth-container::after { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+
+.auth-header {
+  text-align: left;
+  margin-bottom: 20px;
+  border-left: 3px solid var(--neon-cyan);
+  padding-left: 15px;
+}
+
+.auth-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+}
+
+/* Avatar Section */
+.avatar-upload-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: rgba(0, 255, 255, 0.03);
+  margin-bottom: 25px;
+  border: 1px dashed rgba(0, 255, 255, 0.2);
+}
+
+.avatar-preview {
+  width: 70px;
+  height: 70px;
+  border-radius: 4px;
+  border: 1px solid var(--neon-cyan);
+  object-fit: cover;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+.upload-info {
+    flex: 1;
+    margin-left: 15px;
+}
+
+.upload-btn {
+  background: transparent;
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  padding: 6px 12px;
+  cursor: pointer;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 9px;
+  text-transform: uppercase;
+  clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+}
+
+/* Passcode Display */
+.passcode-wrapper {
+    margin-bottom: 25px;
+}
+
+#authStatus {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    color: rgba(0, 255, 255, 0.6);
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.passcode-display {
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.pass-dot {
+  width: 25px;
+  height: 4px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pass-dot.active {
+  background: var(--neon-cyan);
+  box-shadow: 0 0 12px var(--neon-cyan);
+  border-color: var(--neon-cyan);
+  transform: scaleY(1.5);
+}
+
+/* Number Pad Grid */
+.numpad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.num-btn {
+  height: 54px;
+  background: rgba(0, 255, 255, 0.04);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  color: #fff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 24px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  overflow: hidden;
+}
+
+.num-btn::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: 4px;
+    font-size: 7px;
+    font-family: 'Orbitron', sans-serif;
+    opacity: 0.4;
+    letter-spacing: 1px;
+}
+
+.num-btn:hover {
+  background: rgba(0, 255, 255, 0.12);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+.num-btn:active {
+  transform: scale(0.96);
+  background: var(--neon-cyan);
+  color: #000;
+}
+
+.num-btn.special {
+    font-size: 14px;
+    color: var(--neon-pink);
+    border-color: rgba(255, 0, 255, 0.2);
+}
+
+.num-btn.special::after {
+    color: var(--neon-pink);
+    opacity: 0.6;
+}
+
+.num-btn.special:hover {
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.2);
+    border-color: var(--neon-pink);
+}
+
+/* Footer Section */
+.auth-footer {
+    margin-top: 30px;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: transparent;
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.submit-btn:not(:disabled):hover {
+    background: var(--neon-cyan);
+    color: #000;
+    box-shadow: 0 0 25px var(--neon-cyan);
+}
+
+.submit-btn:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+    border-color: rgba(255,255,255,0.2);
+    color: #fff;
+}
+
+/* Nickname Screen */
+.nickname-box {
+    margin-top: 20px;
+    position: relative;
+}
+
+.input-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8px;
+    color: rgba(0, 255, 255, 0.5);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.tech-input {
+    width: 100%;
+    background: rgba(0, 255, 255, 0.05);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-left: 4px solid var(--neon-cyan);
+    padding: 12px 15px;
+    color: #fff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 18px;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.tech-input:focus {
+    background: rgba(0, 255, 255, 0.1);
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+}
+
+.tech-input::placeholder {
+    color: rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile Adjustments */
+@media (max-height: 700px) {
+    .auth-container { padding: 20px; }
+    .num-btn { height: 48px; }
+}

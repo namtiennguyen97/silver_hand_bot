@@ -24,6 +24,7 @@ class VNEngine {
         this.isTyping     = false;
         this.isChoiceMode   = false;
         this.onComplete   = null;
+        this.terminateTimer = null;
 
         // Audio Management
         this.bgm          = null;
@@ -113,9 +114,16 @@ class VNEngine {
 
     /* --- Core Engine --- */
     start(scriptObj, startId = 'start', onComplete = null) {
+        if (this.terminateTimer) {
+            clearTimeout(this.terminateTimer);
+            this.terminateTimer = null;
+        }
         this.script = scriptObj;
         this.onComplete = onComplete;
         this.overlay.style.display = 'block';
+        this.overlay.style.animation = 'none'; // Reset animation
+        void this.overlay.offsetWidth; // Trigger reflow
+        this.overlay.style.animation = 'vnFadeIn 0.5s ease forwards';
         this.overlay.classList.remove('finished');
         
         if (this.choiceOverlay) this.choiceOverlay.style.display = 'none'; // Ensure hidden at start
@@ -254,10 +262,12 @@ class VNEngine {
     }
 
     terminate() {
+        if (this.terminateTimer) clearTimeout(this.terminateTimer);
         this.overlay.style.animation = 'vnFadeIn 0.5s ease reverse forwards';
         this.stopBGM();
-        setTimeout(() => {
+        this.terminateTimer = setTimeout(() => {
             this.overlay.style.display = 'none';
+            this.terminateTimer = null;
             if (this.onComplete) this.onComplete();
         }, 500);
     }

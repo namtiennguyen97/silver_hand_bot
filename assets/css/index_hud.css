@@ -112,7 +112,6 @@ body.finished #hud-root {
   position: relative;
   background: rgba(0,0,0,0.6);
   box-shadow: 0 0 20px rgba(94,242,214,0.2);
-  z-index: 2;
 }
 
 .level-ring-rotate {

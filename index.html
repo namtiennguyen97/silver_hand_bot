@@ -4,16 +4,99 @@
   <meta charset="UTF-8">
   <title>SAO-ĐÊM – Mayor AI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
   <!-- CSS dùng lại (Bundled for Performance) -->
   <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
   <link rel="stylesheet" href="assets/css/bundle_index.css">
+  <link rel="stylesheet" href="assets/css/vn_overlay.css">
+  <link rel="stylesheet" href="assets/css/auth_ui.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 </head>
 <body>
 <!-- CYBER LIST OVERLAY (LEGACY) -->
 <div id="cyberOverlay" class="cyber-overlay">
+</div>
+
+<!-- VISUAL NOVEL INTRO OVERLAY -->
+<div id="vnOverlay">
+  <div id="vnChoiceOverlay" class="vn-choice-overlay"></div>
+  <div class="vn-stage">
+    <div class="vn-char left dim" id="vnCharLeft">
+      <img src="assets/img/drama/smirk.png" alt="opponent" id="vnImgLeft" style="display:none">
+    </div>
+    <div class="vn-char right active" id="vnCharRight">
+      <img src="assets/img/drama/smirk.png" alt="Mayor" id="vnImgRight">
+    </div>
+  </div>
+  <div class="vn-dialogue" id="vnDialogue">
+    <div class="vn-speaker-tag" id="vnSpeakerTag">MAYOR AI</div>
+    <div class="vn-text" id="vnText"></div>
+    <div class="vn-controls">
+      <div class="vn-progress" id="vnProgress"></div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="vn-skip-btn" id="vnSkipBtn">⏩ SKIP ALL</button>
+        <span class="vn-next-indicator" id="vnNextIndicator">▼</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ACCOUNT REGISTRATION / LOGIN MODAL -->
+<div id="authModal">
+  <div class="auth-container">
+    <div id="authStep1">
+      <div class="auth-header">
+        <div class="auth-title">ESTABLISH_IDENTITY</div>
+      </div>
+      <div class="avatar-upload-box">
+        <img src="assets/img/mayor_avatar.jpg" alt="Avatar" class="avatar-preview" id="avatarPreview">
+        <div class="upload-info">
+            <input type="file" id="avatarInput" hidden accept="image/*">
+            <button class="upload-btn" onclick="document.getElementById('avatarInput').click()">UPLOAD_BIO_IMAGE</button>
+            <div style="font-size:7px; color:rgba(0,255,255,0.4); margin-top:5px; font-family:'Orbitron'">// SELECT_SOURCE_NODE</div>
+        </div>
+      </div>
+      <div class="passcode-wrapper">
+          <div id="authStatus">SET YOUR 8-DIGIT PASSCODE</div>
+          <div class="passcode-display">
+            <div class="pass-dot"></div><div class="pass-dot"></div><div class="pass-dot"></div><div class="pass-dot"></div>
+            <div class="pass-dot"></div><div class="pass-dot"></div><div class="pass-dot"></div><div class="pass-dot"></div>
+          </div>
+      </div>
+      <div class="numpad-grid">
+        <button class="num-btn" data-val="1" data-label="KEY_01">1</button>
+        <button class="num-btn" data-val="2" data-label="KEY_02">2</button>
+        <button class="num-btn" data-val="3" data-label="KEY_03">3</button>
+        <button class="num-btn" data-val="4" data-label="KEY_04">4</button>
+        <button class="num-btn" data-val="5" data-label="KEY_05">5</button>
+        <button class="num-btn" data-val="6" data-label="KEY_06">6</button>
+        <button class="num-btn" data-val="7" data-label="KEY_07">7</button>
+        <button class="num-btn" data-val="8" data-label="KEY_08">8</button>
+        <button class="num-btn" data-val="9" data-label="KEY_09">9</button>
+        <button class="num-btn special" data-val="clear" data-label="RESET">CLR</button>
+        <button class="num-btn" data-val="0" data-label="KEY_00">0</button>
+        <button class="num-btn special" data-val="back" data-label="DELETE">DEL</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Nickname Input -->
+    <div id="authStep2" style="display:none">
+        <div class="auth-header">
+          <div class="auth-title">IDENTIFICATION_ID</div>
+        </div>
+        <div class="nickname-box">
+            <div class="input-label">// ENTER_TACTICIAN_NICKNAME</div>
+            <input type="text" id="nicknameInput" class="tech-input" placeholder="REQUIRED_FIELD" maxlength="20">
+            <div class="input-glitch"></div>
+        </div>
+    </div>
+
+    <div class="auth-footer">
+        <button class="submit-btn" id="mainSubmitBtn" disabled>FINALIZE_REGISTRATION</button>
+    </div>
+  </div>
 </div>
 
 <!-- =============================================
@@ -229,8 +312,11 @@
             <span class="setting-label">BACKGROUND MODE</span>
             <div class="bg-mode-controls" style="display: flex; gap: 10px;">
                 <button id="btnMode3D" class="mode-btn" style="padding: 5px 15px; border: 1px solid var(--hud-cyan, #00ffff); background: var(--hud-cyan, #00ffff); color: #000; cursor: pointer; font-weight: bold;">3D</button>
-                <button id="btnMode2D" class="mode-btn" style="padding: 5px 15px; border: 1px solid var(--hud-cyan, #00ffff); background: transparent; color: var(--hud-cyan, #00ffff); cursor: pointer; font-weight: bold;">2D</button>
             </div>
+        </div>
+        <div class="setting-row" id="settingAccountRow" style="margin-top: 15px; border-top: 1px solid rgba(0,255,255,0.1); padding-top: 15px;">
+            <span class="setting-label">ACCOUNT IDENTITY</span>
+            <button id="btnManageAccount" class="mode-btn" style="padding: 5px 12px; border: 1px solid var(--hud-cyan, #00ffff); background: transparent; color: var(--hud-cyan, #00ffff); cursor: pointer; font-size: 10px;">ESTABLISH_ID</button>
         </div>
     </div>
 </template>
@@ -475,7 +561,9 @@
 <script src="assets/js/loading.js"></script>
 <script src="assets/js/heartlock_zone_info.js"></script>
 <script src="assets/js/rpg_chat.js"></script>
+<script src="assets/js/vn_engine.js"></script>
 <script src="assets/js/index_main.js"></script>
+<script src="assets/js/auth_vn.js"></script>
 
 <audio id="bgmAudio" loop src="assets/sounds/pgr_to_our_destiny.mp3" preload="auto"></audio>
 

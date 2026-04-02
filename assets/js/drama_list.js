@@ -23,34 +23,34 @@ const STAGE_DATA = [
   {
     id: "26-22",
     title: "Scammer come back",
-    status: "cleared",
+    status: "locked",
     type: "drama",
     img: "assets/img/drama/smirk.png",
     link: null,
     x: 35, y: 55,
-    description: null,
+    description: "Nội dung chưa được mở khóa. Hoàn thành các nhiệm vụ trước để tiếp tục.",
     rules: []
   },
   {
     id: "26-23",
     title: "Be a official",
-    status: "cleared",
+    status: "locked",
     type: "drama",
     img: "assets/img/drama/smirk.png",
     link: null,
     x: 55, y: 68,
-    description: null,
+    description: "Nội dung chưa được mở khóa. Hoàn thành các nhiệm vụ trước để tiếp tục.",
     rules: []
   },
   {
     id: "26-24",
     title: "Tranh Chấp Vùng Kín",
-    status: "cleared",
+    status: "locked",
     type: "drama",
     img: "assets/img/drama/smirk.png",
     link: null,
     x: 75, y: 50,
-    description: null,
+    description: "Nội dung chưa được mở khóa. Hoàn thành các nhiệm vụ trước để tiếp tục.",
     rules: []
   },
   {
@@ -61,7 +61,7 @@ const STAGE_DATA = [
     img: "assets/img/drama/smirk.png",
     link: null,
     x: 90, y: 65,
-    description: null,
+    description: "Nội dung chưa được mở khóa. Hoàn thành các nhiệm vụ trước để tiếp tục.",
     rules: []
   }
 ];

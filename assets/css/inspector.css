@@ -256,8 +256,8 @@ html, body {
     position: fixed;
     left: 50%;
     transform: translateX(-50%);
-    bottom: 220px;
-    width: min(480px, 88vw);
+    bottom: 240px;
+    width: min(600px, 95vw);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -266,8 +266,8 @@ html, body {
 }
 #npcCharWrap {
     position: relative;
-    width: 260px;
-    height: 340px;
+    width: 400px;
+    height: 520px;
     display: flex;
     align-items: flex-end;
     justify-content: center;
@@ -741,12 +741,12 @@ html, body {
 
     /* NPC Zone - Center Focus */
     #npcZone {
-        bottom: 180px; /* Leave space for larger buttons */
-        width: 92vw;
+        bottom: 220px;
+        width: 95vw;
     }
     #npcCharWrap {
-        width: 180px;
-        height: 240px;
+        width: 280px;
+        height: 380px;
     }
     #npcCharImg {
         max-width: 130%; /* Peak out a bit */

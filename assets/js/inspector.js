@@ -6,6 +6,41 @@
 /* ================================================
    DAY DATA - Criteria & Applicants
 ================================================ */
+/* ================================================
+   NPC IMAGE POOL
+================================================ */
+const NPC_IMAGES = [
+    'assets/img/inspector_npc/npc_1.png',
+    'assets/img/inspector_npc/npc_2.png',
+    'assets/img/inspector_npc/npc_3.png',
+    'assets/img/inspector_npc/npc_4.png',
+    'assets/img/inspector_npc/npc_5.png',
+    'assets/img/inspector_npc/npc_6.png',
+    'assets/img/inspector_npc/npc_7.png',
+    'assets/img/inspector_npc/npc_8.png',
+    'assets/img/inspector_npc/npc_9.png',
+    'assets/img/inspector_npc/npc_10.png',
+];
+
+// Fisher-Yates shuffle, returns shuffled copy
+function shuffleArray(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// Assign unique NPC images to all applicants in a day (no repeats)
+function assignNpcImages(dayIndex) {
+    const applicants = GAME_DAYS[dayIndex].applicants;
+    const pool = shuffleArray(NPC_IMAGES);
+    applicants.forEach((app, i) => {
+        app.img = pool[i % pool.length];
+    });
+}
+
 const GAME_DAYS = [
 
     /* ===== DAY 1 ===== */
@@ -21,7 +56,7 @@ const GAME_DAYS = [
         ],
         applicants: [
             {
-                id: "A01", name: "NGUYỄN VĂN AN", img: "assets/img/npc_default.png",
+                id: "A01", name: "NGUYỄN VĂN AN", img: null,
                 profession: "Nông dân", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
@@ -30,7 +65,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A02", name: "???  [ẨN DANH]", img: "assets/img/npc_default.png",
+                id: "A02", name: "???  [ẨN DANH]", img: null,
                 profession: "Không khai", criminal: false, enemyCamp: false,
                 shouldApprove: false,
                 lines: [
@@ -39,7 +74,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A03", name: "TRẦN THỊ BÌNH", img: "assets/img/npc_default.png",
+                id: "A03", name: "TRẦN THỊ BÌNH", img: null,
                 profession: "Y tá", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
@@ -48,7 +83,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A04", name: "ĐOÀN QUANG MINH", img: "assets/img/npc_default.png",
+                id: "A04", name: "ĐOÀN QUANG MINH", img: null,
                 profession: "Cựu lính thuê", criminal: false, enemyCamp: true,
                 shouldApprove: false,
                 lines: [
@@ -57,7 +92,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A05", name: "LÊ CÔNG HIỆU", img: "assets/img/npc_default.png",
+                id: "A05", name: "LÊ CÔNG HIỆU", img: null,
                 profession: "Thợ xây", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
@@ -66,7 +101,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A06", name: "PHẠM THỊ LOAN", img: "assets/img/npc_default.png",
+                id: "A06", name: "PHẠM THỊ LOAN", img: null,
                 profession: "Buôn bán", criminal: true, enemyCamp: false,
                 shouldApprove: false,
                 lines: [
@@ -75,7 +110,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A07", name: "HOÀNG MINH TUẤN", img: "assets/img/npc_default.png",
+                id: "A07", name: "HOÀNG MINH TUẤN", img: null,
                 profession: "Thợ săn / Dẫn đường", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
@@ -99,7 +134,7 @@ const GAME_DAYS = [
         ],
         applicants: [
             {
-                id: "B01", name: "VÕ ANH DŨNG", img: "assets/img/npc_default.png",
+                id: "B01", name: "VÕ ANH DŨNG", img: null,
                 profession: "Lính chiến", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
@@ -108,7 +143,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "B02", name: "BÙI THANH TUYỀN", img: "assets/img/npc_default.png",
+                id: "B02", name: "BÙI THANH TUYỀN", img: null,
                 profession: "Newbie", criminal: false, enemyCamp: false,
                 shouldApprove: false,
                 lines: [
@@ -117,7 +152,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "B03", name: "NGUYỄN HÙNG CƯỜNG", img: "assets/img/npc_default.png",
+                id: "B03", name: "NGUYỄN HÙNG CƯỜNG", img: null,
                 profession: "Xạ thủ", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
@@ -126,7 +161,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "B04", name: "TRƯƠNG KIM LONG", img: "assets/img/npc_default.png",
+                id: "B04", name: "TRƯƠNG KIM LONG", img: null,
                 profession: "???", criminal: false, enemyCamp: false,
                 shouldApprove: false,
                 lines: [
@@ -135,7 +170,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "B05", name: "PHAN THỊ QUỲNH NHƯ", img: "assets/img/npc_default.png",
+                id: "B05", name: "PHAN THỊ QUỲNH NHƯ", img: null,
                 profession: "Chỉ huy camp cũ", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
@@ -144,7 +179,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "B06", name: "ĐỖ VĂN KHẢI", img: "assets/img/npc_default.png",
+                id: "B06", name: "ĐỖ VĂN KHẢI", img: null,
                 profession: "Vệ sĩ", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
@@ -168,7 +203,7 @@ const GAME_DAYS = [
         ],
         applicants: [
             {
-                id: "C01", name: "NGUYỄN THỊ PHƯƠNG", img: "assets/img/npc_default.png",
+                id: "C01", name: "NGUYỄN THỊ PHƯƠNG", img: null,
                 profession: "Được giới thiệu bởi Official Bảo", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
@@ -177,7 +212,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "C02", name: "HÀ THANH LIÊM", img: "assets/img/npc_default.png",
+                id: "C02", name: "HÀ THANH LIÊM", img: null,
                 profession: "Cựu thành viên Delta-9", criminal: false, enemyCamp: true,
                 shouldApprove: false,
                 lines: [
@@ -186,7 +221,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "C03", name: "TRIỆU VĂN KIÊN", img: "assets/img/npc_default.png",
+                id: "C03", name: "TRIỆU VĂN KIÊN", img: null,
                 profession: "Tự do", criminal: false, enemyCamp: false,
                 shouldApprove: false,
                 lines: [
@@ -195,7 +230,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "C04", name: "LÝ THANH HÀ", img: "assets/img/npc_default.png",
+                id: "C04", name: "LÝ THANH HÀ", img: null,
                 profession: "Được giới thiệu bởi Official Mai", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
@@ -204,7 +239,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "C05", name: "PHÙNG VĂN KHOA", img: "assets/img/npc_default.png",
+                id: "C05", name: "PHÙNG VĂN KHOA", img: null,
                 profession: "Tình báo — [CẢNH BÁO]", criminal: false, enemyCamp: true,
                 shouldApprove: false,
                 lines: [
@@ -213,7 +248,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "C06", name: "ĐINH THỊ HƯƠNG", img: "assets/img/npc_default.png",
+                id: "C06", name: "ĐINH THỊ HƯƠNG", img: null,
                 profession: "Dược sĩ — Được giới thiệu bởi Official Thiên", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
@@ -222,7 +257,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "C07", name: "NGUYỄN CAO THẮNG", img: "assets/img/npc_default.png",
+                id: "C07", name: "NGUYỄN CAO THẮNG", img: null,
                 profession: "Không rõ nguồn gốc", criminal: false, enemyCamp: true,
                 shouldApprove: false,
                 lines: [
@@ -435,6 +470,9 @@ function startDay(dayIndex) {
     State.correct  = 0;
     State.wrong    = 0;
     State.dialogueDone = false;
+
+    // Assign unique random NPC images for this day
+    assignNpcImages(dayIndex);
 
     // Hide criteria at start of day
     if (criteriaBoard) criteriaBoard.classList.remove('show');

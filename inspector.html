@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camp Inspector — SAO-ĐÊM</title>
+  <meta name="description" content="Mini-game duyệt thành viên gia nhập camp SAO-ĐÊM. Phong cách Papers Please Cyberpunk.">
+  <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/loading.css">
+  <link rel="stylesheet" href="assets/css/inspector.css">
+  <link rel="stylesheet" href="assets/css/vn_overlay.css">
+</head>
+
+<body>
+
+<!-- ============ LOADING SCREEN ============ -->
+<div id="loadingOverlay">
+  <div class="loading-wrapper">
+    <div class="loading-text">
+      <span class="sao">SAO &nbsp;</span><span class="dem"> ĐÊM</span>
+    </div>
+    <div class="loading-progress">
+      <div class="progress-bar" id="loadingProgress"></div>
+      <div class="loading-info">
+        <span id="loadingStatus">INITIALIZING CAMP INSPECTOR...</span>
+        <span id="loadingPercentage">0%</span>
+      </div>
+    </div>
+    <div class="line top"></div>
+    <div class="line bottom"></div>
+  </div>
+</div>
+
+<!-- ============ DESK BACKGROUND ============ -->
+<div id="inspectorBg">
+  <img src="assets/img/inspector_desk.png" alt="Desk Background">
+</div>
+
+<!-- ============ GLASS WINDOW FRAME ============ -->
+<div id="glassFrame"></div>
+<div class="glass-corner tl"></div>
+<div class="glass-corner tr"></div>
+<div class="glass-corner bl"></div>
+<div class="glass-corner br"></div>
+
+<!-- ============ DECISION FLASH ============ -->
+<div id="decisionFlash"></div>
+
+<!-- ============ STAMP OVERLAY ============ -->
+<div id="stampOverlay">
+  <div class="stamp-text approved">DUYỆT</div>
+</div>
+
+<!-- ============ MAIN UI LAYER ============ -->
+<div id="inspectorUI">
+
+  <!-- TOP BAR -->
+  <div id="topBar">
+    <div class="topbar-left">
+      <div class="topbar-title">CAMP INSPECTOR // SAO-ĐÊM</div>
+      <div class="topbar-sub">// CLASSIFIED RECRUITMENT PROTOCOL — RESTRICTED ACCESS //</div>
+    </div>
+    <div class="topbar-right">
+      <div class="day-badge" id="dayBadge">DAY 1 / 3</div>
+      <div class="score-display" id="scoreDisplay">SCORE: 0</div>
+      <button class="btn-exit" onclick="window.location.href='index.html'">✕ EXIT</button>
+    </div>
+  </div>
+
+  <!-- CRITERIA BOARD -->
+  <div id="criteriaBoard">
+    <div class="criteria-header">
+      <div class="criteria-dot"></div>
+      <div class="criteria-title">// TIÊU CHÍ DUYỆT HÔM NAY — ACTIVE PROTOCOL //</div>
+    </div>
+    <div class="criteria-body">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ NPC ZONE (Center of glass) ============ -->
+<div id="npcZone">
+  <div id="npcCharWrap">
+    <img id="npcCharImg" src="assets/img/npc_default.png" alt="Applicant">
+  </div>
+
+  <!-- Dialogue Box -->
+  <div id="inspectorDialogue">
+    <div id="dlgSpeaker">— UNKNOWN —</div>
+    <div id="dlgText"></div>
+    <div id="dlgNext">▼</div>
+  </div>
+</div>
+
+<!-- LOOKUP TERMINAL -->
+<div id="lookupTerminal">
+  <div class="term-label">CRITERIA DB</div>
+  <div class="term-icon">💾</div>
+</div>
+
+<!-- ============ DESK BUTTONS ============ -->
+<div id="deskButtons">
+  <button class="desk-btn approve" id="approveBtn">
+    <div class="btn-icon">✅</div>
+    <div class="btn-label">DUYỆT VÀO</div>
+  </button>
+  <button class="desk-btn reject" id="rejectBtn">
+    <div class="btn-icon">⛔</div>
+    <div class="btn-label">TỪ CHỐI</div>
+  </button>
+</div>
+
+<!-- ============ DAY TRANSITION SCREEN ============ -->
+<div id="dayTransition">
+  <div class="dt-eyecatch">DAY 1</div>
+  <div class="dt-subtitle">SCREENING DAY 01</div>
+  <button class="dt-start-btn">// BẮT ĐẦU NGÀY //</button>
+</div>
+
+<!-- ============ DAY RESULTS SCREEN ============ -->
+<div id="resultsScreen">
+  <div class="results-title">// KẾT QUẢ NGÀY 1 //</div>
+  <div class="results-grid">
+    <div class="result-stat green">
+      <div class="rs-val" id="rs-correct">0</div>
+      <div class="rs-label">ĐÚNG</div>
+    </div>
+    <div class="result-stat red">
+      <div class="rs-val" id="rs-wrong">0</div>
+      <div class="rs-label">SAI</div>
+    </div>
+    <div class="result-stat amber">
+      <div class="rs-val" id="rs-approved">0</div>
+      <div class="rs-label">ĐÃ DUYỆT</div>
+    </div>
+    <div class="result-stat">
+      <div class="rs-val" id="rs-rejected" style="color:#aaa">0</div>
+      <div class="rs-label">TỪ CHỐI</div>
+    </div>
+  </div>
+  <div class="result-stat amber" style="width:min(420px,90vw); text-align:center; padding:12px;">
+    <div class="rs-val" style="font-size:28px" id="rs-accuracy">0%</div>
+    <div class="rs-label">ĐỘ CHÍNH XÁC</div>
+  </div>
+  <p class="result-msg" id="rs-msg"></p>
+  <button class="results-next-btn">// NGÀY TIẾP THEO //</button>
+</div>
+
+<!-- ============ GAME OVER SCREEN ============ -->
+<div id="gameOverScreen">
+  <div class="go-rank">S — GRANDMASTER INSPECTOR</div>
+  <div class="go-title">// MISSION COMPLETE //</div>
+  <div class="go-score">0<span> PTS</span></div>
+  <p class="result-msg" id="go-pct" style="margin-top:10px"></p>
+  <div class="go-buttons">
+    <button class="go-btn" id="goReplay">🔄 CHƠI LẠI</button>
+    <button class="go-btn secondary" id="goHome">← THOÁT</button>
+  </div>
+</div>
+
+<!-- ============ VISUAL NOVEL OVERLAY ============ -->
+<div id="vnOverlay">
+  <div id="vnChoiceOverlay" class="vn-choice-overlay"></div>
+
+  <div class="vn-stage">
+    <div class="vn-char left dim" id="vnCharLeft">
+      <img src="assets/img/system.png" alt="opponent" id="vnImgLeft">
+    </div>
+    <div class="vn-char right active" id="vnCharRight">
+      <img src="assets/img/mayor_dialogue_1.png" alt="Mayor" id="vnImgRight">
+    </div>
+  </div>
+  <div class="vn-dialogue" id="vnDialogue">
+    <div class="vn-speaker-tag" id="vnSpeakerTag">MAYOR AI</div>
+    <div class="vn-text" id="vnText"></div>
+    <div class="vn-controls">
+      <div class="vn-progress" id="vnProgress"></div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="vn-skip-btn" id="vnSkipBtn">⏩ SKIP ALL</button>
+        <span class="vn-next-indicator" id="vnNextIndicator">▼</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SCRIPTS ============ -->
+<script src="assets/js/loading.js"></script>
+<script src="assets/js/vn_engine.js"></script>
+<script src="assets/js/inspector.js"></script>
+
+
+</body>
+</html>

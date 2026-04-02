@@ -61,64 +61,56 @@
   </div>
 </div>
 
-<!-- TOPBAR -->
-<header class="drama-topbar">
-  <div class="topbar-brand">
-    <div class="brand-icon">⚡</div>
-    <div class="brand-label">
-      <div class="brand-title">DRAMA ARCHIVE</div>
-      <div class="brand-sub">CLASSIFIED INCIDENT LOG // SAO-ĐÊM</div>
-    </div>
-  </div>
-  <div class="topbar-right">
-    <button class="hud-back-btn" onclick="window.location.href='index.html'">← EXIT_NODE</button>
-  </div>
-</header>
+<!-- BACKGROUND -->
+<div class="drama-bg-layer">
+  <img src="assets/img/drama_bg.png" alt="Futuristic Map Background">
+  <div class="bg-overlay"></div>
+</div>
 
-<!-- MAIN -->
-<main class="drama-main">
+<!-- STAGE MAP UI CONTAINER -->
+<div class="stage-map-container">
+  
+  <!-- TOP LEFT CONTROLS -->
+  <div class="stage-top-controls">
+    <button class="stage-btn-control" onclick="window.location.href='index.html'">
+      <span class="btn-icon">Esc</span>
+      <span class="btn-text">返回 (BACK)</span>
+    </button>
+    <button class="stage-btn-control" onclick="window.location.href='index.html'">
+      <span class="btn-icon">Home</span>
+      <span class="btn-text">主界面 (HOME)</span>
+    </button>
+  </div>
 
-  <!-- HEADER -->
-  <div class="drama-header">
-    <div class="drama-header-tag">// INCIDENT DATABASE // RESTRICTED ACCESS //</div>
-    <h1>SERVER <span>DRAMA</span> LOG</h1>
-    <div class="drama-header-line"></div>
-    <div class="drama-header-stats">
-      <div class="drama-stat">
-        <div class="drama-stat-val" id="statTotal">0</div>
-        <div class="drama-stat-label">TOTAL CASES</div>
-      </div>
-      <div class="drama-stat">
-        <div class="drama-stat-val" style="color:#ff6b6b" id="statActive">0</div>
-        <div class="drama-stat-label">ACTIVE</div>
-      </div>
-      <div class="drama-stat">
-        <div class="drama-stat-val" style="color:#ffb74d" id="statOngoing">0</div>
-        <div class="drama-stat-label">ONGOING</div>
-      </div>
-      <div class="drama-stat">
-        <div class="drama-stat-val" style="color:rgba(94,242,214,0.4)" id="statClosed">0</div>
-        <div class="drama-stat-label">CLOSED</div>
-      </div>
+  <!-- LEFT CHAPTER INFO -->
+  <div class="stage-chapter-info">
+    <div class="chapter-number">26</div>
+    <div class="chapter-details">
+      <div class="chapter-title">DRAMA ARCHIVE</div>
+      <div class="chapter-subtitle">摇篮游行 (Cradle Parade)</div>
+      <div class="chapter-time">剩余时间 (Remaining) <span>31天 (Days)</span></div>
     </div>
   </div>
 
-  <!-- FILTERS -->
-  <div class="drama-filters">
-    <button class="filter-btn active" data-filter="all">ALL CASES</button>
-    <button class="filter-btn" data-filter="active">🔴 ACTIVE</button>
-    <button class="filter-btn" data-filter="ongoing">🟠 ONGOING</button>
-    <button class="filter-btn" data-filter="closed">⚫ CLOSED</button>
+  <!-- BOTTOM PROGRESS -->
+  <div class="stage-bottom-progress">
+    <div class="progress-ring">
+      <div class="ring-text">已领取</div>
+    </div>
+    <div class="progress-info">
+      <div class="progress-count">36<span>/36</span></div>
+      <div class="progress-label"><span class="hexagon-icon">⬡</span> 收集进度 (Collected)</div>
+    </div>
   </div>
 
-  <!-- LIST -->
-  <div class="drama-list" id="dramaList">
-    <!-- Rendered by JS -->
+  <!-- NODE MAP CANVAS -->
+  <div class="stage-nodes-canvas" id="dramaRootNodes">
+    <!-- SVGs for connecting lines will go here -->
+    <svg class="stage-lines-svg" id="stageLinesSvg" preserveAspectRatio="none"></svg>
+    <!-- Nodes rendered by JS -->
   </div>
 
-  <div class="drama-empty" id="dramaEmpty">[ NO RECORDS FOUND ]</div>
-
-</main>
+</div>
 
 <script src="assets/js/loading.js"></script>
 <script src="assets/js/vn_engine.js"></script>

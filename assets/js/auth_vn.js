@@ -5,24 +5,38 @@
 
 const VN_AUTH_SCRIPT = {
     'start': {
-        speaker: 'Silver-Hand',
+        speaker: 'MAYOR AI',
         side: 'right',
         image: 'assets/img/mayor_dialogue_1.png',
         text: '... Đang quét sinh trắc học. Nhận diện Tactician mới trong khu vực Node Hope 101.',
+        next: 'guest_1'
+    },
+    'guest_1': {
+        speaker: 'SYSTEM',
+        side: 'left',
+        image: 'assets/img/system.png',
+        effect: 'shake',
+        text: 'Chờ đã... Đây là đâu? Ai đang nói vậy?',
         next: 'line2'
     },
     'line2': {
-        speaker: 'Silver-Hand',
+        speaker: 'MAYOR AI',
         side: 'right',
         effect: 'flash',
         text: 'Chào mừng bạn. Tôi là MAYOR AI, người quản lý giao diện trung tâm này. Dữ liệu của bạn chưa có trong bản lưu trữ vĩnh viễn.',
+        next: 'guest_2'
+    },
+    'guest_2': {
+        speaker: 'SYSTEM',
+        side: 'left',
+        text: 'Dữ liệu chưa có? Ý cô là tôi cần phải đăng ký danh tính để truy cập hệ thống?',
         next: 'line3'
     },
     'line3': {
-        speaker: 'Silver-Hand',
+        speaker: 'MAYOR AI',
         side: 'right',
         image: 'assets/img/mayor_dialogue_2.png',
-        text: 'Để tránh việc mất dữ liệu quá trình tham chiến, bạn có muốn thiết lập một Identity ID riêng cho mình không?',
+        text: 'Đúng vậy. Để tránh việc mất dữ liệu quá trình tham chiến, bạn có muốn thiết lập một Identity ID riêng cho mình không?',
         next: 'choice_auth'
     },
     'choice_auth': {
@@ -32,14 +46,26 @@ const VN_AUTH_SCRIPT = {
         ]
     },
     'path_guest': {
-        speaker: 'Silver-Hand',
+        speaker: 'SYSTEM',
+        side: 'left',
+        text: 'Tôi chỉ muốn trải nghiệm xem qua hệ thống này trước thôi.',
+        next: 'path_guest_resp'
+    },
+    'path_guest_resp': {
+        speaker: 'MAYOR AI',
         side: 'right',
-        image: 'assets/img/mayor_dialogue_5.png',
+        image: 'assets/img/mayor_dialogue_1.png',
         text: 'Đã rõ. Chế độ Khách (Guest) đã được ghi nhận. Bạn có thể thiết lập danh tính sau này trong mục SETTING của HUD.',
         next: 'finalize_guest'
     },
     'path_register': {
-        speaker: 'Silver-Hand',
+        speaker: 'SYSTEM',
+        side: 'left',
+        text: 'Được thôi, tôi sẽ tiến hành xác lập danh tính Tactician ngay.',
+        next: 'path_register_resp'
+    },
+    'path_register_resp': {
+        speaker: 'MAYOR AI',
         side: 'right',
         effect: 'shake',
         text: 'Quyết định sáng suốt. Khởi tạo quy trình thiết lập Identity Protocol... Vui lòng upload ảnh đại diện và nhập mã passcode.',
@@ -47,25 +73,25 @@ const VN_AUTH_SCRIPT = {
     },
     'finalize_guest': {
         speaker: 'SYSTEM',
-        text: 'SYSTEM: GUEST_MODE_ACTIVE. Chúc bạn một ngày tốt lành.',
+        text: 'SYSTEM: GUEST MODE ACTIVE. Chúc bạn một ngày tốt lành.',
         image: 'assets/img/mayor_dialogue_3.png',
     },
     'trigger_register': {
         speaker: 'SYSTEM',
-        text: 'SYSTEM: IDENTITY_PROTOCOL_INITIALIZING...'
+        text: 'SYSTEM: IDENTITY PROTOCOL INITIALIZING...'
     }
 };
 
 const VN_THANKS_SCRIPT = {
     'start': {
-        speaker: 'Silver-Hand',
+        speaker: 'MAYOR AI',
         side: 'right',
         image: 'assets/img/mayor_dialogue_2.png',
         text: 'Cám ơn Tactician. Mật mã thiết lập thành công. Hệ thống đã mã hóa lớp bảo mật cấp cao nhất.',
         next: 'ask_name'
     },
     'ask_name': {
-        speaker: 'Silver-Hand',
+        speaker: 'MAYOR AI',
         side: 'right',
         text: 'Trước khi hoàn tất, hãy cho tôi biết biệt danh (Nickname) của bạn. Hệ thống cần định danh để phục vụ các giao thức tương lai.',
         next: null
@@ -171,7 +197,7 @@ class AuthVN {
         this.authStep2.style.display = 'none';
         this.updateDisplay();
         this.authStatus.textContent = 'SET YOUR 8-DIGIT PASSCODE';
-        this.submitBtn.textContent = 'FINALIZE_REGISTRATION';
+        this.submitBtn.textContent = 'FINALIZE REGISTRATION';
         this.modal.style.display = 'flex';
     }
 
@@ -203,7 +229,7 @@ class AuthVN {
                     this.inputMode = 'nickname';
                     this.authStep1.style.display = 'none';
                     this.authStep2.style.display = 'block';
-                    this.submitBtn.textContent = 'FINALIZE_REGISTRATION';
+                    this.submitBtn.textContent = 'FINALIZE REGISTRATION';
                     this.submitBtn.disabled = true;
                     this.modal.style.display = 'flex';
                     if (window.toggleHUD) window.toggleHUD(false);
@@ -242,12 +268,12 @@ class AuthVN {
                 } else {
                     alert('ERROR: ' + (res.error || 'FAILED'));
                     this.submitBtn.disabled = false;
-                    this.submitBtn.textContent = 'FINALIZE_REGISTRATION';
+                    this.submitBtn.textContent = 'FINALIZE REGISTRATION';
                 }
             } catch (err) {
                 alert('NODE ERROR. PLEASE RETRY.');
                 this.submitBtn.disabled = false;
-                this.submitBtn.textContent = 'FINALIZE_REGISTRATION';
+                this.submitBtn.textContent = 'FINALIZE REGISTRATION';
             }
         }
     }

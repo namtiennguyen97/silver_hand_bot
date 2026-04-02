@@ -22,7 +22,7 @@
   <div id="vnChoiceOverlay" class="vn-choice-overlay"></div>
   <div class="vn-stage">
     <div class="vn-char left dim" id="vnCharLeft">
-      <img src="assets/img/mayor_dialogue_1.png" alt="opponent" id="vnImgLeft" style="display:none">
+      <img src="assets/img/system.png" alt="opponent" id="vnImgLeft">
     </div>
     <div class="vn-char right active" id="vnCharRight">
       <img src="assets/img/mayor_dialogue_1.png" alt="Mayor" id="vnImgRight">
@@ -46,14 +46,14 @@
   <div class="auth-container">
     <div id="authStep1">
       <div class="auth-header">
-        <div class="auth-title">ESTABLISH_IDENTITY</div>
+        <div class="auth-title">ESTABLISH IDENTITY</div>
       </div>
       <div class="avatar-upload-box">
         <img src="assets/img/unknown_avatar.png" alt="Avatar" class="avatar-preview" id="avatarPreview">
         <div class="upload-info">
             <input type="file" id="avatarInput" hidden accept="image/*">
-            <button class="upload-btn" onclick="document.getElementById('avatarInput').click()">UPLOAD_BIO_IMAGE</button>
-            <div style="font-size:7px; color:rgba(0,255,255,0.4); margin-top:5px; font-family:'Orbitron'">// SELECT_SOURCE_NODE</div>
+            <button class="upload-btn" onclick="document.getElementById('avatarInput').click()">UPLOAD BIO IMAGE</button>
+            <div style="font-size:7px; color:rgba(0,255,255,0.4); margin-top:5px; font-family:'Orbitron'">// SELECT SOURCE NODE</div>
         </div>
       </div>
       <div class="passcode-wrapper">
@@ -64,17 +64,17 @@
           </div>
       </div>
       <div class="numpad-grid">
-        <button class="num-btn" data-val="1" data-label="KEY_01">1</button>
-        <button class="num-btn" data-val="2" data-label="KEY_02">2</button>
-        <button class="num-btn" data-val="3" data-label="KEY_03">3</button>
-        <button class="num-btn" data-val="4" data-label="KEY_04">4</button>
-        <button class="num-btn" data-val="5" data-label="KEY_05">5</button>
-        <button class="num-btn" data-val="6" data-label="KEY_06">6</button>
-        <button class="num-btn" data-val="7" data-label="KEY_07">7</button>
-        <button class="num-btn" data-val="8" data-label="KEY_08">8</button>
-        <button class="num-btn" data-val="9" data-label="KEY_09">9</button>
+        <button class="num-btn" data-val="1" data-label="KEY 01">1</button>
+        <button class="num-btn" data-val="2" data-label="KEY 02">2</button>
+        <button class="num-btn" data-val="3" data-label="KEY 03">3</button>
+        <button class="num-btn" data-val="4" data-label="KEY 04">4</button>
+        <button class="num-btn" data-val="5" data-label="KEY 05">5</button>
+        <button class="num-btn" data-val="6" data-label="KEY 06">6</button>
+        <button class="num-btn" data-val="7" data-label="KEY 07">7</button>
+        <button class="num-btn" data-val="8" data-label="KEY 08">8</button>
+        <button class="num-btn" data-val="9" data-label="KEY 09">9</button>
         <button class="num-btn special" data-val="clear" data-label="RESET">CLR</button>
-        <button class="num-btn" data-val="0" data-label="KEY_00">0</button>
+        <button class="num-btn" data-val="0" data-label="KEY 00">0</button>
         <button class="num-btn special" data-val="back" data-label="DELETE">DEL</button>
       </div>
     </div>
@@ -82,17 +82,17 @@
     <!-- Step 2: Nickname Input -->
     <div id="authStep2" style="display:none">
         <div class="auth-header">
-          <div class="auth-title">IDENTIFICATION_ID</div>
+          <div class="auth-title">IDENTIFICATION ID</div>
         </div>
         <div class="nickname-box">
-            <div class="input-label">// ENTER_TACTICIAN_NICKNAME</div>
-            <input type="text" id="nicknameInput" class="tech-input" placeholder="REQUIRED_FIELD" maxlength="20">
+            <div class="input-label">// ENTER TACTICIAN NICKNAME</div>
+            <input type="text" id="nicknameInput" class="tech-input" placeholder="REQUIRED FIELD" maxlength="20">
             <div class="input-glitch"></div>
         </div>
     </div>
 
     <div class="auth-footer">
-        <button class="submit-btn" id="mainSubmitBtn" disabled>FINALIZE_REGISTRATION</button>
+        <button class="submit-btn" id="mainSubmitBtn" disabled>FINALIZE REGISTRATION</button>
     </div>
   </div>
 </div>
@@ -146,23 +146,23 @@
         <div class="hud-action-menu">
             <button class="hud-action-btn btn-battle" id="hudBtnBattle">
                 <span class="btn-main-label">BATTLE</span>
-                <span class="btn-sub-label">// DRAMA_ARCHIVE.EXE</span>
+                <span class="btn-sub-label">// DRAMA ARCHIVE.EXE</span>
             </button>
             <button class="hud-action-btn" id="hudBtnMembers">
                 <span class="btn-main-label">NEWS</span>
-                <span class="btn-sub-label">OFFICIAL_BROADCAST_SYNC</span>
+                <span class="btn-sub-label">OFFICIAL BROADCAST SYNC</span>
             </button>
             <button class="hud-action-btn" id="hudBtnTasks">
                 <span class="btn-main-label">TASKS</span>
-                <span class="btn-sub-label">DAILY_OBJECTIVE_SYNC</span>
+                <span class="btn-sub-label">DAILY OBJECTIVE SYNC</span>
             </button>
             <button class="hud-action-btn" id="hudBtnRD">
                 <span class="btn-main-label">CTC PLAN</span>
-                <span class="btn-sub-label">CTC_PLANER_ACCESS</span>
+                <span class="btn-sub-label">CTC PLANER ACCESS</span>
             </button>
             <button class="hud-action-btn" id="hudBtnSetting">
                 <span class="btn-main-label">SETTING</span>
-                <span class="btn-sub-label">SYSTEM_PREFERENCES</span>
+                <span class="btn-sub-label">SYSTEM PREFERENCES</span>
             </button>
         </div>
     </div>
@@ -187,7 +187,7 @@
                 </div>
             </div>
             <div class="hud-promo-banner" id="hudPromoBanner">
-                <div class="banner-tag">OFFICIAL_BROADCAST</div>
+                <div class="banner-tag">OFFICIAL BROADCAST</div>
                 <img src="assets/img/drama/smirk.png" alt="Promo" style="object-position: top center;">
             </div>
         </div>
@@ -316,7 +316,7 @@
         <div class="setting-row" id="settingAccountRow" style="margin-top: 15px; border-top: 1px solid rgba(0,255,255,0.1); padding-top: 15px;">
             <span class="setting-label">ACCOUNT IDENTITY</span>
             <div style="display: flex; gap: 10px;">
-                <button id="btnManageAccount" class="mode-btn" style="padding: 5px 12px; border: 1px solid var(--hud-cyan, #00ffff); background: transparent; color: var(--hud-cyan, #00ffff); cursor: pointer; font-size: 10px;">ESTABLISH_ID</button>
+                <button id="btnManageAccount" class="mode-btn" style="padding: 5px 12px; border: 1px solid var(--hud-cyan, #00ffff); background: transparent; color: var(--hud-cyan, #00ffff); cursor: pointer; font-size: 10px;">ESTABLISH ID</button>
                 <button onclick="localStorage.removeItem('silverhand_user'); window.location.reload();" class="mode-btn" style="padding: 5px 12px; border: 1px solid #ff3366; background: transparent; color: #ff3366; cursor: pointer; font-size: 10px;">DEBUG: CLEAR AUTH</button>
             </div>
         </div>
@@ -483,7 +483,7 @@
     <div class="bio-section">
       <div class="bio-section-title">
         <span>History Chronicle</span>
-        <span style="opacity:0.4; font-size:9px">ARCHIVE_01: STATUS_CORE</span>
+        <span style="opacity:0.4; font-size:9px">ARCHIVE_01: STATUS CORE</span>
       </div>
       
       <div class="bio-chronicle">

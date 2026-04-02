@@ -570,14 +570,14 @@ function startNewsLoading(lang) {
     if (!detailBody) return;
     detailBody.innerHTML = `
         <div class="news-chunk-loading">
-            <div class="news-status-text">CONNECTED_TO_MAYOR_NODE</div>
+            <div class="news-status-text">CONNECTED TO MAYOR NODE</div>
             <div class="news-loading-bar"><div class="chunk"></div><div class="chunk"></div><div class="chunk"></div><div class="chunk"></div><div class="chunk"></div><div class="chunk"></div><div class="chunk"></div><div class="chunk"></div></div>
             <div class="news-status-text" id="newsLoadingStep" style="font-size: 8px; opacity: 0.8;">RECOGNIZING LANGUAGE: ${lang.toUpperCase()}...</div>
         </div>
     `;
     const chunks = detailBody.querySelectorAll(".chunk");
     let activeIndex = 0;
-    const steps = ["ESTABLISHING_NEURAL_LINK...", "INJECTING_MAYOR_CONTEXT...", "DECRYPTING_STREAM...", "RECONSTRUCTING_DOM...", "SYNCING_GAME_TERMINOLOGY...", "FINALIZING_CONTENT..."];
+    const steps = ["ESTABLISHING NEURAL LINK...", "INJECTING MAYOR CONTEXT...", "DECRYPTING STREAM...", "RECONSTRUCTING DOM...", "SYNCING GAME TERMINOLOGY...", "FINALIZING CONTENT..."];
     let stepIndex = 0;
     newsLoadingInterval = setInterval(() => {
         chunks.forEach((c, i) => c.classList.toggle("active", i === activeIndex));
@@ -597,7 +597,7 @@ function renderArticleContent(data, isTranslated = false) {
     if (!detailBody) return;
     detailBody.innerHTML = `
         <div class="news-detail-content reveal">
-            <div class="news-header"><div style="display: flex; justify-content: space-between; align-items: center;"><span class="news-date">${isTranslated ? '🛰️ NEURAL_TRANS' : '📡 ORIGINAL_LINK'}</span><span class="news-date">${data.date || ''}</span></div></div>
+            <div class="news-header"><div style="display: flex; justify-content: space-between; align-items: center;"><span class="news-date">${isTranslated ? '🛰️ NEURAL TRANS' : '📡 ORIGINAL LINK'}</span><span class="news-date">${data.date || ''}</span></div></div>
             <h1>${data.title}</h1><div class="article-text-content">${data.content}</div>
         </div>
     `;

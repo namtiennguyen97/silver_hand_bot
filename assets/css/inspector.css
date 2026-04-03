@@ -177,77 +177,200 @@ html, body {
 /* ================================================
    CRITERIA BOARD (Holographic display top-center)
 ================================================ */
+/* ================================================
+   CRITERIA BOARD (Digital Data Tablet Modal)
+================================================ */
 #criteriaBoard {
     position: fixed;
-    top: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(520px, 90vw);
-    background: rgba(0, 20, 35, 0.95);
-    border: 1px solid var(--cyan);
-    border-top: 3px solid var(--cyan);
-    box-shadow: 0 0 50px rgba(0,0,0,0.8), 0 0 20px rgba(0,255,255,0.2);
-    z-index: 100;
-    pointer-events: none;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 5, 10, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 999; /* Top level priority */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.4s ease;
+    pointer-events: none;
 }
 #criteriaBoard.show {
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(10px);
     pointer-events: all;
 }
 
-.criteria-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 16px;
-    background: rgba(0,255,255,0.08);
-    border-bottom: 1px solid var(--border);
-}
-.criteria-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--cyan);
-    box-shadow: 0 0 5px var(--cyan);
-    animation: pulse 1.5s ease-in-out infinite;
-}
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.3; }
-}
-.criteria-title {
-    font-family: var(--font-hud);
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: var(--cyan);
-}
-.criteria-body {
-    padding: 12px 16px;
+.criteria-tablet-frame {
+    width: min(560px, 95vw);
+    background: #050b15;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 255, 255, 0.1);
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+}
+#criteriaBoard.show .criteria-tablet-frame {
+    transform: scale(1) translateY(0);
+}
+
+/* Header with Glitch */
+.criteria-header {
+    background: linear-gradient(90deg, rgba(0, 255, 255, 0.1) 0%, transparent 100%);
+    padding: 20px;
+    border-bottom: 2px solid var(--cyan);
+    position: relative;
+}
+.header-glitch {
+    font-family: var(--font-hud);
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--cyan);
+    letter-spacing: 4px;
+    position: relative;
+    text-transform: uppercase;
+}
+.header-glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #050b15;
+    left: 2px;
+    text-shadow: -2px 0 var(--pink);
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 5s infinite linear alternate-reverse;
+}
+.header-sub {
+    font-family: var(--font-hud);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(0, 255, 255, 0.5);
+    margin-top: 5px;
+}
+
+/* Supervisor Section */
+.supervisor-section {
+    padding: 15px 20px;
+    background: rgba(0, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.sv-label {
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.4);
+}
+.sv-name {
+    font-family: var(--font-hud);
+    font-size: 18px;
+    color: var(--amber);
+    text-shadow: 0 0 10px rgba(255, 191, 0, 0.3);
+    letter-spacing: 4px;
+}
+.sv-status {
+    font-size: 9px;
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.sv-status::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--green);
+}
+
+/* Body */
+.criteria-body {
+    padding: 25px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 400px;
+    overflow-y: auto;
 }
 .criteria-rule {
     display: flex;
     align-items: flex-start;
-    gap: 8px;
+    gap: 15px;
     font-family: var(--font-mono);
-    font-size: 12px;
-    color: rgba(255,255,255,0.9);
-    line-height: 1.4;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.5;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 10px 15px;
+    border-radius: 4px;
+    border-left: 3px solid transparent;
 }
 .criteria-icon {
-    flex-shrink: 0;
-    font-size: 13px;
-    margin-top: 1px;
+    font-size: 16px;
+    margin-top: 2px;
 }
-.criteria-rule.warning { color: var(--amber); }
-.criteria-rule.danger  { color: var(--pink); }
-.criteria-rule.ok      { color: var(--green); }
+.criteria-rule.warning { border-left-color: var(--amber); background: rgba(255, 191, 0, 0.05); }
+.criteria-rule.danger  { border-left-color: var(--pink); background: rgba(255, 51, 102, 0.05); }
+.criteria-rule.ok      { border-left-color: var(--green); background: rgba(0, 255, 136, 0.05); }
+
+/* Footer */
+.criteria-footer {
+    padding: 15px 20px;
+    border-top: 1px solid rgba(0, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #030810;
+}
+.footer-note {
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.2);
+    letter-spacing: 1px;
+}
+.criteria-close-btn {
+    background: var(--cyan);
+    color: #000;
+    border: none;
+    font-family: var(--font-hud);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    padding: 8px 16px;
+    cursor: pointer;
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    transition: all 0.3s;
+}
+.criteria-close-btn:hover {
+    background: #fff;
+    box-shadow: 0 0 15px #fff;
+}
+
+@keyframes glitch-anim {
+    0% { clip: rect(66px, 9999px, 86px, 0); }
+    5% { clip: rect(24px, 9999px, 45px, 0); }
+    10% { clip: rect(82px, 9999px, 14px, 0); }
+    15% { clip: rect(54px, 9999px, 73px, 0); }
+    20% { clip: rect(10px, 9999px, 92px, 0); }
+    25% { clip: rect(61px, 9999px, 34px, 0); }
+    30% { clip: rect(38px, 9999px, 51px, 0); }
+    35% { clip: rect(89px, 9999px, 67px, 0); }
+    40% { clip: rect(15px, 9999px, 28px, 0); }
+    45% { clip: rect(76px, 9999px, 94px, 0); }
+    50% { clip: rect(42px, 9999px, 59px, 0); }
+    55% { clip: rect(97px, 9999px, 12px, 0); }
+    60% { clip: rect(21px, 9999px, 39px, 0); }
+    65% { clip: rect(85px, 9999px, 53px, 0); }
+    70% { clip: rect(57px, 9999px, 71px, 0); }
+    75% { clip: rect(13px, 9999px, 95px, 0); }
+    80% { clip: rect(69px, 9999px, 19px, 0); }
+    85% { clip: rect(31px, 9999px, 48px, 0); }
+    90% { clip: rect(91px, 9999px, 64px, 0); }
+    95% { clip: rect(25px, 9999px, 41px, 0); }
+    100% { clip: rect(79px, 9999px, 11px, 0); }
+}
 
 /* ================================================
    NPC CHARACTER ZONE (Center glass area)
@@ -294,6 +417,102 @@ html, body {
     from { opacity: 1; transform: translateX(0); }
     to   { opacity: 0; transform: translateX(120px); }
 }
+
+/* ================================================
+   NPC SCAN OVERLAY — Full-screen scanline effect
+   while waiting for next character image to load
+================================================ */
+#npcSkeleton {
+    position: fixed;
+    inset: 0;
+    z-index: 60;            /* above game UI, below day transition/results */
+    display: none;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    /* Subtle dark tint so scanline is visible */
+    background: rgba(0, 4, 14, 0.45);
+    overflow: hidden;
+}
+#npcSkeleton.active {
+    display: flex;
+}
+
+/* ── The bright moving scanline ── */
+.scan-line {
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    height: 3px;
+    background: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(0, 255, 255, 0.15) 15%,
+        rgba(0, 255, 255, 0.9) 50%,
+        rgba(0, 255, 255, 0.15) 85%,
+        transparent 100%
+    );
+    box-shadow:
+        0 0 8px 2px rgba(0, 255, 255, 0.7),
+        0 0 24px 6px rgba(0, 255, 255, 0.25);
+    animation: scanLineSweep 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ── Wide soft glow band that follows the scanline ── */
+.scan-glow {
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    height: 120px;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(0, 255, 255, 0.04) 20%,
+        rgba(0, 255, 255, 0.09) 50%,
+        rgba(0, 255, 255, 0.04) 80%,
+        transparent 100%
+    );
+    animation: scanGlowSweep 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Scanline goes from top → bottom, repeating */
+@keyframes scanLineSweep {
+    0%   { top: -4px;   opacity: 0; }
+    4%   { opacity: 1; }
+    96%  { opacity: 1; }
+    100% { top: 100vh;  opacity: 0; }
+}
+@keyframes scanGlowSweep {
+    0%   { top: -60px;  opacity: 0; }
+    4%   { opacity: 1; }
+    96%  { opacity: 1; }
+    100% { top: calc(100vh - 60px); opacity: 0; }
+}
+
+/* ── Center label ── */
+.scan-label {
+    position: relative;
+    z-index: 1;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 5px;
+    color: rgba(0, 255, 255, 0.6);
+    text-shadow:
+        0 0 8px rgba(0, 255, 255, 0.8),
+        0 0 20px rgba(0, 255, 255, 0.3);
+    animation: scanLabelPulse 1.5s step-end infinite;
+    user-select: none;
+}
+@keyframes scanLabelPulse {
+    0%, 60%, 100% { opacity: 1; }
+    30%            { opacity: 0.15; }
+}
+
+#npcCharImg {
+    position: relative;
+    z-index: 2;
+}
+
 
 /* ================================================
    VN DIALOGUE BOX (Attached under NPC)
@@ -409,12 +628,12 @@ html, body {
 ================================================ */
 #lookupTerminal {
     position: fixed;
-    bottom: 30px;
-    left: 30px;
-    width: 60px;
-    height: 60px;
-    background: rgba(0, 40, 60, 0.8);
-    border: 2px solid var(--cyan);
+    top: 100px;
+    left: 20px;
+    width: 65px;
+    height: 30px;
+    background: rgba(0, 40, 60, 0.85);
+    border: 1px solid var(--cyan);
     color: var(--cyan);
     display: flex;
     align-items: center;
@@ -423,25 +642,20 @@ html, body {
     z-index: 40;
     pointer-events: all;
     transition: all 0.3s;
-    box-shadow: 0 0 15px rgba(0,255,255,0.2);
-    clip-path: polygon(15% 0, 100% 0, 100% 85%, 85% 100%, 0 100%, 0 15%);
+    box-shadow: 0 0 10px rgba(0,255,255,0.1);
 }
 #lookupTerminal:hover {
     background: var(--cyan);
     color: var(--dark);
     box-shadow: 0 0 30px var(--cyan);
 }
-#lookupTerminal .term-icon { font-size: 24px; }
 #lookupTerminal .term-label {
-    position: absolute;
-    top: -25px;
-    left: 0;
     font-family: var(--font-hud);
-    font-size: 9px;
-    letter-spacing: 1px;
-    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
     color: var(--cyan);
-    text-shadow: 0 0 5px var(--cyan);
+    text-transform: uppercase;
 }
 
 
@@ -731,17 +945,61 @@ html, body {
     .day-badge { font-size: 9px; padding: 3px 10px; }
     .score-display { font-size: 10px; }
 
-    /* Criteria Board - Higher z-index and top position */
+    /* ─── CRITERIA BOARD — Mobile Bottom Sheet ─── */
     #criteriaBoard {
-        top: 60px;
-        width: 95vw;
-        max-height: 50vh;
-        overflow-y: auto;
+        align-items: flex-end; /* Align tablet to bottom */
+        padding: 0;
     }
+    .criteria-tablet-frame {
+        width: 100%;
+        margin: 0;
+        border-radius: 20px 20px 0 0;
+        border: none;
+        border-top: 2px solid var(--cyan);
+        transform: translateY(100%) !important;
+        max-height: 85vh;
+    }
+    #criteriaBoard.show .criteria-tablet-frame {
+        transform: translateY(0) !important;
+    }
+    #criteriaBoard.show {
+        pointer-events: all;
+    }
+    
+    .criteria-body {
+        max-height: 50vh;
+    }
+    
+    .criteria-close-btn {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+    }
+
+    /* Drag handle pill at top of sheet */
+    .criteria-tablet-frame::before {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 4px;
+        border-radius: 2px;
+        background: rgba(0,255,255,0.3);
+        margin: 10px auto -10px;
+    }
+
+    /* Backdrop when sheet is open */
+    #criteriaMobileBackdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 199;
+    }
+    #criteriaMobileBackdrop.active { display: block; }
 
     /* NPC Zone - Center Focus */
     #npcZone {
-        bottom: 220px;
+        bottom: 190px;
         width: 95vw;
     }
     #npcCharWrap {
@@ -762,7 +1020,7 @@ html, body {
 
     /* Desk Buttons - Modern Mobile Grid */
     #deskButtons {
-        height: 160px;
+        height: 150px;
         flex-direction: row;
         gap: 15px;
         padding: 0 15px 15px;
@@ -770,7 +1028,7 @@ html, body {
     }
     .desk-btn {
         flex: 1;
-        height: 100px;
+        height: 95px;
         width: auto;
         clip-path: none;
         border-radius: 12px;
@@ -783,23 +1041,29 @@ html, body {
     /* Decision Stamps - Larger for impact */
     .stamp-text { font-size: 60px; border-width: 12px; }
 
-    /* Lookup Terminal - Prominent Mobile Icon */
+    /* ─── Lookup Terminal — high corner tab (Right side) ─── */
     #lookupTerminal {
-        bottom: 180px;
+        bottom: auto;
+        top: 75px; 
+        right: 0;
         left: auto;
-        right: 15px;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        clip-path: none;
-        background: rgba(0, 255, 255, 0.2);
-        backdrop-filter: blur(5px);
+        width: 45px;
+        height: 32px;
+        padding: 0;
+        background: rgba(0, 40, 60, 0.9);
+        border: 1px solid var(--cyan);
+        border-right: none;
+        border-radius: 6px 0 0 6px;
+        box-shadow: -4px 0 15px rgba(0,255,255,0.2);
+        z-index: 150;
+        transform: none !important;
     }
     #lookupTerminal .term-label {
-        top: -18px;
-        left: auto;
-        right: 0;
-        font-size: 8px;
+        position: static;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 1px;
+        color: var(--cyan);
     }
 
     /* Counter */

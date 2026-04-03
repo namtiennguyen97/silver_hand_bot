@@ -68,23 +68,21 @@
     </div>
   </div>
 
-  <!-- CRITERIA BOARD -->
-  <div id="criteriaBoard">
-    <div class="criteria-header">
-      <div class="criteria-dot"></div>
-      <div class="criteria-title">// TIÊU CHÍ DUYỆT HÔM NAY — ACTIVE PROTOCOL //</div>
-    </div>
-    <div class="criteria-body">
-      <!-- Rendered by JS -->
-    </div>
-  </div>
+  <!-- (Backdrop and lookup terminal follow here) -->
 
+</div>
+
+<!-- ============ NPC SCAN OVERLAY (full-screen, shown while loading next NPC) ============ -->
+<div id="npcSkeleton">
+  <div class="scan-line"></div>
+  <div class="scan-glow"></div>
+  <div class="scan-label">WAITING FOR NEXT...</div>
 </div>
 
 <!-- ============ NPC ZONE (Center of glass) ============ -->
 <div id="npcZone">
   <div id="npcCharWrap">
-    <img id="npcCharImg" src="assets/img/npc_default.png" alt="Applicant">
+    <img id="npcCharImg" src="" alt="Applicant" style="opacity:0;">
   </div>
 
   <!-- Dialogue Box -->
@@ -95,10 +93,11 @@
   </div>
 </div>
 
-<!-- LOOKUP TERMINAL -->
+<!-- (Backdrop and lookup terminal follow here) -->
+
+<!-- LOOKUP TERMINAL (Relocated to top-left) -->
 <div id="lookupTerminal">
-  <div class="term-label">CRITERIA DB</div>
-  <div class="term-icon">💾</div>
+  <div class="term-label">NOTE</div>
 </div>
 
 <!-- ============ DESK BUTTONS ============ -->
@@ -182,6 +181,31 @@
         <button class="vn-skip-btn" id="vnSkipBtn">⏩ SKIP ALL</button>
         <span class="vn-next-indicator" id="vnNextIndicator">▼</span>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- CRITERIA BOARD MODAL (DATA TABLET) - MOVED TO TOP LEVEL FOR Z-INDEX FIX -->
+<div id="criteriaBoard">
+  <div class="criteria-tablet-frame">
+    <div class="criteria-header">
+      <div class="header-glitch" data-text="CLASSIFIED DATA">CLASSIFIED DATA</div>
+      <div class="header-sub">SAO-ĐÊM COMMAND // PROTOCOL ACTIVE</div>
+    </div>
+    
+    <div class="supervisor-section">
+      <div class="sv-label">SUPERVISOR // AUTHORIZED BY:</div>
+      <div class="sv-name">SILVER-HAND</div>
+      <div class="sv-status">ONLINE / MONITORING</div>
+    </div>
+
+    <div class="criteria-body">
+      <!-- Rendered by JS -->
+    </div>
+
+    <div class="criteria-footer">
+      <div class="footer-note">DO NOT DISTRIBUTE // PROPERTY OF SILVER-HAND</div>
+      <button class="criteria-close-btn" onclick="toggleCriteria(true)">CLOSE INTERFACE</button>
     </div>
   </div>
 </div>

@@ -90,14 +90,39 @@
     <div id="dlgSpeaker">— UNKNOWN —</div>
     <div id="dlgText"></div>
     <div id="dlgNext">▼</div>
+    <!-- NEW: Check ID Button (Initially Hidden) -->
+    <button id="idCardBtn" onclick="toggleIdCard(true)">
+      <span class="btn-scan-line"></span>
+      CHECK ID
+    </button>
   </div>
 </div>
 
 <!-- (Backdrop and lookup terminal follow here) -->
 
-<!-- LOOKUP TERMINAL (Relocated to top-left) -->
-<div id="lookupTerminal">
-  <div class="term-label">NOTE</div>
+<!-- LOOKUP TERMINALS (Initially hidden) -->
+<div id="lookupContainer" style="display:none;">
+  <div id="lookupTerminal" class="lookup-btn">
+    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+    </svg>
+    <div class="term-label">NOTE</div>
+  </div>
+  <div id="rivalBtn" class="lookup-btn" onclick="toggleRivalModal(true)">
+    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    <div class="term-label">RIVAL</div>
+  </div>
+  <div id="mayorBtn" class="lookup-btn" onclick="toggleMayorNote(true)">
+    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v10a4 4 0 0 0 4 4h2a7 7 0 0 0 7-7V11" />
+    </svg>
+    <div class="term-label">MAYOR</div>
+  </div>
 </div>
 
 <!-- ============ DESK BUTTONS ============ -->
@@ -185,8 +210,8 @@
   </div>
 </div>
 
-<!-- CRITERIA BOARD MODAL (DATA TABLET) - MOVED TO TOP LEVEL FOR Z-INDEX FIX -->
-<div id="criteriaBoard">
+<!-- CRITERIA BOARD MODAL (DATA TABLET) -->
+<div id="criteriaBoard" class="modal-overlay">
   <div class="criteria-tablet-frame">
     <div class="criteria-header">
       <div class="header-glitch" data-text="CLASSIFIED DATA">CLASSIFIED DATA</div>
@@ -210,7 +235,100 @@
   </div>
 </div>
 
-<!-- ============ SCRIPTS ============ -->
+<!-- ============ PERSONAL ID CARD MODAL ============ -->
+<div id="idCardModal" class="modal-overlay">
+  <div class="id-card-tablet">
+    <div class="id-card-header">
+      <div class="id-card-bg-text">ID_VERIFY</div>
+      <div class="id-card-title">IDENTITY VERIFICATION SERVICE</div>
+      <div class="id-card-id" id="idCardSerial">SN: 000-000-000</div>
+    </div>
+    
+    <div class="id-card-body">
+      <div class="id-card-profile">
+        <div class="id-avatar-wrap">
+          <img id="idAvatarImg" src="" alt="Headshot">
+          <div class="id-scan-overlay"></div>
+        </div>
+        <div class="id-basic-info">
+          <div class="id-name" id="idName">---</div>
+          <div class="id-meta">
+            <div class="id-stat">
+              <span class="label">REGION</span>
+              <span class="value" id="idNation">---</span>
+            </div>
+            <div class="id-stat">
+              <span class="label">ACC LVL</span>
+              <span class="value" id="idLevel">0</span>
+            </div>
+            <div class="id-stat">
+              <span class="label">CERT</span>
+              <span class="value" id="idCert">---</span>
+            </div>
+            <div class="id-stat">
+              <span class="label">CAMP</span>
+              <span class="value" id="idCamp">---</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="id-social-section">
+        <div class="id-section-title">SOCIAL CONNECTION ROADMAP</div>
+        <div class="id-social-canvas-wrap">
+          <div id="socialCircleContainer"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="id-card-footer">
+      <button class="id-close-btn" onclick="toggleIdCard(false)">CLOSE RECORD</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ RIVAL CAMP MODAL ============ -->
+<div id="rivalModal" class="modal-overlay">
+  <div class="rival-tablet">
+    <div class="rival-header">
+      <div class="rival-title">CAMP ALLIANCE DATABASE</div>
+    </div>
+    <div class="rival-body">
+      <div class="rival-section enemy">
+          <div class="section-head">HOSTILE / RIVAL</div>
+          <div class="camp-list" id="enemyCampList">
+              <!-- Rendered by JS -->
+          </div>
+      </div>
+      <div class="rival-section ally">
+          <div class="section-head">ALLIED / NEUTRAL</div>
+          <div class="camp-list" id="allyCampList">
+              <!-- Rendered by JS -->
+          </div>
+      </div>
+    </div>
+    <div class="rival-footer">
+      <button class="rival-close-btn" onclick="toggleRivalModal(false)">CLOSE DATABASE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MAYOR NOTE MODAL ============ -->
+<div id="mayorNoteModal" class="modal-overlay">
+  <div class="mayor-tablet">
+    <div class="mayor-header">
+      <div class="mayor-title">MAYOR'S DIRECTIVE</div>
+    </div>
+    <div class="mayor-body">
+      <div class="mayor-content" id="mayorNoteContent">
+          <!-- Rendered by JS -->
+      </div>
+    </div>
+    <div class="mayor-footer">
+      <button class="mayor-close-btn" onclick="toggleMayorNote(false)">DISMISS</button>
+    </div>
+  </div>
+</div>
 <script src="assets/js/loading.js"></script>
 <script src="assets/js/vn_engine.js"></script>
 <script src="assets/js/inspector.js"></script>

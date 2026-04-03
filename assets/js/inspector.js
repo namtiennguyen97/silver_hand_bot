@@ -41,81 +41,134 @@ function assignNpcImages(dayIndex) {
     });
 }
 
+const CAMP_RELATIONS = {
+    enemies: ['Astral', 'Hunter', 'Tagalog', 'Konoha', 'Fortis'],
+    allies:  ['Eternal', 'SANTUY', 'AVALON', 'Players', 'VNHouse', 'Vior', 'RedRoom', 'UNITY']
+};
+
+const MAYOR_NOTES = [
+    /* DAY 1 */
+    "LƯU Ý QUAN TRỌNG TỪ THỊ TRƯỞNG:\n\nHiện nay có một số anh em VN mua lại tài khoản (acc) từ người nước ngoài thuộc các Camp đối thủ để sử dụng.\n\nNếu gặp trường hợp thẻ bài ghi quốc tịch nước ngoài và thuộc Camp đối địch, nhưng người đó khẳng định trong hội thoại là 'người Việt' hoặc 'tài khoản mới mua', chúng ta VẪN DUYỆT cho họ vào camp.",
+    /* DAY 2 */
+    "Chỉ thị Ngày 2 đang được soạn thảo...",
+    /* DAY 3 */
+    "Chỉ thị Ngày 3 đang được soạn thảo..."
+];
+
 const GAME_DAYS = [
 
     /* ===== DAY 1 ===== */
     {
         day: 1,
-        title: "Ngày đầu tiên",
-        subtitle: "SCREENING DAY 01 — CHECKPOINT ALPHA",
+        title: "Serious Mode: Phase 01",
+        subtitle: "SCREENING DAY 01 — IDENTITY VERIFICATION",
         criteria: [
-            { icon: "✅", cls: "ok",      text: "Approve individuals with practical survival skills (Farmer, Medic, Engineer)" },
-            { icon: "✅", cls: "ok",      text: "Approve individuals with no prior criminal record on the server" },
-            { icon: "⛔", cls: "danger",  text: "Deny individuals affiliated with enemy camps (Red Faction Logo)" },
-            { icon: "⚠️", cls: "warning", text: "Caution: Unidentified professions may be masking their identity" }
+            { icon: "🇻🇳", cls: "ok",      text: "PRIORITY: VN Members — Full access granted" },
+            { icon: "🌐", cls: "warning", text: "GLOBAL: Foreign members must be Level 145+ for entry" },
+            { icon: "⛔", cls: "danger",  text: "DENY: Hostile camps (Astral, Hunter, Tagalog, Konoha, Fortis)" },
+            { icon: "🔍", cls: "ok",      text: "HINT: Use 'CHECK ID' and 'RIVAL' to cross-verify affiliations" }
         ],
         applicants: [
             {
-                id: "A01", name: "ALEX 'GREENFIELD' HART", img: null,
-                profession: "Farmer / Livestock", criminal: false, enemyCamp: false,
+                id: "A01", name: "ELYSIUM", img: null,
+                nationality: "VN", level: 152, cert: "Herb", camp: "Eternal",
+                friends: [
+                    { name: "MEND", intimacy: 85, camp: "AVALON" },
+                    { name: "FORD", intimacy: 70, camp: "VNHouse" }
+                ],
+                profession: "Dân cày nguyên liệu", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "Hey... name's Alex. I grow crops, raise livestock. My settlement got hit 3 days ago.", next: "l2" },
-                    { text: "No weapons, no record. Just looking for a safe place for what's left of my family.", next: null }
+                    { text: "Chào sếp, mình từ vùng xanh mới qua. Chuyên đi farm nguyên liệu nên muốn tìm camp nào an toàn để cất đồ.", next: "l2" },
+                    { text: "Mình có bác FORD bên VNHouse bảo chứng nhé. Rất mong được cày cuốc cùng anh em.", next: null }
                 ]
             },
             {
-                id: "A02", name: "??? [UNIDENTIFIED]", img: null,
-                profession: "Undisclosed", criminal: false, enemyCamp: false,
-                shouldApprove: false,
+                id: "A02", name: "COBRA", img: null,
+                nationality: "JPN", level: 138, cert: "Rifle man", camp: "Konoha",
+                friends: [
+                    { name: "UCHIHA_IT", intimacy: 99, camp: "Konoha" }
+                ],
+                profession: "Solo player tìm team", criminal: false, enemyCamp: true,
+                shouldApprove: false, // Enemy Camp (Konoha)
                 lines: [
-                    { text: "Look, I don't need to explain myself. Just let me in. I'll be useful.", next: "l2" },
-                    { text: "Occupation? Doesn't matter. You're asking too many questions.", next: null }
+                    { text: "Sếp ơi, em lang thang mãi cũng chán. Cấp 138 rồi, PK cũng khá, cho em xin một slot vào camp với.", next: "l2" },
+                    { text: "Acc em quốc tịch JPN nhưng em ở VN nhé, sếp check kỹ giúp em.", next: null }
                 ]
             },
             {
-                id: "A03", name: "SARA 'MEND' COLE", img: null,
-                profession: "Field Medic", criminal: false, enemyCamp: false,
+                id: "A03", name: "NIGHTMARE", img: null,
+                nationality: "VN", level: 160, cert: "Warrior", camp: "AVALON",
+                friends: [
+                    { name: "ELYSIUM", intimacy: 85, camp: "Eternal" }
+                ],
+                profession: "Người chơi cũ quay lại", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "I'm a medic. Three years running a field clinic out in Silent Plain.", next: "l2" },
-                    { text: "I can treat wounded and sort out meds. Every camp needs someone like me.", next: null }
+                    { text: "Chào sếp, mình mới chơi lại game sau một thời gian off. Thấy camp mình đang tuyển nên ghé qua xin chân chạy vặt.", next: "l2" },
+                    { text: "Mình quen thân với ELYSIUM đây, kỹ năng thì sếp cứ yên tâm, không lụ nghề đâu.", next: null }
                 ]
             },
             {
-                id: "A04", name: "MARCUS VANE", img: null,
-                profession: "Ex Mercenary", criminal: false, enemyCamp: true,
-                shouldApprove: false,
+                id: "A04", name: "STORM", img: null,
+                nationality: "USA", level: 180, cert: "Sniper", camp: "Tagalog",
+                friends: [
+                    { name: "CHIEF_TAG", intimacy: 95, camp: "Tagalog" }
+                ],
+                profession: "Sát thủ săn Bounty", criminal: false, enemyCamp: true,
+                shouldApprove: false, // Enemy Camp (Tagalog)
                 lines: [
-                    { text: "Heh... SAO-ĐÊM. Heard this camp's got muscle. I want in.", next: "l2" },
-                    { text: "[A red faction logo briefly exposed under his jacket as he raises his arm]", next: null }
+                    { text: "Chào, tôi chuyên đi săn Bounty đây. Cấp 180 chắc sếp cũng hiểu trình độ thế nào rồi nhỉ.", next: "l2" },
+                    { text: "[Hệ thống quét thấy thẻ bài Camp Tagalog được giấu kỹ dưới áo giáp — Có dấu hiệu gian lận]", next: null }
                 ]
             },
             {
-                id: "A05", name: "DEREK 'MASON' FORD", img: null,
-                profession: "Engineer / Construction", criminal: false, enemyCamp: false,
+                id: "A05", name: "TITAN", img: null,
+                nationality: "VN", level: 148, cert: "Logger", camp: "VNHouse",
+                friends: [
+                    { name: "ELYSIUM", intimacy: 70, camp: "Eternal" }
+                ],
+                profession: "Kiến trúc sư xây Base", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "I build shelters, fortifications, dig trenches — all by hand if needed.", next: "l2" },
-                    { text: "No guns, no politics. Just give me tools and materials and I'll get to work.", next: null }
+                    { text: "Sếp ơi mình là FORD đây, chuyên xây dựng pháo đài. Elysium chắc có kể về mình rồi nhỉ?", next: "l2" },
+                    { text: "Mình muốn xin vào camp để hỗ trợ anh em thiết kế khu phòng thủ cho chắc chắn. Cho mình xin slot nha.", next: null }
                 ]
             },
             {
-                id: "A06", name: "LENA CROSS", img: null,
-                profession: "Black Market Trader", criminal: true, enemyCamp: false,
-                shouldApprove: false,
+                id: "A06", name: "VIPER", img: null,
+                nationality: "USA", level: 142, cert: "Virut", camp: "Players",
+                friends: [
+                    { name: "MARKET_MAKER", intimacy: 45, camp: "RedRoom" }
+                ],
+                profession: "Thương nhân chợ đen", criminal: false, enemyCamp: false,
+                shouldApprove: false, // USA and Level < 145
                 lines: [
-                    { text: "Hi there. I'm a merchant — I can connect your camp with major supply lines.", next: "l2" },
-                    { text: "[SYSTEM ALERT: 1 violation — illegal arms exchange recorded at Mount Gray Bear sector]", next: null }
+                    { text: "Chào sếp, em chuyên buôn bán nhu yếu phẩm đủ loại. Tuy cấp hơi thấp nhưng em nhiều đồ lắm.", next: "l2" },
+                    { text: "Em có nhiều mối làm ăn bên server Mỹ, cho em vào camp em để giá ưu đãi cho anh em cày cuốc.", next: null }
                 ]
             },
             {
-                id: "A07", name: "RYAN 'TRACKER' WOLFE", img: null,
-                profession: "Hunter / Scout", criminal: false, enemyCamp: false,
+                id: "A07", name: "WOLFE", img: null,
+                nationality: "VN", level: 165, cert: "Sniper", camp: "Eternal",
+                profession: "Người chơi hệ thám hiểm", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "Survived solo in the wilds for 8 months. Know the terrain, know the traps.", next: "l2" },
-                    { text: "You need someone to scout and forage? I'm your best option.", next: null }
+                    { text: "Chào anh, tôi toàn đi dạo bản đồ một mình cả năm nay rồi. Mọi ngóc ngách ở đây tôi đều thuộc hết.", next: "l2" },
+                    { text: "Nếu camp mình cần người dẫn đường đi chiếm cứ điểm thì cứ gọi tôi nhé.", next: null }
+                ]
+            },
+            {
+                id: "A08", name: "PHANTOM", img: null,
+                nationality: "JPN", level: 140, cert: "Rifle man", camp: "Konoha",
+                friends: [
+                    { name: "REBORN", intimacy: 10, camp: "Konoha" }
+                ],
+                profession: "Chủ mới mua acc", criminal: false, enemyCamp: true,
+                shouldApprove: true, // Special Case: Bought Account
+                lines: [
+                    { text: "Chào sếp, acc này tôi mới mua của một khứa JPN bên Konoha.", next: "l2" },
+                    { text: "Tôi là người VN 100%, mới nhảy hố game này nên mua acc cày cho nhanh. Nhận em vào camp với anh em cho vui sếp ơi.", next: null }
                 ]
             }
         ]
@@ -125,66 +178,66 @@ const GAME_DAYS = [
     {
         day: 2,
         title: "Day Two",
-        subtitle: "SCREENING DAY 02 — TÌNH HÌNH CĂN KIỆT",
+        subtitle: "SCREENING DAY 02 — CHIẾN DỊCH THANH LỌC",
         criteria: [
-            { icon: "✅", cls: "ok",      text: "Priority: Tier 3+ combat level individuals" },
-            { icon: "✅", cls: "ok",      text: "Approve members who have participated in Patrol or Shelter Land ops" },
-            { icon: "⛔", cls: "danger",  text: "Deny accounts less than 30 days old on the server" },
-            { icon: "⚠️", cls: "warning", text: "Investigate: Carrying more than 1 heavy weapon" }
+            { icon: "✅", cls: "ok",      text: "Ưu tiên: Anh em có Tier chiến đấu cao" },
+            { icon: "✅", cls: "ok",      text: "Duyệt: Những ai từng đi Tuần tra hoặc Shelter Land" },
+            { icon: "⛔", cls: "danger",  text: "Từ chối: Tài khoản chơi chưa đủ 30 ngày" },
+            { icon: "⚠️", cls: "warning", text: "Cảnh báo: Mang theo quá nhiều vũ khí hạng nặng" }
         ],
         applicants: [
             {
                 id: "B01", name: "VICTOR 'IRON' SHAW", img: null,
-                profession: "Combat Veteran", criminal: false, enemyCamp: false,
+                profession: "Tay chơi lão luyện", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "I've run 4 Shelter Land ops with my old camp. Tier 4 fighter.", next: "l2" },
-                    { text: "Camp dissolved after the turf dispute last month. Looking for a new home base.", next: null }
+                    { text: "Tôi đi Shelter Land 4 lần rồi sếp. Tier 4 chiến đấu, bao nhiệt tình luôn.", next: "l2" },
+                    { text: "Camp cũ mới giải tán vì tranh chấp địa bàn, giờ đang tìm bến đỗ mới để tiếp tục cày.", next: null }
                 ]
             },
             {
                 id: "B02", name: "MIKA REED", img: null,
-                profession: "Recruit — New Player", criminal: false, enemyCamp: false,
+                profession: "Tân thủ tò mò", criminal: false, enemyCamp: false,
                 shouldApprove: false,
                 lines: [
-                    { text: "I've only been on the server for... 12 days. But I learn super fast, I promise!", next: "l2" },
-                    { text: "Never been in a raid yet, but I really want to contribute if you give me a chance.", next: null }
+                    { text: "Dạ chào sếp, em mới chơi được... 12 ngày à. Nhưng em hứa sẽ tiếp thu nhanh lắm!", next: "l2" },
+                    { text: "Em chưa bao giờ đi raid hay gì hết, sếp cho em vào camp làm chân chạy vặt cũng được ạ.", next: null }
                 ]
             },
             {
                 id: "B03", name: "JAMES 'GHOST' COLE", img: null,
-                profession: "Sniper / Marksman", criminal: false, enemyCamp: false,
+                profession: "Xạ thủ bọc lót", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "Tier 5 sniper. 47 days old account. Held overwatch in 6 consecutive Patrol missions.", next: "l2" },
-                    { text: "Carrying one rifle and personal ammo. All registered and legit.", next: null }
+                    { text: "Hê lô sếp, mình chuyên bọc lót cho anh em đi tuần tra. Acc chơi được 47 ngày rồi.", next: "l2" },
+                    { text: "Trên người chỉ mang một khẩu súng với đạn dược cá nhân thôi, hàng chính chủ 100%.", next: null }
                 ]
             },
             {
                 id: "B04", name: "DANTE KRIEG", img: null,
-                profession: "???", criminal: false, enemyCamp: false,
+                profession: "Người chơi hệ hù dọa", criminal: false, enemyCamp: false,
                 shouldApprove: false,
                 lines: [
-                    { text: "Just let me in already. I've got 3 heavy machine guns, an RPG and 2 crates of ammo.", next: "l2" },
-                    { text: "I can handle anyone in your way. Anyone — including your own squad.", next: null }
+                    { text: "Mở cửa cho tôi vào nhanh đi. Tôi mang theo 3 khẩu súng máy với đống đạn hạng nặng đây.", next: "l2" },
+                    { text: "Vào camp tôi sẽ xử đẹp bất cứ đứa nào ngáng đường... kể cả đội của sếp luôn.", next: null }
                 ]
             },
             {
                 id: "B05", name: "COMMANDER ELISE VALE", img: null,
-                profession: "Ex-Camp Commander", criminal: false, enemyCamp: false,
+                profession: "Cựu chủ Camp", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "Former Major of Camp Dark Steel. 82-day account. Led 3 Shelter Land operations.", next: "l2" },
-                    { text: "Dark Steel disbanded this month. I need a disciplined camp to keep fighting.", next: null }
+                    { text: "Chào anh, tôi từng quản lý camp bên Dark Steel. Acc chơi được 82 ngày, đi Shelter Land suốt.", next: "l2" },
+                    { text: "Bên đó giải tán rồi nên tôi muốn tìm một camp có kỷ luật để cùng anh em đi chiếm cứ điểm.", next: null }
                 ]
             },
             {
                 id: "B06", name: "SEAN 'SHIELD' PARKS", img: null,
-                profession: "Close-range Guard", criminal: false, enemyCamp: false,
+                profession: "Hộ vệ nhiệt tình", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "55-day account, Tier 3 CQC. Specialize in escort and member protection during patrols.", next: "l2" },
-                    { text: "One combat knife, one sidearm. Nothing more, nothing less.", next: null }
+                    { text: "Chào sếp, em chơi được 55 ngày rồi, Tier 3 chiến đấu. Chuyên bảo kê anh em đi farm.", next: "l2" },
+                    { text: "Hành trang gọn nhẹ chỉ có con dao với súng lục thôi, cho em vào camp với nha.", next: null }
                 ]
             }
         ]
@@ -196,73 +249,73 @@ const GAME_DAYS = [
         title: "Final Day",
         subtitle: "SCREENING DAY 03 — NGUY CƠ NỘI GIÁN",
         criteria: [
-            { icon: "⛔", cls: "danger",  text: "Deny anyone linked to Delta-9 camp (Confirmed Espionage)" },
-            { icon: "⛔", cls: "danger",  text: "Deny individuals with red tattoos on neck/arms (Cartel Marks)" },
-            { icon: "✅", cls: "ok",      text: "Approve individuals referred of Official camp members" },
-            { icon: "⚠️", cls: "warning", text: "Caution: Delta-9 is attempting to plant operatives in major camps" }
+            { icon: "⛔", cls: "danger",  text: "Cấm: Bất cứ ai liên quan đến Camp Delta-9 (Gián điệp)" },
+            { icon: "⛔", cls: "danger",  text: "Cấm: Người chơi có hình xăm đỏ (Dấu hiệu tội phạm)" },
+            { icon: "✅", cls: "ok",      text: "Duyệt: Những ai được quan chức cấp cao bảo lãnh" },
+            { icon: "⚠️", cls: "warning", text: "Lưu ý: Delta-9 đang tìm cách xâm nhập bằng mọi giá" }
         ],
         applicants: [
             {
                 id: "C01", name: "ARIA CHEN", img: null,
-                profession: "Referred by Official Bao", criminal: false, enemyCamp: false,
+                profession: "Người quen bảo lãnh", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "Officer Bao sent me. He said to come find the Mayor directly.", next: "l2" },
-                    { text: "I specialize in resource recovery and food processing. Nothing to do with Delta-9.", next: null }
+                    { text: "Chào anh, anh Bảo bảo em qua đây gặp sếp trực tiếp để xin vào camp.", next: "l2" },
+                    { text: "Em chuyên đi gom nguyên liệu chế đồ, không liên quan gì đến hội Delta-9 đâu ạ.", next: null }
                 ]
             },
             {
                 id: "C02", name: "BLAKE 'SHADOW' FINN", img: null,
-                profession: "Ex Delta-9 Operative", criminal: false, enemyCamp: true,
+                profession: "Kẻ săn đêm", criminal: false, enemyCamp: true,
                 shouldApprove: false,
                 lines: [
-                    { text: "Heard you need people. I've got solid experience in night ops.", next: "l2" },
-                    { text: "[ID scan detects a Delta-9 badge tucked beneath the folds of his jacket]", next: null }
+                    { text: "Nghe nói camp mình đang cần người đi raid đêm. Tôi có nhiều kinh nghiệm PK lắm nè.", next: "l2" },
+                    { text: "[Hệ thống quét thấy huy hiệu Delta-9 giấu trong tay áo — Nghi vấn gián điệp]", next: null }
                 ]
             },
             {
                 id: "C03", name: "WOLF STRIDER", img: null,
-                profession: "Drifter — No affiliation", criminal: false, enemyCamp: false,
+                profession: "Lãng khách solo", criminal: false, enemyCamp: false,
                 shouldApprove: false,
                 lines: [
-                    { text: "Just a free agent. No camp, no crew. Been wandering solo for months.", next: "l2" },
-                    { text: "[Security camera zoom: clear view of a red serpent tattoo on the left side of his neck]", next: null }
+                    { text: "Sếp ơi tôi toàn chơi một mình thôi, nay muốn đổi gió vào camp cày chung với team cho vui.", next: "l2" },
+                    { text: "[Camera an ninh phát hiện hình xăm rắn đỏ bên cổ trái — Thuộc danh sách đen]", next: null }
                 ]
             },
             {
                 id: "C04", name: "VERA 'WRENCH' KIM", img: null,
-                profession: "Referred by Official Mai", criminal: false, enemyCamp: false,
+                profession: "Thợ bảo trì súng", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "Officer Mai sent me. I'm a tech specialist — weapons maintenance and vehicle repair.", next: "l2" },
-                    { text: "No dark affiliations. Mai can vouch for me completely.", next: null }
+                    { text: "Chào sếp, chị Mai giới thiệu em qua đây. Em chuyên bảo trì vũ khí với sửa xe cho anh em.", next: "l2" },
+                    { text: "Lý lịch em sạch 100%, chị Mai bảo chứng nên sếp cứ yên tâm nhận em nha.", next: null }
                 ]
             },
             {
                 id: "C05", name: "REED 'WHISPER' CALLOWAY", img: null,
-                profession: "Intelligence — [WARNING]", criminal: false, enemyCamp: true,
+                profession: "Kẻ đào tẩu", criminal: false, enemyCamp: true,
                 shouldApprove: false,
                 lines: [
-                    { text: "Please — I'm running from Delta-9. They want me dead because I know too much.", next: "l2" },
-                    { text: "[Behavioral analysis: speech too rehearsed, zero signs of genuine fear — scripted narrative detected]", next: null }
+                    { text: "Cứu em với sếp, em đang bị tụi Delta-9 truy đuổi vì biết quá nhiều bí mật của tụi nó.", next: "l2" },
+                    { text: "[Phân tích hành vi: Giọng nói có vẻ đang diễn kịch, không hề có dấu hiệu sợ hãi thật sự]", next: null }
                 ]
             },
             {
                 id: "C06", name: "LUNA HAYES", img: null,
-                profession: "Pharmacist — Referred by Official Thien", criminal: false, enemyCamp: false,
+                profession: "Dân chế Buff", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "I can synthesize medicine and vaccines from wild-crafted materials. Officer Thien can confirm.", next: "l2" },
-                    { text: "Zero Delta-9 links. No tattoos. I just want to live and contribute.", next: null }
+                    { text: "Chào anh, em biết chế nhiều loại thuốc tăng lực hỗ trợ anh em đi raid. Anh Thiện bảo em qua đây.", next: "l2" },
+                    { text: "Lý lịch em trong sạch, không hình xăm, chỉ muốn vào camp để cống hiến thôi.", next: null }
                 ]
             },
             {
                 id: "C07", name: "UNKNOWN DRIFTER", img: null,
-                profession: "Origin: Unverified", criminal: false, enemyCamp: true,
+                profession: "Người chơi bí ẩn", criminal: false, enemyCamp: true,
                 shouldApprove: false,
                 lines: [
-                    { text: "I need into this camp. Now. No time for explanations.", next: "l2" },
-                    { text: "[Auto-scan: Delta-9 tracking device detected inside subject's backpack]", next: null }
+                    { text: "Cho tôi vào camp ngay đi, không có thời gian để giải thích nhiều đâu.", next: "l2" },
+                    { text: "[Hệ thống tự động quét thấy thiết bị định vị của Delta-9 trong balo đối tượng]", next: null }
                 ]
             }
         ]
@@ -372,7 +425,10 @@ const State = {
 const $ = id => document.getElementById(id);
 let criteriaBoard, npcCharImg, npcSkeleton, dlgSpeaker, dlgText, dlgNext,
     approveBtn, rejectBtn, dayTransition, resultsScreen, gameOverScreen,
-    decisionFlash, stampOverlay, applicantCounter, dayBadge, scoreDisplay, lookupTerminal;
+    decisionFlash, stampOverlay, applicantCounter, dayBadge, scoreDisplay, lookupTerminal,
+    idCardModal, idCardBtn, idAvatarImg, idName, idNation, idLevel, idCert, idCamp, socialContainer,
+    rivalModal, rivalBtn, enemyList, allyList,
+    mayorNoteModal, mayorBtn, mayorNoteContent;
 
 let vnEngine;
 
@@ -402,6 +458,28 @@ function initGame() {
     scoreDisplay     = $('scoreDisplay');
     lookupTerminal   = $('lookupTerminal');
 
+    // ID Card Modal elements
+    idCardModal      = $('idCardModal');
+    idCardBtn        = $('idCardBtn');
+    idAvatarImg      = $('idAvatarImg');
+    idName           = $('idName');
+    idNation         = $('idNation');
+    idLevel          = $('idLevel');
+    idCert           = $('idCert');
+    idCamp           = $('idCamp');
+    socialContainer  = $('socialCircleContainer');
+
+    // Rival Modal elements
+    rivalModal       = $('rivalModal');
+    rivalBtn         = $('rivalBtn');
+    enemyList        = $('enemyCampList');
+    allyList         = $('allyCampList');
+
+    // Mayor Note elements
+    mayorNoteModal   = $('mayorNoteModal');
+    mayorBtn         = $('mayorBtn');
+    mayorNoteContent = $('mayorNoteContent');
+
     // Dialogue click to advance
     $('inspectorDialogue').addEventListener('click', () => advanceLine());
 
@@ -412,10 +490,13 @@ function initGame() {
     // Lookup terminal toggle — with modal support
     window.toggleCriteria = (forceClose) => {
         const isOpen = criteriaBoard.classList.contains('show');
-        if (forceClose || isOpen) {
-            criteriaBoard.classList.remove('show');
-        } else {
+        const show = !(forceClose || isOpen);
+        if (show) {
             criteriaBoard.classList.add('show');
+            if (lookupContainer) lookupContainer.style.display = 'none';
+        } else {
+            criteriaBoard.classList.remove('show');
+            if (lookupContainer) lookupContainer.style.display = 'flex';
         }
     };
     lookupTerminal.addEventListener('click', () => window.toggleCriteria());
@@ -423,7 +504,71 @@ function initGame() {
     // Init VN Engine for introductions
     vnEngine = new VNEngine();
 
+    // ID Card Toggle
+    window.toggleIdCard = (show) => {
+        if (show) {
+            renderIdCard();
+            idCardModal.classList.add('show');
+            if (lookupContainer) lookupContainer.style.display = 'none';
+            playSfx('nierMail');
+        } else {
+            idCardModal.classList.remove('show');
+            if (lookupContainer) lookupContainer.style.display = 'flex';
+            playSfx('nierMenu');
+        }
+    };
+    idCardBtn.addEventListener('click', () => window.toggleIdCard(true));
+
+    // Rival Modal Toggle
+    window.toggleRivalModal = (show) => {
+        if (show) {
+            populateCamps();
+            rivalModal.classList.add('show');
+            if (lookupContainer) lookupContainer.style.display = 'none';
+            playSfx('nierMail');
+        } else {
+            rivalModal.classList.remove('show');
+            if (lookupContainer) lookupContainer.style.display = 'flex';
+            playSfx('nierMenu');
+        }
+    };
+
+    // Mayor Note Toggle
+    window.toggleMayorNote = (show) => {
+        if (show) {
+            if (mayorNoteContent) {
+                mayorNoteContent.textContent = MAYOR_NOTES[State.day] || "Không có chỉ thị mới.";
+            }
+            mayorNoteModal.classList.add('show');
+            if (lookupContainer) lookupContainer.style.display = 'none';
+            playSfx('nierMail');
+        } else {
+            mayorNoteModal.classList.remove('show');
+            if (lookupContainer) lookupContainer.style.display = 'flex';
+            playSfx('nierMenu');
+        }
+    };
+
     showDayTransition(0);
+}
+
+function populateCamps() {
+    if (!enemyList || !allyList) return;
+    enemyList.innerHTML = '';
+    allyList.innerHTML = '';
+    
+    CAMP_RELATIONS.enemies.forEach(c => {
+        const tag = document.createElement('div');
+        tag.className = 'camp-tag';
+        tag.textContent = c;
+        enemyList.appendChild(tag);
+    });
+    CAMP_RELATIONS.allies.forEach(c => {
+        const tag = document.createElement('div');
+        tag.className = 'camp-tag';
+        tag.textContent = c;
+        allyList.appendChild(tag);
+    });
 }
 
 // Primary: wait for loading animation to finish
@@ -448,6 +593,9 @@ function showDayTransition(dayIndex) {
     dayTransition.querySelector('.dt-subtitle').textContent = day.subtitle;
     dayTransition.classList.add('show');
 
+    // Hide tools during intro
+    if (lookupContainer) lookupContainer.style.display = 'none';
+
     dayTransition.querySelector('.dt-start-btn').onclick = () => {
         dayTransition.classList.remove('show');
 
@@ -463,6 +611,94 @@ function showDayTransition(dayIndex) {
             setTimeout(() => startDay(dayIndex), 500);
         }
     };
+}
+
+/* ================================================
+   ID CARD RENDERING & SOCIAL CIRCLE 2.0
+================================================ */
+function renderIdCard() {
+    const applicant = GAME_DAYS[State.day].applicants[State.applicantIndex];
+    if (!applicant) return;
+
+    idName.textContent   = applicant.name;
+    idNation.textContent = applicant.nationality || "UNKNOWN";
+    idLevel.textContent  = applicant.level || "0";
+    idCert.textContent   = applicant.cert || "NONE";
+    idCamp.textContent   = applicant.camp || "UNKNOWN";
+    idAvatarImg.src      = applicant.img;
+    
+    const serial = `SN: ${Math.floor(Math.random()*900+100)}-${applicant.id || 'A00'}-${Math.floor(Math.random()*9000+1000)}`;
+    const serialEl = $('idCardSerial');
+    if (serialEl) serialEl.textContent = serial;
+
+    drawSocialCircle(applicant.friends || []);
+}
+
+function drawSocialCircle(friends) {
+    if (!socialContainer) return;
+    socialContainer.innerHTML = '';
+    
+    const centerX = socialContainer.offsetWidth / 2;
+    const centerY = socialContainer.offsetHeight / 2;
+    const applicant = GAME_DAYS[State.day].applicants[State.applicantIndex];
+    
+    // Center Node (The Applicant)
+    const centerNode = document.createElement('div');
+    centerNode.className = 'social-node center';
+    centerNode.style.left = (centerX - 30) + 'px';
+    centerNode.style.top  = (centerY - 30) + 'px';
+    centerNode.innerHTML  = `<img src="${applicant.img}" class="social-avatar">`;
+    socialContainer.appendChild(centerNode);
+    
+    if (!friends || friends.length === 0) {
+        return;
+    }
+
+    const radius = Math.min(socialContainer.offsetWidth, socialContainer.offsetHeight) * 0.35;
+    friends.forEach((friend, idx) => {
+        const angle = (idx / friends.length) * (2 * Math.PI);
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
+        
+        // Link Line
+        const link = document.createElement('div');
+        link.className = 'social-link';
+        link.style.left = centerX + 'px';
+        link.style.top  = centerY + 'px';
+        link.style.width = radius + 'px';
+        link.style.transform = `rotate(${angle}rad)`;
+        socialContainer.appendChild(link);
+
+        // Intimacy Label (Middle of the line)
+        const midX = centerX + (radius/2) * Math.cos(angle);
+        const midY = centerY + (radius/2) * Math.sin(angle);
+        const intLabel = document.createElement('div');
+        intLabel.className = 'intimacy-label';
+        intLabel.textContent = `${friend.intimacy}%`;
+        intLabel.style.left = midX + 'px';
+        intLabel.style.top  = midY + 'px';
+        socialContainer.appendChild(intLabel);
+        
+        // Friend Node
+        const node = document.createElement('div');
+        node.className = 'social-node';
+        node.style.left = (x - 20) + 'px';
+        node.style.top  = (y - 20) + 'px';
+        // Use a generic avatar or head-only for friends for now
+        node.innerHTML = `<img src="assets/img/avatars/generic.png" class="social-avatar">`;
+        socialContainer.appendChild(node);
+        
+        // Label
+        const label = document.createElement('div');
+        label.className = 'social-label';
+        label.style.left = x + 'px';
+        label.style.top  = (y + 25) + 'px';
+        label.innerHTML = `
+            <span class="friend-name">${friend.name}</span>
+            <span class="friend-camp">${friend.camp}</span>
+        `;
+        socialContainer.appendChild(label);
+    });
 }
 
 
@@ -492,6 +728,14 @@ function startDay(dayIndex) {
 
     // Load first applicant
     loadApplicant(dayIndex, 0);
+
+    // Update Mayor Note content for this day
+    if (mayorNoteContent) {
+        mayorNoteContent.textContent = MAYOR_NOTES[dayIndex] || "Không có chỉ thị mới.";
+    }
+
+    // Show lookup tools ONLY after intro
+    if (lookupContainer) lookupContainer.style.display = 'flex';
 }
 
 /* ================================================
@@ -593,6 +837,7 @@ function typeLine(text) {
                 setTimeout(() => {
                     approveBtn.classList.add('active');
                     rejectBtn.classList.add('active');
+                    idCardBtn.style.display = 'block';
                 }, 400);
             }
         }
@@ -610,12 +855,14 @@ function advanceLine() {
         typeTimer = null;
         dlgText.textContent = applicant.lines[State.currentLine].text;
         dlgNext.style.display = 'block';
+        
         const line = applicant.lines[State.currentLine];
         if (!line.next) {
             State.dialogueDone = true;
             setTimeout(() => {
                 approveBtn.classList.add('active');
                 rejectBtn.classList.add('active');
+                idCardBtn.style.display = 'block';
             }, 200);
         }
         return;
@@ -665,6 +912,7 @@ function makeDecision(isApprove) {
     // Disable buttons
     approveBtn.classList.remove('active');
     rejectBtn.classList.remove('active');
+    idCardBtn.style.display = 'none';
 
     // Slide out NPC and load next
     setTimeout(() => {
@@ -680,6 +928,8 @@ function makeDecision(isApprove) {
    SHOW DAY RESULTS
 ================================================ */
 function showDayResults(dayIndex) {
+    // Hide tools
+    if (lookupContainer) lookupContainer.style.display = 'none';
     State.dayScores.push({
         day: dayIndex + 1,
         correct: State.correct,

@@ -1,6 +1,11 @@
 /* =============================================
    VISUAL NOVEL OVERLAY STYLES
 ============================================= */
+@font-face {
+  font-family: 'Conthrax';
+  src: url('/assets/fonts/Conthrax-SemiBold.otf') format('opentype');
+  font-display: swap;
+}
 #vnOverlay {
   display: none;
   position: fixed;
@@ -183,7 +188,7 @@
 
 /* Dialogue text area */
 .vn-text {
-  font-family: 'Inter', 'Orbitron', sans-serif;
+  font-family: 'Conthrax', 'Orbitron', sans-serif;
   font-size: 14px;
   line-height: 1.65;
   color: #d8ffff;

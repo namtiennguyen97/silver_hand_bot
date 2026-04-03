@@ -10,6 +10,11 @@ body {
     color: #fff;
     font-family: 'Inter', sans-serif;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+*:focus {
+    outline: none !important;
 }
 
 /* 1. BACKGROUND LAYER */
@@ -237,7 +242,6 @@ body {
 }
 
 .stage-node:hover {
-    transform: scale(1.05) translateY(-5px) !important; /* Note: Important added to preserve hover over inline */
     z-index: 10;
 }
 
@@ -453,6 +457,15 @@ body {
         transform: none !important;
         width: 80% !important;
         max-width: 320px;
+        outline: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .stage-node:hover,
+    .stage-node:active,
+    .stage-node:focus {
+        transform: none !important;
+        box-shadow: none !important;
     }
     
     /* Zig Zag layout */

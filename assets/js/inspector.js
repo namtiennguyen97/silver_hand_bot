@@ -20,7 +20,74 @@ const NPC_IMAGES = [
     'assets/img/inspector_npc/npc_8.png',
     'assets/img/inspector_npc/npc_9.png',
     'assets/img/inspector_npc/npc_10.png',
+    'assets/img/inspector_npc/npc_11.png',
+    'assets/img/inspector_npc/npc_12.png',
+    'assets/img/inspector_npc/npc_13.png',
+    'assets/img/inspector_npc/npc_14.png',
+    'assets/img/inspector_npc/npc_15_couple_type.png',
+    'assets/img/inspector_npc/npc_16_couple_type.png',
+    'assets/img/inspector_npc/npc_17.png',
+    'assets/img/inspector_npc/npc_18.png',
+    'assets/img/inspector_npc/npc_19.png',
+    'assets/img/inspector_npc/npc_20.png',
+    'assets/img/inspector_npc/npc_21.png',
+    'assets/img/inspector_npc/npc_22.png',
+    'assets/img/inspector_npc/npc_23.png',
+    'assets/img/inspector_npc/npc_24.png',
+    'assets/img/inspector_npc/npc_25.png',
 ];
+
+// Helper to resolve portrait image path from main NPC image path
+function resolvePortraitPath(mainPath) {
+    if (!mainPath) return "";
+    const filename = mainPath.split('/').pop();
+    // Filename in portrail folder matches the numeric prefix (e.g., npc_15_couple_type.png -> npc_15.png)
+    const match = filename.match(/npc_\d+/);
+    if (match) {
+        return `assets/img/inspector_npc/portrail/${match[0]}.png`;
+    }
+    return `assets/img/inspector_npc/portrail/${filename}`;
+}
+
+const STORY_CHARACTER_IMAGES = {
+    'FORD': 'assets/img/inspector_npc/npc_10.png',
+    'MEND': 'assets/img/inspector_npc/npc_11.png',
+    'CHIEF_TAG': 'assets/img/inspector_npc/npc_18.png',
+    'MARKET_MAKER': 'assets/img/inspector_npc/npc_20.png',
+    'REBORN': 'assets/img/inspector_npc/npc_22.png',
+    'BẢO': 'assets/img/inspector_npc/npc_1.png',
+    'MAI': 'assets/img/inspector_npc/npc_14.png',
+    'THIỆN': 'assets/img/inspector_npc/npc_3.png',
+    'ZATAN': 'assets/img/inspector_npc/npc_17.png'
+};
+
+// Helper to find a character's main image by their name
+function findCharacterImageByName(name) {
+    if (!name) return null;
+    const cleanName = name.trim().toUpperCase();
+
+    // 1. Check direct applicant name match
+    for (const day of GAME_DAYS) {
+        for (const app of day.applicants) {
+            if (app.name.toUpperCase() === cleanName) return app.img;
+        }
+    }
+
+    // 2. Check story character mapping
+    if (STORY_CHARACTER_IMAGES[cleanName]) {
+        return STORY_CHARACTER_IMAGES[cleanName];
+    }
+
+    // 3. Persistent fallback based on character name hash
+    // (ensures same character always gets same random portrait)
+    let hash = 0;
+    for (let i = 0; i < cleanName.length; i++) {
+        hash = ((hash << 5) - hash) + cleanName.charCodeAt(i);
+        hash |= 0;
+    }
+    const idx = (Math.abs(hash) % 25) + 1;
+    return `assets/img/inspector_npc/npc_${idx}.png`;
+}
 
 // Fisher-Yates shuffle, returns shuffled copy
 function shuffleArray(arr) {
@@ -63,15 +130,15 @@ const GAME_DAYS = [
         title: "Serious Mode: Phase 01",
         subtitle: "SCREENING DAY 01 — IDENTITY VERIFICATION",
         criteria: [
-            { icon: "🇻🇳", cls: "ok",      text: "PRIORITY: VN Members — Full access granted" },
-            { icon: "🌐", cls: "warning", text: "GLOBAL: Foreign members must be Level 145+ for entry" },
-            { icon: "⛔", cls: "danger",  text: "DENY: Hostile camps (Astral, Hunter, Tagalog, Konoha, Fortis)" },
-            { icon: "🔍", cls: "ok",      text: "HINT: Use 'CHECK ID' and 'RIVAL' to cross-verify affiliations" }
+            { icon: "🇻🇳", cls: "ok",      text: "PRIORITY: Đối với mem VN thì nhận vào không khắt khe." },
+            { icon: "🌐", cls: "warning", text: "GLOBAL: Nếu là người nước ngoài thì ít nhất phải level 145+" },
+            { icon: "⛔", cls: "danger",  text: "DENY: Kiểm tra hòm thư rival camp và danh sách black list nhé" },
+            { icon: "🔍", cls: "ok",      text: "HINT: Hãy chọn check ID để kiểm tra từng người" }
         ],
         applicants: [
             {
                 id: "A01", name: "ELYSIUM", img: null,
-                nationality: "VN", level: 152, cert: "Herb", camp: "Eternal",
+                nationality: "VN", level: 120, cert: "Herb", camp: "Eternal",
                 friends: [
                     { name: "MEND", intimacy: 85, camp: "AVALON" },
                     { name: "FORD", intimacy: 70, camp: "VNHouse" }
@@ -79,26 +146,36 @@ const GAME_DAYS = [
                 profession: "Dân cày nguyên liệu", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "Chào sếp, mình từ vùng xanh mới qua. Chuyên đi farm nguyên liệu nên muốn tìm camp nào an toàn để cất đồ.", next: "l2" },
+                    { text: "Chào sếp, mình thấy camp còn nhiều slot nên mình muốn vào trải nghiệm.", next: "l2" },
                     { text: "Mình có bác FORD bên VNHouse bảo chứng nhé. Rất mong được cày cuốc cùng anh em.", next: null }
                 ]
             },
             {
+                id: "A-BL-01", name: "ZATAN", img: "assets/img/inspector_npc/npc_17.png",
+                nationality: "VN", level: 124, cert: "Drifter", camp: "Eternal",
+                profession: "Chuyên gia 'off' lâu ngày", criminal: false, enemyCamp: false,
+                shouldApprove: false, 
+                lines: [
+                    { text: "Chào Mayor, cho mình vào lại camp với.", next: "l2" },
+                    { text: "Lần này mình hứa sẽ không off lâu nữa đâu mà... Đi mà, cho mình một cơ hội cuối đi!", next: null }
+                ]
+            },
+            {
                 id: "A02", name: "COBRA", img: null,
-                nationality: "JPN", level: 138, cert: "Rifle man", camp: "Konoha",
+                nationality: "JPN", level: 147, cert: "Rifle man", camp: "Konoha",
                 friends: [
                     { name: "UCHIHA_IT", intimacy: 99, camp: "Konoha" }
                 ],
                 profession: "Solo player tìm team", criminal: false, enemyCamp: true,
                 shouldApprove: false, // Enemy Camp (Konoha)
                 lines: [
-                    { text: "Sếp ơi, em lang thang mãi cũng chán. Cấp 138 rồi, PK cũng khá, cho em xin một slot vào camp với.", next: "l2" },
-                    { text: "Acc em quốc tịch JPN nhưng em ở VN nhé, sếp check kỹ giúp em.", next: null }
+                    { text: "Hi- i just want to traveller through every camp just for fun.", next: "l2" },
+                    { text: "Believe me, i didnt spy or anything, just want to join for fun", next: null }
                 ]
             },
             {
                 id: "A03", name: "NIGHTMARE", img: null,
-                nationality: "VN", level: 160, cert: "Warrior", camp: "AVALON",
+                nationality: "VN", level: 144, cert: "Warrior", camp: "AVALON",
                 friends: [
                     { name: "ELYSIUM", intimacy: 85, camp: "Eternal" }
                 ],
@@ -106,56 +183,56 @@ const GAME_DAYS = [
                 shouldApprove: true,
                 lines: [
                     { text: "Chào sếp, mình mới chơi lại game sau một thời gian off. Thấy camp mình đang tuyển nên ghé qua xin chân chạy vặt.", next: "l2" },
-                    { text: "Mình quen thân với ELYSIUM đây, kỹ năng thì sếp cứ yên tâm, không lụ nghề đâu.", next: null }
+                    { text: "Mình quen thân với ELYSIUM đây, kỹ năng thì sếp cứ yên tâm, không lụt nghề đâu.", next: null }
                 ]
             },
             {
                 id: "A04", name: "STORM", img: null,
-                nationality: "USA", level: 180, cert: "Sniper", camp: "Tagalog",
+                nationality: "USA", level: 148, cert: "Sniper", camp: "Tagalog",
                 friends: [
                     { name: "CHIEF_TAG", intimacy: 95, camp: "Tagalog" }
                 ],
                 profession: "Sát thủ săn Bounty", criminal: false, enemyCamp: true,
                 shouldApprove: false, // Enemy Camp (Tagalog)
                 lines: [
-                    { text: "Chào, tôi chuyên đi săn Bounty đây. Cấp 180 chắc sếp cũng hiểu trình độ thế nào rồi nhỉ.", next: "l2" },
-                    { text: "[Hệ thống quét thấy thẻ bài Camp Tagalog được giấu kỹ dưới áo giáp — Có dấu hiệu gian lận]", next: null }
+                    { text: "Hi- can i join your camp?", next: "l2" },
+                    { text: "I just want to join- no reason", next: null }
                 ]
             },
             {
                 id: "A05", name: "TITAN", img: null,
-                nationality: "VN", level: 148, cert: "Logger", camp: "VNHouse",
+                nationality: "VN", level: 142, cert: "Logger", camp: "VNHouse",
                 friends: [
                     { name: "ELYSIUM", intimacy: 70, camp: "Eternal" }
                 ],
                 profession: "Kiến trúc sư xây Base", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "Sếp ơi mình là FORD đây, chuyên xây dựng pháo đài. Elysium chắc có kể về mình rồi nhỉ?", next: "l2" },
-                    { text: "Mình muốn xin vào camp để hỗ trợ anh em thiết kế khu phòng thủ cho chắc chắn. Cho mình xin slot nha.", next: null }
+                    { text: "Sếp ơi mình là FORD đây, mình là VN và chỉ chơi chill. Elysium chắc có kể về mình rồi nhỉ?", next: "l2" },
+                    { text: "Mình muốn xin vào camp. Cho mình xin slot nha.", next: null }
                 ]
             },
             {
                 id: "A06", name: "VIPER", img: null,
-                nationality: "USA", level: 142, cert: "Virut", camp: "Players",
+                nationality: "USA", level: 142, cert: "Logger", camp: "Players",
                 friends: [
                     { name: "MARKET_MAKER", intimacy: 45, camp: "RedRoom" }
                 ],
                 profession: "Thương nhân chợ đen", criminal: false, enemyCamp: false,
                 shouldApprove: false, // USA and Level < 145
                 lines: [
-                    { text: "Chào sếp, em chuyên buôn bán nhu yếu phẩm đủ loại. Tuy cấp hơi thấp nhưng em nhiều đồ lắm.", next: "l2" },
-                    { text: "Em có nhiều mối làm ăn bên server Mỹ, cho em vào camp em để giá ưu đãi cho anh em cày cuốc.", next: null }
+                    { text: "Chào sếp, em chuyên buôn bán goldbar. Rate hợp lý cho ae nè.", next: "l2" },
+                    { text: "Em có nhiều mối làm ăn với mấy khứa nước ngoài, cho em vào camp em để giá ưu đãi cho anh em cày cuốc.", next: null }
                 ]
             },
             {
                 id: "A07", name: "WOLFE", img: null,
-                nationality: "VN", level: 165, cert: "Sniper", camp: "Eternal",
+                nationality: "VN", level: 146, cert: "Sniper", camp: "Eternal",
                 profession: "Người chơi hệ thám hiểm", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "Chào anh, tôi toàn đi dạo bản đồ một mình cả năm nay rồi. Mọi ngóc ngách ở đây tôi đều thuộc hết.", next: "l2" },
-                    { text: "Nếu camp mình cần người dẫn đường đi chiếm cứ điểm thì cứ gọi tôi nhé.", next: null }
+                    { text: "Hi sis- wait- re you girl or boy ? haha. Sao Dem new official?", next: "l2" },
+                    { text: "I just want to join and fighting for you guys side. Thats all", next: null }
                 ]
             },
             {
@@ -167,8 +244,8 @@ const GAME_DAYS = [
                 profession: "Chủ mới mua acc", criminal: false, enemyCamp: true,
                 shouldApprove: true, // Special Case: Bought Account
                 lines: [
-                    { text: "Chào sếp, acc này tôi mới mua của một khứa JPN bên Konoha.", next: "l2" },
-                    { text: "Tôi là người VN 100%, mới nhảy hố game này nên mua acc cày cho nhanh. Nhận em vào camp với anh em cho vui sếp ơi.", next: null }
+                    { text: "Chào sếp, acc này tôi mới mua của một khứa bên Konoha.", next: "l2" },
+                    { text: "Tôi là người VN 100%, mới nhảy hố game này nên mua acc cày cho nhanh. Nhận em vào camp với anh em cho vui sếp ơi hehe.", next: null }
                 ]
             }
         ]
@@ -322,33 +399,68 @@ const GAME_DAYS = [
     }
 ];
 
+// NPC 6 & 8 - Supplemental Blacklist Applicants
+const PT_BINH_APP = {
+    id: "A-BL-02", name: "pt_bình", img: "assets/img/inspector_npc/npc_6.png",
+    nationality: "VN", level: 135, cert: "Logger", camp: "Eternal",
+    profession: "Cựu thành viên Sao Đêm", criminal: true, enemyCamp: false,
+    shouldApprove: false, 
+    lines: [
+        { text: "Chào sếp, cho tui cơ hội quay lại camp với. Tui biết sai rồi, lần này tui sẽ chăm chỉ cày cuốc.", next: "l2" },
+        { text: "[Hệ thống: Đối tượng từng bị trục xuất vì hiềm khích và bêu xấu Sao Đêm. Liên tục rêu rao bêu xấu bên ngoài nhưng luôn tìm cách vào lại thất bại.]", next: null }
+    ]
+};
+
+const ROY_APP = {
+    id: "A-BL-03", name: "Roy", img: "assets/img/inspector_npc/npc_8.png",
+    nationality: "VN", level: 148, cert: "Warrior", camp: "Unity",
+    profession: "Người chơi tự do", criminal: true, enemyCamp: false,
+    shouldApprove: false, 
+    lines: [
+        { text: "Chào bạn, mình là Minh Nhật. Muốn tìm một camp ổn định để gắn bó lâu dài. Mình có kinh nghiệm PK và săn Boss.", next: "l2" },
+        { text: "[Cảnh báo: Nhận dạng thông tin trùng khớp với 'Roy' - Scammer khét tiếng Life After VN. Thường tự giới thiệu là Minh Nhật kèm đời tư giả mạo.]", next: null }
+    ]
+};
+
+// Inject Roy into Day 3
+GAME_DAYS[2].applicants.splice(4, 0, ROY_APP);
+
+// Inject pt_bình randomly into Day 2 or Day 3
+if (Math.random() < 0.5) {
+    GAME_DAYS[1].applicants.splice(3, 0, PT_BINH_APP); // Day 2
+} else {
+    GAME_DAYS[2].applicants.splice(2, 0, PT_BINH_APP); // Day 3
+}
+
+
 /* ================================================
    MAYOR INTRO SCRIPTS (Day Introductions)
 ================================================ */
 const MAYOR_INTRO_SCRIPTS = {
     day_1: {
         'start': {
-            speaker: 'MAYOR AI',
+            speaker: 'Silver-Hand',
             side: 'right',
             image: 'assets/img/mayor_dialogue_1.png',
-            text: 'Chào mừng Tactician. Chào mừng bạn đến với quy trình kiểm soát nhân sự đầu tiên của Camp SAO-ĐÊM.',
+            text: 'Chào mừng tân Official. Chào mừng bạn đến với quy trình kiểm soát nhân sự đầu tiên của Camp SAO-ĐÊM.',
             next: 'd1_2'
         },
         'd1_2': {
-            speaker: 'MAYOR AI',
-            side: 'right',
-            text: 'Camp chúng ta đang phát triển, nhưng an ninh là ưu tiên hàng đầu. Hãy lọc kỹ những người tị nạn.',
+            speaker: 'SYSTEM',
+            side: 'left',
+            image: 'assets/img/system.png',
+            text: 'Thông báo- có nhiều đơn duyệt camp vẫn còn tồn đọng!',
             next: 'd1_3'
         },
         'd1_3': {
-            speaker: 'MAYOR AI',
+            speaker: 'Silver-Hand',
             side: 'right',
             image: 'assets/img/mayor_dialogue_2.png',
-            text: 'Ưu tiên những người có kỹ năng sinh tồn thực tế. Tuyệt đối không nhận kẻ phạm tội hay gián điệp camp thù địch.',
+            text: 'Phải rồi, xử lý vụ này trước vậy, hãy dựa vào những tiêu chí tôi đề ra trong ngày hôm nay để duyệt member nhé.',
             next: 'd1_4'
         },
         'd1_4': {
-            speaker: 'MAYOR AI',
+            speaker: 'Silver-Hand',
             side: 'right',
             text: 'Chúc may mắn. Tôi sẽ giám sát kết quả của bạn vào cuối ngày.',
             next: null
@@ -356,7 +468,7 @@ const MAYOR_INTRO_SCRIPTS = {
     },
     day_2: {
         'start': {
-            speaker: 'MAYOR AI',
+            speaker: 'Silver-Hand',
             side: 'right',
             image: 'assets/img/mayor_dialogue_2.png',
             effect: 'flash',
@@ -364,13 +476,13 @@ const MAYOR_INTRO_SCRIPTS = {
             next: 'd2_2'
         },
         'd2_2': {
-            speaker: 'MAYOR AI',
+            speaker: 'Silver-Hand',
             side: 'right',
             text: 'Hôm nay, hãy chú ý đến những người có Tier chiến đấu cao và đã từng tham gia tuần tra. Họ sẽ giúp ích cho Shelter Land tới.',
             next: 'd2_3'
         },
         'd2_3': {
-            speaker: 'MAYOR AI',
+            speaker: 'Silver-Hand',
             side: 'right',
             image: 'assets/img/mayor_dialogue_3.png',
             text: 'Cẩn thận với những kẻ mang nhiều vũ khí hạng nặng nhưng không rõ lai lịch. Đừng để chúng lọt lưới.',
@@ -379,7 +491,7 @@ const MAYOR_INTRO_SCRIPTS = {
     },
     day_3: {
         'start': {
-            speaker: 'MAYOR AI',
+            speaker: 'Silver-Hand',
             side: 'right',
             image: 'assets/img/mayor_dialogue_1.png',
             effect: 'shake',
@@ -387,13 +499,13 @@ const MAYOR_INTRO_SCRIPTS = {
             next: 'd3_2'
         },
         'd3_2': {
-            speaker: 'MAYOR AI',
+            speaker: 'Silver-Hand',
             side: 'right',
             text: 'Hôm nay, chỉ được duyệt những người có thông tin minh bạch 100%. Nếu thấy bất cứ nghi vấn nào, hãy TỪ CHỐI ngay lập tức.',
             next: 'd3_3'
         },
         'd3_3': {
-            speaker: 'MAYOR AI',
+            speaker: 'Silver-Hand',
             side: 'right',
             image: 'assets/img/mayor_dialogue_2.png',
             text: 'Sự tồn vong của SAO-ĐÊM nằm trong tay bạn. Hãy làm tốt nhiệm vụ cuối cùng này.',
@@ -625,7 +737,7 @@ function renderIdCard() {
     idLevel.textContent  = applicant.level || "0";
     idCert.textContent   = applicant.cert || "NONE";
     idCamp.textContent   = applicant.camp || "UNKNOWN";
-    idAvatarImg.src      = applicant.img;
+    idAvatarImg.src      = resolvePortraitPath(applicant.img);
     
     const serial = `SN: ${Math.floor(Math.random()*900+100)}-${applicant.id || 'A00'}-${Math.floor(Math.random()*9000+1000)}`;
     const serialEl = $('idCardSerial');
@@ -647,16 +759,18 @@ function drawSocialCircle(friends) {
     centerNode.className = 'social-node center';
     centerNode.style.left = (centerX - 30) + 'px';
     centerNode.style.top  = (centerY - 30) + 'px';
-    centerNode.innerHTML  = `<img src="${applicant.img}" class="social-avatar">`;
+    centerNode.innerHTML  = `<img src="${resolvePortraitPath(applicant.img)}" class="social-avatar">`;
     socialContainer.appendChild(centerNode);
     
     if (!friends || friends.length === 0) {
         return;
     }
 
-    const radius = Math.min(socialContainer.offsetWidth, socialContainer.offsetHeight) * 0.35;
+    const radius = Math.min(socialContainer.offsetWidth * 0.45, socialContainer.offsetHeight * 0.45);
     friends.forEach((friend, idx) => {
-        const angle = (idx / friends.length) * (2 * Math.PI);
+        // Rotate layout by an offset (e.g., 30 degrees) to ensure a more natural, angled branching look
+        const startOffset = Math.PI / 6;
+        const angle = ((idx / friends.length) * (2 * Math.PI)) + startOffset;
         const x = centerX + radius * Math.cos(angle);
         const y = centerY + radius * Math.sin(angle);
         
@@ -684,8 +798,12 @@ function drawSocialCircle(friends) {
         node.className = 'social-node';
         node.style.left = (x - 20) + 'px';
         node.style.top  = (y - 20) + 'px';
-        // Use a generic avatar or head-only for friends for now
-        node.innerHTML = `<img src="assets/img/avatars/generic.png" class="social-avatar">`;
+        
+        // Find friend's image or use fallback
+        const friendImg = findCharacterImageByName(friend.name);
+        const portraitSrc = friendImg ? resolvePortraitPath(friendImg) : "assets/img/avatars/generic.png";
+        
+        node.innerHTML = `<img src="${portraitSrc}" class="social-avatar">`;
         socialContainer.appendChild(node);
         
         // Label
@@ -906,7 +1024,7 @@ function makeDecision(isApprove) {
     stampOverlay.classList.remove('show');
     void stampOverlay.offsetWidth;
     stampOverlay.querySelector('.stamp-text').className = `stamp-text ${isApprove ? 'approved' : 'rejected'}`;
-    stampOverlay.querySelector('.stamp-text').textContent = isApprove ? 'DUYỆT' : 'TỪ CHỐI';
+    stampOverlay.querySelector('.stamp-text').textContent = isApprove ? 'ACCEPT' : 'REFUSE';
     stampOverlay.classList.add('show');
 
     // Disable buttons
@@ -999,3 +1117,103 @@ function showGameOver() {
 
     setTimeout(() => gameOverScreen.classList.add('show'), 600);
 }
+/* ============ BLACKLIST LOGIC ============ */
+const BLACKLIST_DATA = [
+    { 
+        name: "ZATAN", 
+        img: "npc_17.png", 
+        story: "Từng là ở SAO ĐÊM, tuy nhiên người này liên tục offline mất tăm và ra vào camp liên tục, thời gian chơi cũng không bền, chuyên gia gạ mua acc rồi bán ngay tức thì với giá cao hơn kiếm lời.. Hơn hết rất nhiều người tố cáo cách sống rất không được sạch sẽ trong quá khứ. Sau một thời gian ra vào camp rồi lại offline trên dưới 6-7 lần, camp quyết định không nhận người này nữa."
+    },
+    { 
+        name: "pt_bình", 
+        img: "npc_6.png", 
+        story: "Hiềm khích cá nhân với các cấp quản lý Sao Đêm ngày xưa. Sau khi bị trục xuất, đối tượng liên tục bêu xấu camp và tẩy não nhiều người VN bên ngoài khác, nhưng nực cười ở chỗ đối tượng vẫn âm mưu trà trộn quay lại bằng nhiều cách khác nhau. Thậm chí từng cố gắng comeback camp nhưng không được."
+    },
+    { 
+        name: "Roy", 
+        img: "npc_8.png", 
+        story: "Kẻ lừa đảo chuyên nghiệp. Thường lấy tên 'Minh Nhật' để tiếp cận người mới, gạ người ta mua bán và đặc biệt là gửi code cho bản thân- sau đó cách thức của scammer này luôn là dán email recovery vào để chiếm đoạt tài sản. Chúng có 2 người 1 nam và 1 nữ thay phiên nhau scam và mời gọi. Trong văn nói chuyện luôn xưng gọi Ní ơi và cố gắng thân thiết đến mức độ sến súa nhất có thế- rất hay thề thốt và nổ, chúng từng suýt thành công chiếm đoạt tài khoản của Silver-Hand vào cuối năm 2023 nhưng bị lật kèo."
+    }
+];
+
+function toggleBlacklist(show) {
+    const modal = document.getElementById('blacklistModal');
+    if (show) {
+        populateBlacklist();
+        modal.classList.add('show');
+    } else {
+        modal.classList.remove('show');
+    }
+}
+
+function populateBlacklist() {
+    const grid = document.getElementById('blacklistGrid');
+    const storyBox = document.getElementById('blacklistStory');
+    if (!grid) return;
+    grid.innerHTML = '';
+    
+    if (storyBox) storyBox.textContent = "Chọn một đối tượng để xem báo cáo vi phạm...";
+    
+    BLACKLIST_DATA.forEach(person => {
+        const item = document.createElement('div');
+        item.className = 'blacklist-item';
+        
+        const portrait = `assets/img/inspector_npc/portrail/${person.img}`;
+        
+        item.innerHTML = `
+            <div class="blacklist-avatar-wrap">
+                <img src="${portrait}" class="blacklist-avatar">
+            </div>
+            <div class="blacklist-name">${person.name}</div>
+        `;
+        
+        item.onclick = () => {
+            // Remove active from others
+            document.querySelectorAll('.blacklist-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            
+            // Show story
+            showBlacklistStory(person.story);
+            playSfx('nierMenu');
+        };
+        
+        grid.appendChild(item);
+    });
+}
+
+let blacklistTypeTimer = null;
+let currentBlacklistStory = "";
+
+function showBlacklistStory(text) {
+    const box = document.getElementById('blacklistStory');
+    if (!box) return;
+    
+    currentBlacklistStory = text;
+    if (blacklistTypeTimer) clearInterval(blacklistTypeTimer);
+    box.textContent = '';
+    
+    let i = 0;
+    blacklistTypeTimer = setInterval(() => {
+        box.textContent += text.charAt(i);
+        // Auto-scroll to bottom
+        box.scrollTop = box.scrollHeight;
+        
+        i++;
+        if (i >= text.length) {
+            clearInterval(blacklistTypeTimer);
+            blacklistTypeTimer = null;
+        }
+    }, 20);
+
+    // Click to skip typing
+    box.onclick = () => {
+        if (blacklistTypeTimer) {
+            clearInterval(blacklistTypeTimer);
+            blacklistTypeTimer = null;
+            box.textContent = currentBlacklistStory;
+            box.scrollTop = box.scrollHeight;
+        }
+    };
+}
+
+

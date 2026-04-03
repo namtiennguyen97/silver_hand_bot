@@ -35,6 +35,8 @@ body {
     color: #fff;
     font-family: var(--font-body);
     user-select: none;
+    overscroll-behavior: none;
+    touch-action: none;
 }
 
 /* ================================================
@@ -1408,7 +1410,10 @@ body {
     /* NPC Zone - Center Focus */
     #npcZone {
         bottom: 190px;
-        width: 95vw;
+        width: 100%;
+        left: 0;
+        transform: none;
+        padding: 0;
     }
 
     #npcCharWrap {
@@ -1440,6 +1445,9 @@ body {
         gap: 15px;
         padding: 0 15px 15px;
         background: linear-gradient(to top, rgba(0, 255, 255, 0.1), transparent);
+        left: 0;
+        right: 0;
+        width: 100%;
     }
 
     .desk-btn {
@@ -1752,10 +1760,9 @@ body {
 
 #idAvatarImg {
     width: 100%;
-    height: 140%;
-    /* Offset to focus on head */
+    height: 100%;
     object-fit: cover;
-    object-position: top;
+    object-position: center;
     filter: brightness(1.2) contrast(1.1) grayscale(0.4);
 }
 
@@ -1805,6 +1812,39 @@ body {
     line-height: 1;
 }
 
+.id-card-footer {
+    padding: 15px 24px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 5, 10, 0.4);
+}
+
+.id-close-btn {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(0, 255, 255, 0.05));
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    font-family: var(--font-hud);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    padding: 14px 24px;
+    cursor: pointer;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-transform: uppercase;
+}
+
+.id-close-btn:hover {
+    background: var(--cyan);
+    color: #000;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.id-close-btn:active {
+    transform: translateY(1px) scale(0.98);
+}
+
 .id-social-section {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-top: 20px;
@@ -1819,7 +1859,7 @@ body {
 }
 
 .id-social-canvas-wrap {
-    height: 200px;
+    height: 260px;
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.05);
     position: relative;
@@ -1859,7 +1899,7 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: top;
+    object-position: center;
     filter: brightness(1.2) contrast(1.1);
 }
 
@@ -1891,8 +1931,13 @@ body {
 
 .social-link {
     position: absolute;
-    height: 1px;
-    background: rgba(0, 255, 255, 0.2);
+    height: 2px;
+    background: repeating-linear-gradient(90deg, 
+        rgba(0, 255, 255, 0.4), 
+        rgba(0, 255, 255, 0.4) 5px, 
+        transparent 5px, 
+        transparent 9px);
+    box-shadow: 0 0 6px rgba(0, 255, 255, 0.15);
     transform-origin: left center;
     z-index: 2;
 }
@@ -1901,15 +1946,18 @@ body {
     position: absolute;
     font-family: var(--font-hud);
     font-size: 8px;
+    font-weight: 900;
     color: var(--amber);
-    background: rgba(0, 0, 0, 0.8);
-    border: 1px solid var(--amber);
-    padding: 1px 4px;
+    background: rgba(0, 8, 16, 0.95);
+    border: 1px solid rgba(255, 183, 0, 0.5);
+    padding: 2px 6px;
     border-radius: 4px;
     transform: translate(-50%, -50%);
     pointer-events: none;
     z-index: 8;
     white-space: nowrap;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
+    letter-spacing: 0.5px;
 }
 
 /* ================================================
@@ -2045,6 +2093,184 @@ body {
     }
 
     .id-social-canvas-wrap {
-        height: 160px;
+        height: 220px;
     }
 }
+.lookup-btn.danger {
+    border-color: rgba(255, 0, 70, 0.4);
+    color: #ff0046;
+}
+
+.lookup-btn.danger:hover {
+    background: rgba(255, 0, 70, 0.15);
+    border-color: #ff0046;
+    box-shadow: 0 0 20px rgba(255, 0, 70, 0.3);
+}
+
+/* ============ BLACKLIST MODAL ============ */
+#blacklistModal {
+    display: none;
+    z-index: 1000;
+}
+
+#blacklistModal.show {
+    display: flex;
+}
+
+.blacklist-tablet {
+    width: min(480px, 95vw);
+    background: #00080a;
+    border: 1px solid #ff0046;
+    border-radius: 4px;
+    box-shadow: 0 0 40px rgba(255, 0, 70, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: modalSlide 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.blacklist-header {
+    padding: 15px 20px;
+    background: linear-gradient(90deg, #ff0046, transparent);
+    border-bottom: 2px solid #ff0046;
+}
+
+.blacklist-title {
+    font-family: var(--font-hud);
+    font-size: 14px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 2px;
+}
+
+.blacklist-body {
+    flex: 1;
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.blacklist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 15px;
+}
+
+.blacklist-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 0, 70, 0.05);
+    border: 1px solid rgba(255, 0, 70, 0.2);
+    padding: 10px;
+    transition: all 0.3s ease;
+}
+
+.blacklist-item:hover {
+    background: rgba(255, 0, 70, 0.1);
+    border-color: #ff0046;
+}
+
+.blacklist-avatar-wrap {
+    width: 80px;
+    height: 80px;
+    border: 1px solid #ff0046;
+    margin-bottom: 8px;
+    overflow: hidden;
+    background: #000;
+}
+
+.blacklist-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: brightness(1.2) grayscale(0.5) contrast(1.1);
+}
+
+.blacklist-name {
+    font-family: var(--font-hud);
+    font-size: 10px;
+    font-weight: 700;
+    color: #ff0046;
+    text-align: center;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.blacklist-footer {
+    padding: 15px 20px;
+    border-top: 1px solid rgba(255, 0, 70, 0.2);
+    background: rgba(255, 0, 70, 0.05);
+    display: flex;
+    justify-content: center;
+}
+
+.blacklist-close-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid #ff0046;
+    color: #ff0046;
+    font-family: var(--font-hud);
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.blacklist-close-btn:hover {
+    background: #ff0046;
+    color: #fff;
+    box-shadow: 0 0 15px #ff0046;
+}
+
+.blacklist-story {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 0, 70, 0.3);
+    border-left: 4px solid #ff0046;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    color: #ff99aa;
+    height: 100px;
+    position: relative;
+    overflow-y: auto;
+}
+
+.blacklist-story::-webkit-scrollbar {
+    width: 4px;
+}
+
+.blacklist-story::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.blacklist-story::-webkit-scrollbar-thumb {
+    background: #ff0046;
+    border-radius: 2px;
+}
+
+.blacklist-story::before {
+    content: "CRIMINAL_REPORT_DATA";
+    position: absolute;
+    top: 2px;
+    right: 5px;
+    font-size: 8px;
+    color: rgba(255, 0, 70, 0.3);
+    letter-spacing: 1px;
+}
+
+.blacklist-item.active {
+    background: rgba(255, 0, 70, 0.2);
+    border-color: #ff0046;
+    box-shadow: inset 0 0 15px rgba(255, 0, 70, 0.4);
+    transform: scale(1.05);
+}
+
+.blacklist-item {
+    cursor: pointer;
+}
+

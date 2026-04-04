@@ -4,6 +4,55 @@
 =============================================================== */
 
 /* ================================================
+   INSPECTOR AUDIO ENGINE
+   BGM + SFX management for the mini-game
+================================================ */
+const inspectorSfx = (() => {
+    // SFX
+    const _sfx = (src, vol = 0.55) => {
+        const a = new Audio(src);
+        a.volume = vol;
+        a.play().catch(() => {});
+    };
+
+    // BGM — loop
+    let bgm = null;
+    let bgmStarted = false;
+
+    function startBgm() {
+        if (bgmStarted) return;
+        bgmStarted = true;
+        bgm = new Audio('assets/sounds/pgr_lobby_theme.mp3');
+        bgm.loop = true;
+        bgm.volume = 0.28;
+        bgm.play().catch(() => { bgmStarted = false; });
+    }
+
+    // Auto-start BGM on first user gesture (needed for browser autoplay policy)
+    function _onFirstInteraction() {
+        startBgm();
+        document.removeEventListener('click', _onFirstInteraction);
+        document.removeEventListener('keydown', _onFirstInteraction);
+    }
+    document.addEventListener('click', _onFirstInteraction, { once: true });
+    document.addEventListener('keydown', _onFirstInteraction, { once: true });
+
+    return {
+        click:   () => _sfx('assets/sounds/item_select.ogg', 0.55),
+        approve: () => _sfx('assets/sounds/apcept.ogg', 0.7),
+        reject:  () => _sfx('assets/sounds/alert_warning.ogg', 0.6),
+        startBgm,
+        stopBgm: () => { if (bgm) { bgm.pause(); bgm.currentTime = 0; } },
+        setBgmVol: (v) => { if (bgm) bgm.volume = v; }
+    };
+})();
+
+// Shim for legacy playSfx() calls within inspector.js (nierMail / nierMenu)
+function playSfx(key) {
+    inspectorSfx.click();
+}
+
+/* ================================================
    DAY DATA - Criteria & Applicants
 ================================================ */
 /* ================================================
@@ -611,7 +660,8 @@ const State = {
     processing: false,
     dayScores: [],
     ctcUnlockShown: false,
-    day1UnlockShown: false
+    day1UnlockShown: false,
+    msgUnlockShown: false
 };
 
 /* ================================================
@@ -763,6 +813,18 @@ function initGame() {
             playSfx('nierMenu');
         }
     };
+
+    // ── Global click SFX via event delegation ──────────────────────
+    // Plays item_select.ogg on any interactive element EXCEPT approve/
+    // reject buttons (those already trigger via makeDecision).
+    document.addEventListener('click', (e) => {
+        const el = e.target.closest('button, .lookup-btn, .msg-tab, [onclick]');
+        if (!el) return;
+        // Use ID string comparison — more reliable than object reference
+        const eid = el.id;
+        if (eid === 'approveBtn' || eid === 'rejectBtn') return;
+        inspectorSfx.click();
+    }, true);
 
     showDayTransition(0);
 }
@@ -966,6 +1028,19 @@ function startDay(dayIndex) {
             if (State.day === 1 && !State.ctcUnlockShown) {
                 State.ctcUnlockShown = true;
                 setTimeout(() => triggerCtcUnlockAnim(), 800);
+            }
+        }
+        // Show/Hide MSG button based on day (Day 3+)
+        const msgBtnEl = document.getElementById('msgBtn');
+        if (msgBtnEl) {
+            const isDay3 = (State.day >= 2);
+            msgBtnEl.style.display = isDay3 ? 'flex' : 'none';
+            // Fire the Message Unlock animation only once, on Day 3 start
+            if (State.day === 2 && !State.msgUnlockShown) {
+                State.msgUnlockShown = true;
+                setTimeout(() => {
+                    if (typeof triggerMsgUnlockAnim === 'function') triggerMsgUnlockAnim();
+                }, 800);
             }
         }
         // Fire Day 1 unlock animation
@@ -1213,6 +1288,13 @@ function makeDecision(isApprove) {
     if (isCorrect)  State.correct++;  else State.wrong++;
     State.totalScore += isCorrect ? 10 : -5;
 
+    // Play decision SFX
+    if (isApprove) {
+        inspectorSfx.approve();
+    } else {
+        inspectorSfx.reject();
+    }
+
     // Update score display
     if (scoreDisplay) scoreDisplay.textContent = `SCORE: ${State.totalScore}`;
 
@@ -1289,6 +1371,62 @@ function showDayResults(dayIndex) {
 }
 
 /* ================================================
+   END EPILOGUE SCRIPTS (fires before Game Over screen)
+================================================ */
+const END_SCRIPTS = {
+    perfect: {
+        'start': {
+            speaker: 'Silver-Hand',
+            side: 'right',
+            image: 'assets/img/mayor_dialogue_5.png',
+            effect: 'flash',
+            text: 'Quá xuất sắc!',
+            next: 'e1_2'
+        },
+        'e1_2': {
+            speaker: 'Silver-Hand',
+            side: 'right',
+            image: 'assets/img/mayor_dialogue_1.png',
+            text: 'Từ giờ Mayor có thể yên tâm nghỉ ngơi tán gái rồi hehe. Bạn official này thật sự là nhân tài hiếm có!',
+            next: null
+        }
+    },
+    good: {
+        'start': {
+            speaker: 'Silver-Hand',
+            side: 'right',
+            image: 'assets/img/mayor_dialogue_3.png',
+            text: 'Bạn official này có vẻ không được vững cho lắm...',
+            next: 'e2_2'
+        },
+        'e2_2': {
+            speaker: 'Silver-Hand',
+            side: 'right',
+            image: 'assets/img/mayor_dialogue_2.png',
+            text: 'Nhưng có lẽ vẫn có thể đào tạo được. Hãy đồng hành cùng chúng mình nhé.',
+            next: null
+        }
+    },
+    bad: {
+        'start': {
+            speaker: 'Silver-Hand',
+            side: 'right',
+            image: 'assets/img/mayor_dialogue_1.png',
+            effect: 'shake',
+            text: 'Tệ- quá tệ...',
+            next: 'e3_2'
+        },
+        'e3_2': {
+            speaker: 'Silver-Hand',
+            side: 'right',
+            image: 'assets/img/mayor_dialogue_2.png',
+            text: 'Vậy là sau cùng mình vẫn phải là người làm mọi thứ à. Xin lỗi bạn official, chúng ta dừng hợp tác tại đây nhé.',
+            next: null
+        }
+    }
+};
+
+/* ================================================
    SHOW GAME OVER
 ================================================ */
 function showGameOver() {
@@ -1301,6 +1439,7 @@ function showGameOver() {
                : overallPct >= 40 ? 'C — JUNIOR ANALYST'
                : 'D — COMPROMISED';
 
+    // Prepare game over screen content (but don't show yet)
     gameOverScreen.querySelector('.go-rank').textContent  = rank;
     gameOverScreen.querySelector('.go-title').textContent = '// MISSION COMPLETE //';
     gameOverScreen.querySelector('.go-score').innerHTML   = `${State.totalScore}<span> PTS</span>`;
@@ -1308,6 +1447,7 @@ function showGameOver() {
 
     gameOverScreen.querySelector('#goReplay').onclick = () => {
         State.day = 0; State.totalScore = 0; State.dayScores = [];
+        State.ctcUnlockShown = false; State.day1UnlockShown = false; State.msgUnlockShown = false;
         gameOverScreen.classList.remove('show');
         setTimeout(() => showDayTransition(0), 600);
     };
@@ -1315,7 +1455,22 @@ function showGameOver() {
         window.location.href = 'index.html';
     };
 
-    setTimeout(() => gameOverScreen.classList.add('show'), 600);
+    // Pick epilogue script based on accuracy
+    const epilogueKey = overallPct === 100 ? 'perfect'
+                      : overallPct >= 80   ? 'good'
+                      : 'bad';
+    const epilogueScript = END_SCRIPTS[epilogueKey];
+
+    // Play VN epilogue, THEN show game over screen
+    if (vnEngine && epilogueScript) {
+        setTimeout(() => {
+            vnEngine.start(epilogueScript, 'start', () => {
+                setTimeout(() => gameOverScreen.classList.add('show'), 400);
+            });
+        }, 300);
+    } else {
+        setTimeout(() => gameOverScreen.classList.add('show'), 600);
+    }
 }
 /* ============ BLACKLIST LOGIC ============ */
 const BLACKLIST_DATA = [

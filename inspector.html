@@ -142,6 +142,13 @@
     <div class="term-label">CTC RETURNER</div>
     <span class="new-badge ctc-badge" id="ctcNewBadge">NEW</span>
   </div>
+  <div id="msgBtn" class="lookup-btn msg" data-label="MESSAGE" style="display:none;" onclick="toggleMsgModal(true)">
+    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+    <div class="term-label">MESSAGE</div>
+    <span class="new-badge msg-badge" id="msgNewBadge">NEW</span>
+  </div>
 </div>
 
 <!-- ============ DAY 1 NEW FEATURE TOAST ============ -->
@@ -165,6 +172,19 @@
       <div class="ctc-toast-label">FUNCTION UNLOCKED</div>
       <div class="ctc-toast-title">CTC RETURNER</div>
       <div class="ctc-toast-sub">Kiểm tra danh sách thành viên đánh thuê CTC trở về</div>
+    </div>
+  </div>
+  <div class="ctc-toast-scanline"></div>
+</div>
+
+<!-- ============ NEW FEATURE TOAST (Message Unlock - Day 3) ============ -->
+<div id="msgUnlockToast">
+  <div class="ctc-toast-inner">
+    <div class="ctc-toast-icon">💬</div>
+    <div class="ctc-toast-content">
+      <div class="ctc-toast-label">FUNCTION UNLOCKED</div>
+      <div class="ctc-toast-title">MESSAGE INTEL</div>
+      <div class="ctc-toast-sub">Theo dõi chat cộng đồng để lọc thông tin nghi vấn</div>
     </div>
   </div>
   <div class="ctc-toast-scanline"></div>
@@ -410,8 +430,38 @@
     </div>
   </div>
 </div>
+
+<!-- ============ MESSAGE CHAT MODAL ============ -->
+<div id="msgModal" class="modal-overlay">
+  <div class="msg-tablet">
+    <div class="msg-header">
+      <div class="msg-header-left">
+        <div class="msg-status-dot"></div>
+        <div class="msg-header-info">
+          <div class="msg-title">SAO-ĐÊM // COMMUNITY INTEL</div>
+          <div class="msg-subtitle">INTERCEPTED CHANNEL — CLASSIFIED</div>
+        </div>
+      </div>
+      <div class="msg-header-badge">LIVE</div>
+    </div>
+    <div class="msg-channel-tabs">
+      <button class="msg-tab active" onclick="switchMsgChannel(0, this)">💬 General</button>
+      <button class="msg-tab" onclick="switchMsgChannel(1, this)">💰 Acc Trading</button>
+      <button class="msg-tab" onclick="switchMsgChannel(2, this)">🏕️ Camp Apply</button>
+    </div>
+    <div class="msg-body" id="msgBody">
+      <!-- Rendered by JS -->
+    </div>
+    <div class="msg-footer">
+      <div class="msg-hint">// Phân tích tin nhắn — chú ý tên người trong game //</div>
+      <button class="msg-close-btn" onclick="toggleMsgModal(false)">CLOSE INTEL</button>
+    </div>
+  </div>
+</div>
+
 <script src="assets/js/loading.js"></script>
 <script src="assets/js/vn_engine.js"></script>
+<script src="assets/js/inspector_msg.js"></script>
 <script src="assets/js/inspector.js"></script>
 
 

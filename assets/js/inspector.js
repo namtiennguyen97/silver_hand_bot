@@ -141,7 +141,7 @@ const CTC_DATA = [
     { 
         name: "Valkyrie", 
         img: "npc_19.png", 
-        story: "Nữ chiến binh dũng mãnh, nổi danh với khả năng càn quét bằng vũ khí hạng nặng. Cô ấy đã giúp nhiều Camp chiến thắng trong các trận CTC lớn trước khi quay về nhà."
+        story: "Con người bí ẩn nhưng cống hiến 100% cho Sao Đêm từ rất lâu- rất đang tin cậy."
     }
 ];
 
@@ -160,7 +160,7 @@ const GAME_DAYS = [
         ],
         applicants: [
             {
-                id: "A01", name: "ELYSIUM", img: null,
+                id: "A01", name: "ELYSIUM", img: "assets/img/inspector_npc/npc_3.png",
                 nationality: "VN", level: 120, cert: "Herb", camp: "Eternal",
                 friends: [
                     { name: "MEND", intimacy: 85, camp: "AVALON" },
@@ -184,7 +184,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A02", name: "COBRA", img: null,
+                id: "A02", name: "COBRA", img: "assets/img/inspector_npc/npc_13.png",
                 nationality: "JPN", level: 147, cert: "Rifle man", camp: "Konoha",
                 friends: [
                     { name: "UCHIHA_IT", intimacy: 99, camp: "Konoha" }
@@ -197,7 +197,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A03", name: "NIGHTMARE", img: null,
+                id: "A03", name: "NIGHTMARE", img: "assets/img/inspector_npc/npc_14.png",
                 nationality: "VN", level: 144, cert: "Warrior", camp: "AVALON",
                 friends: [
                     { name: "ELYSIUM", intimacy: 85, camp: "Eternal" }
@@ -210,8 +210,8 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A04", name: "STORM", img: null,
-                nationality: "USA", level: 148, cert: "Sniper", camp: "Tagalog",
+                id: "A04", name: "STORM", img: "assets/img/inspector_npc/npc_12.png",
+                nationality: "INDO", level: 148, cert: "Sniper", camp: "Tagalog",
                 friends: [
                     { name: "CHIEF_TAG", intimacy: 95, camp: "Tagalog" }
                 ],
@@ -223,7 +223,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A05", name: "TITAN", img: null,
+                id: "A05", name: "TITAN", img: "assets/img/inspector_npc/npc_5.png",
                 nationality: "VN", level: 142, cert: "Logger", camp: "VNHouse",
                 friends: [
                     { name: "ELYSIUM", intimacy: 70, camp: "Eternal" }
@@ -236,20 +236,20 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A06", name: "VIPER", img: null,
-                nationality: "USA", level: 142, cert: "Logger", camp: "Players",
+                id: "A06", name: "VIPER", img: "assets/img/inspector_npc/npc_11.png",
+                nationality: "VN", level: 142, cert: "Logger", camp: "Players",
                 friends: [
                     { name: "MARKET_MAKER", intimacy: 45, camp: "RedRoom" }
                 ],
                 profession: "Thương nhân chợ đen", criminal: false, enemyCamp: false,
-                shouldApprove: false, // USA and Level < 145
+                shouldApprove: true, // USA and Level < 145
                 lines: [
                     { text: "Chào sếp, em chuyên buôn bán goldbar. Rate hợp lý cho ae nè.", next: "l2" },
                     { text: "Em có nhiều mối làm ăn với mấy khứa nước ngoài, cho em vào camp em để giá ưu đãi cho anh em cày cuốc.", next: null }
                 ]
             },
             {
-                id: "A07", name: "WOLFE", img: null,
+                id: "A07", name: "WOLFE", img: "assets/img/inspector_npc/npc_23.png",
                 nationality: "VN", level: 146, cert: "Sniper", camp: "Eternal",
                 profession: "Người chơi hệ thám hiểm", criminal: false, enemyCamp: false,
                 shouldApprove: true,
@@ -259,7 +259,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A08", name: "PHANTOM", img: null,
+                id: "A08", name: "PHANTOM", img: "assets/img/inspector_npc/npc_24.png",
                 nationality: "JPN", level: 140, cert: "Rifle man", camp: "Konoha",
                 friends: [
                     { name: "REBORN", intimacy: 10, camp: "Konoha" }
@@ -288,12 +288,12 @@ const GAME_DAYS = [
         ],
         applicants: [
             {
-                id: "B01", name: "Xeno", img: null,
+                id: "B01", name: "Xeno", img: "assets/img/inspector_npc/npc_8.png",
                 profession: "Play boy", criminal: false, enemyCamp: false,
-                nationality: "VN", level: 139, cert: "Miner", camp: "Tagalog",
+                nationality: "VN", level: 139, cert: "Miner", camp: "ROS",
                 friends: [
-                    { name: "Sword", intimacy: 85, camp: "Tagalog" },
-                    { name: "MENGR", intimacy: 70, camp: "Astral" }
+                    { name: "Takumi", intimacy: 85, camp: "ROS" },
+                    { name: "Soobin", intimacy: 70, camp: "ROS" }
                 ],
                 shouldApprove: true,
                 lines: [
@@ -316,44 +316,59 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "B03", name: "JAMES", img: null,
+                id: "B03", name: "Jmaes", img: null,
                 profession: "Sniper", criminal: false, enemyCamp: false,
-                nationality: "ThaiLand", level: 147, cert: "Herb", camp: "Hunter",
+                nationality: "ThaiLand", level: 146, cert: "Rifle man", camp: "AVALON",
                 friends: [
-                    { name: "Sins", intimacy: 90, camp: "Hunter" },
-                    { name: "MENGR", intimacy: 45, camp: "Astral" }
+                    { name: "Habert", intimacy: 100, camp: "Eternal" },
+                    { name: "Cigull", intimacy: 50, camp: "SANTUY" }
+                ],
+                shouldApprove: false,
+                lines: [
+                    { text: "Hi--- I m backkk after CTC.", next: "l2" },
+                    { text: "I just fought for your camp in CTC. so tired.", next: null }
+                ]
+            },
+            {
+                id: "B04", name: "Creep", img: null,
+                profession: "Virut", criminal: false, enemyCamp: false,
+                shouldApprove: false,
+                nationality: "VN", level: 145, cert: "Rifle man", camp: "Eternal",
+                friends: [
+                    { name: "Yaun", intimacy: 50, camp: "Players" },
+                    { name: "Bert", intimacy: 50, camp: "SANTUY" }
+                ],
+                lines: [
+                    { text: "Chào đại ca!!!", next: "l2" },
+                    { text: "Em đi đánh thuê CTC về rồi đây.", next: null }
+                ]
+            },
+            {
+                id: "B05", name: "Foxy", img: 'assets/img/inspector_npc/npc_15_couple_type.png',
+                profession: "Rifle man", criminal: false, enemyCamp: false,
+                nationality: "INDO", level: 147, cert: "Rifle man", camp: "SANTUY",
+                friends: [
+                    { name: "Wolfy", intimacy: 100, camp: "SANTUY" },
+                    { name: "Bert", intimacy: 50, camp: "SANTUY" }
                 ],
                 shouldApprove: true,
                 lines: [
-                    { text: "Hê lô sếp, mình chuyên bọc lót cho anh em đi tuần tra. Acc chơi được 47 ngày rồi.", next: "l2" },
-                    { text: "Trên người chỉ mang một khẩu súng với đạn dược cá nhân thôi, hàng chính chủ 100%.", next: null }
+                    { text: "Hi- i heard that you guys is recruiting for strong account.", next: "l2" },
+                    { text: "Can i and my cohab join you guys?. She is Wolfy.", next: null }
                 ]
             },
             {
-                id: "B04", name: "DANTE KRIEG", img: null,
-                profession: "Người chơi hệ hù dọa", criminal: false, enemyCamp: false,
-                shouldApprove: false,
-                lines: [
-                    { text: "Mở cửa cho tôi vào nhanh đi. Tôi mang theo 3 khẩu súng máy với đống đạn hạng nặng đây.", next: "l2" },
-                    { text: "Vào camp tôi sẽ xử đẹp bất cứ đứa nào ngáng đường... kể cả đội của sếp luôn.", next: null }
-                ]
-            },
-            {
-                id: "B05", name: "COMMANDER ELISE VALE", img: null,
-                profession: "Cựu chủ Camp", criminal: false, enemyCamp: false,
+                id: "B06", name: "Arisas", img: null,
+                profession: "Rifle man", criminal: false, enemyCamp: false,
                 shouldApprove: true,
+                nationality: "VN", level: 134, cert: "Rifle man", camp: "Eternal",
+                friends: [
+                    { name: "Takung", intimacy: 60, camp: "Astral" },
+                    { name: "Opas", intimacy: 50, camp: "Eternal" }
+                ],
                 lines: [
-                    { text: "Chào anh, tôi từng quản lý camp bên Dark Steel. Acc chơi được 82 ngày, đi Shelter Land suốt.", next: "l2" },
-                    { text: "Bên đó giải tán rồi nên tôi muốn tìm một camp có kỷ luật để cùng anh em đi chiếm cứ điểm.", next: null }
-                ]
-            },
-            {
-                id: "B06", name: "SEAN 'SHIELD' PARKS", img: null,
-                profession: "Hộ vệ nhiệt tình", criminal: false, enemyCamp: false,
-                shouldApprove: true,
-                lines: [
-                    { text: "Chào sếp, em chơi được 55 ngày rồi, Tier 3 chiến đấu. Chuyên bảo kê anh em đi farm.", next: "l2" },
-                    { text: "Hành trang gọn nhẹ chỉ có con dao với súng lục thôi, cho em vào camp với nha.", next: null }
+                    { text: "Chào sếp, mới mua con acc", next: "l2" },
+                    { text: "Acc hơi thọt nên sếp thông cảm nha. Em chỉ chơi chill thôi.", next: null }
                 ]
             }
         ]
@@ -475,8 +490,12 @@ if (Math.random() < 0.5) {
 const randomCTC = CTC_DATA[Math.floor(Math.random() * CTC_DATA.length)];
 const CTC_APP = {
     id: "A-CTC-01", name: randomCTC.name, img: `assets/img/inspector_npc/${randomCTC.img}`,
-    nationality: "VN", level: 150, cert: "Warrior", camp: "SAO-ĐÊM",
-    profession: "Chiến binh CTC trở về", criminal: false, enemyCamp: false,
+    nationality: "VN", level: 147, cert: "Warrior", camp: "SANTUY",
+    profession: "Rifle man", criminal: false, enemyCamp: false,
+    friends: [
+        { name: "DL", intimacy: 100, camp: "Sao-Đêm" },
+        { name: "Grace", intimacy: 50, camp: "Avalon" }
+    ],
     shouldApprove: true,
     lines: [
         { text: `Chào sếp, tôi là ${randomCTC.name} đây. Tôi vừa hoàn thành chuyến đánh thuê CTC quốc tế và trở về camp.`, next: "l2" },

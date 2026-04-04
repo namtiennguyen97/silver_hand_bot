@@ -1,6 +1,8 @@
 /* ================================================
    INSPECTOR_MSG.JS — Message Intel Feature (Day 3)
    3 Community Chat Channels for screening intel
+   Chat is natural game conversation — no meta hints.
+   Players cross-reference with applicants themselves.
 ================================================ */
 
 const MESSAGE_CHANNELS = [
@@ -12,62 +14,56 @@ const MESSAGE_CHANNELS = [
             {
                 uid: 0, name: 'Kaito_VN', tag: null, online: true,
                 img: 'assets/img/inspector_npc/portrail/npc_1.png',
-                time: '09:14', reactions: [{e:'👋',c:5}],
-                text: 'Ae ơi camp <span class="highlight cyan">SAO-ĐÊM</span> hôm nay tuyển không vậy? Thấy bảng tuyển thành viên đỏ đèn rồi'
+                time: '08:52', reactions: [{e:'👋',c:4}],
+                text: 'Ae ơi camp mở cổng rồi kìa, hôm nay có mấy đứa nhắn mình hỏi xin vào đó'
             },
             {
                 uid: 1, name: 'Minhh_Nguyen', tag: 'camp', online: true,
                 img: 'assets/img/inspector_npc/portrail/npc_2.png',
-                time: '09:16', reactions: [{e:'✅',c:3}],
-                text: 'Ừ đang có mở hòm thư đó, nhưng nghe đâu hôm nay <span class="highlight red">siết rất chặt</span>, cần check kỹ lắm'
-            },
-            {
-                uid: 2, name: 'ZX_Phantom', tag: null, online: false,
-                img: 'assets/img/inspector_npc/portrail/npc_3.png',
-                time: '09:18', reactions: [],
-                text: 'mình có thằng bạn acc bên <span class="highlight red">Konoha</span> muốn vào, nhưng camp mình với Konoha không deal được nhỉ'
-            },
-            {
-                uid: 3, name: 'Silver_Captain', tag: 'mod', online: true,
-                img: 'assets/img/inspector_npc/portrail/npc_4.png',
-                time: '09:20', reactions: [{e:'⚠️',c:8},{e:'🔍',c:4}],
-                text: '⚠️ Nhắc lại một lần: <span class="highlight red">KONOHA là rival camp</span>. Bất kỳ ai biết người từ Konoha xin vào mà không report thì cũng bị xử lý nhé ae'
-            },
-            {
-                uid: 4, name: 'LunaFox', tag: null, online: true,
-                img: 'assets/img/inspector_npc/portrail/npc_5.png',
-                time: '09:23', reactions: [{e:'😅',c:2}],
-                text: 'Trời ơi, hôm qua thấy mấy tên <span class="highlight red">ZATAN</span> lại đăng tuyển camp rồi... người này bị blacklist rồi mà còn cố hả?'
-            },
-            {
-                uid: 1, name: 'Minhh_Nguyen', tag: 'camp', online: true,
-                img: 'assets/img/inspector_npc/portrail/npc_2.png',
-                time: '09:25', reactions: [{e:'😤',c:6}],
-                text: 'ZATAN thì thôi rồi. Mình biết ông này offline mất tăm liên tục, ra vào 7-8 lần rồi mà. Camp mình tống cổ luôn rồi đặt vào blacklist'
+                time: '08:55', reactions: [{e:'👀',c:3}],
+                text: 'Ừ nghe rồi. Hôm nay official mới xử lý đơn, ae cứ nộp bình thường nhé. Nhưng mà nhớ khai đầy đủ vào nha'
             },
             {
                 uid: 5, name: 'VietHero99', tag: null, online: true,
                 img: 'assets/img/inspector_npc/portrail/npc_6.png',
-                time: '09:31', reactions: [{e:'💬',c:3}],
-                text: 'Ờ, ae nhớ check kỹ ID card trước khi duyệt nghen. Nhiều trường hợp thẻ bài ghi nước ngoài nhưng thực ra người VN mua acc lại đó'
+                time: '09:05', reactions: [],
+                text: 'À mà nhắc ae nhớ: acc từ camp khác mà mua lại thì phải nói thật với official nhé. Khai trung thực thì người ta duyệt chứ không reject đâu'
             },
             {
                 uid: 0, name: 'Kaito_VN', tag: null, online: true,
                 img: 'assets/img/inspector_npc/portrail/npc_1.png',
                 time: '09:33', reactions: [{e:'👍',c:9}],
-                text: 'À đúng rồi, thằng <span class="highlight">PHANTOM</span> tui biết, nó mua acc bên Konoha đó. Người thật là VN 100% nha, đừng từ chối nó'
+                text: 'À mà thằng <span class="highlight">ZxPhantom</span> tui biết, nó mới mua acc bên Konoha đó nhưng người thật là VN 100% nha. Acc xin rời Konoha rồi, đừng từ chối nó'
+            },
+            {
+                uid: 1, name: 'Minhh_Nguyen', tag: 'camp', online: true,
+                img: 'assets/img/inspector_npc/portrail/npc_2.png',
+                time: '09:36', reactions: [{e:'✅',c:5}],
+                text: 'Ok noted. Phantom thì ok, người VN mua lại mà khai rõ là được. Official chú ý nhé'
+            },
+            {
+                uid: 4, name: 'LunaFox', tag: null, online: true,
+                img: 'assets/img/inspector_npc/portrail/npc_5.png',
+                time: '10:02', reactions: [{e:'😅',c:2}],
+                text: 'Trời ơi hôm qua thấy tên <span class="highlight red">ZATAN</span> xin vào lại nữa. Người này bị đuổi ra rồi còn cố hả'
+            },
+            {
+                uid: 1, name: 'Minhh_Nguyen', tag: 'camp', online: true,
+                img: 'assets/img/inspector_npc/portrail/npc_2.png',
+                time: '10:04', reactions: [{e:'😤',c:6}],
+                text: 'Zatan bị blacklist rồi, ra vào mấy lần mà lần nào cũng biến mất. Official reject thẳng đi khỏi cần hỏi'
             },
             {
                 uid: 6, name: 'Kira_DX', tag: null, online: false,
                 img: 'assets/img/inspector_npc/portrail/npc_7.png',
-                time: '09:40', reactions: [{e:'🚨',c:12}],
-                text: '❗ Cẩn thận! Nghe tin <span class="highlight red">Delta-9</span> đang cố cài người vào SAO-ĐÊM ngày hôm nay. Tụi nó rành giả dạng lắm'
+                time: '10:15', reactions: [{e:'⚠️',c:7}],
+                text: 'Ae coi chừng mấy tên Astral đang muốn trà trộn vào đó. Tụi nó biết hôm nay mình mở đơn rồi'
             },
             {
-                uid: 3, name: 'Silver_Captain', tag: 'mod', online: true,
-                img: 'assets/img/inspector_npc/portrail/npc_4.png',
-                time: '09:42', reactions: [{e:'🔒',c:7}],
-                text: 'Đã được báo cáo. Official hôm nay cần <span class="highlight red">kiểm tra KỸ</span> từng người. Đặc biệt check huy hiệu và hình xăm. Ai nghi vấn → từ chối ngay'
+                uid: 5, name: 'VietHero99', tag: null, online: true,
+                img: 'assets/img/inspector_npc/portrail/npc_6.png',
+                time: '10:18', reactions: [{e:'💬',c:4}],
+                text: 'Nếu ai hỏi vào mà tự bảo từng ở Astral hay Fortis thì reject thẳng đi khỏi cần suy nghĩ nhiều. Dù bảo rời rồi cũng không ok'
             }
         ]
     },
@@ -80,57 +76,57 @@ const MESSAGE_CHANNELS = [
                 uid: 2, name: 'TradeKing_Ha', tag: 'seller', online: false,
                 img: 'assets/img/inspector_npc/portrail/npc_8.png',
                 time: '18:02', reactions: [{e:'💰',c:4}],
-                text: '【SELL】 Acc lv<span class="highlight">148</span> | cert <span class="highlight">Sniper</span> | camp <span class="highlight red">Tagalog</span> (mua lại từ nước ngoài, có thể chuyển camp) | 3 triệu vnđ firm'
+                text: '【SELL】 Acc lv<span class="highlight">148</span> | camp <span class="highlight red">Tagalog</span> | cert Sniper | 3 triệu firm. Acc mua lại từ nước ngoài, cần chuyển camp trước khi giao'
             },
             {
                 uid: 7, name: 'NightBuyer', tag: 'buyer', online: false,
                 img: 'assets/img/inspector_npc/portrail/npc_9.png',
-                time: '18:10', reactions: [],
-                text: 'Acc Tagalog không dùng được ở SAO-ĐÊM đó ông. <span class="highlight red">Rival camp</span> à'
+                time: '18:15', reactions: [],
+                text: 'ib mình với ông, mình đang tính mua để vào SAO-ĐÊM chơi. Tagalog xin rời được không ông?'
             },
             {
                 uid: 2, name: 'TradeKing_Ha', tag: 'seller', online: false,
                 img: 'assets/img/inspector_npc/portrail/npc_8.png',
-                time: '18:13', reactions: [],
-                text: 'Biết rồi nên mới note là SẼ chuyển camp trước khi bán. Ae mua xong tự nộp đơn xin vào SAO-ĐÊM bình thường là được, chỉ cần nói là người VN mua acc lại thôi'
+                time: '18:20', reactions: [],
+                text: 'Được, mình sẽ xin rời Tagalog trước rồi mới giao acc. Đợi mình xử lý nha'
             },
             { date: 'HÔM QUA' },
             {
+                uid: 7, name: 'NightBuyer', tag: 'buyer', online: false,
+                img: 'assets/img/inspector_npc/portrail/npc_9.png',
+                time: '11:00', reactions: [],
+                text: 'Ông ơi deal hôm đó tính sao rồi? Mình đang chờ đó'
+            },
+            {
+                uid: 2, name: 'TradeKing_Ha', tag: 'seller', online: false,
+                img: 'assets/img/inspector_npc/portrail/npc_8.png',
+                time: '11:30', reactions: [{e:'😞',c:2}],
+                text: 'Xin lỗi bro, mình không bán nữa rồi. Mình quyết định giữ lại acc đó chơi tiếp. Deal hủy nha'
+            },
+            {
+                uid: 7, name: 'NightBuyer', tag: 'buyer', online: false,
+                img: 'assets/img/inspector_npc/portrail/npc_9.png',
+                time: '11:35', reactions: [{e:'😤',c:3}],
+                text: 'Vậy thì thôi, mình cũng đang tính chỗ khác rồi. Oke huỷ'
+            },
+            { date: 'HÔM NAY' },
+            {
                 uid: 5, name: 'Scam_Report_Bot', tag: 'mod', online: true,
                 img: 'assets/img/inspector_npc/portrail/npc_10.png',
-                time: '11:30', reactions: [{e:'🚨',c:15},{e:'😱',c:8}],
-                text: '🚨 CẢNH BÁO SCAMMER: Tên <span class="highlight red">Roy</span> (alias: Minh Nhật) đang tiếp cận nhiều người. Hắn gạ mua bán acc rồi xin gửi code → chiếm đoạt tài khoản. Đã từng nhắm vào <span class="highlight">Silver-Hand</span> cuối 2023. ĐỪNG DEAL!'
+                time: '09:00', reactions: [{e:'🚨',c:15},{e:'😱',c:8}],
+                text: '🚨 Nhắc lại: Tên <span class="highlight red">Roy</span> hay xưng là <span class="highlight red">Minh Nhật</span> đang lân la hỏi xin vào nhiều camp. Ae cẩn thận, hắn có tiền sử scam acc. Đừng deal gì với hắn hết'
             },
             {
                 uid: 0, name: 'Kaito_VN', tag: null, online: true,
                 img: 'assets/img/inspector_npc/portrail/npc_1.png',
-                time: '11:45', reactions: [{e:'💯',c:11}],
-                text: 'Nhận ra tụi scammer này dễ lắm: hay xưng <span class="highlight red">"ní ơi"</span>, thề thốt rất nhiều, hỏi số điện thoại và email. <span class="highlight red">BLOCK NGAY</span> khi thấy dấu hiệu này'
-            },
-            {
-                uid: 8, name: 'AccHunter_VN', tag: 'buyer', online: true,
-                img: 'assets/img/inspector_npc/portrail/npc_11.png',
-                time: '14:22', reactions: [{e:'🤔',c:3}],
-                text: 'Hỏi chút: mình mua acc bên camp <span class="highlight red">Hunter</span>, lv 147, giờ muốn xin vào SAO-ĐÊM có được không? Hay bị từ chối vì Hunter là rival?'
+                time: '09:10', reactions: [{e:'💯',c:8}],
+                text: 'Xác nhận, mình từng bị hắn tiếp cận. Kiểu gì cũng tự giới thiệu là Minh Nhật rồi mới nói chuyện. Cứ thấy tên đó là cẩn thận ngay'
             },
             {
                 uid: 3, name: 'Silver_Captain', tag: 'mod', online: true,
                 img: 'assets/img/inspector_npc/portrail/npc_4.png',
-                time: '14:28', reactions: [{e:'✅',c:6}],
-                text: 'Nguyên tắc là: bạn phải <span class="highlight green">tự khai</span> với official là đã mua lại acc. Nếu official thấy acc từ rival camp nhưng bạn nói rõ là người VN mua lại → <span class="highlight green">được duyệt</span>. Nên thành thật!'
-            },
-            { date: 'HÔM NAY' },
-            {
-                uid: 4, name: 'LunaFox', tag: null, online: true,
-                img: 'assets/img/inspector_npc/portrail/npc_5.png',
-                time: '08:50', reactions: [{e:'👀',c:7}],
-                text: 'Ae ơi có bán acc lv <span class="highlight">134</span> luôn không? Mình đang tìm acc tầm level này để cho đứa em chơi, không cần cert gì sang hết'
-            },
-            {
-                uid: 4, name: 'LunaFox', tag: null, online: true,
-                img: 'assets/img/inspector_npc/portrail/npc_5.png',
-                time: '09:05', reactions: [{e:'😅',c:4}],
-                text: 'Mình đang cần MUA không phải bán. Main mình bên SANTUY đây, ai có ib mình nhé'
+                time: '09:15', reactions: [{e:'🔒',c:6}],
+                text: 'Đã ghi nhận. Official hôm nay nếu thấy ai tên <span class="highlight red">Roy hoặc Minh Nhật</span> nộp đơn thì reject ngay nhé. Không cần xem xét thêm'
             }
         ]
     },
@@ -142,74 +138,98 @@ const MESSAGE_CHANNELS = [
             {
                 uid: 6, name: 'Blake_Shadow', tag: 'applicant', online: false,
                 img: 'assets/img/inspector_npc/portrail/npc_7.png',
-                time: '07:55', reactions: [{e:'🏕️',c:2}],
-                text: 'Xin chào ae SAO-ĐÊM! Mình là <span class="highlight">BLAKE</span>, chuyên đi raid đêm, kinh nghiệm PK nhiều. Ai bảo lãnh cho mình vào camp với?'
-            },
-            {
-                uid: 3, name: 'Silver_Captain', tag: 'mod', online: true,
-                img: 'assets/img/inspector_npc/portrail/npc_4.png',
-                time: '07:58', reactions: [],
-                text: 'Bạn có thể nộp đơn qua official nhé. Nhưng lưu ý cần khai rõ background camp cũ'
-            },
-            {
-                uid: 6, name: 'Blake_Shadow', tag: 'applicant', online: false,
-                img: 'assets/img/inspector_npc/portrail/npc_7.png',
-                time: '08:01', reactions: [{e:'😐',c:3}],
-                text: 'À thì... mình từng ở <span class="highlight red">Delta-9</span> nhưng đã rời rất lâu rồi. Bây giờ muốn tìm camp mới nghiêm túc hơn...'
+                time: '07:40', reactions: [],
+                text: 'Hỏi thăm ae, camp SAO-ĐÊM hôm nay có mở nhận đơn không? Mình muốn xin vào'
             },
             {
                 uid: 1, name: 'Minhh_Nguyen', tag: 'camp', online: true,
                 img: 'assets/img/inspector_npc/portrail/npc_2.png',
-                time: '08:04', reactions: [{e:'⛔',c:9}],
-                text: '⛔ <span class="highlight red">DELTA-9</span> là kẻ thù của SAO-ĐÊM. Cựu thành viên Delta-9 cũng không được vào theo chính sách mới. Official nên <span class="highlight red">TỪ CHỐI</span> trường hợp này'
+                time: '07:43', reactions: [],
+                text: 'Có, nộp đơn qua official hôm nay. Bạn khai đầy đủ background là được'
             },
             {
-                uid: 8, name: 'Vera_Wrench', tag: 'applicant', online: true,
+                uid: 6, name: 'Blake_Shadow', tag: 'applicant', online: false,
+                img: 'assets/img/inspector_npc/portrail/npc_7.png',
+                time: '07:45', reactions: [{e:'😬',c:2}],
+                text: 'Ah thì mình trước có chơi bên Astral một thời gian nhưng thấy không hợp nên bỏ rồi. Giờ muốn tìm camp mới. Vậy có ok không?'
+            },
+            {
+                uid: 1, name: 'Minhh_Nguyen', tag: 'camp', online: true,
+                img: 'assets/img/inspector_npc/portrail/npc_2.png',
+                time: '07:48', reactions: [{e:'⛔',c:8}],
+                text: 'Thật ra Astral là rival của mình nên cựu thành viên bên đó không được vào theo chính sách ae ơi. Dù rời rồi cũng vậy, quy định là quy định'
+            },
+            {
+                uid: 6, name: 'Blake_Shadow', tag: 'applicant', online: false,
+                img: 'assets/img/inspector_npc/portrail/npc_7.png',
+                time: '07:50', reactions: [],
+                text: 'Ờ thôi vậy. Thấy buồn nhưng hiểu rồi'
+            },
+            {
+                uid: 8, name: 'Vera_Kim', tag: 'applicant', online: true,
                 img: 'assets/img/inspector_npc/portrail/npc_12.png',
-                time: '08:45', reactions: [{e:'🔧',c:5}],
-                text: 'Xin chào! Mình là <span class="highlight green">VERA</span>, chuyên bảo trì vũ khí. Chị <span class="highlight">Mai</span> giới thiệu mình qua đây. Lý lịch trong sạch, không hình xăm, không liên quan gì Delta-9 hết ạ'
+                time: '08:30', reactions: [{e:'🔧',c:3}],
+                text: 'Hi ae, mình là Vera. Chị Mai giới thiệu mình qua đây xin vào camp. Chị nói cứ nhắn đây hỏi thêm nếu cần'
             },
             {
                 uid: 5, name: 'VietHero99', tag: 'camp', online: true,
                 img: 'assets/img/inspector_npc/portrail/npc_6.png',
-                time: '08:50', reactions: [{e:'✅',c:7}],
-                text: 'Vera thì mình biết, người tốt lắm. Chị Mai cũng là face trong camp mình. <span class="highlight green">Đáng tin cậy 100%</span>. Official cứ duyệt đi nhé'
+                time: '08:32', reactions: [{e:'✅',c:7}],
+                text: 'Vera thì mình biết nhé, người tốt lắm. Chị Mai cũng là người trong camp mình quen. Cứ duyệt đi official ơi'
             },
             {
-                uid: 7, name: 'Reed_Whisper', tag: 'applicant', online: false,
-                img: 'assets/img/inspector_npc/portrail/npc_13.png',
-                time: '09:10', reactions: [{e:'❓',c:4},{e:'🤥',c:6}],
-                text: 'Mình đang bị <span class="highlight red">Delta-9</span> truy đuổi vì biết quá nhiều bí mật của tụi nó. Cần SAO-ĐÊM cho mình trú ẩn gấp! Thật sự không có thời gian giải thích nhiều...'
-            },
-            {
-                uid: 3, name: 'Silver_Captain', tag: 'mod', online: true,
-                img: 'assets/img/inspector_npc/portrail/npc_4.png',
-                time: '09:13', reactions: [{e:'🕵️',c:8}],
-                text: '⚠️ Trường hợp <span class="highlight red">Reed</span>: Bộ phận phân tích hành vi nhận thấy <span class="highlight red">không có dấu hiệu sợ hãi thật sự</span> trong giọng nói. Có khả năng đây là nội gián Delta-9. Official → <span class="highlight red">TỪ CHỐI</span>'
+                uid: 4, name: 'LunaFox', tag: null, online: true,
+                img: 'assets/img/inspector_npc/portrail/npc_5.png',
+                time: '08:45', reactions: [{e:'😊',c:4}],
+                text: 'Vera chuyên sửa súng và bảo trì thiết bị cho anh em, cực kỳ hữu ích đó. Mình từng nhờ cổ fix đồ nhiều lần rồi'
             },
             {
                 uid: 0, name: 'Kaito_VN', tag: null, online: true,
                 img: 'assets/img/inspector_npc/portrail/npc_1.png',
-                time: '09:35', reactions: [{e:'🙌',c:5}],
-                text: 'Ae ơi <span class="highlight green">LUNA HAYES</span> này mình quen. Anh Thiện bảo lãnh cho cổ rồi, làm đồ buff rất chăm, không có vấn đề gì hết. Duyệt đi ông official!'
+                time: '09:38', reactions: [{e:'🙌',c:6}],
+                text: 'Ae ơi <span class="highlight green">LunaHayes</span> này mình quen. Anh Thiện bên camp nhờ mình nhắn giúp: ảnh bảo lãnh cho cổ vào nhé. Cổ chuyên pha buff raid đêm, siêng lắm'
             },
             {
                 uid: 4, name: 'LunaFox', tag: 'applicant', online: true,
                 img: 'assets/img/inspector_npc/portrail/npc_5.png',
-                time: '09:38', reactions: [{e:'💊',c:3}],
-                text: 'Xác nhận luôn! Luna chuyên chế <span class="highlight green">buff tăng lực raid đêm</span> rất xịn. Lý lịch sạch hoàn toàn'
+                time: '09:42', reactions: [{e:'💊',c:3}],
+                text: 'Mình xác nhận Luna đó nha, cổ làm buff xịn lắm. Lý lịch không có gì đáng ngại, cứ yên tâm'
             },
             {
-                uid: 2, name: 'TradeKing_Ha', tag: null, online: false,
-                img: 'assets/img/inspector_npc/portrail/npc_8.png',
-                time: '09:55', reactions: [{e:'🤔',c:2}],
-                text: 'Còn vụ <span class="highlight red">UNKNOWN DRIFTER</span> nào đó đang đứng ngoài cổng camp kìa ae. Không chịu khai background, chỉ nói "không có thời gian giải thích". Hệ thống còn phát hiện <span class="highlight red">thiết bị GPS lạ</span> trong balo...'
+                uid: 1, name: 'Minhh_Nguyen', tag: 'camp', online: true,
+                img: 'assets/img/inspector_npc/portrail/npc_2.png',
+                time: '10:30', reactions: [{e:'🤔',c:4}],
+                text: 'Còn có tên <span class="highlight red">DrifterX</span> đang đứng ngoài cổng, không chịu khai gì hết. Hỏi background thì nói không cần phải giải thích. Ae thấy lạ không?'
             },
             {
                 uid: 3, name: 'Silver_Captain', tag: 'mod', online: true,
                 img: 'assets/img/inspector_npc/portrail/npc_4.png',
-                time: '10:00', reactions: [{e:'🚫',c:14}],
-                text: '🚫 <span class="highlight red">TỪ CHỐI NGAY</span> trường hợp đó. Thiết bị định vị Delta-9 → gián điệp 100%. Official nào xử lý ca này thì đừng thương xót nhé!'
+                time: '10:33', reactions: [{e:'🚫',c:12}],
+                text: 'Không khai thì không vào. Đơn giản vậy thôi. Official cứ yêu cầu khai đủ, ai không khai thì reject'
+            },
+            {
+                uid: 7, name: 'Reed_W', tag: 'applicant', online: false,
+                img: 'assets/img/inspector_npc/portrail/npc_13.png',
+                time: '10:50', reactions: [{e:'❓',c:5}],
+                text: 'Ae ơi mình cần vào camp gấp, mình bị người ta kiếm chuyện vì mình biết chuyện nội bộ của bên đó. Không tiện nói nhiều ở đây'
+            },
+            {
+                uid: 0, name: 'Kaito_VN', tag: null, online: true,
+                img: 'assets/img/inspector_npc/portrail/npc_1.png',
+                time: '10:53', reactions: [{e:'🤨',c:6}],
+                text: 'Ủa mà bên đó là camp nào vậy? Nói rõ đi ông, mình cũng cần biết context chứ'
+            },
+            {
+                uid: 7, name: 'Reed_W', tag: 'applicant', online: false,
+                img: 'assets/img/inspector_npc/portrail/npc_13.png',
+                time: '10:55', reactions: [],
+                text: 'Thôi kệ, ở đây nói không tiện. Mình lên gặp official trực tiếp vậy'
+            },
+            {
+                uid: 1, name: 'Minhh_Nguyen', tag: 'camp', online: true,
+                img: 'assets/img/inspector_npc/portrail/npc_2.png',
+                time: '10:58', reactions: [{e:'😒',c:4}],
+                text: 'Cái kiểu giấu thông tin mà đòi vào camp này mình không thích. Official tự cân nhắc nha, mình không bảo lãnh cho trường hợp này đâu'
             }
         ]
     }

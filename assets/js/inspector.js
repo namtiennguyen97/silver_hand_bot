@@ -180,12 +180,12 @@ const CTC_DATA = [
     { 
         name: "Kaelith", 
         img: "npc_5.png", 
-        story: "Chiến binh kỳ cựu từng chinh chiến tại các chiến trường CTC Châu Âu. Kỹ năng bắn tỉa điêu luyện, vừa hoàn thành hợp đồng đánh thuê 6 tháng và quyết định trở về cống hiến cho SAO-ĐÊM."
+        story: "Chiến binh kỳ cựu vốn ở camp nước ngoài, nhưng đã đầu quân cho Sao Đêm được 1 năm trời."
     },
     { 
         name: "Xero", 
         img: "npc_12.png", 
-        story: "Chuyên gia phá bẫy và đột kích. Từng phục vụ trong đội quân đánh thuê tại vùng Shelter Land phía Bắc. Trở về với lượng lớn kinh nghiệm chiến đấu thực tế."
+        story: "Chuyên gia trong CTC, biết rất nhiều mẹo hay trong chiến đấu."
     },
     { 
         name: "Valkyrie", 
@@ -233,7 +233,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A02", name: "COBRA", img: "assets/img/inspector_npc/npc_13.png",
+                id: "A02", name: "COBRA", img: "assets/img/inspector_npc/npc_21.png",
                 nationality: "JPN", level: 147, cert: "Rifle man", camp: "Konoha",
                 friends: [
                     { name: "UCHIHA_IT", intimacy: 99, camp: "Konoha" }
@@ -246,7 +246,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A03", name: "NIGHTMARE", img: "assets/img/inspector_npc/npc_14.png",
+                id: "A03", name: "NIGHTMARE", img: "assets/img/inspector_npc/npc_30.png",
                 nationality: "VN", level: 144, cert: "Warrior", camp: "AVALON",
                 friends: [
                     { name: "ELYSIUM", intimacy: 85, camp: "Eternal" }
@@ -285,7 +285,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A06", name: "VIPER", img: "assets/img/inspector_npc/npc_11.png",
+                id: "A06", name: "VIPER", img: "assets/img/inspector_npc/npc_31.png",
                 nationality: "VN", level: 142, cert: "Logger", camp: "Players",
                 friends: [
                     { name: "MARKET_MAKER", intimacy: 45, camp: "RedRoom" }
@@ -298,7 +298,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A07", name: "WOLFE", img: "assets/img/inspector_npc/npc_23.png",
+                id: "A07", name: "WOLFE", img: "assets/img/inspector_npc/npc_22.png",
                 nationality: "VN", level: 146, cert: "Sniper", camp: "Eternal",
                 profession: "Người chơi hệ thám hiểm", criminal: false, enemyCamp: false,
                 shouldApprove: true,
@@ -337,7 +337,7 @@ const GAME_DAYS = [
         ],
         applicants: [
             {
-                id: "B01", name: "Xeno", img: "assets/img/inspector_npc/npc_8.png",
+                id: "B01", name: "Xeno", img: "assets/img/inspector_npc/npc_33.png",
                 profession: "Play boy", criminal: false, enemyCamp: false,
                 nationality: "VN", level: 139, cert: "Miner", camp: "ROS",
                 friends: [
@@ -351,7 +351,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "B02", name: "Mangos", img: null,
+                id: "B02", name: "Mangos", img: "assets/img/inspector_npc/npc_39.png",
                 profession: "Warrior", criminal: false, enemyCamp: false,
                 nationality: "INDO", level: 147, cert: "Herb", camp: "Hunter",
                 friends: [
@@ -365,7 +365,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "B03", name: "Jmaes", img: null,
+                id: "B03", name: "Jmaes", img: "assets/img/inspector_npc/npc_40.png",
                 profession: "Sniper", criminal: false, enemyCamp: false,
                 nationality: "ThaiLand", level: 146, cert: "Rifle man", camp: "AVALON",
                 friends: [
@@ -379,7 +379,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "B04", name: "Creep", img: null,
+                id: "B04", name: "Creep", img: "assets/img/inspector_npc/npc_38.png",
                 profession: "Virut", criminal: false, enemyCamp: false,
                 shouldApprove: false,
                 nationality: "VN", level: 145, cert: "Rifle man", camp: "Eternal",
@@ -407,7 +407,7 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "B06", name: "Arisas", img: null,
+                id: "B06", name: "Arisas", img: "assets/img/inspector_npc/npc_37.png",
                 profession: "Rifle man", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 nationality: "VN", level: 134, cert: "Rifle man", camp: "Eternal",
@@ -427,75 +427,116 @@ const GAME_DAYS = [
     {
         day: 3,
         title: "Final Day",
-        subtitle: "SCREENING DAY 03 — NGUY CƠ NỘI GIÁN",
+        subtitle: "SCREENING DAY 03 — KIỂM TRA ĐẶC BIỆT",
         criteria: [
-            { icon: "⛔", cls: "danger",  text: "Cấm: Bất cứ ai liên quan đến Camp Delta-9 (Gián điệp)" },
-            { icon: "⛔", cls: "danger",  text: "Cấm: Người chơi có hình xăm đỏ (Dấu hiệu tội phạm)" },
-            { icon: "✅", cls: "ok",      text: "Duyệt: Những ai được quan chức cấp cao bảo lãnh" },
-            { icon: "⚠️", cls: "warning", text: "Lưu ý: Delta-9 đang tìm cách xâm nhập bằng mọi giá" }
+            { icon: "⛔", cls: "danger",  text: "Cấm: Thành viên hoặc cựu thành viên của Rival Camps (Astral, Hunter...)" },
+            { icon: "⛔", cls: "danger",  text: "Cấm: Acc vẫn còn nằm trong camp đối thủ khi nộp đơn" },
+            { icon: "✅", cls: "ok",      text: "Duyệt: Người được thành viên SAO-ĐÊM bảo lãnh trực tiếp" },
+            { icon: "✅", cls: "ok",      text: "Duyệt: Người VN mua lại acc và đã khai rõ ràng" },
+            { icon: "⚠️", cls: "warning", text: "Tra kỹ kênh Message — có nhiều thông tin hữu ích" }
         ],
         applicants: [
             {
-                id: "C01", name: "ARIA CHEN", img: null,
-                profession: "Người quen bảo lãnh", criminal: false, enemyCamp: false,
+                id: "C01", 
+                name: "ZxPhantom",
+                img: "assets/img/inspector_npc/npc_36.png",
+                nationality: "VN", level: 140, cert: "Rifle man", camp: "Konoha",
+                friends: [
+                    { name: "Kaito_VN", intimacy: 95, camp: "Eternal" }
+                ],
+                profession: "Người chơi tự do", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "Chào anh, anh Bảo bảo em qua đây gặp sếp trực tiếp để xin vào camp.", next: "l2" },
-                    { text: "Em chuyên đi gom nguyên liệu chế đồ, không liên quan gì đến hội Delta-9 đâu ạ.", next: null }
+                    { text: "ê sếp, cho mình xin vào camp với. Mình là ZxPhantom, mới mua lại acc này từ đầu tuần.", next: "l2" },
+                    { text: "Acc hồi trước bên Konoha nhưng đã xin rời rồi, giờ không còn trong camp đó nữa đâu. Mình người VN 100% nha sếp.", next: null }
                 ]
             },
             {
-                id: "C02", name: "BLAKE 'SHADOW' FINN", img: null,
-                profession: "Kẻ săn đêm", criminal: false, enemyCamp: true,
+                id: "C02",
+                name: "Blake_Shadow",
+                img: "assets/img/inspector_npc/npc_26.png",
+                nationality: "VN", level: 145, cert: "Warrior", camp: "Astral",
+                friends: [
+                    { name: "Kira_DX", intimacy: 40, camp: "Astral" }
+                ],
+                profession: "Thợ săn đêm", criminal: false, enemyCamp: true,
                 shouldApprove: false,
                 lines: [
-                    { text: "Nghe nói camp mình đang cần người đi raid đêm. Tôi có nhiều kinh nghiệm PK lắm nè.", next: "l2" },
-                    { text: "[Hệ thống quét thấy huy hiệu Delta-9 giấu trong tay áo — Nghi vấn gián điệp]", next: null }
+                    { text: "Chào sếp, nghe nói SAO-ĐÊM đang tuyển nên mình qua hỏi thăm. Mình hay đi raid đêm, kinh nghiệm khá nhiều.", next: "l2" },
+                    { text: "Trước mình có chơi bên Astral một thời gian ngắn nhưng thấy không hợp rồi bỏ. Giờ tìm camp mới cho ổn định hơn.", next: null }
                 ]
             },
             {
-                id: "C03", name: "WOLF STRIDER", img: null,
-                profession: "Lãng khách solo", criminal: false, enemyCamp: false,
-                shouldApprove: false,
-                lines: [
-                    { text: "Sếp ơi tôi toàn chơi một mình thôi, nay muốn đổi gió vào camp cày chung với team cho vui.", next: "l2" },
-                    { text: "[Camera an ninh phát hiện hình xăm rắn đỏ bên cổ trái — Thuộc danh sách đen]", next: null }
-                ]
-            },
-            {
-                id: "C04", name: "VERA 'WRENCH' KIM", img: null,
-                profession: "Thợ bảo trì súng", criminal: false, enemyCamp: false,
+                id: "C03",
+                name: "Vera_Kim",
+                img: "assets/img/inspector_npc/npc_35.png",
+                nationality: "VN", level: 138, cert: "Herb", camp: "VNHouse",
+                friends: [
+                    { name: "MAI", intimacy: 100, camp: "SAO-ĐÊM" }
+                ],
+                profession: "Thợ bảo trì vũ khí", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "Chào sếp, chị Mai giới thiệu em qua đây. Em chuyên bảo trì vũ khí với sửa xe cho anh em.", next: "l2" },
-                    { text: "Lý lịch em sạch 100%, chị Mai bảo chứng nên sếp cứ yên tâm nhận em nha.", next: null }
+                    { text: "Hi sếp, mình là Vera. Chị Mai bên camp mình giới thiệu qua đây xin vào.", next: "l2" },
+                    { text: "Mình chuyên craft súng với bán gb cho anh em, không liên quan gì tới rival camp nào khác hết nha.", next: null }
                 ]
             },
             {
-                id: "C05", name: "REED 'WHISPER' CALLOWAY", img: null,
-                profession: "Kẻ đào tẩu", criminal: false, enemyCamp: true,
+                id: "C04",
+                name: "NightBuyer",
+                img: "assets/img/inspector_npc/npc_27.png",
+                nationality: "VN", level: 148, cert: "Sniper", camp: "Tagalog",
+                friends: [
+                    { name: "TradeKing_Ha", intimacy: 35, camp: "Eternal" }
+                ],
+                profession: "Người chơi mới", criminal: false, enemyCamp: true,
                 shouldApprove: false,
                 lines: [
-                    { text: "Cứu em với sếp, em đang bị tụi Delta-9 truy đuổi vì biết quá nhiều bí mật của tụi nó.", next: "l2" },
-                    { text: "[Phân tích hành vi: Giọng nói có vẻ đang diễn kịch, không hề có dấu hiệu sợ hãi thật sự]", next: null }
+                    { text: "Chào anh, em muốn xin vào camp SAO-ĐÊM. Em là new owner nè.", next: "l2" },
+                    { text: "Cái acc Tagalog này được chốt hơi muộn nên nên chiều nay mới xong.", next: null }
                 ]
             },
             {
-                id: "C06", name: "LUNA HAYES", img: null,
+                id: "C05",
+                name: "Reed_W",
+                img: "assets/img/inspector_npc/npc_28.png",
+                nationality: "VN", level: 142, cert: "Miner", camp: "Konoha",
+                friends: [
+                    { name: "Shadow", intimacy: 15, camp: "Konoha" }
+                ],
+                profession: "Người chơi lang thang", criminal: false, enemyCamp: true,
+                shouldApprove: false,
+                lines: [
+                    { text: "Mình cần vào camp gấp, tụi bên kia đang kiếm chuyện với mình lắm vì mình biết nhiều chuyện nội bộ của tụi nó.", next: "l2" },
+                    { text: "Không tiện nói nhiều ở đây đâu sếp, nhưng tin mình đi, mình đứng về phía SAO-ĐÊM mà. Cần vào gấp.", next: null }
+                ]
+            },
+            {
+                id: "C06",
+                name: "LunaHayes",
+                img: "assets/img/inspector_npc/npc_29.png",
+                nationality: "VN", level: 135, cert: "Herb", camp: "SANTUY",
+                friends: [
+                    { name: "THIỆN", intimacy: 98, camp: "SAO-ĐÊM" }
+                ],
                 profession: "Dân chế Buff", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "Chào anh, em biết chế nhiều loại thuốc tăng lực hỗ trợ anh em đi raid. Anh Thiện bảo em qua đây.", next: "l2" },
-                    { text: "Lý lịch em trong sạch, không hình xăm, chỉ muốn vào camp để cống hiến thôi.", next: null }
+                    { text: "Hello sếp! Mình là Luna, ahihi. Anh Thiện nhờ mình qua đây đăng ký vào camp.", next: "l2" },
+                    { text: "Mình chuyên pha mấy loại buff cho anh em raid đêm. Không biết gì về mấy vụ camp chiến đâu nha, chỉ thích chill thôi.", next: null }
                 ]
             },
             {
-                id: "C07", name: "UNKNOWN DRIFTER", img: null,
-                profession: "Người chơi bí ẩn", criminal: false, enemyCamp: true,
+                id: "C07",
+                name: "DrifterX",
+                img: "assets/img/inspector_npc/npc_32.png",
+                nationality: "USA", level: 150, cert: "Warrior", camp: "Fortis",
+                friends: [],
+                profession: "Người chơi ẩn danh", criminal: false, enemyCamp: true,
                 shouldApprove: false,
                 lines: [
-                    { text: "Cho tôi vào camp ngay đi, không có thời gian để giải thích nhiều đâu.", next: "l2" },
-                    { text: "[Hệ thống tự động quét thấy thiết bị định vị của Delta-9 trong balo đối tượng]", next: null }
+                    { text: "Cho tôi vào camp đi, không cần hỏi nhiều. Tôi đủ điều kiện hết rồi.", next: "l2" },
+                    { text: "Lý lịch tôi sạch, tôi không muốn khai gì thêm. Cứ duyệt đi là xong.", next: null }
                 ]
             }
         ]
@@ -506,22 +547,28 @@ const GAME_DAYS = [
 const PT_BINH_APP = {
     id: "A-BL-02", name: "pt_bình", img: "assets/img/inspector_npc/npc_6.png",
     nationality: "VN", level: 135, cert: "Logger", camp: "Eternal",
+    friends: [
+        { name: "CHIEF_TAG", intimacy: 45, camp: "Tagalog" }
+    ],
     profession: "Cựu thành viên Sao Đêm", criminal: true, enemyCamp: false,
-    shouldApprove: false, 
+    shouldApprove: false,
     lines: [
-        { text: "Chào sếp, cho tui cơ hội quay lại camp với. Tui biết sai rồi, lần này tui sẽ chăm chỉ cày cuốc.", next: "l2" },
-        { text: "[Hệ thống: Đối tượng từng bị trục xuất vì hiềm khích và bêu xấu Sao Đêm. Liên tục rêu rao bêu xấu bên ngoài nhưng luôn tìm cách vào lại thất bại.]", next: null }
+        { text: "Sếp ơi cho tui comeback camp với. Tui biết sai rồi, lần này tui thề chăm chỉ, không gây sự gì nữa đâu.", next: "l2" },
+        { text: "Hồi xưa tui nóng tính quá nên mới ra nông nỗi đó, nhưng giờ khác rồi. Tui chỉ muốn cày chung với anh em thôi.", next: null }
     ]
 };
 
 const ROY_APP = {
     id: "A-BL-03", name: "Roy", img: "assets/img/inspector_npc/npc_8.png",
     nationality: "VN", level: 148, cert: "Warrior", camp: "Unity",
+    friends: [
+        { name: "Kaito_VN", intimacy: 10, camp: "Eternal" }
+    ],
     profession: "Người chơi tự do", criminal: true, enemyCamp: false,
-    shouldApprove: false, 
+    shouldApprove: false,
     lines: [
-        { text: "Chào bạn, mình là Minh Nhật. Muốn tìm một camp ổn định để gắn bó lâu dài. Mình có kinh nghiệm PK và săn Boss.", next: "l2" },
-        { text: "[Cảnh báo: Nhận dạng thông tin trùng khớp với 'Roy' - Scammer khét tiếng Life After VN. Thường tự giới thiệu là Minh Nhật kèm đời tư giả mạo.]", next: null }
+        { text: "Chào bạn, mình là Minh Nhật. Đang tìm một camp ổn định để gắn bó. Mình có kinh nghiệm và cực kỳ uy tín.", next: "l2" },
+        { text: "Mình chơi khá lâu nhưng trước giờ chưa được vào camp nào xịn. Hy vọng bạn official cho mình cơ hội nhé!", next: null }
     ]
 };
 
@@ -624,21 +671,21 @@ const MAYOR_INTRO_SCRIPTS = {
             speaker: 'DL',
             side: 'left',
             image: 'assets/img/inspector_npc/npc_25.png',
-            text: 'Chú Nam, nhiều ae camp nước ngoài sẽ tới camp mình để chuẩn bị cho mùa CTC sắp tới',
+            text: 'Chú Nam, nhiều ae mua acc từ camp đối thủ lắm, chú check tin nhắn nhé',
             next: 'd3_3'
         },
         'd3_3': {
             speaker: 'Chy Chy',
             side: 'left',
             image: 'assets/img/inspector_npc/npc_20.png',
-            text: 'OK. Và chú nhớ duyệt cả những acc được báo danh liệt kê từ các camp đồng minh nhé',
+            text: 'OK. bạn new official nhớ check cả tin nhắn ở group chung để biết tình hình mà duyệt nha',
             next: 'd3_4'
         },
         'd3_4': {
             speaker: 'Silver-Hand',
             side: 'right',
             image: 'assets/img/mayor_dialogue_2.png',
-            text: 'Rắc rối nhỉ. Chúc bạn new official may mắn.',
+            text: 'Rắc rối nhỉ. Chúc bạn new official may mắn. Để mình duyệt bạn vào group camp mình.',
             next: null
         }
     }
@@ -1452,7 +1499,7 @@ function showGameOver() {
         setTimeout(() => showDayTransition(0), 600);
     };
     gameOverScreen.querySelector('#goHome').onclick = () => {
-        window.location.href = 'index.html';
+        window.location.href = 'drama.html';
     };
 
     // Pick epilogue script based on accuracy

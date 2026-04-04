@@ -99,12 +99,17 @@ function shuffleArray(arr) {
     return a;
 }
 
-// Assign unique NPC images to all applicants in a day (no repeats)
+// Assign unique NPC images to all applicants in a day (no repeats, only if not already assigned)
 function assignNpcImages(dayIndex) {
     const applicants = GAME_DAYS[dayIndex].applicants;
     const pool = shuffleArray(NPC_IMAGES);
-    applicants.forEach((app, i) => {
-        app.img = pool[i % pool.length];
+    let poolIndex = 0;
+    applicants.forEach((app) => {
+        // Chỉ random ảnh nếu NPC chưa được chỉ định sẵn ảnh (img đang là null)
+        if (!app.img) {
+            app.img = pool[poolIndex % pool.length];
+            poolIndex++;
+        }
     });
 }
 
@@ -117,9 +122,27 @@ const MAYOR_NOTES = [
     /* DAY 1 */
     "LƯU Ý QUAN TRỌNG TỪ THỊ TRƯỞNG:\n\nHiện nay có một số anh em VN mua lại tài khoản (acc) từ người nước ngoài thuộc các Camp đối thủ để sử dụng.\n\nNếu gặp trường hợp thẻ bài ghi quốc tịch nước ngoài và thuộc Camp đối địch, nhưng người đó khẳng định trong hội thoại là 'người Việt' hoặc 'tài khoản mới mua', chúng ta VẪN DUYỆT cho họ vào camp.",
     /* DAY 2 */
-    "Chỉ thị Ngày 2 đang được soạn thảo...",
+    "THÔNG BÁO QUAN TRỌNG NGÀY 2:\n\nHôm nay chúng ta đón chào một số anh em chiến binh từ các chương trình đánh thuê CTC quốc tế trở về. \n\nHãy kiểm tra danh mục 'CTC RETURNER' để nhận diện họ. Đây là những nhân tài cần thiết cho sức mạnh quân sự của SAO-ĐÊM, hãy DUYỆT cho họ vào camp ngay lập tức khi họ xuất hiện.",
     /* DAY 3 */
     "Chỉ thị Ngày 3 đang được soạn thảo..."
+];
+
+const CTC_DATA = [
+    { 
+        name: "Kaelith", 
+        img: "npc_5.png", 
+        story: "Chiến binh kỳ cựu từng chinh chiến tại các chiến trường CTC Châu Âu. Kỹ năng bắn tỉa điêu luyện, vừa hoàn thành hợp đồng đánh thuê 6 tháng và quyết định trở về cống hiến cho SAO-ĐÊM."
+    },
+    { 
+        name: "Xero", 
+        img: "npc_12.png", 
+        story: "Chuyên gia phá bẫy và đột kích. Từng phục vụ trong đội quân đánh thuê tại vùng Shelter Land phía Bắc. Trở về với lượng lớn kinh nghiệm chiến đấu thực tế."
+    },
+    { 
+        name: "Valkyrie", 
+        img: "npc_19.png", 
+        story: "Nữ chiến binh dũng mãnh, nổi danh với khả năng càn quét bằng vũ khí hạng nặng. Cô ấy đã giúp nhiều Camp chiến thắng trong các trận CTC lớn trước khi quay về nhà."
+    }
 ];
 
 const GAME_DAYS = [
@@ -255,35 +278,51 @@ const GAME_DAYS = [
     {
         day: 2,
         title: "Day Two",
-        subtitle: "SCREENING DAY 02 — CHIẾN DỊCH THANH LỌC",
+        subtitle: "SCREENING DAY 02 — ĐÁNH THUÊ TRỞ VỀ",
         criteria: [
-            { icon: "✅", cls: "ok",      text: "Ưu tiên: Anh em có Tier chiến đấu cao" },
-            { icon: "✅", cls: "ok",      text: "Duyệt: Những ai từng đi Tuần tra hoặc Shelter Land" },
-            { icon: "⛔", cls: "danger",  text: "Từ chối: Tài khoản chơi chưa đủ 30 ngày" },
-            { icon: "⚠️", cls: "warning", text: "Cảnh báo: Mang theo quá nhiều vũ khí hạng nặng" }
+            { icon: "🇻🇳", cls: "ok",      text: "PRIORITY: Đối với mem VN thì nhận vào không khắt khe." },
+            { icon: "🌐", cls: "warning", text: "GLOBAL: Nếu là người nước ngoài thì ít nhất phải level 145+" },
+            { icon: "⛔", cls: "danger",  text: "DENY: Kiểm tra hòm thư rival camp và danh sách black list nhé" },
+            { icon: "🔍", cls: "ok",      text: "HINT: Hãy chọn check ID để kiểm tra từng người" },
+            { icon: "🔍", cls: "ok",      text: "Hãy check cả danh sách CTC returner để xem mọi người đi đánh thuê trở về nhé" },
         ],
         applicants: [
             {
-                id: "B01", name: "VICTOR 'IRON' SHAW", img: null,
-                profession: "Tay chơi lão luyện", criminal: false, enemyCamp: false,
+                id: "B01", name: "Xeno", img: null,
+                profession: "Play boy", criminal: false, enemyCamp: false,
+                nationality: "VN", level: 139, cert: "Miner", camp: "Tagalog",
+                friends: [
+                    { name: "Sword", intimacy: 85, camp: "Tagalog" },
+                    { name: "MENGR", intimacy: 70, camp: "Astral" }
+                ],
                 shouldApprove: true,
                 lines: [
-                    { text: "Tôi đi Shelter Land 4 lần rồi sếp. Tier 4 chiến đấu, bao nhiệt tình luôn.", next: "l2" },
-                    { text: "Camp cũ mới giải tán vì tranh chấp địa bàn, giờ đang tìm bến đỗ mới để tiếp tục cày.", next: null }
+                    { text: "Chào sếp", next: "l2" },
+                    { text: "Sau một thời gian lang thang phiêu bạt camp nước ngoài, mình muốn vào camp mình trải nghiệm", next: null }
                 ]
             },
             {
-                id: "B02", name: "MIKA REED", img: null,
-                profession: "Tân thủ tò mò", criminal: false, enemyCamp: false,
+                id: "B02", name: "Mangos", img: null,
+                profession: "Warrior", criminal: false, enemyCamp: false,
+                nationality: "INDO", level: 147, cert: "Herb", camp: "Hunter",
+                friends: [
+                    { name: "Sins", intimacy: 90, camp: "Hunter" },
+                    { name: "MENGR", intimacy: 45, camp: "Astral" }
+                ],
                 shouldApprove: false,
                 lines: [
-                    { text: "Dạ chào sếp, em mới chơi được... 12 ngày à. Nhưng em hứa sẽ tiếp thu nhanh lắm!", next: "l2" },
-                    { text: "Em chưa bao giờ đi raid hay gì hết, sếp cho em vào camp làm chân chạy vặt cũng được ạ.", next: null }
+                    { text: "Hi, the ctc season has been ended", next: "l2" },
+                    { text: "Can i join your camp for the next ctc?", next: null }
                 ]
             },
             {
-                id: "B03", name: "JAMES 'GHOST' COLE", img: null,
-                profession: "Xạ thủ bọc lót", criminal: false, enemyCamp: false,
+                id: "B03", name: "JAMES", img: null,
+                profession: "Sniper", criminal: false, enemyCamp: false,
+                nationality: "ThaiLand", level: 147, cert: "Herb", camp: "Hunter",
+                friends: [
+                    { name: "Sins", intimacy: 90, camp: "Hunter" },
+                    { name: "MENGR", intimacy: 45, camp: "Astral" }
+                ],
                 shouldApprove: true,
                 lines: [
                     { text: "Hê lô sếp, mình chuyên bọc lót cho anh em đi tuần tra. Acc chơi được 47 ngày rồi.", next: "l2" },
@@ -432,6 +471,20 @@ if (Math.random() < 0.5) {
     GAME_DAYS[2].applicants.splice(2, 0, PT_BINH_APP); // Day 3
 }
 
+// Inject one random CTC member into Day 2
+const randomCTC = CTC_DATA[Math.floor(Math.random() * CTC_DATA.length)];
+const CTC_APP = {
+    id: "A-CTC-01", name: randomCTC.name, img: `assets/img/inspector_npc/${randomCTC.img}`,
+    nationality: "VN", level: 150, cert: "Warrior", camp: "SAO-ĐÊM",
+    profession: "Chiến binh CTC trở về", criminal: false, enemyCamp: false,
+    shouldApprove: true,
+    lines: [
+        { text: `Chào sếp, tôi là ${randomCTC.name} đây. Tôi vừa hoàn thành chuyến đánh thuê CTC quốc tế và trở về camp.`, next: "l2" },
+        { text: "Rất vui được quay lại sát cánh cùng anh em SAO-ĐÊM. Sếp check hồ sơ ctc của tôi nhé.", next: null }
+    ]
+};
+GAME_DAYS[1].applicants.splice(Math.floor(Math.random() * 3) + 2, 0, CTC_APP);
+
 
 /* ================================================
    MAYOR INTRO SCRIPTS (Day Introductions)
@@ -470,22 +523,23 @@ const MAYOR_INTRO_SCRIPTS = {
         'start': {
             speaker: 'Silver-Hand',
             side: 'right',
-            image: 'assets/img/mayor_dialogue_2.png',
+            image: 'assets/img/mayor_dialogue_5.png',
             effect: 'flash',
-            text: 'Báo cáo tình hình: Nguồn cung thực phẩm đang cạn kiệt. Chúng ta cần những người có thực lực chiến đấu thực sự.',
+            text: 'Chúc mừng bạn đã tới ngày thứ 2.',
             next: 'd2_2'
         },
         'd2_2': {
-            speaker: 'Silver-Hand',
-            side: 'right',
-            text: 'Hôm nay, hãy chú ý đến những người có Tier chiến đấu cao và đã từng tham gia tuần tra. Họ sẽ giúp ích cho Shelter Land tới.',
+            speaker: 'Chy Chy',
+            side: 'left',
+            image: 'assets/img/inspector_npc/npc_20.png',
+            text: 'Chú ơi- mùa CTC này xong rồi, ae đi đánh thuê ở các camp đồng minh sẽ về đấy, chú để ý để duyệt nhé.',
             next: 'd2_3'
         },
         'd2_3': {
             speaker: 'Silver-Hand',
             side: 'right',
             image: 'assets/img/mayor_dialogue_3.png',
-            text: 'Cẩn thận với những kẻ mang nhiều vũ khí hạng nặng nhưng không rõ lai lịch. Đừng để chúng lọt lưới.',
+            text: 'Uả... hôm nay đã là mùa cuối CTC rồi à. Ok để bảo bạn new official đây quản lý nhé.',
             next: null
         }
     },
@@ -495,20 +549,28 @@ const MAYOR_INTRO_SCRIPTS = {
             side: 'right',
             image: 'assets/img/mayor_dialogue_1.png',
             effect: 'shake',
-            text: 'Báo động cấp độ ĐỎ! Hệ thống radar phát hiệu tín hiệu của gián điệp trà trộn trong dòng người tị nạn.',
+            text: 'Chúc mừng tới ngày 3 bạn nhé. Tôi có việc quan trọng giao cho bạn đây',
             next: 'd3_2'
         },
         'd3_2': {
-            speaker: 'Silver-Hand',
-            side: 'right',
-            text: 'Hôm nay, chỉ được duyệt những người có thông tin minh bạch 100%. Nếu thấy bất cứ nghi vấn nào, hãy TỪ CHỐI ngay lập tức.',
+            speaker: 'DL',
+            side: 'left',
+            image: 'assets/img/inspector_npc/npc_25.png',
+            text: 'Chú Nam, nhiều ae camp nước ngoài sẽ tới camp mình để chuẩn bị cho mùa CTC sắp tới',
             next: 'd3_3'
         },
         'd3_3': {
+            speaker: 'Chy Chy',
+            side: 'left',
+            image: 'assets/img/inspector_npc/npc_20.png',
+            text: 'OK. Và chú nhớ duyệt cả những acc được báo danh liệt kê từ các camp đồng minh nhé',
+            next: 'd3_4'
+        },
+        'd3_4': {
             speaker: 'Silver-Hand',
             side: 'right',
             image: 'assets/img/mayor_dialogue_2.png',
-            text: 'Sự tồn vong của SAO-ĐÊM nằm trong tay bạn. Hãy làm tốt nhiệm vụ cuối cùng này.',
+            text: 'Rắc rối nhỉ. Chúc bạn new official may mắn.',
             next: null
         }
     }
@@ -528,7 +590,9 @@ const State = {
     totalScore: 0,
     dialogueDone: false,
     processing: false,
-    dayScores: []
+    dayScores: [],
+    ctcUnlockShown: false,
+    day1UnlockShown: false
 };
 
 /* ================================================
@@ -540,7 +604,8 @@ let criteriaBoard, npcCharImg, npcSkeleton, dlgSpeaker, dlgText, dlgNext,
     decisionFlash, stampOverlay, applicantCounter, dayBadge, scoreDisplay, lookupTerminal,
     idCardModal, idCardBtn, idAvatarImg, idName, idNation, idLevel, idCert, idCamp, socialContainer,
     rivalModal, rivalBtn, enemyList, allyList,
-    mayorNoteModal, mayorBtn, mayorNoteContent;
+    mayorNoteModal, mayorBtn, mayorNoteContent,
+    ctcModal, ctcBtn, ctcGrid;
 
 let vnEngine;
 
@@ -591,6 +656,11 @@ function initGame() {
     mayorNoteModal   = $('mayorNoteModal');
     mayorBtn         = $('mayorBtn');
     mayorNoteContent = $('mayorNoteContent');
+
+    // CTC elements
+    ctcModal         = $('ctcModal');
+    ctcBtn           = $('ctcBtn');
+    ctcGrid          = $('ctcGrid');
 
     // Dialogue click to advance
     $('inspectorDialogue').addEventListener('click', () => advanceLine());
@@ -656,6 +726,20 @@ function initGame() {
             playSfx('nierMail');
         } else {
             mayorNoteModal.classList.remove('show');
+            if (lookupContainer) lookupContainer.style.display = 'flex';
+            playSfx('nierMenu');
+        }
+    };
+
+    // CTC Modal Toggle
+    window.toggleCtcModal = (show) => {
+        if (show) {
+            populateCtcList();
+            ctcModal.classList.add('show');
+            if (lookupContainer) lookupContainer.style.display = 'none';
+            playSfx('nierMail');
+        } else {
+            ctcModal.classList.remove('show');
             if (lookupContainer) lookupContainer.style.display = 'flex';
             playSfx('nierMenu');
         }
@@ -853,7 +937,104 @@ function startDay(dayIndex) {
     }
 
     // Show lookup tools ONLY after intro
-    if (lookupContainer) lookupContainer.style.display = 'flex';
+    if (lookupContainer) {
+        lookupContainer.style.display = 'flex';
+        // Show/Hide CTC button based on day
+        if (ctcBtn) {
+            const isDay2 = (State.day >= 1);
+            ctcBtn.style.display = isDay2 ? 'flex' : 'none';
+            // Fire the "NEW FUNCTION UNLOCKED" animation only once, on Day 2 start
+            if (State.day === 1 && !State.ctcUnlockShown) {
+                State.ctcUnlockShown = true;
+                setTimeout(() => triggerCtcUnlockAnim(), 800);
+            }
+        }
+        // Fire Day 1 unlock animation
+        if (State.day === 0 && !State.day1UnlockShown) {
+            State.day1UnlockShown = true;
+            setTimeout(() => triggerDay1UnlockAnim(), 800);
+        }
+    }
+}
+
+/* ================================================
+   CTC UNLOCK ANIMATION (fires once on Day 2 start)
+================================================ */
+function triggerCtcUnlockAnim() {
+    const toast = document.getElementById('ctcUnlockToast');
+    const badge = document.getElementById('ctcNewBadge');
+
+    // 1. Add glow ring on button
+    if (ctcBtn) ctcBtn.classList.add('ctc-glow');
+
+    // 2. Slide toast up
+    if (toast) {
+        toast.classList.remove('hide');
+        toast.classList.add('show');
+    }
+
+    // 3. After 3.5s: slide toast back down, remove glow (but keep badge)
+    setTimeout(() => {
+        if (toast) {
+            toast.classList.remove('show');
+            toast.classList.add('hide');
+        }
+        if (ctcBtn) ctcBtn.classList.remove('ctc-glow');
+    }, 3500);
+
+    // 4. After 10s: remove the NEW badge permanently
+    setTimeout(() => {
+        if (badge) {
+            badge.style.transition = 'opacity 0.5s';
+            badge.style.opacity = '0';
+            setTimeout(() => badge.remove(), 500);
+        }
+    }, 10000);
+}
+
+/* ================================================
+   DAY 1 UNLOCK ANIMATION (fires once on Day 1 start)
+================================================ */
+function triggerDay1UnlockAnim() {
+    const toast = document.getElementById('day1UnlockToast');
+    const rivalBtnLocal = document.getElementById('rivalBtn');
+    const blacklistBtnLocal = document.getElementById('blacklistBtn');
+    const rivalBadge = document.getElementById('rivalNewBadge');
+    const blacklistBadge = document.getElementById('blacklistNewBadge');
+
+    // 1. Add glow ring on buttons
+    if (rivalBtnLocal) rivalBtnLocal.classList.add('rival-glow');
+    if (blacklistBtnLocal) blacklistBtnLocal.classList.add('blacklist-glow');
+
+    // 2. Slide toast up
+    if (toast) {
+        toast.classList.remove('hide');
+        toast.classList.add('show');
+    }
+
+    // 3. After 3.5s: slide toast back down, remove glow (but keep badges)
+    setTimeout(() => {
+        if (toast) {
+            toast.classList.remove('show');
+            toast.classList.add('hide');
+        }
+        if (rivalBtnLocal) rivalBtnLocal.classList.remove('rival-glow');
+        if (blacklistBtnLocal) blacklistBtnLocal.classList.remove('blacklist-glow');
+    }, 3500);
+
+    // 4. After 10s: remove the NEW badges permanently
+    setTimeout(() => {
+        if (rivalBadge) {
+            rivalBadge.style.transition = 'opacity 0.5s';
+            rivalBadge.style.opacity = '0';
+            setTimeout(() => rivalBadge.remove(), 500);
+        }
+        if (blacklistBadge) {
+            blacklistBadge.style.transition = 'opacity 0.5s';
+            blacklistBadge.style.opacity = '0';
+            setTimeout(() => blacklistBadge.remove(), 500);
+        }
+    }, 10000);
 }
 
 /* ================================================
@@ -1217,3 +1398,66 @@ function showBlacklistStory(text) {
 }
 
 
+/* ============ CTC LOGIC ============ */
+function populateCtcList() {
+    if (!ctcGrid) return;
+    ctcGrid.innerHTML = '';
+    
+    const storyBox = document.getElementById('ctcStory');
+    if (storyBox) storyBox.textContent = 'Chọn một thành viên để xem thông tin đi đánh thuê...';
+    
+    CTC_DATA.forEach(person => {
+        const item = document.createElement('div');
+        item.className = 'ctc-item';
+        
+        const portrait = `assets/img/inspector_npc/portrail/${person.img}`;
+        
+        item.innerHTML = `
+            <div class="ctc-avatar-wrap">
+                <img src="${portrait}" class="ctc-avatar">
+            </div>
+            <div class="ctc-name">${person.name}</div>
+        `;
+        
+        item.onclick = () => {
+            document.querySelectorAll('.ctc-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            showCtcStory(person.story);
+            playSfx('nierMenu');
+        };
+        
+        ctcGrid.appendChild(item);
+    });
+}
+
+let ctcTypeTimer = null;
+let currentCtcStory = '';
+
+function showCtcStory(text) {
+    const box = document.getElementById('ctcStory');
+    if (!box) return;
+    
+    currentCtcStory = text;
+    if (ctcTypeTimer) clearInterval(ctcTypeTimer);
+    box.textContent = '';
+    
+    let i = 0;
+    ctcTypeTimer = setInterval(() => {
+        box.textContent += text.charAt(i);
+        box.scrollTop = box.scrollHeight;
+        i++;
+        if (i >= text.length) {
+            clearInterval(ctcTypeTimer);
+            ctcTypeTimer = null;
+        }
+    }, 20);
+
+    box.onclick = () => {
+        if (ctcTypeTimer) {
+            clearInterval(ctcTypeTimer);
+            ctcTypeTimer = null;
+            box.textContent = currentCtcStory;
+            box.scrollTop = box.scrollHeight;
+        }
+    };
+}

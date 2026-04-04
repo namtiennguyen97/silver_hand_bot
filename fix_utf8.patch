@@ -1,0 +1,618 @@
+﻿diff --git a/assets/js/inspector.js b/assets/js/inspector.js
+index 0ca9c89..4abec4a 100644
+--- a/assets/js/inspector.js
++++ b/assets/js/inspector.js
+@@ -99,12 +99,17 @@ function shuffleArray(arr) {
+     return a;
+ }
+ 
+-// Assign unique NPC images to all applicants in a day (no repeats)
++// Assign unique NPC images to all applicants in a day (no repeats, only if not already assigned)
+ function assignNpcImages(dayIndex) {
+     const applicants = GAME_DAYS[dayIndex].applicants;
+     const pool = shuffleArray(NPC_IMAGES);
+-    applicants.forEach((app, i) => {
+-        app.img = pool[i % pool.length];
++    let poolIndex = 0;
++    applicants.forEach((app) => {
++        // Chß╗ë random ß║únh nß║┐u NPC ch╞░a ─æ╞░ß╗úc chß╗ë ─æß╗ïnh sß║╡n ß║únh (img ─æang l├á null)
++        if (!app.img) {
++            app.img = pool[poolIndex % pool.length];
++            poolIndex++;
++        }
+     });
+ }
+ 
+@@ -117,11 +122,29 @@ const MAYOR_NOTES = [
+     /* DAY 1 */
+     "L╞»U ├¥ QUAN TRß╗îNG Tß╗¬ THß╗è TR╞»ß╗₧NG:\n\nHiß╗çn nay c├│ mß╗Öt sß╗æ anh em VN mua lß║íi t├ái khoß║ún (acc) tß╗½ ng╞░ß╗¥i n╞░ß╗¢c ngo├ái thuß╗Öc c├íc Camp ─æß╗æi thß╗º ─æß╗â sß╗¡ dß╗Ñng.\n\nNß║┐u gß║╖p tr╞░ß╗¥ng hß╗úp thß║╗ b├ái ghi quß╗æc tß╗ïch n╞░ß╗¢c ngo├ái v├á thuß╗Öc Camp ─æß╗æi ─æß╗ïch, nh╞░ng ng╞░ß╗¥i ─æ├│ khß║│ng ─æß╗ïnh trong hß╗Öi thoß║íi l├á 'ng╞░ß╗¥i Viß╗çt' hoß║╖c 't├ái khoß║ún mß╗¢i mua', ch├║ng ta Vß║¬N DUYß╗åT cho hß╗ì v├áo camp.",
+     /* DAY 2 */
+-    "Chß╗ë thß╗ï Ng├áy 2 ─æang ─æ╞░ß╗úc soß║ín thß║úo...",
++    "TH├öNG B├üO QUAN TRß╗îNG NG├ÇY 2:\n\nH├┤m nay ch├║ng ta ─æ├│n ch├áo mß╗Öt sß╗æ anh em chiß║┐n binh tß╗½ c├íc ch╞░╞íng tr├¼nh ─æ├ính thu├¬ CTC quß╗æc tß║┐ trß╗ƒ vß╗ü. \n\nH├úy kiß╗âm tra danh mß╗Ñc 'CTC RETURNER' ─æß╗â nhß║¡n diß╗çn hß╗ì. ─É├óy l├á nhß╗»ng nh├ón t├ái cß║ºn thiß║┐t cho sß╗⌐c mß║ính qu├ón sß╗▒ cß╗ºa SAO-─É├èM, h├úy DUYß╗åT cho hß╗ì v├áo camp ngay lß║¡p tß╗⌐c khi hß╗ì xuß║Ñt hiß╗çn.",
+     /* DAY 3 */
+     "Chß╗ë thß╗ï Ng├áy 3 ─æang ─æ╞░ß╗úc soß║ín thß║úo..."
+ ];
+ 
++const CTC_DATA = [
++    { 
++        name: "Kaelith", 
++        img: "npc_5.png", 
++        story: "Chiß║┐n binh kß╗│ cß╗▒u tß╗½ng chinh chiß║┐n tß║íi c├íc chiß║┐n tr╞░ß╗¥ng CTC Ch├óu ├éu. Kß╗╣ n─âng bß║»n tß╗ëa ─æi├¬u luyß╗çn, vß╗½a ho├án th├ánh hß╗úp ─æß╗ông ─æ├ính thu├¬ 6 th├íng v├á quyß║┐t ─æß╗ïnh trß╗ƒ vß╗ü cß╗æng hiß║┐n cho SAO-─É├èM."
++    },
++    { 
++        name: "Xero", 
++        img: "npc_12.png", 
++        story: "Chuy├¬n gia ph├í bß║½y v├á ─æß╗Öt k├¡ch. Tß╗½ng phß╗Ñc vß╗Ñ trong ─æß╗Öi qu├ón ─æ├ính thu├¬ tß║íi v├╣ng Shelter Land ph├¡a Bß║»c. Trß╗ƒ vß╗ü vß╗¢i l╞░ß╗úng lß╗¢n kinh nghiß╗çm chiß║┐n ─æß║Ñu thß╗▒c tß║┐."
++    },
++    { 
++        name: "Valkyrie", 
++        img: "npc_19.png", 
++        story: "Nß╗» chiß║┐n binh d┼⌐ng m├únh, nß╗òi danh vß╗¢i khß║ú n─âng c├án qu├⌐t bß║▒ng v┼⌐ kh├¡ hß║íng nß║╖ng. C├┤ ß║Ñy ─æ├ú gi├║p nhiß╗üu Camp chiß║┐n thß║»ng trong c├íc trß║¡n CTC lß╗¢n tr╞░ß╗¢c khi quay vß╗ü nh├á."
++    }
++];
++
+ const GAME_DAYS = [
+ 
+     /* ===== DAY 1 ===== */
+@@ -255,35 +278,51 @@ const GAME_DAYS = [
+     {
+         day: 2,
+         title: "Day Two",
+-        subtitle: "SCREENING DAY 02 ΓÇö CHIß║╛N Dß╗èCH THANH Lß╗îC",
++        subtitle: "SCREENING DAY 02 ΓÇö ─É├üNH THU├è TRß╗₧ Vß╗Ç",
+         criteria: [
+-            { icon: "Γ£à", cls: "ok",      text: "╞»u ti├¬n: Anh em c├│ Tier chiß║┐n ─æß║Ñu cao" },
+-            { icon: "Γ£à", cls: "ok",      text: "Duyß╗çt: Nhß╗»ng ai tß╗½ng ─æi Tuß║ºn tra hoß║╖c Shelter Land" },
+-            { icon: "Γ¢ö", cls: "danger",  text: "Tß╗½ chß╗æi: T├ái khoß║ún ch╞íi ch╞░a ─æß╗º 30 ng├áy" },
+-            { icon: "ΓÜá∩╕Å", cls: "warning", text: "Cß║únh b├ío: Mang theo qu├í nhiß╗üu v┼⌐ kh├¡ hß║íng nß║╖ng" }
++            { icon: "≡ƒç╗≡ƒç│", cls: "ok",      text: "PRIORITY: ─Éß╗æi vß╗¢i mem VN th├¼ nhß║¡n v├áo kh├┤ng khß║»t khe." },
++            { icon: "≡ƒîÉ", cls: "warning", text: "GLOBAL: Nß║┐u l├á ng╞░ß╗¥i n╞░ß╗¢c ngo├ái th├¼ ├¡t nhß║Ñt phß║úi level 145+" },
++            { icon: "Γ¢ö", cls: "danger",  text: "DENY: Kiß╗âm tra h├▓m th╞░ rival camp v├á danh s├ích black list nh├⌐" },
++            { icon: "≡ƒöì", cls: "ok",      text: "HINT: H├úy chß╗ìn check ID ─æß╗â kiß╗âm tra tß╗½ng ng╞░ß╗¥i" },
++            { icon: "≡ƒöì", cls: "ok",      text: "H├úy check cß║ú danh s├ích CTC returner ─æß╗â xem mß╗ìi ng╞░ß╗¥i ─æi ─æ├ính thu├¬ trß╗ƒ vß╗ü nh├⌐" },
+         ],
+         applicants: [
+             {
+-                id: "B01", name: "VICTOR 'IRON' SHAW", img: null,
+-                profession: "Tay ch╞íi l├úo luyß╗çn", criminal: false, enemyCamp: false,
++                id: "B01", name: "Xeno", img: null,
++                profession: "Play boy", criminal: false, enemyCamp: false,
++                nationality: "VN", level: 139, cert: "Miner", camp: "Tagalog",
++                friends: [
++                    { name: "Sword", intimacy: 85, camp: "Tagalog" },
++                    { name: "MENGR", intimacy: 70, camp: "Astral" }
++                ],
+                 shouldApprove: true,
+                 lines: [
+-                    { text: "T├┤i ─æi Shelter Land 4 lß║ºn rß╗ôi sß║┐p. Tier 4 chiß║┐n ─æß║Ñu, bao nhiß╗çt t├¼nh lu├┤n.", next: "l2" },
+-                    { text: "Camp c┼⌐ mß╗¢i giß║úi t├ín v├¼ tranh chß║Ñp ─æß╗ïa b├án, giß╗¥ ─æang t├¼m bß║┐n ─æß╗ù mß╗¢i ─æß╗â tiß║┐p tß╗Ñc c├áy.", next: null }
++                    { text: "Ch├áo sß║┐p", next: "l2" },
++                    { text: "Sau mß╗Öt thß╗¥i gian lang thang phi├¬u bß║ít camp n╞░ß╗¢c ngo├ái, m├¼nh muß╗æn v├áo camp m├¼nh trß║úi nghiß╗çm", next: null }
+                 ]
+             },
+             {
+-                id: "B02", name: "MIKA REED", img: null,
+-                profession: "T├ón thß╗º t├▓ m├▓", criminal: false, enemyCamp: false,
++                id: "B02", name: "Mangos", img: null,
++                profession: "Warrior", criminal: false, enemyCamp: false,
++                nationality: "INDO", level: 147, cert: "Herb", camp: "Hunter",
++                friends: [
++                    { name: "Sins", intimacy: 90, camp: "Hunter" },
++                    { name: "MENGR", intimacy: 45, camp: "Astral" }
++                ],
+                 shouldApprove: false,
+                 lines: [
+-                    { text: "Dß║í ch├áo sß║┐p, em mß╗¢i ch╞íi ─æ╞░ß╗úc... 12 ng├áy ├á. Nh╞░ng em hß╗⌐a sß║╜ tiß║┐p thu nhanh lß║»m!", next: "l2" },
+-                    { text: "Em ch╞░a bao giß╗¥ ─æi raid hay g├¼ hß║┐t, sß║┐p cho em v├áo camp l├ám ch├ón chß║íy vß║╖t c┼⌐ng ─æ╞░ß╗úc ß║í.", next: null }
++                    { text: "Hi, the ctc season has been ended", next: "l2" },
++                    { text: "Can i join your camp for the next ctc?", next: null }
+                 ]
+             },
+             {
+-                id: "B03", name: "JAMES 'GHOST' COLE", img: null,
+-                profession: "Xß║í thß╗º bß╗ìc l├│t", criminal: false, enemyCamp: false,
++                id: "B03", name: "JAMES", img: null,
++                profession: "Sniper", criminal: false, enemyCamp: false,
++                nationality: "ThaiLand", level: 147, cert: "Herb", camp: "Hunter",
++                friends: [
++                    { name: "Sins", intimacy: 90, camp: "Hunter" },
++                    { name: "MENGR", intimacy: 45, camp: "Astral" }
++                ],
+                 shouldApprove: true,
+                 lines: [
+                     { text: "H├¬ l├┤ sß║┐p, m├¼nh chuy├¬n bß╗ìc l├│t cho anh em ─æi tuß║ºn tra. Acc ch╞íi ─æ╞░ß╗úc 47 ng├áy rß╗ôi.", next: "l2" },
+@@ -432,6 +471,20 @@ if (Math.random() < 0.5) {
+     GAME_DAYS[2].applicants.splice(2, 0, PT_BINH_APP); // Day 3
+ }
+ 
++// Inject one random CTC member into Day 2
++const randomCTC = CTC_DATA[Math.floor(Math.random() * CTC_DATA.length)];
++const CTC_APP = {
++    id: "A-CTC-01", name: randomCTC.name, img: `assets/img/inspector_npc/${randomCTC.img}`,
++    nationality: "VN", level: 150, cert: "Warrior", camp: "SAO-─É├èM",
++    profession: "Chiß║┐n binh CTC trß╗ƒ vß╗ü", criminal: false, enemyCamp: false,
++    shouldApprove: true,
++    lines: [
++        { text: `Ch├áo sß║┐p, t├┤i l├á ${randomCTC.name} ─æ├óy. T├┤i vß╗½a ho├án th├ánh chuyß║┐n ─æ├ính thu├¬ CTC quß╗æc tß║┐ v├á trß╗ƒ vß╗ü camp.`, next: "l2" },
++        { text: "Rß║Ñt vui ─æ╞░ß╗úc quay lß║íi s├ít c├ính c├╣ng anh em SAO-─É├èM. Sß║┐p check hß╗ô s╞í ctc cß╗ºa t├┤i nh├⌐.", next: null }
++    ]
++};
++GAME_DAYS[1].applicants.splice(Math.floor(Math.random() * 3) + 2, 0, CTC_APP);
++
+ 
+ /* ================================================
+    MAYOR INTRO SCRIPTS (Day Introductions)
+@@ -470,22 +523,23 @@ const MAYOR_INTRO_SCRIPTS = {
+         'start': {
+             speaker: 'Silver-Hand',
+             side: 'right',
+-            image: 'assets/img/mayor_dialogue_2.png',
++            image: 'assets/img/mayor_dialogue_5.png',
+             effect: 'flash',
+-            text: 'B├ío c├ío t├¼nh h├¼nh: Nguß╗ôn cung thß╗▒c phß║⌐m ─æang cß║ín kiß╗çt. Ch├║ng ta cß║ºn nhß╗»ng ng╞░ß╗¥i c├│ thß╗▒c lß╗▒c chiß║┐n ─æß║Ñu thß╗▒c sß╗▒.',
++            text: 'Ch├║c mß╗½ng bß║ín ─æ├ú tß╗¢i ng├áy thß╗⌐ 2.',
+             next: 'd2_2'
+         },
+         'd2_2': {
+-            speaker: 'Silver-Hand',
+-            side: 'right',
+-            text: 'H├┤m nay, h├úy ch├║ ├╜ ─æß║┐n nhß╗»ng ng╞░ß╗¥i c├│ Tier chiß║┐n ─æß║Ñu cao v├á ─æ├ú tß╗½ng tham gia tuß║ºn tra. Hß╗ì sß║╜ gi├║p ├¡ch cho Shelter Land tß╗¢i.',
++            speaker: 'Chy Chy',
++            side: 'left',
++            image: 'assets/img/inspector_npc/npc_20.png',
++            text: 'Ch├║ ╞íi- m├╣a CTC n├áy xong rß╗ôi, ae ─æi ─æ├ính thu├¬ ß╗ƒ c├íc camp ─æß╗ông minh sß║╜ vß╗ü ─æß║Ñy, ch├║ ─æß╗â ├╜ ─æß╗â duyß╗çt nh├⌐.',
+             next: 'd2_3'
+         },
+         'd2_3': {
+             speaker: 'Silver-Hand',
+             side: 'right',
+             image: 'assets/img/mayor_dialogue_3.png',
+-            text: 'Cß║⌐n thß║¡n vß╗¢i nhß╗»ng kß║╗ mang nhiß╗üu v┼⌐ kh├¡ hß║íng nß║╖ng nh╞░ng kh├┤ng r├╡ lai lß╗ïch. ─Éß╗½ng ─æß╗â ch├║ng lß╗ìt l╞░ß╗¢i.',
++            text: 'Uß║ú... h├┤m nay ─æ├ú l├á m├╣a cuß╗æi CTC rß╗ôi ├á. Ok ─æß╗â bß║úo bß║ín new official ─æ├óy quß║ún l├╜ nh├⌐.',
+             next: null
+         }
+     },
+@@ -495,20 +549,28 @@ const MAYOR_INTRO_SCRIPTS = {
+             side: 'right',
+             image: 'assets/img/mayor_dialogue_1.png',
+             effect: 'shake',
+-            text: 'B├ío ─æß╗Öng cß║Ñp ─æß╗Ö ─Éß╗Ä! Hß╗ç thß╗æng radar ph├ít hiß╗çu t├¡n hiß╗çu cß╗ºa gi├ín ─æiß╗çp tr├á trß╗Ön trong d├▓ng ng╞░ß╗¥i tß╗ï nß║ín.',
++            text: 'Ch├║c mß╗½ng tß╗¢i ng├áy 3 bß║ín nh├⌐. T├┤i c├│ viß╗çc quan trß╗ìng giao cho bß║ín ─æ├óy',
+             next: 'd3_2'
+         },
+         'd3_2': {
+-            speaker: 'Silver-Hand',
+-            side: 'right',
+-            text: 'H├┤m nay, chß╗ë ─æ╞░ß╗úc duyß╗çt nhß╗»ng ng╞░ß╗¥i c├│ th├┤ng tin minh bß║ích 100%. Nß║┐u thß║Ñy bß║Ñt cß╗⌐ nghi vß║Ñn n├áo, h├úy Tß╗¬ CHß╗ÉI ngay lß║¡p tß╗⌐c.',
++            speaker: 'DL',
++            side: 'left',
++            image: 'assets/img/inspector_npc/npc_25.png',
++            text: 'Ch├║ Nam, nhiß╗üu ae camp n╞░ß╗¢c ngo├ái sß║╜ tß╗¢i camp m├¼nh ─æß╗â chuß║⌐n bß╗ï cho m├╣a CTC sß║»p tß╗¢i',
+             next: 'd3_3'
+         },
+         'd3_3': {
++            speaker: 'Chy Chy',
++            side: 'left',
++            image: 'assets/img/inspector_npc/npc_20.png',
++            text: 'OK. V├á ch├║ nhß╗¢ duyß╗çt cß║ú nhß╗»ng acc ─æ╞░ß╗úc b├ío danh liß╗çt k├¬ tß╗½ c├íc camp ─æß╗ông minh nh├⌐',
++            next: 'd3_4'
++        },
++        'd3_4': {
+             speaker: 'Silver-Hand',
+             side: 'right',
+             image: 'assets/img/mayor_dialogue_2.png',
+-            text: 'Sß╗▒ tß╗ôn vong cß╗ºa SAO-─É├èM nß║▒m trong tay bß║ín. H├úy l├ám tß╗æt nhiß╗çm vß╗Ñ cuß╗æi c├╣ng n├áy.',
++            text: 'Rß║»c rß╗æi nhß╗ë. Ch├║c bß║ín new official may mß║»n.',
+             next: null
+         }
+     }
+@@ -528,7 +590,10 @@ const State = {
+     totalScore: 0,
+     dialogueDone: false,
+     processing: false,
+-    dayScores: []
++    dayScores: [],
++    ctcUnlockShown: false,
++    day1UnlockShown: false,
++    vipUnlockShown: false
+ };
+ 
+ /* ================================================
+@@ -540,7 +605,9 @@ let criteriaBoard, npcCharImg, npcSkeleton, dlgSpeaker, dlgText, dlgNext,
+     decisionFlash, stampOverlay, applicantCounter, dayBadge, scoreDisplay, lookupTerminal,
+     idCardModal, idCardBtn, idAvatarImg, idName, idNation, idLevel, idCert, idCamp, socialContainer,
+     rivalModal, rivalBtn, enemyList, allyList,
+-    mayorNoteModal, mayorBtn, mayorNoteContent;
++    mayorNoteModal, mayorBtn, mayorNoteContent,
++    ctcModal, ctcBtn, ctcGrid,
++    vipModal, vipBtn, vipGrid;
+ 
+ let vnEngine;
+ 
+@@ -592,6 +659,16 @@ function initGame() {
+     mayorBtn         = $('mayorBtn');
+     mayorNoteContent = $('mayorNoteContent');
+ 
++    // CTC elements
++    ctcModal         = $('ctcModal');
++    ctcBtn           = $('ctcBtn');
++    ctcGrid          = $('ctcGrid');
++
++    // VIP elements
++    vipModal         = $('vipModal');
++    vipBtn           = $('vipBtn');
++    vipGrid          = $('vipGrid');
++
+     // Dialogue click to advance
+     $('inspectorDialogue').addEventListener('click', () => advanceLine());
+ 
+@@ -661,6 +738,34 @@ function initGame() {
+         }
+     };
+ 
++    // CTC Modal Toggle
++    window.toggleCtcModal = (show) => {
++        if (show) {
++            populateCtcList();
++            ctcModal.classList.add('show');
++            if (lookupContainer) lookupContainer.style.display = 'none';
++            playSfx('nierMail');
++        } else {
++            ctcModal.classList.remove('show');
++            if (lookupContainer) lookupContainer.style.display = 'flex';
++            playSfx('nierMenu');
++        }
++    };
++
++    // VIP Modal Toggle
++    window.toggleVipModal = (show) => {
++        if (show) {
++            populateVipList();
++            vipModal.classList.add('show');
++            if (lookupContainer) lookupContainer.style.display = 'none';
++            playSfx('nierMail');
++        } else {
++            vipModal.classList.remove('show');
++            if (lookupContainer) lookupContainer.style.display = 'flex';
++            playSfx('nierMenu');
++        }
++    };
++
+     showDayTransition(0);
+ }
+ 
+@@ -853,7 +958,150 @@ function startDay(dayIndex) {
+     }
+ 
+     // Show lookup tools ONLY after intro
+-    if (lookupContainer) lookupContainer.style.display = 'flex';
++    if (lookupContainer) {
++        lookupContainer.style.display = 'flex';
++        // Show/Hide CTC button based on day
++        if (ctcBtn) {
++            const isDay2 = (State.day >= 1);
++            ctcBtn.style.display = isDay2 ? 'flex' : 'none';
++            // Fire the "NEW FUNCTION UNLOCKED" animation only once, on Day 2 start
++            if (State.day === 1 && !State.ctcUnlockShown) {
++                State.ctcUnlockShown = true;
++                setTimeout(() => triggerCtcUnlockAnim(), 800);
++            }
++        }
++        // Fire Day 1 unlock animation
++        if (State.day === 0 && !State.day1UnlockShown) {
++            State.day1UnlockShown = true;
++            setTimeout(() => triggerDay1UnlockAnim(), 800);
++        }
++
++        // Show/Hide VIP PASS button based on day 3
++        if (vipBtn) {
++            const isDay3 = (State.day >= 2);
++            vipBtn.style.display = isDay3 ? 'flex' : 'none';
++            // Fire the D3 unlock toast
++            if (State.day === 2 && !State.vipUnlockShown) {
++                State.vipUnlockShown = true;
++                setTimeout(() => triggerVipUnlockAnim(), 800);
++            }
++        }
++    }
++}
++
++/* ================================================
++   CTC UNLOCK ANIMATION (fires once on Day 2 start)
++================================================ */
++function triggerCtcUnlockAnim() {
++    const toast = document.getElementById('ctcUnlockToast');
++    const badge = document.getElementById('ctcNewBadge');
++
++    // 1. Add glow ring on button
++    if (ctcBtn) ctcBtn.classList.add('ctc-glow');
++
++    // 2. Slide toast up
++    if (toast) {
++        toast.classList.remove('hide');
++        toast.classList.add('show');
++    }
++
++    // 3. After 3.5s: slide toast back down, remove glow (but keep badge)
++    setTimeout(() => {
++        if (toast) {
++            toast.classList.remove('show');
++            toast.classList.add('hide');
++        }
++        if (ctcBtn) ctcBtn.classList.remove('ctc-glow');
++    }, 3500);
++
++    // 4. After 10s: remove the NEW badge permanently
++    setTimeout(() => {
++        if (badge) {
++            badge.style.transition = 'opacity 0.5s';
++            badge.style.opacity = '0';
++            setTimeout(() => badge.remove(), 500);
++        }
++    }, 10000);
++}
++
++/* ================================================
++   DAY 1 UNLOCK ANIMATION (fires once on Day 1 start)
++================================================ */
++function triggerDay1UnlockAnim() {
++    const toast = document.getElementById('day1UnlockToast');
++    const rivalBtnLocal = document.getElementById('rivalBtn');
++    const blacklistBtnLocal = document.getElementById('blacklistBtn');
++    const rivalBadge = document.getElementById('rivalNewBadge');
++    const blacklistBadge = document.getElementById('blacklistNewBadge');
++
++    // 1. Add glow ring on buttons
++    if (rivalBtnLocal) rivalBtnLocal.classList.add('rival-glow');
++    if (blacklistBtnLocal) blacklistBtnLocal.classList.add('blacklist-glow');
++
++    // 2. Slide toast up
++    if (toast) {
++        toast.classList.remove('hide');
++        toast.classList.add('show');
++    }
++
++    // 3. After 3.5s: slide toast back down, remove glow (but keep badges)
++    setTimeout(() => {
++        if (toast) {
++            toast.classList.remove('show');
++            toast.classList.add('hide');
++        }
++        if (rivalBtnLocal) rivalBtnLocal.classList.remove('rival-glow');
++        if (blacklistBtnLocal) blacklistBtnLocal.classList.remove('blacklist-glow');
++    }, 3500);
++
++    // 4. After 10s: remove the NEW badges permanently
++    setTimeout(() => {
++        if (rivalBadge) {
++            rivalBadge.style.transition = 'opacity 0.5s';
++            rivalBadge.style.opacity = '0';
++            setTimeout(() => rivalBadge.remove(), 500);
++        }
++        if (blacklistBadge) {
++            blacklistBadge.style.transition = 'opacity 0.5s';
++            blacklistBadge.style.opacity = '0';
++            setTimeout(() => blacklistBadge.remove(), 500);
++        }
++    }, 10000);
++}
++
++/* ================================================
++   VIP UNLOCK ANIMATION (fires once on Day 3 start)
++================================================ */
++function triggerVipUnlockAnim() {
++    const toast = document.getElementById('day3UnlockToast');
++    const badge = document.getElementById('vipNewBadge');
++
++    // 1. Add glow ring on button
++    if (vipBtn) vipBtn.classList.add('vip-glow');
++
++    // 2. Slide toast up
++    if (toast) {
++        toast.classList.remove('hide');
++        toast.classList.add('show');
++    }
++
++    // 3. After 3.5s: slide toast back down, remove glow (but keep badge)
++    setTimeout(() => {
++        if (toast) {
++            toast.classList.remove('show');
++            toast.classList.add('hide');
++        }
++        if (vipBtn) vipBtn.classList.remove('vip-glow');
++    }, 3500);
++
++    // 4. After 10s: remove the NEW badge permanently
++    setTimeout(() => {
++        if (badge) {
++            badge.style.transition = 'opacity 0.5s';
++            badge.style.opacity = '0';
++            setTimeout(() => badge.remove(), 500);
++        }
++    }, 10000);
+ }
+ 
+ /* ================================================
+@@ -1083,137 +1331,75 @@ function showDayResults(dayIndex) {
+         } else {
+             setTimeout(() => showDayTransition(nextDayIndex), 600);
+         }
+-    };
+-
+-    setTimeout(() => screen.classList.add('show'), 400);
+-}
+-
+-/* ================================================
+-   SHOW GAME OVER
+-================================================ */
+-function showGameOver() {
+-    const totalCorrect  = State.dayScores.reduce((a, d) => a + d.correct, 0);
+-    const totalApps     = GAME_DAYS.reduce((a, d) => a + d.applicants.length, 0);
+-    const overallPct    = Math.round((totalCorrect / totalApps) * 100);
+-    const rank = overallPct >= 90 ? 'S ΓÇö GRANDMASTER INSPECTOR'
+-               : overallPct >= 75 ? 'A ΓÇö SENIOR INSPECTOR'
+-               : overallPct >= 60 ? 'B ΓÇö INSPECTOR'
+-               : overallPct >= 40 ? 'C ΓÇö JUNIOR ANALYST'
+-               : 'D ΓÇö COMPROMISED';
+-
+-    gameOverScreen.querySelector('.go-rank').textContent  = rank;
+-    gameOverScreen.querySelector('.go-title').textContent = '// MISSION COMPLETE //';
+-    gameOverScreen.querySelector('.go-score').innerHTML   = `${State.totalScore}<span> PTS</span>`;
+-    gameOverScreen.querySelector('#go-pct').textContent   = `Ch├¡nh x├íc: ${overallPct}%  |  Tß╗òng ─æ├║ng: ${totalCorrect}/${totalApps}`;
+-
+-    gameOverScreen.querySelector('#goReplay').onclick = () => {
+-        State.day = 0; State.totalScore = 0; State.dayScores = [];
+-        gameOverScreen.classList.remove('show');
+-        setTimeout(() => showDayTransition(0), 600);
+-    };
+-    gameOverScreen.querySelector('#goHome').onclick = () => {
+-        window.location.href = 'index.html';
+-    };
+-
+-    setTimeout(() => gameOverScreen.classList.add('show'), 600);
+-}
+-/* ============ BLACKLIST LOGIC ============ */
+-const BLACKLIST_DATA = [
+-    { 
+-        name: "ZATAN", 
+-        img: "npc_17.png", 
+-        story: "Tß╗½ng l├á ß╗ƒ SAO ─É├èM, tuy nhi├¬n ng╞░ß╗¥i n├áy li├¬n tß╗Ñc offline mß║Ñt t─âm v├á ra v├áo camp li├¬n tß╗Ñc, thß╗¥i gian ch╞íi c┼⌐ng kh├┤ng bß╗ün, chuy├¬n gia gß║í mua acc rß╗ôi b├ín ngay tß╗⌐c th├¼ vß╗¢i gi├í cao h╞ín kiß║┐m lß╗¥i.. H╞ín hß║┐t rß║Ñt nhiß╗üu ng╞░ß╗¥i tß╗æ c├ío c├ích sß╗æng rß║Ñt kh├┤ng ─æ╞░ß╗úc sß║ích sß║╜ trong qu├í khß╗⌐. Sau mß╗Öt thß╗¥i gian ra v├áo camp rß╗ôi lß║íi offline tr├¬n d╞░ß╗¢i 6-7 lß║ºn, camp quyß║┐t ─æß╗ïnh kh├┤ng nhß║¡n ng╞░ß╗¥i n├áy nß╗»a."
+-    },
+-    { 
+-        name: "pt_b├¼nh", 
+-        img: "npc_6.png", 
+-        story: "Hiß╗üm kh├¡ch c├í nh├ón vß╗¢i c├íc cß║Ñp quß║ún l├╜ Sao ─É├¬m ng├áy x╞░a. Sau khi bß╗ï trß╗Ñc xuß║Ñt, ─æß╗æi t╞░ß╗úng li├¬n tß╗Ñc b├¬u xß║Ñu camp v├á tß║⌐y n├úo nhiß╗üu ng╞░ß╗¥i VN b├¬n ngo├ái kh├íc, nh╞░ng nß╗▒c c╞░ß╗¥i ß╗ƒ chß╗ù ─æß╗æi t╞░ß╗úng vß║½n ├óm m╞░u tr├á trß╗Ön quay lß║íi bß║▒ng nhiß╗üu c├ích kh├íc nhau. Thß║¡m ch├¡ tß╗½ng cß╗æ gß║»ng comeback camp nh╞░ng kh├┤ng ─æ╞░ß╗úc."
+-    },
+-    { 
+-        name: "Roy", 
+-        img: "npc_8.png", 
+-        story: "Kß║╗ lß╗½a ─æß║úo chuy├¬n nghiß╗çp. Th╞░ß╗¥ng lß║Ñy t├¬n 'Minh Nhß║¡t' ─æß╗â tiß║┐p cß║¡n ng╞░ß╗¥i mß╗¢i, gß║í ng╞░ß╗¥i ta mua b├ín v├á ─æß║╖c biß╗çt l├á gß╗¡i code cho bß║ún th├ón- sau ─æ├│ c├ích thß╗⌐c cß╗ºa scammer n├áy lu├┤n l├á d├ín email recovery v├áo ─æß╗â chiß║┐m ─æoß║ít t├ái sß║ún. Ch├║ng c├│ 2 ng╞░ß╗¥i 1 nam v├á 1 nß╗» thay phi├¬n nhau scam v├á mß╗¥i gß╗ìi. Trong v─ân n├│i chuyß╗çn lu├┤n x╞░ng gß╗ìi N├¡ ╞íi v├á cß╗æ gß║»ng th├ón thiß║┐t ─æß║┐n mß╗⌐c ─æß╗Ö sß║┐n s├║a nhß║Ñt c├│ thß║┐- rß║Ñt hay thß╗ü thß╗æt v├á nß╗ò, ch├║ng tß╗½ng su├╜t th├ánh c├┤ng chiß║┐m ─æoß║ít t├ái khoß║ún cß╗ºa Silver-Hand v├áo cuß╗æi n─âm 2023 nh╞░ng bß╗ï lß║¡t k├¿o."
+-    }
+-];
+-
+-function toggleBlacklist(show) {
+-    const modal = document.getElementById('blacklistModal');
+-    if (show) {
+-        populateBlacklist();
+-        modal.classList.add('show');
+-    } else {
+-        modal.classList.remove('show');
+-    }
+-}
+-
+-function populateBlacklist() {
+-    const grid = document.getElementById('blacklistGrid');
+-    const storyBox = document.getElementById('blacklistStory');
+-    if (!grid) return;
+-    grid.innerHTML = '';
+-    
+-    if (storyBox) storyBox.textContent = "Chß╗ìn mß╗Öt ─æß╗æi t╞░ß╗úng ─æß╗â xem b├ío c├ío vi phß║ím...";
+-    
+-    BLACKLIST_DATA.forEach(person => {
+-        const item = document.createElement('div');
+-        item.className = 'blacklist-item';
+-        
+-        const portrait = `assets/img/inspector_npc/portrail/${person.img}`;
+-        
+-        item.innerHTML = `
+-            <div class="blacklist-avatar-wrap">
+-                <img src="${portrait}" class="blacklist-avatar">
+-            </div>
+-            <div class="blacklist-name">${person.name}</div>
+-        `;
+-        
+-        item.onclick = () => {
+-            // Remove active from others
+-            document.querySelectorAll('.blacklist-item').forEach(i => i.classList.remove('active'));
+             item.classList.add('active');
+-            
+-            // Show story
+-            showBlacklistStory(person.story);
++            showCtcStory(person.story);
+             playSfx('nierMenu');
+         };
+         
+-        grid.appendChild(item);
++        ctcGrid.appendChild(item);
+     });
+ }
+ 
+-let blacklistTypeTimer = null;
+-let currentBlacklistStory = "";
++let ctcTypeTimer = null;
++let currentCtcStory = '';
+ 
+-function showBlacklistStory(text) {
+-    const box = document.getElementById('blacklistStory');
++function showCtcStory(text) {
++    const box = document.getElementById('ctcStory');
+     if (!box) return;
+     
+-    currentBlacklistStory = text;
+-    if (blacklistTypeTimer) clearInterval(blacklistTypeTimer);
++    currentCtcStory = text;
++    if (ctcTypeTimer) clearInterval(ctcTypeTimer);
+     box.textContent = '';
+     
+     let i = 0;
+-    blacklistTypeTimer = setInterval(() => {
++    ctcTypeTimer = setInterval(() => {
+         box.textContent += text.charAt(i);
+-        // Auto-scroll to bottom
+         box.scrollTop = box.scrollHeight;
+-        
+         i++;
+         if (i >= text.length) {
+-            clearInterval(blacklistTypeTimer);
+-            blacklistTypeTimer = null;
++            clearInterval(ctcTypeTimer);
++            ctcTypeTimer = null;
+         }
+     }, 20);
+ 
+-    // Click to skip typing
+     box.onclick = () => {
+-        if (blacklistTypeTimer) {
+-            clearInterval(blacklistTypeTimer);
+-            blacklistTypeTimer = null;
+-            box.textContent = currentBlacklistStory;
++        if (ctcTypeTimer) {
++            clearInterval(ctcTypeTimer);
++            ctcTypeTimer = null;
++            box.textContent = currentCtcStory;
+             box.scrollTop = box.scrollHeight;
+         }
+     };
+ }
+ 
++/* ============ VIP LOGIC ============ */
++function populateVipList() {
++    if (!vipGrid) return;
++function showVipStory(text) {
++    const box = document.getElementById('vipStory');
++    if (!box) return;
++    
++    currentVipStory = text;
++    if (vipTypeTimer) clearInterval(vipTypeTimer);
++    box.textContent = '';
++    
++    let i = 0;
++    vipTypeTimer = setInterval(() => {
++        box.textContent += text.charAt(i);
++        box.scrollTop = box.scrollHeight;
++        i++;
++        if (i >= text.length) {
++            clearInterval(vipTypeTimer);
++            vipTypeTimer = null;
++        }
++    }, 20);
+ 
++    box.onclick = () => {
++        if (vipTypeTimer) {
++            clearInterval(vipTypeTimer);
++            vipTypeTimer = null;
++            box.textContent = currentVipStory;
++            box.scrollTop = box.scrollHeight;
++        }
++    };
++}

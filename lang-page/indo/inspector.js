@@ -246,16 +246,17 @@ const GAME_DAYS = [
                 ]
             },
             {
-                id: "A03", name: "NIGHTMARE", img: "../../assets/img/inspector_npc/npc_30.png",
-                nationality: "VN", level: 144, cert: "Warrior", camp: "AVALON",
+                id: "A03", name: "EVA", img: "../../assets/img/inspector_npc/npc_30.png",
+                nationality: "INDO", level: 145, cert: "Rifle man", camp: "Astral",
                 friends: [
-                    { name: "ELYSIUM", intimacy: 85, camp: "Eternal" }
+                    { name: "ELYSIUM", intimacy: 85, camp: "Eternal" },
+                    { name: "Silver-Hand", intimacy: 10000, camp: "SAO-ĐÊM", img: "assets/img/mayor_5.png" },
                 ],
-                profession: "Người chơi cũ quay lại", criminal: false, enemyCamp: false,
+                profession: "Cantikku", criminal: false, enemyCamp: false,
                 shouldApprove: true,
                 lines: [
-                    { text: "Halo bos, aku baru main lagi setelah sempet off. Liat camp lagi rekrut jadi mampir mau join.", next: "l2" },
-                    { text: "Aku akrab sama ELYSIUM, soal skill bos tenang aja, gak bakal kaku kok.", next: null }
+                    { text: "Aku pacarnya Mayor nih, tolong langsung acc aku ya", next: "l2" },
+                    { text: "kalau nggak di-acc, nanti malam dia tidur di jalan! 😄", next: null }
                 ]
             },
             {
@@ -1030,7 +1031,7 @@ function drawSocialCircle(friends) {
         node.style.top  = (y - 20) + 'px';
         
         // Find friend's image or use fallback
-        const friendImg = findCharacterImageByName(friend.name);
+        const friendImg = friend.img || findCharacterImageByName(friend.name);
         const portraitSrc = friendImg ? resolvePortraitPath(friendImg) : "../../assets/img/avatars/generic.png";
         
         node.innerHTML = `<img src="${portraitSrc}" class="social-avatar">`;

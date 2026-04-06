@@ -1029,7 +1029,7 @@ function drawSocialCircle(friends) {
         node.style.top  = (y - 20) + 'px';
         
         // Find friend's image or use fallback
-        const friendImg = findCharacterImageByName(friend.name);
+        const friendImg = friend.img || findCharacterImageByName(friend.name);
         const portraitSrc = friendImg ? resolvePortraitPath(friendImg) : "assets/img/avatars/generic.png";
         
         node.innerHTML = `<img src="${portraitSrc}" class="social-avatar">`;

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Camp Inspector — SAO-ĐÊM</title>
-  <meta name="description" content="Mini-game duyệt thành viên gia nhập camp SAO-ĐÊM. Phong cách Papers Please Cyberpunk.">
-  <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
+  <meta name="description" content="Mini-game penyaringan anggota masuk camp SAO-ĐÊM. Bergaya Papers Please Cyberpunk.">
+  <link rel="icon" type="image/png" href="../../assets/img/mayor_avatar.jpg">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/loading.css">
-  <link rel="stylesheet" href="assets/css/inspector.css">
-  <link rel="stylesheet" href="assets/css/vn_overlay.css">
+  <link rel="stylesheet" href="../../assets/css/loading.css">
+  <link rel="stylesheet" href="../../assets/css/inspector.css">
+  <link rel="stylesheet" href="../../assets/css/vn_overlay.css">
 </head>
 
 <body>
@@ -34,7 +34,7 @@
 
 <!-- ============ DESK BACKGROUND ============ -->
 <div id="inspectorBg">
-  <img src="assets/img/inspector_desk.png" alt="Desk Background">
+  <img src="../../assets/img/inspector_desk.png" alt="Desk Background">
 </div>
 
 <!-- ============ GLASS WINDOW FRAME ============ -->
@@ -66,7 +66,7 @@
     </div>
     <div class="topbar-right">
       <div class="stability-container">
-        <div class="stability-label">CAMP STABILITY</div>
+        <div class="stability-label">STABILITAS CAMP</div>
         <div class="stability-bar-bg">
           <div id="stabilityBar" class="stability-bar-fill" style="width: 100%;"></div>
         </div>
@@ -174,7 +174,7 @@
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
       <path d="M9 12l2 2 4-4"></path>
     </svg>
-    <div class="term-label">SCAN TRUTH [1]</div>
+    <div class="term-label">TRUTH SCAN [1]</div>
     <span class="scan-count-badge" id="truthScanBadge">1</span>
   </div>
 </div>
@@ -186,7 +186,7 @@
     <div class="ctc-toast-content">
       <div class="ctc-toast-label">FUNCTIONS UNLOCKED</div>
       <div class="ctc-toast-title">CAMP DATABASE</div>
-      <div class="ctc-toast-sub">Kiểm tra danh sách RIVAL và BLACKLIST để nhận diện đối tượng ngấm nhập</div>
+      <div class="ctc-toast-sub">Periksa daftar RIVAL dan BLACKLIST untuk mengidentifikasi penyusup</div>
     </div>
   </div>
   <div class="ctc-toast-scanline"></div>
@@ -199,7 +199,7 @@
     <div class="ctc-toast-content">
       <div class="ctc-toast-label">FUNCTION UNLOCKED</div>
       <div class="ctc-toast-title">CTC RETURNER</div>
-      <div class="ctc-toast-sub">Kiểm tra danh sách thành viên đánh thuê CTC trở về</div>
+      <div class="ctc-toast-sub">Periksa daftar anggota bayaran CTC yang kembali</div>
     </div>
   </div>
   <div class="ctc-toast-scanline"></div>
@@ -212,7 +212,7 @@
     <div class="ctc-toast-content">
       <div class="ctc-toast-label">FUNCTION UNLOCKED</div>
       <div class="ctc-toast-title">MESSAGE INTEL</div>
-      <div class="ctc-toast-sub">Theo dõi chat cộng đồng để lọc thông tin nghi vấn</div>
+      <div class="ctc-toast-sub">Pantau obrolan komunitas untuk menyaring informasi mencurigakan</div>
     </div>
   </div>
   <div class="ctc-toast-scanline"></div>
@@ -234,20 +234,20 @@
 <div id="dayTransition">
   <div class="dt-eyecatch">DAY 1</div>
   <div class="dt-subtitle">SCREENING DAY 01</div>
-  <button class="dt-start-btn">// BẮT ĐẦU NGÀY //</button>
+  <button class="dt-start-btn">// MULAI HARI //</button>
 </div>
 
 <!-- ============ DAY RESULTS SCREEN ============ -->
 <div id="resultsScreen">
-  <div class="results-title">// KẾT QUẢ NGÀY 1 //</div>
+  <div class="results-title">// HASIL HARI 1 //</div>
   <div class="results-grid">
     <div class="result-stat green">
       <div class="rs-val" id="rs-correct">0</div>
-      <div class="rs-label">ĐÚNG</div>
+      <div class="rs-label">BENAR</div>
     </div>
     <div class="result-stat red">
       <div class="rs-val" id="rs-wrong">0</div>
-      <div class="rs-label">SAI</div>
+      <div class="rs-label">SALAH</div>
     </div>
     <div class="result-stat amber">
       <div class="rs-val" id="rs-approved">0</div>
@@ -260,10 +260,10 @@
   </div>
   <div class="result-stat amber" style="width:min(420px,90vw); text-align:center; padding:12px;">
     <div class="rs-val" style="font-size:28px" id="rs-accuracy">0%</div>
-    <div class="rs-label">ĐỘ CHÍNH XÁC</div>
+    <div class="rs-label">AKURASI</div>
   </div>
   <p class="result-msg" id="rs-msg"></p>
-  <button class="results-next-btn">// NGÀY TIẾP THEO //</button>
+  <button class="results-next-btn">// HARI BERIKUTNYA //</button>
 </div>
 
 <!-- ============ GAME OVER SCREEN ============ -->
@@ -273,8 +273,8 @@
   <div class="go-score">0<span> PTS</span></div>
   <p class="result-msg" id="go-pct" style="margin-top:10px"></p>
   <div class="go-buttons">
-    <button class="go-btn" id="goReplay">🔄 CHƠI LẠI</button>
-    <button class="go-btn secondary" id="goHome">← THOÁT</button>
+    <button class="go-btn" id="goReplay">🔄 MAIN LAGI</button>
+    <button class="go-btn secondary" id="goHome">← KELUAR</button>
   </div>
 </div>
 
@@ -284,10 +284,10 @@
 
   <div class="vn-stage">
     <div class="vn-char left dim" id="vnCharLeft">
-      <img src="assets/img/system.png" alt="opponent" id="vnImgLeft">
+      <img src="../../assets/img/system.png" alt="opponent" id="vnImgLeft">
     </div>
     <div class="vn-char right active" id="vnCharRight">
-      <img src="assets/img/mayor_dialogue_1.png" alt="Mayor" id="vnImgRight">
+      <img src="../../assets/img/mayor_dialogue_1.png" alt="Mayor" id="vnImgRight">
     </div>
   </div>
   <div class="vn-dialogue" id="vnDialogue">
@@ -433,7 +433,7 @@
       <div class="blacklist-grid" id="blacklistGrid">
           <!-- Rendered by JS -->
       </div>
-      <div id="blacklistStory" class="blacklist-story">Chọn một đối tượng để xem báo cáo vi phạm...</div>
+      <div id="blacklistStory" class="blacklist-story">Pilih target untuk melihat laporan pelanggaran...</div>
     </div>
     <div class="blacklist-footer">
       <button class="blacklist-close-btn" onclick="toggleBlacklist(false)">CLOSE DATABASE</button>
@@ -451,7 +451,7 @@
       <div class="ctc-grid" id="ctcGrid">
           <!-- Rendered by JS -->
       </div>
-      <div id="ctcStory" class="ctc-story">Chọn một thành viên để xem thông tin đi đánh thuê...</div>
+      <div id="ctcStory" class="ctc-story">Pilih anggota untuk melihat info bayaran...</div>
     </div>
     <div class="ctc-footer">
       <button class="ctc-close-btn" onclick="toggleCtcModal(false)">CLOSE DATABASE</button>
@@ -481,16 +481,16 @@
       <!-- Rendered by JS -->
     </div>
     <div class="msg-footer">
-      <div class="msg-hint">// Phân tích tin nhắn — chú ý tên người trong game //</div>
+      <div class="msg-hint">// Analisis pesan — perhatikan nama dalam game //</div>
       <button class="msg-close-btn" onclick="toggleMsgModal(false)">CLOSE INTEL</button>
     </div>
   </div>
 </div>
 
-<script src="assets/js/loading.js"></script>
-<script src="assets/js/vn_engine.js"></script>
-<script src="assets/js/inspector_msg.js"></script>
-<script src="assets/js/inspector.js"></script>
+<script src="../../assets/js/loading.js"></script>
+<script src="../../assets/js/vn_engine.js"></script>
+<script src="inspector_msg.js"></script>
+<script src="inspector.js"></script>
 
 
 </body>

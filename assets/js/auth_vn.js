@@ -308,8 +308,8 @@ function initAuth() {
     }
 }
 
-if (document.readyState === 'complete') {
-    initAuth();
-} else {
-    window.addEventListener('load', initAuth);
-}
+// if (document.readyState === 'complete') {
+//     initAuth();
+// } else {
+//     window.addEventListener('load', initAuth);
+// }

@@ -708,7 +708,12 @@ const State = {
     dayScores: [],
     ctcUnlockShown: false,
     day1UnlockShown: false,
-    msgUnlockShown: false
+    msgUnlockShown: false,
+    // [NEW] Enhancements
+    stability: 100,
+    isScanning: false,
+    stabilityTimer: null,
+    truthScansAvailable: 1
 };
 
 /* ================================================
@@ -721,7 +726,9 @@ let criteriaBoard, npcCharImg, npcSkeleton, dlgSpeaker, dlgText, dlgNext,
     idCardModal, idCardBtn, idAvatarImg, idName, idNation, idLevel, idCert, idCamp, socialContainer,
     rivalModal, rivalBtn, enemyList, allyList,
     mayorNoteModal, mayorBtn, mayorNoteContent,
-    ctcModal, ctcBtn, ctcGrid;
+    ctcModal, ctcBtn, ctcGrid,
+    // [NEW] Enhancements
+    stabilityBar, stabilityValue, scannerOverlay, scanTruthBtn;
 
 let vnEngine;
 
@@ -750,6 +757,12 @@ function initGame() {
     dayBadge         = $('dayBadge');
     scoreDisplay     = $('scoreDisplay');
     lookupTerminal   = $('lookupTerminal');
+
+    // [NEW] Enhancements
+    stabilityBar    = $('stabilityBar');
+    stabilityValue  = $('stabilityValue');
+    scannerOverlay  = $('scannerOverlay');
+    scanTruthBtn    = $('scanTruthBtn');
 
     // ID Card Modal elements
     idCardModal      = $('idCardModal');
@@ -809,10 +822,14 @@ function initGame() {
             idCardModal.classList.add('show');
             if (lookupContainer) lookupContainer.style.display = 'none';
             playSfx('nierMail');
+            // [NEW] Trigger scanner overlay
+            if (scannerOverlay) scannerOverlay.classList.add('active');
         } else {
             idCardModal.classList.remove('show');
             if (lookupContainer) lookupContainer.style.display = 'flex';
             playSfx('nierMenu');
+            // [NEW] Hide scanner overlay
+            if (scannerOverlay) scannerOverlay.classList.remove('active');
         }
     };
     idCardBtn.addEventListener('click', () => window.toggleIdCard(true));
@@ -1059,6 +1076,16 @@ function startDay(dayIndex) {
     // Load first applicant
     loadApplicant(dayIndex, 0);
 
+    // [NEW] Start stability logic
+    updateStability(0); // init UI
+    startStabilityDecay();
+
+    // [NEW] Balanced Truth Scan
+    if (dayIndex > 0) {
+        State.truthScansAvailable++;
+    }
+    updateTruthScanUI();
+
     // Update Mayor Note content for this day
     if (mayorNoteContent) {
         mayorNoteContent.textContent = MAYOR_NOTES[dayIndex] || "Không có chỉ thị mới.";
@@ -1179,8 +1206,164 @@ function triggerDay1UnlockAnim() {
 }
 
 /* ================================================
-   RENDER CRITERIA
+   [NEW] ENHANCEMENTS LOGIC
 ================================================ */
+function updateStability(amount) {
+    State.stability = Math.max(0, Math.min(100, State.stability + amount));
+    
+    if (stabilityBar) {
+        stabilityBar.style.width = `${State.stability}%`;
+        // Color transition
+        if (State.stability > 60) stabilityBar.style.background = 'linear-gradient(90deg, var(--pink), var(--cyan))';
+        else if (State.stability > 30) stabilityBar.style.background = 'var(--amber)';
+        else stabilityBar.style.background = 'var(--pink)';
+    }
+    
+    if (stabilityValue) {
+        stabilityValue.textContent = `${Math.floor(State.stability)}%`;
+        stabilityValue.style.color = (State.stability < 30) ? 'var(--pink)' : 'var(--cyan)';
+    }
+    if (State.stability <= 0) {
+        endGameByInstability();
+    }
+}
+
+let alertTimer = null;
+function showSystemAlert(msg, isWarning = true) {
+    const el = $('systemAlert');
+    if (!el) return;
+    
+    if (alertTimer) clearTimeout(alertTimer);
+    
+    el.textContent = msg;
+    el.className = isWarning ? 'system-alert show warning' : 'system-alert show';
+    playSfx('nierMenu');
+    
+    alertTimer = setTimeout(() => {
+        el.classList.remove('show');
+        alertTimer = null;
+    }, 2500);
+}
+
+function updateTruthScanUI() {
+    const btn = $('scanTruthBtn');
+    if (btn) {
+        const label = btn.querySelector('.term-label');
+        if (label) {
+            label.textContent = `SCAN TRUTH [${State.truthScansAvailable}]`;
+        }
+        const badge = $('truthScanBadge');
+        if (badge) {
+            badge.textContent = State.truthScansAvailable;
+            // Always show badge if Truth Scan is unlocked, but style it "empty" if 0
+            badge.style.display = 'flex';
+            if (State.truthScansAvailable <= 0) {
+                badge.classList.add('empty');
+            } else {
+                badge.classList.remove('empty');
+            }
+        }
+    }
+}
+
+function endGameByInstability() {
+    if (State.processing || State.gameOver) return;
+    State.processing = true;
+    State.gameOver = true;
+
+    if (State.stabilityTimer) clearInterval(State.stabilityTimer);
+    
+    // Dim background & hide buttons
+    if (lookupContainer) lookupContainer.style.display = 'none';
+    if (approveBtn) approveBtn.classList.remove('active');
+    if (rejectBtn) rejectBtn.classList.remove('active');
+    if (idCardBtn) idCardBtn.style.display = 'none';
+
+    // Play "Instability" VN sequence
+    const script = END_SCRIPTS.instability;
+    if (vnEngine && script) {
+        setTimeout(() => {
+            vnEngine.start(script, 'start', () => {
+                showGameOver(true); // Param true means "Failed" context
+            });
+        }, 500);
+    } else {
+        showGameOver(true);
+    }
+}
+
+function startStabilityDecay() {
+    if (State.stabilityTimer) clearInterval(State.stabilityTimer);
+    State.stabilityTimer = setInterval(() => {
+        if (!State.processing && !State.dialogueDone) {
+            updateStability(-0.2); // Very slow decay while reading
+        } else if (State.dialogueDone) {
+            updateStability(-0.8); // Pressure to decide
+        }
+    }, 1000);
+}
+
+function triggerTruthScan() {
+    if (State.truthScansAvailable <= 0) {
+        showSystemAlert("NO TRUTH SCANS REMAINING FOR TODAY.");
+        return;
+    }
+
+    if (State.stability < 15) {
+        showSystemAlert("STABILITY TOO LOW FOR TRUTH SCAN.");
+        return;
+    }
+    
+    if (State.isScanning) return;
+    State.isScanning = true;
+    
+    State.truthScansAvailable--;
+    updateTruthScanUI();
+    
+    updateStability(-15);
+    if (scanTruthBtn) scanTruthBtn.classList.add('scanning');
+    playSfx('nierMail');
+    
+    // Reveal Scanner Overlay briefly on portrait
+    if (scannerOverlay) scannerOverlay.classList.add('active');
+    
+    const applicant = GAME_DAYS[State.day].applicants[State.applicantIndex];
+    
+    setTimeout(() => {
+        State.isScanning = false;
+        if (scanTruthBtn) scanTruthBtn.classList.remove('scanning');
+        if (scannerOverlay && !idCardModal.classList.contains('show')) {
+            scannerOverlay.classList.remove('active');
+        }
+        
+        let hint = "";
+        // Logic for specialized hints
+        if (applicant.id === "A08") { // Phantom
+            hint = "[ANALYSIS]: New Owner account purchase verified. Ethnicity: VN.";
+        } else if (applicant.enemyCamp && !applicant.shouldApprove) {
+            hint = "[ANALYSIS]: Potential Infiltrator. External loyalty detected.";
+        } else if (applicant.criminal) {
+            hint = "[ANALYSIS]: Blacklist match. Illegal past confirmed.";
+        } else if (applicant.shouldApprove) {
+            hint = "[ANALYSIS]: No external threats found. Profile consistent.";
+        } else {
+            hint = "[ANALYSIS]: Ambiguous data. Verify against criteria.";
+        }
+        
+        showDialogueHint(hint);
+    }, 2000);
+}
+
+function showDialogueHint(hint) {
+    if (!dlgText) return;
+    const originalText = dlgText.innerHTML;
+    dlgText.innerHTML = `<span style="color:var(--amber); font-weight:bold;">${hint}</span><br>${originalText}`;
+    playSfx('nierMenu');
+}
+
+/* ================================================
+   RENDER CRITERIA
+   ================================================ */
 function renderCriteria(rules) {
     const body = criteriaBoard.querySelector('.criteria-body');
     body.innerHTML = rules.map(r => `
@@ -1209,6 +1392,10 @@ function loadApplicant(dayIndex, applicantIndex) {
     State.processing     = false;
 
     const applicant = applicants[applicantIndex];
+
+    // [NEW] Hide Scan button for next applicant
+    if (scanTruthBtn) scanTruthBtn.style.display = 'none';
+    if (scannerOverlay) scannerOverlay.classList.remove('active');
 
     // Update counter
     if (applicantCounter) {
@@ -1278,6 +1465,8 @@ function typeLine(text) {
                     approveBtn.classList.add('active');
                     rejectBtn.classList.add('active');
                     idCardBtn.style.display = 'block';
+                    // [NEW] Show Truth Scan button
+                    if (scanTruthBtn) scanTruthBtn.style.display = 'flex';
                 }, 400);
             }
         }
@@ -1303,6 +1492,8 @@ function advanceLine() {
                 approveBtn.classList.add('active');
                 rejectBtn.classList.add('active');
                 idCardBtn.style.display = 'block';
+                // [NEW] Show Truth Scan button
+                if (scanTruthBtn) scanTruthBtn.style.display = 'flex';
             }, 200);
         }
         return;
@@ -1334,6 +1525,9 @@ function makeDecision(isApprove) {
     if (isApprove) State.approved++; else State.rejected++;
     if (isCorrect)  State.correct++;  else State.wrong++;
     State.totalScore += isCorrect ? 10 : -5;
+    
+    // [NEW] Stability reward/penalty
+    updateStability(isCorrect ? 8 : -20);
 
     // Play decision SFX
     if (isApprove) {
@@ -1384,6 +1578,9 @@ function showDayResults(dayIndex) {
         approved: State.approved,
         rejected: State.rejected
     });
+
+    // [NEW] Stop stability decay
+    if (State.stabilityTimer) clearInterval(State.stabilityTimer);
 
     const accuracy = Math.round((State.correct / (State.correct + State.wrong)) * 100) || 0;
     const msg = accuracy >= 80
@@ -1470,33 +1667,51 @@ const END_SCRIPTS = {
             text: 'Vậy là sau cùng mình vẫn phải là người làm mọi thứ à. Xin lỗi bạn official, chúng ta dừng hợp tác tại đây nhé.',
             next: null
         }
+    },
+    instability: {
+        'start': {
+            speaker: 'Silver-Hand',
+            side: 'right',
+            image: 'assets/img/mayor_dialogue_4.png',
+            effect: 'shake',
+            text: 'Trời ạ! toang camp rồi!',
+            next: 'i2'
+        },
+        'i2': {
+            speaker: 'Silver-Hand',
+            side: 'right',
+            image: 'assets/img/mayor_dialogue_2.png',
+            text: 'Camp đang gặp sự cố nghiêm trọng về tính ổn định. Chúng ta buộc phải tạm dừng tuyển dụng tại đây!',
+            next: null
+        }
     }
 };
 
 /* ================================================
    SHOW GAME OVER
 ================================================ */
-function showGameOver() {
-    const totalCorrect  = State.dayScores.reduce((a, d) => a + d.correct, 0);
+function showGameOver(wasInstability = false) {
+    const totalCorrect  = State.dayScores.reduce((a, d) => a + d.correct, 0) + (wasInstability ? State.correct : 0);
+    const totalWrong    = State.dayScores.reduce((a, d) => a + d.wrong, 0) + (wasInstability ? State.wrong : 0);
     const totalApps     = GAME_DAYS.reduce((a, d) => a + d.applicants.length, 0);
-    const overallPct    = Math.round((totalCorrect / totalApps) * 100);
-    const rank = overallPct >= 90 ? 'S — GRANDMASTER INSPECTOR'
+    const overallPct    = Math.round((totalCorrect / (totalCorrect + totalWrong)) * 100) || 0;
+    
+    const rank = wasInstability ? 'E — COMPROMISED'
+               : overallPct >= 90 ? 'S — GRANDMASTER INSPECTOR'
                : overallPct >= 75 ? 'A — SENIOR INSPECTOR'
                : overallPct >= 60 ? 'B — INSPECTOR'
                : overallPct >= 40 ? 'C — JUNIOR ANALYST'
-               : 'D — COMPROMISED';
+               : 'D — DISMISSED';
 
-    // Prepare game over screen content (but don't show yet)
+    // Prepare game over screen content
     gameOverScreen.querySelector('.go-rank').textContent  = rank;
-    gameOverScreen.querySelector('.go-title').textContent = '// MISSION COMPLETE //';
+    gameOverScreen.querySelector('.go-title').textContent = wasInstability ? '// MISSION FAILURE //' : '// MISSION COMPLETE //';
+    gameOverScreen.querySelector('.go-title').style.color = wasInstability ? 'var(--pink)' : 'var(--cyan)';
     gameOverScreen.querySelector('.go-score').innerHTML   = `${State.totalScore}<span> PTS</span>`;
-    gameOverScreen.querySelector('#go-pct').textContent   = `Chính xác: ${overallPct}%  |  Tổng đúng: ${totalCorrect}/${totalApps}`;
+    gameOverScreen.querySelector('#go-pct').textContent   = `Đúng: ${totalCorrect}  |  Sai: ${totalWrong}  |  Chính xác: ${overallPct}%`;
 
     gameOverScreen.querySelector('#goReplay').onclick = () => {
-        State.day = 0; State.totalScore = 0; State.dayScores = [];
-        State.ctcUnlockShown = false; State.day1UnlockShown = false; State.msgUnlockShown = false;
-        gameOverScreen.classList.remove('show');
-        setTimeout(() => showDayTransition(0), 600);
+        window.location.reload(); // Hard reset for stability
     };
     gameOverScreen.querySelector('#goHome').onclick = () => {
         window.location.href = 'drama.html';

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Camp Commander — SAO-ĐÊM</title>
+  <meta name="description" content="Quản lý và nâng cấp doanh trại SAO-ĐÊM. Hệ thống quản trị thời gian thực.">
+  <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/loading.css">
+  <link rel="stylesheet" href="assets/css/camp_manager.css">
+</head>
+<body>
+
+<!-- ============ LOADING SCREEN ============ -->
+<div id="loadingOverlay">
+  <div class="loading-wrapper">
+    <div class="loading-text">
+      <span class="sao">SAO &nbsp;</span><span class="dem"> ĐÊM</span>
+    </div>
+    <div class="loading-progress">
+      <div class="progress-bar" id="loadingProgress"></div>
+      <div class="loading-info">
+        <span id="loadingStatus">INITIALIZING COMMAND INTERFACE...</span>
+        <span id="loadingPercentage">0%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ BACKGROUND ============ -->
+<div id="commanderBg">
+  <div class="grid-overlay"></div>
+  <div class="scanline"></div>
+</div>
+
+<!-- ============ HEADER / STATUS BAR ============ -->
+<div id="headerBar">
+  <div class="hb-left">
+    <div class="hb-title">CAMP COMMANDER // OS.v2</div>
+    <div class="hb-user" id="currentUserDisplay">USER: guest_01</div>
+  </div>
+  <div class="hb-right">
+    <div class="stat-item">
+      <span class="label">POPULATION</span>
+      <span class="value" id="statPop">0</span>
+    </div>
+    <div class="stat-item highlight">
+      <span class="label">CREDITS</span>
+      <span class="value" id="statCredits">0</span>
+    </div>
+    <button class="btn-exit" onclick="window.location.href='drama.html'">✕ EXIT</button>
+  </div>
+</div>
+
+<!-- ============ GLOBAL TREASURY BANNER ============ -->
+<div id="globalTreasuryBar">
+  <div class="gt-label">GLOBAL TREASURY:</div>
+  <div class="gt-value" id="globalTotal">0</div>
+  <div class="gt-progress-container">
+    <div class="gt-progress-bar" id="globalProgress"></div>
+    <div class="gt-milestone">NEXT MILESTONE: 1,000,000</div>
+  </div>
+  <div id="activeBuff" class="gt-buff">ACTIVE BUFF: NONE</div>
+</div>
+
+<!-- ============ MAIN CONTENT ============ -->
+<div id="mainContainer">
+  
+  <!-- LEFT: CLICKER / COLLECTION ZONE -->
+  <div id="collectionZone">
+    <div class="collect-card" id="collectBtn">
+      <div class="collect-glow"></div>
+      <div class="collect-icon">💰</div>
+      <div class="collect-text">COLLECT TAX</div>
+      <div class="collect-hint">Manual override enabled</div>
+      <div class="click-effect-container" id="clickEffects"></div>
+    </div>
+    <div class="income-rate">
+      PASSIVE INCOME: <span id="incomeVal">5</span> CR/SEC
+    </div>
+  </div>
+
+  <!-- RIGHT: UPGRADES ZONE -->
+  <div id="upgradeZone">
+    <div class="section-title">// INFRASTRUCTURE UPGRADES //</div>
+    
+    <div class="upgrade-list" id="upgradeList">
+      <!-- UPGRADE CARDS (Rendered by JS) -->
+      <div class="upgrade-card" data-id="energy">
+        <div class="up-icon">⚡</div>
+        <div class="up-info">
+          <div class="up-name">Energy Core</div>
+          <div class="up-level">Lv. 1</div>
+          <div class="up-desc">Tăng hiệu quả năng lượng (+5 CR/sec)</div>
+        </div>
+        <button class="up-btn" id="upBtn-energy">
+          <span class="cost">100</span>
+          <span class="currency">CR</span>
+        </button>
+      </div>
+
+      <div class="upgrade-card" data-id="defense">
+        <div class="up-icon">🛡️</div>
+        <div class="up-info">
+          <div class="up-name">Wall Grid</div>
+          <div class="up-level">Lv. 1</div>
+          <div class="up-desc">Gia cố bức tường (+10% Security)</div>
+        </div>
+        <button class="up-btn" id="upBtn-defense">
+          <span class="cost">250</span>
+          <span class="currency">CR</span>
+        </button>
+      </div>
+
+      <div class="upgrade-card" data-id="comms">
+        <div class="up-icon">📡</div>
+        <div class="up-info">
+          <div class="up-name">Comms Array</div>
+          <div class="up-level">Lv. 0</div>
+          <div class="up-desc">Mở rộng kết nối (-5% Cost Upgrade)</div>
+        </div>
+        <button class="up-btn" id="upBtn-comms">
+          <span class="cost">500</span>
+          <span class="currency">CR</span>
+        </button>
+      </div>
+    </div>
+    
+    <div class="donate-section">
+      <div class="section-title">// GLOBAL CONTRIBUTION //</div>
+      <div class="donate-box">
+        <input type="number" id="donateAmount" placeholder="Amount..." min="1">
+        <button id="donateBtn">DONATE TO QUY CHUNG</button>
+      </div>
+      <div class="recent-donors">
+        <div class="rd-title">RECENT COMMANDERS</div>
+        <div id="donorList" class="rd-list">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="assets/js/loading.js"></script>
+<script src="assets/js/camp_manager.js"></script>
+
+</body>
+</html>

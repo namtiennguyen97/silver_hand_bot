@@ -1529,7 +1529,23 @@ function makeDecision(isApprove) {
     // [NEW] Stability reward/penalty
     updateStability(isCorrect ? 8 : -20);
 
-    // Play decision SFX
+    // [NEW] Persist approved members for Camp Aegis
+    if (isApprove) {
+        const approvedList = JSON.parse(localStorage.getItem('silver_hand_approved_members') || '[]');
+        // Check if already in list to avoid duplicates
+        if (!approvedList.some(m => m.name === applicant.name)) {
+            approvedList.push({
+                name: applicant.name,
+                img: applicant.img,
+                level: applicant.level,
+                profession: applicant.profession,
+                nationality: applicant.nationality,
+                approvedAt: Date.now()
+            });
+            localStorage.setItem('silver_hand_approved_members', JSON.stringify(approvedList.slice(-50))); // Keep last 50
+        }
+    }
+
     if (isApprove) {
         inspectorSfx.approve();
     } else {

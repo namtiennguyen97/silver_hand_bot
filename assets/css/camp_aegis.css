@@ -1,0 +1,321 @@
+/* =============================================
+   CAMP AEGIS: MANAGEMENT — STYLING
+============================================= */
+
+:root {
+  --neon-blue: #00f2ff;
+  --neon-pink: #ff00ea;
+  --neon-green: #39ff14;
+  --neon-yellow: #fefe33;
+  --dark-bg: #05050a;
+  --panel-bg: rgba(15, 20, 35, 0.95);
+  --border-glow: rgba(0, 242, 255, 0.4);
+  --font-main: 'Inter', sans-serif;
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-accent: 'Orbitron', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+body {
+  background: var(--dark-bg);
+  color: #fff;
+  font-family: var(--font-main);
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* ============ BACKGROUND ============ */
+#gameBg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 50%, #0a1222 0%, #05050a 100%);
+  z-index: -2;
+}
+
+.grid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(0, 242, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 242, 255, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.scanline {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.1) 50%);
+  background-size: 100% 4px;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.2;
+}
+
+/* ============ TOP HUD ============ */
+#topHUD {
+  height: 80px;
+  background: rgba(0,0,0,0.85);
+  border-bottom: 1px solid var(--neon-blue);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  position: relative;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+}
+
+.camp-name {
+  font-family: var(--font-accent);
+  font-weight: 900;
+  font-size: 1.2rem;
+  color: var(--neon-blue);
+  text-shadow: 0 0 10px rgba(0,242,255,0.4);
+}
+
+.camp-time {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: #777;
+}
+
+/* Weather Widget */
+.weather-widget {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 242, 255, 0.2);
+  padding: 8px 15px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.weather-icon {
+  font-size: 1.8rem;
+}
+
+.w-top {
+  display: flex;
+  gap: 10px;
+  font-family: var(--font-accent);
+  font-size: 0.85rem;
+}
+
+.w-top #w-temp { color: var(--neon-yellow); }
+.w-top #w-desc { color: #fff; }
+
+.w-bottom {
+  font-size: 0.65rem;
+  color: #888;
+  text-transform: uppercase;
+}
+
+.hud-right {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.resource-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.res-label {
+  font-size: 0.6rem;
+  font-family: var(--font-accent);
+  color: #aaa;
+}
+
+.res-val {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  color: var(--neon-green);
+}
+
+.btn-exit {
+  background: rgba(255, 0, 0, 0.15);
+  border: 1px solid #f44;
+  color: #f44;
+  padding: 6px 12px;
+  font-family: var(--font-accent);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-exit:hover { background: #f44; color: #000; }
+
+/* ============ VIEWPORT / CANVAS ============ */
+#canvasViewport {
+  position: absolute;
+  top: 80px;
+  bottom: 80px;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  cursor: grab;
+}
+
+#canvasViewport:active { cursor: grabbing; }
+
+#gameCanvas {
+  display: block;
+}
+
+/* Plot Menu Overlay */
+.plot-menu {
+  position: absolute;
+  background: var(--panel-bg);
+  border: 1px solid var(--neon-blue);
+  width: 220px;
+  padding: 15px;
+  z-index: 100;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+}
+
+.menu-header {
+  font-family: var(--font-accent);
+  font-size: 0.8rem;
+  color: var(--neon-blue);
+  border-bottom: 1px solid rgba(0, 242, 255, 0.3);
+  margin-bottom: 12px;
+  padding-bottom: 5px;
+}
+
+.menu-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-plot {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 8px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  text-align: left;
+  transition: 0.2s;
+}
+
+.btn-plot:hover:not(:disabled) {
+  background: rgba(0, 242, 255, 0.15);
+  border-color: var(--neon-blue);
+}
+
+.btn-plot:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.menu-close {
+  position: absolute;
+  top: 5px; right: 5px;
+  background: none; border: none;
+  color: #666; cursor: pointer;
+  padding: 5px;
+}
+
+/* ============ BOTTOM NAV ============ */
+#bottomNav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 80px;
+  background: rgba(0,0,0,0.9);
+  border-top: 1px solid rgba(0, 242, 255, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  padding: 0 10px;
+  z-index: 100;
+}
+
+.nav-btn {
+  flex: 1;
+  max-width: 120px;
+  height: 50px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #888;
+  font-family: var(--font-accent);
+  font-size: 0.65rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.3s;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav-btn.active {
+  background: rgba(0, 242, 255, 0.1);
+  border-color: var(--neon-blue);
+  color: var(--neon-blue);
+  box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+}
+
+/* ============ MODAL SYSTEM ============ */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.modal-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--neon-blue);
+  width: 100%;
+  max-width: 500px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 40px rgba(0, 242, 255, 0.2);
+}
+
+.modal-header {
+  padding: 15px;
+  border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-accent);
+  color: var(--neon-blue);
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 600px) {
+  #topHUD { height: auto; padding: 10px; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .hud-center { order: 3; width: 100%; }
+  .hud-left, .hud-right { flex: 1; justify-content: space-between; }
+  #canvasViewport { top: 130px; bottom: 85px; }
+  .nav-btn { font-size: 0.55rem; height: 45px; gap: 2px; }
+}

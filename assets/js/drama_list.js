@@ -21,15 +21,21 @@ const STAGE_DATA = [
     tags: ["UNLOCKED", "3 DAYS", "SAO-ĐÊM"]
   },
   {
-    id: "26-22",
-    title: "Scammer come back",
-    status: "locked",
-    type: "drama",
-    img: "assets/img/drama/smirk.png",
-    link: null,
+    id: "CAMP_AEGIS",
+    title: "Camp Aegis",
+    status: "unlocked",
+    type: "minigame",
+    img: "assets/img/mayor_mobile_workspace.png",
+    link: "camp_aegis.html",
     x: 35, y: 55,
-    description: "Nội dung chưa được mở khóa. Hoàn thành các nhiệm vụ trước để tiếp tục.",
-    rules: []
+    description: "Quản lý tối thượng doanh trại SAO-ĐÊM. Tích hợp thời tiết thực, trồng trọt, chế biến, quản lý nhân sự và giao dịch với NPC bot hằng ngày. Tiến trình lưu trữ đám mây 24/7.",
+    rules: [
+      { icon: "⛅", text: "Thời tiết thực tế ảnh hưởng trực tiếp đến năng suất" },
+      { icon: "🌾", text: "Trồng trọt và thu hoạch theo thời gian thực" },
+      { icon: "🏪", text: "Mở chợ giao dịch với hàng chục loại NPC bot" },
+      { icon: "💾", text: "Lưu trữ tiến trình chơi vĩnh viễn trên Blob" }
+    ],
+    tags: ["UNLOCKED", "REAL-TIME", "SAVES"]
   },
   {
     id: "26-23",

@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="assets/css/loading.css">
   <link rel="stylesheet" href="assets/css/drama.css">
   <link rel="stylesheet" href="assets/css/vn_overlay.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
@@ -65,19 +66,21 @@
 <div class="drama-bg-layer">
   <img src="assets/img/drama_bg.png" alt="Futuristic Map Background">
   <div class="bg-overlay"></div>
+  <div id="dramaParticles"></div>
 </div>
 
 <!-- STAGE MAP UI CONTAINER -->
 <div class="stage-map-container">
   
   <!-- TOP LEFT CONTROLS -->
-  <div class="stage-top-controls">
-    <button class="stage-btn-control" onclick="window.location.href='index.html'">
+  <!-- TOP HUD CONTROLS -->
+  <div class="stage-nav-wrap">
+    <button class="stage-btn-control nav-back" onclick="window.location.href='index.html'">
       <span class="btn-icon">Esc</span>
       <span class="btn-text">BACK</span>
     </button>
-    <button class="stage-btn-control" onclick="window.location.href='index.html'">
-      <span class="btn-icon">Home</span>
+    <button class="stage-btn-control nav-home" onclick="window.location.href='index.html'">
+      <span class="btn-icon"><i class="fa-solid fa-house"></i></span>
       <span class="btn-text">HOME</span>
     </button>
   </div>
@@ -86,8 +89,8 @@
   <div class="stage-chapter-info">
     <div class="chapter-number">26</div>
     <div class="chapter-details">
-      <div class="chapter-title">DRAMA ARCHIVE</div>
-      <div class="chapter-subtitle">Cradle Parade</div>
+      <div class="chapter-title">MAIN ARCHIVE</div>
+      <div class="chapter-subtitle">List Parade</div>
       <div class="chapter-time">Remaining <span>31 Days</span></div>
     </div>
   </div>
@@ -95,11 +98,11 @@
   <!-- BOTTOM PROGRESS -->
   <div class="stage-bottom-progress">
     <div class="progress-ring">
-      <div class="ring-text">CLAIMED</div>
+      <div class="ring-text">ONLINE</div>
     </div>
     <div class="progress-info">
-      <div class="progress-count">36<span>/36</span></div>
-      <div class="progress-label"><span class="hexagon-icon">⬡</span> Collected</div>
+      <div class="progress-count">2<span>/10</span></div>
+      <div class="progress-label"><span class="hexagon-icon">⬡</span> Functions Active</div>
     </div>
   </div>
 
@@ -165,7 +168,7 @@
   </div>
 </div>
 
-<audio id="dramaBgm" src="assets/sounds/campaign_theme.mp3" loop preload="auto"></audio>
+<audio id="dramaBgm" src="assets/sounds/abyss_theme.mp3" loop preload="auto"></audio>
 
 <script src="assets/js/loading.js"></script>
 <script src="assets/js/vn_engine.js"></script>
@@ -269,6 +272,48 @@ const VN_SCRIPT = {
     }
 };
 
+/* =============================================
+   NEON PARTICLES SYSTEM
+============================================= */
+function initDramaParticles() {
+    const container = document.getElementById('dramaParticles');
+    if (!container) return;
+
+    function createParticle() {
+        if (document.hidden) return; // Save resources when tab is hidden
+        
+        const particle = document.createElement('div');
+        particle.className = 'neon-particle';
+        
+        const size = Math.random() * 6 + 2 + 'px';
+        const duration = Math.random() * 15 + 10 + 's';
+        const startX = Math.random() * 100 + '%';
+        
+        particle.style.width = size;
+        particle.style.height = size;
+        particle.style.left = startX;
+        particle.style.bottom = '-10px';
+        particle.style.animationDuration = duration;
+        
+        // Randomly assign cyber colors
+        if (Math.random() > 0.5) {
+            particle.classList.add('cyan');
+        } else {
+            particle.classList.add('pink');
+        }
+
+        container.appendChild(particle);
+
+        // Remove after animation finish
+        setTimeout(() => {
+            particle.remove();
+        }, parseFloat(duration) * 1000);
+    }
+
+    // Low frequency: Create a particle every 800-1500ms
+    setInterval(createParticle, 1200);
+}
+
 window.addEventListener('app:loaded', () => {
     const engine = new VNEngine();
     engine.setBGM('assets/sounds/campaign_theme.mp3');
@@ -276,6 +321,9 @@ window.addEventListener('app:loaded', () => {
     // setTimeout(() => {
     //     engine.start(VN_SCRIPT);
     // }, 800);
+    
+    // Start particles
+    initDramaParticles();
 });
 </script>
 

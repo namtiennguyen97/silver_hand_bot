@@ -763,84 +763,106 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 200px;
+    height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 60px;
+    gap: 80px;
     z-index: 30;
     pointer-events: none;
-    /* Desk surface transparent gradient */
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
+    background: linear-gradient(to top, rgba(0, 5, 12, 0.9) 0%, rgba(0, 5, 12, 0.4) 50%, transparent 100%);
+    border-top: 1px solid rgba(0, 255, 255, 0.05);
 }
 
 .desk-btn {
     position: relative;
-    width: 140px;
-    height: 80px;
+    width: 160px;
+    height: 90px;
     border: none;
-    border-radius: 8px;
     cursor: pointer;
     font-family: var(--font-hud);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 900;
     letter-spacing: 3px;
-    transition: all 0.15s ease;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     pointer-events: all;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
-    /* Disabled by default until dialogue ends */
-    opacity: 0.3;
+    gap: 8px;
+    clip-path: polygon(15px 0, 100% 0, calc(100% - 15px) 100%, 0 100%);
+    opacity: 0.2;
     pointer-events: none;
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.desk-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: 0.5s;
+}
+
+.desk-btn:hover::before {
+    left: 100%;
 }
 
 .desk-btn.active {
     opacity: 1;
     pointer-events: all;
-    animation: btnGlow 2s ease-in-out infinite;
+    animation: btnGlowPulse 2.5s ease-in-out infinite;
 }
 
-@keyframes btnGlow {
-
-    0%,
-    100% {
-        box-shadow: 0 0 12px var(--btn-glow);
+@keyframes btnGlowPulse {
+    0%, 100% {
+        box-shadow: 0 0 15px var(--btn-glow), inset 0 0 10px var(--btn-glow);
     }
-
     50% {
-        box-shadow: 0 0 30px var(--btn-glow), 0 0 60px var(--btn-glow);
+        box-shadow: 0 0 35px var(--btn-glow), inset 0 0 20px var(--btn-glow);
     }
 }
 
 .desk-btn.approve {
-    background: linear-gradient(135deg, #003322, #006644);
-    border: 2px solid var(--green);
+    background: linear-gradient(135deg, rgba(0, 51, 34, 0.8), rgba(0, 102, 68, 0.9));
+    border: 1px solid rgba(0, 255, 136, 0.5);
     color: var(--green);
-    --btn-glow: rgba(0, 255, 136, 0.6);
+    --btn-glow: rgba(0, 255, 136, 0.4);
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
 }
 
 .desk-btn.reject {
-    background: linear-gradient(135deg, #330011, #660022);
-    border: 2px solid var(--pink);
+    background: linear-gradient(135deg, rgba(51, 0, 17, 0.8), rgba(102, 0, 34, 0.9));
+    border: 1px solid rgba(255, 51, 102, 0.5);
     color: var(--pink);
-    --btn-glow: rgba(255, 51, 102, 0.6);
+    --btn-glow: rgba(255, 51, 102, 0.4);
+    text-shadow: 0 0 10px rgba(255, 51, 102, 0.8);
+}
+
+.desk-btn:hover.active {
+    transform: scale(1.1);
+    filter: brightness(1.2);
 }
 
 .desk-btn:active {
-    transform: scale(0.94) translateY(3px);
+    transform: scale(0.95);
 }
 
 .desk-btn .btn-icon {
-    font-size: 22px;
+    font-size: 32px;
+    filter: drop-shadow(0 0 5px currentColor);
 }
 
 .desk-btn .btn-label {
     font-size: 10px;
     letter-spacing: 2px;
+    font-weight: 900;
 }
 
 /* Counter (right of buttons) */
@@ -1371,26 +1393,63 @@ body {
 
     /* Top Bar - Stacked & Compact */
     #topBar {
-        padding: 10px 15px;
-        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+        padding: 8px 12px;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .topbar-left {
+        width: 100%;
+        border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+        padding-bottom: 5px;
     }
 
     .topbar-title {
         font-size: 10px;
-        letter-spacing: 1px;
+        letter-spacing: 1.5px;
     }
 
     .topbar-sub {
         display: none;
     }
 
+    .topbar-right {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .stability-container {
+        min-width: 120px;
+        align-items: flex-start;
+    }
+
     .day-badge {
-        font-size: 9px;
-        padding: 3px 10px;
+        font-size: 8px;
+        padding: 2px 8px;
     }
 
     .score-display {
         font-size: 10px;
+    }
+
+    /* Fixed Exit Button for Mobile - Better Access */
+    .btn-exit {
+        position: fixed;
+        top: 10px;
+        right: 12px;
+        z-index: 100;
+        background: rgba(255, 0, 85, 0.15);
+        border: 1px solid var(--pink);
+        color: var(--pink);
+        font-size: 9px;
+        padding: 4px 10px;
+        border-radius: 4px;
+        backdrop-filter: blur(5px);
+        text-shadow: 0 0 5px var(--pink);
     }
 
     /* ─── CRITERIA BOARD — Mobile Bottom Sheet ─── */
@@ -1485,34 +1544,36 @@ body {
 
     /* Desk Buttons - Modern Mobile Grid */
     #deskButtons {
-        height: 150px;
+        height: 140px;
         flex-direction: row;
-        gap: 15px;
-        padding: 0 15px 15px;
-        background: linear-gradient(to top, rgba(0, 255, 255, 0.1), transparent);
+        gap: 20px;
+        padding: 0 20px 20px;
+        background: linear-gradient(to top, rgba(0, 10, 20, 0.95), transparent);
         left: 0;
         right: 0;
         width: 100%;
+        border-top: 1px solid rgba(0, 255, 255, 0.1);
     }
 
     .desk-btn {
         flex: 1;
-        height: 95px;
+        height: 90px;
         width: auto;
-        clip-path: none;
-        border-radius: 12px;
-        border-width: 3px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+        border-radius: 0;
+        border-width: 1px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.6);
     }
 
     .desk-btn .btn-icon {
-        font-size: 28px;
+        font-size: 36px;
     }
 
     .desk-btn .btn-label {
-        font-size: 11px;
-        font-weight: 700;
-        margin-top: 5px;
+        font-size: 9px;
+        font-weight: 900;
+        margin-top: 2px;
+        letter-spacing: 1px;
     }
 
     /* Decision Stamps - Larger for impact */
@@ -1578,16 +1639,22 @@ body {
         height: 200px;
     }
 
+    #deskButtons {
+        height: 120px;
+        gap: 12px;
+        padding: 0 10px 10px;
+    }
+
+    .desk-btn {
+        height: 80px;
+    }
+
     .desk-btn .btn-icon {
-        font-size: 20px;
+        font-size: 24px;
     }
 
     .desk-btn .btn-label {
-        font-size: 9px;
-    }
-
-    #deskButtons {
-        height: 130px;
+        font-size: 8px;
     }
 }
 

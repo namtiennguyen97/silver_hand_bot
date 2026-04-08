@@ -1,75 +1,74 @@
 /* =============================================
    DRAMA CAMPAIGN LOGIC
 ============================================= */
-
+// status: unlocked, cleared, locked
 const STAGE_DATA = [
-  {
-    id: "INSPECTOR",
-    title: "Camp Inspector",
-    status: "unlocked",
-    type: "minigame",
-    img: "assets/img/inspector_desk.png",
-    link: "inspector.html",
-    x: 10, y: 50,
-    description: "Bạn là quan chức kiểm soát nhân sự Camp SAO-ĐÊM. Sàng lọc người tị nạn qua 3 ngày với các tiêu chí thay đổi.",
-    rules: [
-      { icon: "🎮", text: "Xét duyệt từng hồ sơ — Approve hoặc Reject" },
-      { icon: "📋", text: "Mayor AI giới thiệu tiêu chí mỗi ngày" },
-      { icon: "📊", text: "Kết quả dựa trên độ chính xác quyết định" },
-      { icon: "⚠️", text: "Gián điệp đang trà trộn — hãy lọc kỹ!" }
-    ],
-    tags: ["UNLOCKED", "3 DAYS", "SAO-ĐÊM"]
-  },
-  {
-    id: "CAMP_AEGIS",
-    title: "Camp Aegis",
-    status: "unlocked",
-    type: "minigame",
-    img: "assets/img/mayor_mobile_workspace.png",
-    link: "camp_aegis.html",
-    x: 35, y: 55,
-    description: "Quản lý tối thượng doanh trại SAO-ĐÊM. Tích hợp thời tiết thực, trồng trọt, chế biến, quản lý nhân sự và giao dịch với NPC bot hằng ngày. Tiến trình lưu trữ đám mây 24/7.",
-    rules: [
-      { icon: "⛅", text: "Thời tiết thực tế ảnh hưởng trực tiếp đến năng suất" },
-      { icon: "🌾", text: "Trồng trọt và thu hoạch theo thời gian thực" },
-      { icon: "🏪", text: "Mở chợ giao dịch với hàng chục loại NPC bot" },
-      { icon: "💾", text: "Lưu trữ tiến trình chơi vĩnh viễn trên Blob" }
-    ],
-    tags: ["UNLOCKED", "REAL-TIME", "SAVES"]
-  },
-  {
-    id: "26-23",
-    title: "Be a official",
-    status: "locked",
-    type: "drama",
-    img: "assets/img/drama/smirk.png",
-    link: null,
-    x: 55, y: 68,
-    description: "Nội dung chưa được mở khóa. Hoàn thành các nhiệm vụ trước để tiếp tục.",
-    rules: []
-  },
-  {
-    id: "26-24",
-    title: "Tranh Chấp Vùng Kín",
-    status: "locked",
-    type: "drama",
-    img: "assets/img/drama/smirk.png",
-    link: null,
-    x: 75, y: 50,
-    description: "Nội dung chưa được mở khóa. Hoàn thành các nhiệm vụ trước để tiếp tục.",
-    rules: []
-  },
-  {
-    id: "26-25",
-    title: "Camp Invasion",
-    status: "locked",
-    type: "drama",
-    img: "assets/img/drama/smirk.png",
-    link: null,
-    x: 90, y: 65,
-    description: "Nội dung chưa được mở khóa. Hoàn thành các nhiệm vụ trước để tiếp tục.",
-    rules: []
-  }
+    {
+        id: "INSPECTOR",
+        title: "Camp Inspector",
+        status: "cleared",
+        type: "minigame",
+        img: "assets/img/inspector_desk.png",
+        link: "inspector.html",
+        x: 10, y: 50,
+        description: "You are the new officer in charge of personnel control at Camp SAO-ĐÊM. Screen new members over 3 days as the criteria change each day.",
+        rules: [
+            {icon: "🎮", text: "Review each profile — Approve or Reject"},
+            {icon: "📋", text: "Mayor AI provides the daily criteria"},
+            {icon: "📊", text: "Your score depends on decision accuracy"},
+            {icon: "⚠️", text: "Spies are infiltrating — screen carefully!"}
+        ],
+        tags: ["CLEARED", "3 DAYS", "SAO-ĐÊM"]
+    },
+    {
+        id: "CTC_PLANER",
+        title: "CTC Planer",
+        status: "unlocked",
+        type: "workspace",
+        img: "assets/img/mayor_mobile_workspace.png",
+        link: "ctc-planer.html",
+        x: 35, y: 55,
+        description: "The system manages the CTC battle roster, assigns roles, and organizes detailed strategic plans.",
+        rules: [
+            {icon: "🔧", text: "Manage the list of battle participants"},
+            {icon: "📈", text: "Monitor and adjust in real time"},
+            {icon: "💾", text: "Plan strategies and export reports"}
+        ],
+        tags: ["UNLOCKED", "UTILITY", "CTC"]
+    },
+    {
+        id: "26-23",
+        title: "Be a official",
+        status: "locked",
+        type: "drama",
+        img: "assets/img/drama/smirk.png",
+        link: null,
+        x: 55, y: 68,
+        description: "It locked!",
+        rules: []
+    },
+    {
+        id: "26-24",
+        title: "Boss camp",
+        status: "locked",
+        type: "drama",
+        img: "assets/img/drama/smirk.png",
+        link: null,
+        x: 75, y: 50,
+        description: "It locked!",
+        rules: []
+    },
+    {
+        id: "26-25",
+        title: "Camp Invasion",
+        status: "locked",
+        type: "drama",
+        img: "assets/img/drama/smirk.png",
+        link: null,
+        x: 90, y: 65,
+        description: "It locked!",
+        rules: []
+    }
 ];
 
 /* =============================================
@@ -81,7 +80,7 @@ function openStageModal(stage) {
 
     // Fill in data
     document.getElementById('sdmBadge').textContent = stage.type === 'minigame' ? 'MINI-GAME' : `STAGE ${stage.id}`;
-    document.getElementById('sdmTitle').textContent  = stage.title.toUpperCase();
+    document.getElementById('sdmTitle').textContent = stage.title.toUpperCase();
     document.getElementById('sdmSubtitle').textContent = stage.type === 'minigame'
         ? '// MINI-GAME — PAPERS PLEASE STYLE'
         : `// DRAMA STAGE — ${stage.id}`;
@@ -151,7 +150,7 @@ function renderStageMap() {
         const isMinigame = stage.type === 'minigame';
         nodeDiv.className = `stage-node ${stage.status === 'cleared' ? 'is-cleared' : ''} ${isMinigame ? 'is-minigame' : ''}`;
         nodeDiv.style.left = `${stage.x}%`;
-        nodeDiv.style.top  = `${stage.y}%`;
+        nodeDiv.style.top = `${stage.y}%`;
         nodeDiv.style.transform = 'translate(-50%, -50%)';
 
         nodeDiv.innerHTML = `
@@ -175,7 +174,7 @@ function renderStageMap() {
 
         if (index < STAGE_DATA.length - 1) {
             const current = stage;
-            const next    = STAGE_DATA[index + 1];
+            const next = STAGE_DATA[index + 1];
             svgLines += `<line x1="${current.x}%" y1="${current.y}%" x2="${next.x}%" y2="${next.y}%" stroke="rgba(255,255,255,0.8)" stroke-width="3" />`;
             svgLines += `<line x1="${current.x}%" y1="${current.y}%" x2="${next.x}%" y2="${next.y}%" stroke="rgba(0,255,255,0.4)" stroke-width="8" filter="blur(2px)" />`;
         }
@@ -199,5 +198,6 @@ function renderStageMap() {
 /* --- INIT --- */
 document.addEventListener('DOMContentLoaded', () => {
     renderStageMap();
-    window.addEventListener('resize', () => {});
+    window.addEventListener('resize', () => {
+    });
 });

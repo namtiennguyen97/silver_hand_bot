@@ -614,10 +614,10 @@ const MAYOR_INTRO_SCRIPTS = {
             next: 'd1_2'
         },
         'd1_2': {
-            speaker: 'SYSTEM',
+            speaker: 'Chy Chy',
             side: 'left',
-            image: 'assets/img/system.png',
-            text: 'Thông báo- có nhiều đơn duyệt camp vẫn còn tồn đọng!',
+            image: 'assets/img/inspector_npc/npc_20.png',
+            text: 'Có nhiều đơn duyệt camp vẫn còn tồn đọng kìa chú!',
             next: 'd1_3'
         },
         'd1_3': {

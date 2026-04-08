@@ -1716,7 +1716,7 @@ function showGameOver(wasInstability = false) {
         window.location.reload(); // Hard reset for stability
     };
     gameOverScreen.querySelector('#goHome').onclick = () => {
-        window.location.href = 'drama.html';
+        window.location.href = '../../drama.html';
     };
 
     // Pick epilogue script based on accuracy

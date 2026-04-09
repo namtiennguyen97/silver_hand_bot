@@ -78,6 +78,28 @@ function layoutVideo() {
         videoMain.style.top = '0';
         videoMain.style.left = '0';
     }
+
+    const hudRoot = document.getElementById('hud-root');
+    if (hudRoot) {
+        if (isMobile) {
+            hudRoot.style.width = '100%';
+            hudRoot.style.left = '0';
+            hudRoot.style.transform = 'none';
+            hudRoot.style.margin = '0';
+        } else {
+            // On desktop, we want the HUD to follow the "content" area which is centered
+            // We use the same scaling logic as mobile to determine the "active" HUD width
+            const scaleByH = vh / VIDEO_H;
+            const hudWidth = CONTENT_W * scaleByH;
+            
+            hudRoot.style.width = hudWidth + 'px';
+            hudRoot.style.height = '100%';
+            hudRoot.style.top = '0';
+            hudRoot.style.bottom = '0';
+            hudRoot.style.left = '50%';
+            hudRoot.style.transform = 'translateX(-50%)';
+        }
+    }
 }
 
 // Debounce function to limit layout calls
@@ -189,7 +211,7 @@ function initGamingHUD() {
         });
     }
 
-    withEffect(btnBattle, () => window.location.href = 'drama.html');
+    withEffect(btnBattle, () => window.PageTransition ? window.PageTransition.go('drama.html') : (window.location.href = 'drama.html'));
     withEffect(btnNews, () => {
         openModalByKey("news");
         fetchNews();

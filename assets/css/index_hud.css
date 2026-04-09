@@ -24,15 +24,18 @@
 /* --- HUD Root Layout --- */
 #hud-root {
   position: fixed;
-  inset: 0;
-  z-index: 100000; /* Bumping above other layers */
+  top: 0;
+  bottom: 0;
+  /* left and width are handled by index_main.js layoutVideo() */
+  z-index: 100000;
   pointer-events: none;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 20px;
+  padding: 15px; /* Tighter padding like mobile */
   opacity: 0;
   transition: opacity 1s ease 0.5s;
+  box-sizing: border-box;
 }
 
 body.finished #hud-root {
@@ -230,53 +233,23 @@ body.finished #hud-root {
 }
 
 
-/* --- Top Right: Resources --- */
-.hud-resources {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-}
+/* --- Removed Resources CSS --- */
 
-.hud-resource-item {
-  background: var(--hud-bg);
-  padding: 6px 15px;
-  border: 1px solid var(--hud-border);
-  backdrop-filter: var(--hud-blur);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
-}
-
-.hud-res-icon {
-  width: 14px;
-  height: 14px;
-  background: var(--hud-cyan);
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-}
-
-.hud-res-val {
-  font-family: var(--hud-font);
-  font-size: 12px;
-  color: #fff;
-}
-
-/* --- Middle Row --- */
+/* --- Action Menu (Right Side) --- */
 .hud-mid-row {
   flex-grow: 1;
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding-right: 20px;
+  padding-right: 10px; /* Tighter padding for mobile feel */
   pointer-events: none;
 }
 
-/* --- Action Menu (Right Side) --- */
 .hud-action-menu {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  width: 260px;
+  gap: 8px; /* Tighter gap */
+  width: min(240px, 75%); /* Responsive width within HUD root */
 }
 
 .hud-action-btn {
@@ -402,7 +375,7 @@ body.finished #hud-root {
   justify-content: center;
 }
 .btn-battle .btn-main-label { 
-    font-size: 28px; 
+    font-size: 22px; /* Smaller for mobile consistency */
     color: var(--hud-cyan);
     text-shadow: 0 0 15px var(--hud-cyan);
 }
@@ -514,6 +487,9 @@ body.finished #hud-root {
   padding: 10px 20px;
   backdrop-filter: var(--hud-blur);
   border-right: 2px solid var(--hud-cyan);
+  /* Fixed width to prevent shifting neighboring elements */
+  width: 150px;
+  box-sizing: border-box;
 }
 
 .hud-battery-wrap {
@@ -549,34 +525,55 @@ body.finished #hud-root {
 }
 
 .hud-time-val {
-  font-family: var(--hud-font);
-  font-size: 24px;
-  font-weight: 900;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 22px;
+  font-weight: 400;
   color: #fff;
-  letter-spacing: 2px;
+  letter-spacing: 0px;
+  display: inline-block;
+  min-width: 130px;
+  text-align: right;
+  white-space: nowrap;
 }
 
 /* --- Mobile Responsive --- */
+/* --- Mobile-Style Adjustments (Always applied when narrowed by JS) --- */
+@media (max-width: 1200px), screen and (min-width: 801px) {
+  /* This targets PC with narrowed HUD too */
+  .hud-action-menu { width: min(200px, 80%); }
+  .btn-main-label { font-size: 14px; }
+  .btn-battle .btn-main-label { font-size: 18px; }
+  .hud-profile { 
+    padding: 8px 25px 8px 10px; 
+    gap: 8px; 
+  }
+  .hud-level-wrap { width: 46px; height: 46px; }
+  .hud-level-val { font-size: 18px; }
+  .hud-profile-name { font-size: 15px; }
+  .hud-exp-bar-wrap { width: 120px; margin-top: 10px; }
+}
+
 @media (max-width: 800px) {
   #hud-root { padding: 10px; }
-  .hud-action-menu { width: 180px; }
-  .btn-battle .btn-main-label { font-size: 20px; }
+  .hud-action-menu { width: min(180px, 80%); }
+  .btn-main-label { font-size: 13px; }
+  .btn-sub-label { display: none; } /* Hide sub-label on very small screens */
+  .btn-battle .btn-main-label { font-size: 16px; }
   .hud-bottom-left { width: 100%; }
   .hud-promo-banner { height: 80px; }
-  .hud-resources { display: none; }
   
   /* Profile Mobile Adjustments */
   .hud-profile { 
-    padding: 8px 20px 8px 8px; 
-    gap: 10px; 
-    clip-path: polygon(0 0, 100% 0, calc(100% - 15px) 100%, 0 100%); 
+    padding: 6px 15px 6px 6px; 
+    gap: 8px; 
+    clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); 
   }
-  .hud-level-wrap { width: 42px; height: 42px; }
-  .hud-level-val { font-size: 16px; }
-  .hud-profile-name { font-size: 13px; }
-  .hud-exp-bar-wrap { width: 100px; height: 3px; margin: 2px 0; }
-  .hud-status-text { font-size: 7px; letter-spacing: 1px; }
-  .hud-profile-id { font-size: 8px; }
+  .hud-level-wrap { width: 38px; height: 38px; }
+  .hud-level-val { font-size: 14px; }
+  .hud-profile-name { font-size: 12px; }
+  .hud-exp-bar-wrap { width: 90px; height: 3px; margin: 2px 0; }
+  .hud-exp-val { top: -14px; font-size: 8px; }
+  .hud-profile-id { font-size: 7px; display: none; } /* Hide ID on mobile to save space */
 }
 
 

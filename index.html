@@ -4,11 +4,14 @@
   <meta charset="UTF-8">
   <title>SAO-ĐÊM</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- PAGE TRANSITION: must load first to detect incoming navigation flag -->
+  <script src="assets/js/page_transition.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
   <!-- CSS dùng lại (Bundled for Performance) -->
   <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
   <link rel="stylesheet" href="assets/css/bundle_index.css">
+  <link rel="stylesheet" href="assets/css/page_transition.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 </head>
@@ -126,18 +129,8 @@
         </div>
 
         <!-- TOP CENTER: Removed time sync per request -->
-        <!-- TOP RIGHT: Resources -->
+        <!-- TOP RIGHT: Resources REMOVED PER REQUEST -->
         <div class="hud-section">
-            <div class="hud-resources">
-                <div class="hud-resource-item">
-                    <div class="hud-res-icon"></div>
-                    <div class="hud-res-val">2,674,938</div>
-                </div>
-                <div class="hud-resource-item">
-                    <div class="hud-res-icon" style="background:var(--hud-pink)"></div>
-                    <div class="hud-res-val">SYNC: 100%</div>
-                </div>
-            </div>
         </div>
     </div>
 

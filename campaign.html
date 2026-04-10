@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="spa-page" content="campaign">
+  <title>CAMPAIGN ARCHIVE – SAO-ĐÊM</title>
+  <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/loading.css">
+  <link rel="stylesheet" href="assets/css/drama.css">
+  <link rel="stylesheet" href="assets/css/vn_overlay.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<!-- VISUAL NOVEL INTRO OVERLAY -->
+<div id="vnOverlay">
+  <!-- Choice UI -->
+  <div id="vnChoiceOverlay" class="vn-choice-overlay"></div>
+
+  <!-- Character stage -->
+  <div class="vn-stage">
+    <!-- Left: opponent -->
+    <div class="vn-char left dim" id="vnCharLeft">
+      <img src="assets/img/drama/smirk.png" alt="opponent" id="vnImgLeft">
+    </div>
+    <!-- Right: Silver-Hand -->
+    <div class="vn-char right active" id="vnCharRight">
+      <img src="assets/img/drama/smirk.png" alt="Silver-Hand" id="vnImgRight">
+    </div>
+  </div>
+
+  <!-- Dialogue box -->
+  <div class="vn-dialogue" id="vnDialogue">
+    <div class="vn-speaker-tag" id="vnSpeakerTag">SILVER-HAND</div>
+    <div class="vn-text" id="vnText"></div>
+    <div class="vn-controls">
+      <div class="vn-progress" id="vnProgress"></div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="vn-skip-btn" id="vnSkipBtn">⏩ SKIP ALL</button>
+        <span class="vn-next-indicator" id="vnNextIndicator">▼</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING SCREEN -->
+<div id="loadingOverlay">
+  <div class="loading-wrapper">
+    <div class="loading-text">
+      <span class="sao">SAO &nbsp;</span><span class="dem"> ĐÊM</span>
+    </div>
+    <div class="loading-progress">
+      <div class="progress-bar" id="loadingProgress"></div>
+      <div class="loading-info">
+        <span id="loadingStatus">INITIALIZING...</span>
+        <span id="loadingPercentage">0%</span>
+      </div>
+    </div>
+    <div class="line top"></div>
+    <div class="line bottom"></div>
+  </div>
+</div>
+
+<!-- BACKGROUND -->
+<div class="drama-bg-layer">
+  <img src="assets/img/drama_bg.png" alt="Futuristic Map Background">
+  <div class="bg-overlay"></div>
+  <div id="dramaParticles"></div>
+</div>
+
+<!-- STAGE MAP UI CONTAINER -->
+<div class="stage-map-container">
+  
+  <!-- TOP HUD CONTROLS -->
+  <div class="stage-nav-wrap">
+    <!-- SPA-aware navigation: dùng data-spa-link thay vì onclick href -->
+    <button class="stage-btn-control nav-back" data-spa-link="index.html">
+      <span class="btn-icon">Esc</span>
+      <span class="btn-text">BACK</span>
+    </button>
+    <button class="stage-btn-control nav-home" data-spa-link="index.html">
+      <span class="btn-icon"><i class="fa-solid fa-house"></i></span>
+      <span class="btn-text">HOME</span>
+    </button>
+  </div>
+
+  <!-- LEFT CHAPTER INFO -->
+  <div class="stage-chapter-info">
+    <div class="chapter-number">26</div>
+    <div class="chapter-details">
+      <div class="chapter-title">MAIN ARCHIVE</div>
+      <div class="chapter-subtitle">List Parade</div>
+      <div class="chapter-time">Remaining <span>31 Days</span></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM PROGRESS -->
+  <div class="stage-bottom-progress">
+    <div class="progress-ring">
+      <div class="ring-text">ONLINE</div>
+    </div>
+    <div class="progress-info">
+      <div class="progress-count">2<span>/10</span></div>
+      <div class="progress-label"><span class="hexagon-icon">⬡</span> Functions Active</div>
+    </div>
+  </div>
+
+  <!-- NODE MAP CANVAS -->
+  <div class="stage-nodes-canvas" id="dramaRootNodes">
+    <!-- SVGs for connecting lines will go here -->
+    <svg class="stage-lines-svg" id="stageLinesSvg" preserveAspectRatio="none"></svg>
+    <!-- Nodes rendered by JS -->
+  </div>
+
+</div>
+
+<!-- ============ STAGE DETAIL MODAL ============ -->
+<div id="stageDetailModal" class="sdm-overlay">
+  <div class="sdm-panel">
+    <div class="sdm-badge" id="sdmBadge">MINI-GAME</div>
+    <div class="sdm-header">
+      <div class="sdm-icon-wrap">
+        <img src="assets/img/inspector_desk.png" alt="Stage Preview" id="sdmPreviewImg">
+        <div class="sdm-icon-glow"></div>
+      </div>
+      <div class="sdm-meta">
+        <div class="sdm-title" id="sdmTitle">CAMP INSPECTOR</div>
+        <div class="sdm-subtitle" id="sdmSubtitle">// MINI-GAME — PAPERS PLEASE STYLE</div>
+        <div class="sdm-status-row">
+          <span class="sdm-tag" id="sdmStatusTag">UNLOCKED</span>
+          <span class="sdm-tag outline">3 DAYS</span>
+          <span class="sdm-tag outline">SAO-ĐÊM</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sdm-divider"></div>
+
+    <div class="sdm-desc" id="sdmDesc">
+      Bạn là quan chức kiểm soát nhân sự của Camp SAO-ĐÊM. Có rất nhiều người tị nạn muốn gia nhập camp.
+      Hãy sàng lọc họ qua 3 ngày với những tiêu chí khác nhau — chấp nhận những người phù hợp và từ chối những kẻ nguy hiểm.
+    </div>
+
+    <div class="sdm-rules">
+      <div class="sdm-rule-item">
+        <span class="sdm-rule-icon">🎮</span>
+        <span>Xét duyệt lần lượt từng hồ sơ ứng viên — Approve hoặc Reject</span>
+      </div>
+      <div class="sdm-rule-item">
+        <span class="sdm-rule-icon">📋</span>
+        <span>Mayor AI sẽ giới thiệu tiêu chí mỗi ngày trước khi bắt đầu</span>
+      </div>
+      <div class="sdm-rule-item">
+        <span class="sdm-rule-icon">📊</span>
+        <span>Kết quả dựa trên độ chính xác của các quyết định</span>
+      </div>
+      <div class="sdm-rule-item">
+        <span class="sdm-rule-icon">⚠️</span>
+        <span>Lọc kỹ — gián điệp đang trà trộn trong dòng người tị nạn</span>
+      </div>
+    </div>
+
+    <div class="sdm-actions">
+      <button class="sdm-btn sdm-back" id="sdmBackBtn">← TRỞ LẠI</button>
+      <button class="sdm-btn sdm-start" id="sdmStartBtn">▶️ BẮT ĐẦU</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTE: Audio element REMOVED — BGM lives in index.html shell -->
+<!-- <audio id="dramaBgm" src="assets/sounds/abyss_theme.mp3" loop preload="auto"></audio> -->
+
+<script src="assets/js/loading.js"></script>
+<script src="assets/js/vn_engine.js"></script>
+<script src="assets/js/drama_list.js"></script>
+<script>
+/* =============================================
+   CAMPAIGN SOUND SYSTEM
+   Note: bgmAudio lives in SPA shell (index.html).
+   window.bgmVolume, window.sfxVolume, window.playSfx
+   are already available from the shell's index_main.js.
+   We only need to register SFX for campaign-specific elements.
+============================================= */
+
+// Reuse global playSfx from shell — no need to redeclare
+// Just add campaign-specific cancel targets
+(function initCampaignSfx() {
+    const _clickAudio  = new Audio('assets/sounds/nierMail.mp3');
+    const _cancelAudio = window.cancelAudio || new Audio('assets/sounds/nierMenu.wav');
+
+    document.addEventListener('click', (e) => {
+        const cancelTarget = e.target.closest('.stage-btn-control, #sdmBackBtn, .sdm-back');
+        const clickTarget  = e.target.closest('button, a, .stage-node, .sdm-start, #sdmStartBtn');
+        if (cancelTarget) {
+            if (window.playSfx) window.playSfx(_cancelAudio);
+        } else if (clickTarget) {
+            if (window.playSfx) window.playSfx(_clickAudio);
+        }
+    }, { once: false });
+})();
+
+/* =============================================
+   CAMPAIGN VN INTRO CONFIG
+============================================= */
+const VN_SCRIPT = {
+    'start': {
+        speaker: 'UNKNOWN',
+        side: 'left',
+        text: '... Tưởng rằng không ai biết chuyện này. Hóa ra mày cũng nhúng tay vào?',
+        next: 'line2'
+    },
+    'line2': {
+        speaker: 'SILVER-HAND',
+        side: 'right',
+        text: 'Nhúng tay? Tao chỉ đang ghi chép lại. Mọi incident đều cần một người chứng kiến.',
+        next: 'choice1'
+    },
+    'choice1': {
+        choices: [
+            { text: 'CHẤP NHẬN ĐỐI ĐẦU', next: 'path_fight' },
+            { text: 'GIỮ THÁI ĐỘ TRUNG LẬP', next: 'path_neutral' }
+        ]
+    },
+    'path_fight': {
+        speaker: 'UNKNOWN',
+        side: 'left',
+        effect: 'shake',
+        text: 'Mạnh mồm đấy. Server này không thiếu kẻ muốn đâm sau lưng kẻ tự phụ như mày.',
+        next: 'final'
+    },
+    'path_neutral': {
+        speaker: 'UNKNOWN',
+        side: 'left',
+        text: 'Khôn ngoan đấy. Ở đây, kẻ im lặng thường là kẻ sống sót cuối cùng.',
+        next: 'final'
+    },
+    'final': {
+        speaker: 'SILVER-HAND',
+        side: 'right',
+        effect: 'flash',
+        text: 'Chào mừng đến với CAMPAIGN ARCHIVE. Tất cả đều đã được lưu lại.'
+    }
+};
+
+/* =============================================
+   NEON PARTICLES SYSTEM
+============================================= */
+function initDramaParticles() {
+    const container = document.getElementById('dramaParticles');
+    if (!container) return;
+
+    function createParticle() {
+        if (document.hidden) return;
+        
+        const particle = document.createElement('div');
+        particle.className = 'neon-particle';
+        
+        const size = Math.random() * 6 + 2 + 'px';
+        const duration = Math.random() * 15 + 10 + 's';
+        const startX = Math.random() * 100 + '%';
+        
+        particle.style.width = size;
+        particle.style.height = size;
+        particle.style.left = startX;
+        particle.style.bottom = '-10px';
+        particle.style.animationDuration = duration;
+        
+        if (Math.random() > 0.5) {
+            particle.classList.add('cyan');
+        } else {
+            particle.classList.add('pink');
+        }
+
+        container.appendChild(particle);
+
+        setTimeout(() => {
+            particle.remove();
+        }, parseFloat(duration) * 1000);
+    }
+
+    setInterval(createParticle, 1200);
+}
+
+/* =============================================
+   CAMPAIGN INIT
+   Works in both SPA mode (spa:after-navigate) and
+   direct load mode (app:loaded from loading.js)
+============================================= */
+function initCampaignPage() {
+    const engine = new VNEngine();
+    // đừng xóa nhé, chỉ tạm comment thôi
+    // setTimeout(() => {
+    //     engine.start(VN_SCRIPT);
+    // }, 800);
+    
+    // Start particles
+    initDramaParticles();
+}
+
+// Direct page load (standalone): trigger via app:loaded
+window.addEventListener('app:loaded', initCampaignPage, { once: true });
+
+// SPA mode: trigger via spa:after-navigate (in case loading.js already fired)
+window.addEventListener('spa:after-navigate', (e) => {
+    if (e.detail && e.detail.url && e.detail.url.includes('campaign')) {
+        // Small delay to let DOM settle
+        setTimeout(initCampaignPage, 100);
+    }
+}, { once: true });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,307 @@
+/* ================================================================
+   SPA TRANSITIONS — Cyberpunk Glitch Effects
+   Silver Hand Bot | Mini-SPA Page Transition System
+================================================================ */
+
+/* -------------------------------------------------------
+   GLITCH OVERLAY — Fixed layer, always on top
+------------------------------------------------------- */
+#spa-glitch-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    pointer-events: none;
+    overflow: hidden;
+    opacity: 0;
+    background: transparent;
+}
+
+/* ---- Scanline layer ---- */
+#spa-glitch-overlay .glitch-scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 255, 0.03) 2px,
+        rgba(0, 255, 255, 0.03) 4px
+    );
+    pointer-events: none;
+    opacity: 0;
+}
+
+/* ---- Noise grain layer ---- */
+#spa-glitch-overlay .glitch-noise {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    mix-blend-mode: overlay;
+}
+
+/* ---- Horizontal glitch bars ---- */
+#spa-glitch-overlay .glitch-bar {
+    position: absolute;
+    left: -5%;
+    width: 110%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #00ffff, #ff00ff, transparent);
+    opacity: 0;
+    transform: translateY(-100px);
+    box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff;
+}
+
+/* ---- RGB color split divs ---- */
+#spa-glitch-overlay .glitch-rgb-r,
+#spa-glitch-overlay .glitch-rgb-g,
+#spa-glitch-overlay .glitch-rgb-b {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    mix-blend-mode: screen;
+}
+
+#spa-glitch-overlay .glitch-rgb-r {
+    background: rgba(255, 0, 0, 0.15);
+}
+#spa-glitch-overlay .glitch-rgb-g {
+    background: rgba(0, 255, 0, 0.08);
+}
+#spa-glitch-overlay .glitch-rgb-b {
+    background: rgba(0, 100, 255, 0.15);
+}
+
+/* ---- Full black flash ---- */
+#spa-glitch-overlay .glitch-flash {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    opacity: 0;
+}
+
+/* ================================================================
+   GLITCH-OUT ANIMATION (navigating away)
+================================================================ */
+#spa-glitch-overlay.glitch-out {
+    animation: spa-overlay-out 0.5s ease-in forwards;
+    pointer-events: all; /* Block clicks during transition */
+}
+
+#spa-glitch-overlay.glitch-out .glitch-scanlines {
+    animation: spa-scanlines-pulse 0.15s ease-in-out 3;
+}
+
+#spa-glitch-overlay.glitch-out .glitch-noise {
+    animation: spa-noise-in 0.4s ease-in forwards;
+}
+
+#spa-glitch-overlay.glitch-out .glitch-bar {
+    animation: spa-bar-sweep 0.5s linear forwards;
+}
+
+#spa-glitch-overlay.glitch-out .glitch-rgb-r {
+    animation: spa-rgb-shake-r 0.5s ease-in forwards;
+}
+#spa-glitch-overlay.glitch-out .glitch-rgb-g {
+    animation: spa-rgb-shake-g 0.5s ease-in forwards;
+}
+#spa-glitch-overlay.glitch-out .glitch-rgb-b {
+    animation: spa-rgb-shake-b 0.5s ease-in forwards;
+}
+
+#spa-glitch-overlay.glitch-out .glitch-flash {
+    animation: spa-flash-out 0.5s ease-in forwards;
+}
+
+/* ================================================================
+   GLITCH-IN ANIMATION (new page reveals)
+================================================================ */
+#spa-glitch-overlay.glitch-in {
+    animation: spa-overlay-in 0.6s ease-out forwards;
+    pointer-events: all;
+}
+
+#spa-glitch-overlay.glitch-in .glitch-scanlines {
+    animation: spa-scanlines-pulse 0.1s ease-out 4;
+}
+
+#spa-glitch-overlay.glitch-in .glitch-noise {
+    animation: spa-noise-out 0.5s ease-out forwards;
+}
+
+#spa-glitch-overlay.glitch-in .glitch-bar {
+    animation: spa-bar-sweep-reverse 0.6s linear forwards;
+}
+
+#spa-glitch-overlay.glitch-in .glitch-rgb-r {
+    animation: spa-rgb-settle-r 0.6s ease-out forwards;
+}
+#spa-glitch-overlay.glitch-in .glitch-rgb-g {
+    animation: spa-rgb-settle-g 0.6s ease-out forwards;
+}
+#spa-glitch-overlay.glitch-in .glitch-rgb-b {
+    animation: spa-rgb-settle-b 0.6s ease-out forwards;
+}
+
+#spa-glitch-overlay.glitch-in .glitch-flash {
+    animation: spa-flash-in 0.6s ease-out forwards;
+}
+
+/* ================================================================
+   IDLE STATE (after glitch-in completes)
+================================================================ */
+#spa-glitch-overlay.glitch-idle {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ================================================================
+   KEYFRAMES
+================================================================ */
+
+/* --- Main overlay fade --- */
+@keyframes spa-overlay-out {
+    0%   { opacity: 0; }
+    30%  { opacity: 1; }
+    70%  { opacity: 1; }
+    100% { opacity: 1; }
+}
+
+@keyframes spa-overlay-in {
+    0%   { opacity: 1; }
+    60%  { opacity: 0.5; }
+    100% { opacity: 0; }
+}
+
+/* --- Scanline pulse --- */
+@keyframes spa-scanlines-pulse {
+    0%   { opacity: 0; }
+    50%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* --- Noise --- */
+@keyframes spa-noise-in {
+    0%   { opacity: 0; transform: translate(0, 0); }
+    20%  { opacity: 0.4; transform: translate(-3px, 2px); }
+    40%  { opacity: 0.6; transform: translate(4px, -1px); }
+    60%  { opacity: 0.5; transform: translate(-2px, 3px); }
+    80%  { opacity: 0.8; transform: translate(2px, -2px); }
+    100% { opacity: 0.9; transform: translate(0, 0); }
+}
+
+@keyframes spa-noise-out {
+    0%   { opacity: 0.9; transform: translate(2px, -1px); }
+    30%  { opacity: 0.5; transform: translate(-3px, 2px); }
+    60%  { opacity: 0.2; transform: translate(1px, -1px); }
+    100% { opacity: 0; transform: translate(0, 0); }
+}
+
+/* --- Horizontal bar sweep --- */
+@keyframes spa-bar-sweep {
+    0%   { opacity: 0; transform: translateY(-5px); }
+    10%  { opacity: 1; }
+    50%  { opacity: 0.8; transform: translateY(50vh); }
+    80%  { opacity: 0.4; transform: translateY(90vh); }
+    100% { opacity: 0; transform: translateY(105vh); }
+}
+
+@keyframes spa-bar-sweep-reverse {
+    0%   { opacity: 1; transform: translateY(105vh); }
+    20%  { opacity: 0.8; transform: translateY(60vh); }
+    60%  { opacity: 0.5; transform: translateY(20vh); }
+    90%  { opacity: 0.2; transform: translateY(-5px); }
+    100% { opacity: 0; transform: translateY(-20px); }
+}
+
+/* --- RGB channel shifts (out) --- */
+@keyframes spa-rgb-shake-r {
+    0%   { opacity: 0; transform: translateX(0); }
+    30%  { opacity: 0.6; transform: translateX(-8px); }
+    60%  { opacity: 0.4; transform: translateX(5px); }
+    80%  { opacity: 0.8; transform: translateX(-12px); }
+    100% { opacity: 0.3; transform: translateX(-15px); }
+}
+
+@keyframes spa-rgb-shake-g {
+    0%   { opacity: 0; transform: translateY(0); }
+    40%  { opacity: 0.3; transform: translateY(3px); }
+    70%  { opacity: 0.2; transform: translateY(-4px); }
+    100% { opacity: 0.1; transform: translateY(2px); }
+}
+
+@keyframes spa-rgb-shake-b {
+    0%   { opacity: 0; transform: translateX(0); }
+    30%  { opacity: 0.5; transform: translateX(10px); }
+    60%  { opacity: 0.4; transform: translateX(-6px); }
+    80%  { opacity: 0.7; transform: translateX(14px); }
+    100% { opacity: 0.3; transform: translateX(15px); }
+}
+
+/* --- RGB channel settle (in) --- */
+@keyframes spa-rgb-settle-r {
+    0%   { opacity: 0.3; transform: translateX(-15px); }
+    50%  { opacity: 0.4; transform: translateX(-6px); }
+    80%  { opacity: 0.1; transform: translateX(-2px); }
+    100% { opacity: 0; transform: translateX(0); }
+}
+
+@keyframes spa-rgb-settle-g {
+    0%   { opacity: 0.1; transform: translateY(2px); }
+    50%  { opacity: 0.05; transform: translateY(1px); }
+    100% { opacity: 0; transform: translateY(0); }
+}
+
+@keyframes spa-rgb-settle-b {
+    0%   { opacity: 0.3; transform: translateX(15px); }
+    50%  { opacity: 0.4; transform: translateX(7px); }
+    80%  { opacity: 0.1; transform: translateX(2px); }
+    100% { opacity: 0; transform: translateX(0); }
+}
+
+/* --- Black flash (out: fade to black, in: fade from black) --- */
+@keyframes spa-flash-out {
+    0%   { opacity: 0; }
+    60%  { opacity: 0; }
+    80%  { opacity: 0.5; }
+    90%  { opacity: 0.2; }
+    100% { opacity: 0.85; }
+}
+
+@keyframes spa-flash-in {
+    0%   { opacity: 0.85; }
+    20%  { opacity: 0.3; }
+    50%  { opacity: 0.1; }
+    70%  { opacity: 0; }
+    100% { opacity: 0; }
+}
+
+/* ================================================================
+   SPA VIEWPORT content fade
+================================================================ */
+#spa-viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+}
+
+#spa-viewport.spa-fading-out {
+    animation: spa-content-fade-out 0.3s ease forwards;
+}
+
+#spa-viewport.spa-fading-in {
+    animation: spa-content-fade-in 0.4s ease forwards;
+}
+
+@keyframes spa-content-fade-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+@keyframes spa-content-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}

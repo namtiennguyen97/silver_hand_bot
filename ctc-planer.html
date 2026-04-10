@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
   <link rel="stylesheet" href="assets/css/ctc.css">
   <link rel="stylesheet" href="assets/css/ctc-footer.css">
-  <link rel="stylesheet" href="assets/css/tutorial.css">
+  <link rel="stylesheet" href="assets/css/ctc-workspaces.css">
   <link rel="stylesheet" href="assets/css/tutorial.css">
   <link rel="stylesheet" href="assets/css/rpg_chat.css">
 </head>
@@ -58,16 +58,46 @@
 
 <div class="scanline"></div>
 
-<div class="app">
+<!-- Workspace Browser -->
+<div id="workspaceBrowser" class="workspace-browser hidden">
+  <div class="wb-hero">
+    <h2 class="wb-title">TACTICAL WORKSPACES</h2>
+    <p class="wb-sub">Select an existing tactical plan or create a new one for your team.</p>
+  </div>
+
+  <div class="wb-grid" id="workspaceList">
+    <!-- Rendered via JS -->
+    <div class="loading-text">SCANNING BLOB STORAGE...</div>
+  </div>
+
+  <div class="wb-create-box">
+    <h3 style="margin-top:0">Initialize New Workspace</h3>
+    <div class="wb-input-group">
+      <input type="text" id="newWorkspaceName" class="wb-input" placeholder="Workspace name..." />
+      <input type="password" id="newWorkspacePass" class="wb-input" maxlength="6" pattern="[0-9]*" inputmode="numeric" placeholder="6-digit pass (Optional)" style="max-width:200px" />
+      <button id="createWorkspaceBtn" class="btn primary">Create Workspace</button>
+    </div>
+    <p style="font-size:11px; color:var(--muted); margin-top:8px;">Leave password blank for a public workspace.</p>
+  </div>
+</div>
+
+<div class="app" id="mainApp">
   <div class="topbar">
     <section class="hero">
       <div class="hero-head">
         <div class="hero-left">
           <span class="badge">CTC SAO-DEM Planner</span>
-          <h1 class="hero-title">SAO-DEM TACTICAL TEAM ASSIGNMENT</h1>
+          <h1 class="hero-title">
+            SAO-DEM TACTICAL TEAM ASSIGNMENT
+            <span id="activeWorkspaceBadge" class="workspace-badge hidden"></span>
+          </h1>
         </div>
 
         <div class="hero-actions">
+          <button class="btn toolbar-secondary" id="browseWorkspacesBtn" type="button">
+            <span class="btn-icon"><i class="fa-solid fa-layer-group"></i></span>
+            <span>Switch Workspace</span>
+          </button>
           <a href="index.html" class="home-btn">← Back to Lobby <i class="fa-solid fa-microscope"></i></a>
         </div>
       </div>
@@ -104,6 +134,11 @@
         <button id="managePlayersBtn" class="btn btn-important" type="button">
           <span class="btn-icon"><i class="fa-solid fa-users-gear"></i></span>
           <span>Manage Players</span>
+        </button>
+
+        <button id="uploadPlanBtn" class="btn primary" type="button">
+          <span class="btn-icon"><i class="fa-solid fa-cloud-arrow-up"></i></span>
+          <span id="uploadBtnText">Upload Plan</span>
         </button>
 
         <button class="btn btn-important btn-copy" id="copyBtn" type="button">
@@ -414,6 +449,57 @@
     </div>
   </div>
 </div>
+<!-- DYNAMIC CONFIRM MODAL -->
+<div class="modal" id="dynamicConfirmModal">
+  <div class="modal-panel" style="max-width: 480px;">
+    <div class="modal-head">
+      <h3 id="confirmModalTitle">Are you sure?</h3>
+      <p id="confirmModalText">This action cannot be undone.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="confirmCancelBtn">Cancel</button>
+      <button class="btn warn" id="confirmProceedBtn">Proceed</button>
+    </div>
+  </div>
+</div>
+
+<!-- TACTICAL KEYPAD MODAL -->
+<div class="modal" id="keypadModal">
+  <div class="modal-panel keypad-panel" style="max-width: 400px;">
+    <div class="modal-head">
+      <h3 style="color:var(--cyan); letter-spacing:4px; text-shadow: 0 0 10px var(--cyan);">RESTRICTED ACCESS</h3>
+      <p id="keypadPrompt">ENTER 6-DIGIT AUTHORIZATION CODE</p>
+    </div>
+    <div class="modal-body keypad-body">
+      <div class="keypad-display" id="keypadDisplay">
+        <span class="digit"></span>
+        <span class="digit"></span>
+        <span class="digit"></span>
+        <span class="digit"></span>
+        <span class="digit"></span>
+        <span class="digit"></span>
+      </div>
+      <div class="keypad-grid">
+        <button class="key-btn" data-val="1">1</button>
+        <button class="key-btn" data-val="2">2</button>
+        <button class="key-btn" data-val="3">3</button>
+        <button class="key-btn" data-val="4">4</button>
+        <button class="key-btn" data-val="5">5</button>
+        <button class="key-btn" data-val="6">6</button>
+        <button class="key-btn" data-val="7">7</button>
+        <button class="key-btn" data-val="8">8</button>
+        <button class="key-btn" data-val="9">9</button>
+        <button class="key-btn action clear" id="keypadClear">CLR</button>
+        <button class="key-btn" data-val="0">0</button>
+        <button class="key-btn action enter" id="keypadEnter">ENT</button>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="keypadCancelBtn">Abort Mission</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast">Saved</div>
 <script src="assets/js/loading.js"></script>
 <script src="assets/js/ctc.js"></script>

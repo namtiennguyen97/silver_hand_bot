@@ -74,6 +74,8 @@ let isApplyingRemoteState = false;
 let lastSavedSignature = "";
 let lastAppliedRemoteSignature = "";
 
+let activeWorkspace = null;
+
 // =========================
 // ELEMENTS
 // =========================
@@ -129,6 +131,43 @@ const mobileSortPowerBtn = document.getElementById("mobileSortPowerBtn");
 const mobileSortNameBtn = document.getElementById("mobileSortNameBtn");
 const mobileResetBtn = document.getElementById("mobileResetBtn");
 const mobileRandomSplitBtn = document.getElementById("mobileRandomSplitBtn");
+
+// Workspace Elements
+const workspaceBrowser = document.getElementById("workspaceBrowser");
+const mainApp = document.getElementById("mainApp");
+const workspaceList = document.getElementById("workspaceList");
+const newWorkspaceNameInput = document.getElementById("newWorkspaceName");
+const createWorkspaceBtn = document.getElementById("createWorkspaceBtn");
+const uploadPlanBtn = document.getElementById("uploadPlanBtn");
+const uploadBtnText = document.getElementById("uploadBtnText");
+const activeWorkspaceBadge = document.getElementById("activeWorkspaceBadge");
+const browseWorkspacesBtn = document.getElementById("browseWorkspacesBtn");
+
+// Confirm Modal Elements
+const dynamicConfirmModal = document.getElementById("dynamicConfirmModal");
+const confirmModalTitle = document.getElementById("confirmModalTitle");
+const confirmModalText = document.getElementById("confirmModalText");
+const confirmCancelBtn = document.getElementById("confirmCancelBtn");
+const confirmProceedBtn = document.getElementById("confirmProceedBtn");
+
+// Keypad Elements
+const keypadModal = document.getElementById("keypadModal");
+const keypadDisplay = document.getElementById("keypadDisplay");
+const keypadPrompt = document.getElementById("keypadPrompt");
+const keypadCancelBtn = document.getElementById("keypadCancelBtn");
+const keypadClear = document.getElementById("keypadClear");
+const keypadEnter = document.getElementById("keypadEnter");
+const keyButtons = document.querySelectorAll(".key-btn[data-val]");
+
+// Inputs
+const newWorkspacePassInput = document.getElementById("newWorkspacePass");
+
+// Sounds
+const soundSelect = new Audio("assets/sounds/item_select.ogg");
+function playSelectSound() {
+    soundSelect.currentTime = 0;
+    soundSelect.play().catch(() => {});
+}
 // =========================
 // HELPERS
 // =========================
@@ -155,6 +194,43 @@ function showToast(text) {
 
 function deepClone(obj) {
     return JSON.parse(JSON.stringify(obj));
+}
+
+function customConfirm(title, text, confirmLabel = "Proceed", isWarn = true) {
+    return new Promise((resolve) => {
+        confirmModalTitle.textContent = title;
+        confirmModalText.innerHTML = text;
+        confirmProceedBtn.textContent = confirmLabel;
+
+        if (isWarn) {
+            confirmProceedBtn.classList.add("warn");
+            confirmProceedBtn.classList.remove("primary");
+        } else {
+            confirmProceedBtn.classList.remove("warn");
+            confirmProceedBtn.classList.add("primary");
+        }
+
+        dynamicConfirmModal.classList.add("show");
+
+        const cleanup = () => {
+            dynamicConfirmModal.classList.remove("show");
+            confirmCancelBtn.removeEventListener("click", onCancel);
+            confirmProceedBtn.removeEventListener("click", onConfirm);
+        };
+
+        const onCancel = () => {
+            cleanup();
+            resolve(false);
+        };
+
+        const onConfirm = () => {
+            cleanup();
+            resolve(true);
+        };
+
+        confirmCancelBtn.addEventListener("click", onCancel);
+        confirmProceedBtn.addEventListener("click", onConfirm);
+    });
 }
 
 function getPlayerById(id) {
@@ -233,6 +309,15 @@ function normalizeState() {
     for (const cat of CATEGORIES) {
         state.categories[cat] = state.categories[cat].filter(p => p.group !== "Commander");
     }
+}
+
+function initializeDefaultState() {
+    // Reset categories
+    for (const cat of CATEGORIES) {
+        state.categories[cat] = [];
+    }
+    // Put non-commanders in pool, commanders are separate
+    state.pool = masterPlayers.filter(p => p.group !== "Commander").map(p => deepClone(p));
 }
 function buildSharedPayload() {
     normalizeState();
@@ -348,8 +433,9 @@ function applySharedPayload(payload, options = {}) {
 }
 
 async function fetchSharedState() {
+    if (!activeWorkspace) return null;
     try {
-        const res = await fetch(SHARED_STATE_API, {
+        const res = await fetch(`${SHARED_STATE_API}?workspace=${encodeURIComponent(activeWorkspace)}`, {
             method: "GET",
             headers: {
                 "Accept": "application/json"
@@ -370,18 +456,17 @@ async function fetchSharedState() {
 }
 
 async function saveSharedStateOnline(force = false) {
-    if (isApplyingRemoteState) return;
+    if (isApplyingRemoteState || !activeWorkspace) return;
 
     const payload = buildSharedPayload();
     const signature = buildStateSignature(payload);
 
-    // Không save nếu state không đổi
-    if (!force && signature === lastSavedSignature) {
-        return;
-    }
+    // Update UI Feedback
+    if (uploadBtnText) uploadBtnText.textContent = "Uploading...";
+    if (uploadPlanBtn) uploadPlanBtn.disabled = true;
 
     try {
-        const res = await fetch(SHARED_STATE_API, {
+        const res = await fetch(`${SHARED_STATE_API}?workspace=${encodeURIComponent(activeWorkspace)}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -398,88 +483,148 @@ async function saveSharedStateOnline(force = false) {
 
         lastSharedUpdatedAt = Number(saved.updatedAt) || payload.updatedAt;
         lastSavedSignature = signature;
-    } catch (e) {
-        console.warn("saveSharedStateOnline failed", e);
+        showToast("Plan uploaded to server!");
+    } finally {
+        if (uploadBtnText) uploadBtnText.textContent = "Upload Plan";
+        if (uploadPlanBtn) uploadPlanBtn.disabled = false;
     }
 }
 
+async function loadSharedStateOnStartup(password = null) {
+    if (!activeWorkspace) return;
+
+    try {
+        const url = `${SHARED_STATE_API}?workspace=${encodeURIComponent(activeWorkspace)}${password ? `&password=${encodeURIComponent(password)}` : ""}`;
+        const res = await fetch(url, { cache: "no-store" });
+        const json = await res.json();
+
+        if (json.ok && json.data) {
+            if (json.data.requiresPassword) {
+                // Trigger Keypad
+                const pass = await showTacticalKeypad();
+                if (pass) {
+                    await loadSharedStateOnStartup(pass);
+                } else {
+                    // Aborted - go back to browser
+                    window.location.href = window.location.pathname;
+                }
+                return;
+            }
+
+            // Valid data fetched - apply it
+            const data = json.data;
+            masterPlayers = data.masterPlayers || deepClone(DEFAULT_PLAYERS);
+            state.pool = data.pool || [];
+            state.categories = data.categories || {};
+            
+            saveMasterPlayers();
+            saveState();
+            render();
+            showToast(`Remote data sync: ${activeWorkspace}`);
+        }
+    } catch (err) {
+        console.error("Failed to load shared state:", err);
+    }
+}
+
+// Remove Debounce usage as we want manual now
 function saveSharedStateDebounced() {
-    if (isApplyingRemoteState) return;
-
-    clearTimeout(sharedSaveTimer);
-    sharedSaveTimer = setTimeout(() => {
-        saveSharedStateOnline();
-    }, SHARED_SAVE_DEBOUNCE_MS);
+    // We do nothing here now, or we could just save to localStorage
 }
 
-async function loadSharedStateOnStartup() {
-    const remote = await fetchSharedState();
+async function showTacticalKeypad() {
+    return new Promise((resolve) => {
+        let currentInput = "";
+        const digits = keypadDisplay.querySelectorAll(".digit");
+        
+        const updateDisplay = () => {
+            digits.forEach((d, i) => {
+                if (i < currentInput.length) {
+                    d.classList.add("filled");
+                    // Show digit briefly then mask
+                    if (i === currentInput.length - 1) {
+                        d.textContent = currentInput[i];
+                        setTimeout(() => {
+                            if (currentInput.length > i) d.textContent = "*";
+                        }, 400);
+                    } else {
+                        d.textContent = "*";
+                    }
+                } else {
+                    d.classList.remove("filled");
+                    d.textContent = "";
+                }
+            });
+        };
 
-    if (!remote) {
-        // Chưa có dữ liệu cloud => push state local/default lên cloud 1 lần
-        await saveSharedStateOnline(true);
-        return;
-    }
+        const onKeyPress = (e) => {
+            const val = e.target.getAttribute("data-val");
+            if (currentInput.length < 6) {
+                currentInput += val;
+                playSelectSound();
+                updateDisplay();
+            }
+        };
 
-    const remoteSignature = buildStateSignature(remote);
-    const localSignature = buildStateSignature();
+        const onClear = () => {
+            currentInput = "";
+            playSelectSound();
+            updateDisplay();
+        };
 
-    // Nếu remote giống local thì chỉ sync meta, khỏi render lại
-    if (remoteSignature === localSignature) {
-        lastSharedUpdatedAt = Number(remote.updatedAt) || 0;
-        lastSavedSignature = localSignature;
-        lastAppliedRemoteSignature = remoteSignature;
-        return;
-    }
+        const onEnter = () => {
+            if (currentInput.length === 6) {
+                cleanup();
+                resolve(currentInput);
+            } else {
+                showToast("6 DIGITS REQUIRED");
+            }
+        };
 
-    applySharedPayload(remote, {
-        saveToLocal: true,
-        silent: true
+        const onCancel = () => {
+            cleanup();
+            resolve(null);
+        };
+
+        const cleanup = () => {
+            keypadModal.classList.remove("show");
+            keyButtons.forEach(b => b.removeEventListener("click", onKeyPress));
+            keypadClear.removeEventListener("click", onClear);
+            keypadEnter.removeEventListener("click", onEnter);
+            keypadCancelBtn.removeEventListener("click", onCancel);
+        };
+
+        keyButtons.forEach(b => b.addEventListener("click", onKeyPress));
+        keypadClear.addEventListener("click", onClear);
+        keypadEnter.addEventListener("click", onEnter);
+        keypadCancelBtn.addEventListener("click", onCancel);
+
+        keypadModal.classList.add("show");
+        updateDisplay();
     });
 }
 
-async function pollSharedState() {
-    // Không poll khi tab đang ẩn => tiết kiệm quota
-    if (document.hidden) return;
-
-    const remote = await fetchSharedState();
-    if (!remote) return;
-
-    const remoteUpdatedAt = Number(remote.updatedAt) || 0;
-    const remoteSignature = buildStateSignature(remote);
-    const localSignature = buildStateSignature();
-
-    // Nếu remote cũ hơn hoặc bằng local đã biết => bỏ qua
-    if (remoteUpdatedAt <= lastSharedUpdatedAt) {
-        return;
+async function fetchAllWorkspaces() {
+    try {
+        const res = await fetch(SHARED_STATE_API);
+        if (!res.ok) throw new Error("Failed to fetch workspaces");
+        const json = await res.json();
+        return json.ok ? json.data : [];
+    } catch (e) {
+        console.error("fetchAllWorkspaces error:", e);
+        return [];
     }
-
-    // Nếu nội dung giống local thì chỉ update mốc thời gian
-    if (remoteSignature === localSignature) {
-        lastSharedUpdatedAt = remoteUpdatedAt;
-        lastSavedSignature = localSignature;
-        lastAppliedRemoteSignature = remoteSignature;
-        return;
-    }
-
-    // Nếu remote vừa apply rồi mà poll lại đúng bản đó => bỏ qua
-    if (remoteSignature === lastAppliedRemoteSignature) {
-        lastSharedUpdatedAt = remoteUpdatedAt;
-        return;
-    }
-
-    applySharedPayload(remote, {
-        saveToLocal: true,
-        silent: false
-    });
 }
 
 function startSharedSyncPolling() {
+    // Disabled for now as per user request to use manual upload
+    // But we could poll for remote changes if we want real-time view
+    /*
     clearInterval(sharedSyncTimer);
-
     sharedSyncTimer = setInterval(() => {
         pollSharedState();
     }, SHARED_SYNC_INTERVAL_MS);
+    */
 }
 function saveState() {
     normalizeState();
@@ -1428,8 +1573,12 @@ if (pmSaveBtn) {
 }
 
 if (pmResetDefaultBtn) {
-    pmResetDefaultBtn.addEventListener("click", () => {
-        if (!confirm("Reset player list to default? This will remove your custom edits.")) return;
+    pmResetDefaultBtn.addEventListener("click", async () => {
+        const ok = await customConfirm(
+            "RESET PLAYERS?",
+            "This will revert the player list to default version. <br/>All your custom additions will be lost."
+        );
+        if (!ok) return;
 
         masterPlayers = deepClone(DEFAULT_PLAYERS);
         saveMasterPlayers();
@@ -1489,11 +1638,182 @@ if (mobileRandomSplitBtn) {
     });
 }
 // =========================
+// WORKSPACE BROWSER LOGIC
+// =========================
+async function initWorkspaceFlow() {
+    const params = new URLSearchParams(window.location.search);
+    activeWorkspace = params.get("workspace");
+
+    if (activeWorkspace) {
+        document.title = `CTC Planner - ${activeWorkspace}`;
+        activeWorkspaceBadge.innerHTML = `<i class="fa-solid fa-terminal"></i> WORKSPACE: ${escapeHtml(activeWorkspace)}`;
+        activeWorkspaceBadge.classList.remove("hidden");
+        
+        workspaceBrowser.classList.add("hidden");
+        mainApp.classList.remove("hidden");
+        mainApp.classList.add("app-fade-in");
+
+        loadMasterPlayers();
+        loadState();
+        render();
+
+        await loadSharedStateOnStartup();
+    } else {
+        showWorkspaceBrowser();
+    }
+}
+
+// fetchAllWorkspaces moved to top section
+
+async function showWorkspaceBrowser() {
+    workspaceBrowser.classList.remove("hidden");
+    mainApp.classList.add("hidden");
+    workspaceList.innerHTML = `
+        <div style="text-align:center; grid-column: 1/-1; padding: 40px;">
+            <div class="loading-spinner"></div>
+            <p style="margin-top:15px; color:var(--cyan); letter-spacing:2px;">SCANNING TACTICAL DATA...</p>
+        </div>
+    `;
+
+    const list = await fetchAllWorkspaces();
+    renderWorkspaceList(list);
+}
+
+function renderWorkspaceList(list) {
+    if (!list.length) {
+        workspaceList.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1; padding: 40px;">
+                <i class="fa-solid fa-folder-open" style="font-size: 48px; margin-bottom: 20px; opacity: 0.2;"></i>
+                <p>No tactical plans found in cloud storage.</p>
+                <p style="font-size: 12px; margin-top: 10px;">Initialize your first team workspace below to get started.</p>
+            </div>
+        `;
+        return;
+    }
+
+    workspaceList.innerHTML = list.map(ws => {
+        const date = new Date(ws.uploadedAt).toLocaleString();
+        const isLegacy = ws.name === "Main-Plan";
+        return `
+            <div class="wb-card ${isLegacy ? 'legacy-card' : ''}" onclick="enterWorkspace('${ws.name}')">
+                <div class="wb-name">
+                    ${isLegacy ? '<i class="fa-solid fa-star" style="color:var(--amber); margin-right:8px;"></i>' : '<i class="fa-solid fa-folder" style="margin-right:8px; opacity:0.6;"></i>'}
+                    ${escapeHtml(ws.name)}
+                    ${ws.protected ? '<i class="fa-solid fa-lock protected-badge" title="Password Protected"></i>' : ''}
+                </div>
+                <div class="wb-meta">
+                    <span><i class="fa-regular fa-clock"></i> Updated: ${date}</span>
+                    <span><i class="fa-solid fa-database"></i> Size: ${(ws.size / 1024).toFixed(1)} KB</span>
+                </div>
+                <div class="wb-actions">
+                    <button class="mini-btn" onclick="deleteWorkspace(event, '${ws.name}')">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
+window.enterWorkspace = (name) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("workspace", name);
+    window.location.href = url.toString();
+};
+
+window.deleteWorkspace = async (e, name) => {
+    e.stopPropagation();
+    const ok = await customConfirm(
+        "DELETE WORKSPACE?",
+        `Are you sure you want to permanently delete <b>"${escapeHtml(name)}"</b>? <br/>This action cannot be undone.`
+    );
+    if (!ok) return;
+    
+    try {
+        const res = await fetch(`${SHARED_STATE_API}?workspace=${encodeURIComponent(name)}`, {
+            method: "DELETE"
+        });
+        if (res.ok) {
+            showToast("Workspace deleted");
+            showWorkspaceBrowser();
+        }
+    } catch (err) {
+        showToast("Delete failed");
+    }
+};
+
+async function handleCreateWorkspace() {
+    const name = newWorkspaceNameInput.value.trim().replace(/[^a-zA-Z0-9-_]/g, "");
+    const pass = newWorkspacePassInput.value.trim();
+    
+    if (!name) {
+        showToast("Invalid workspace name!");
+        return;
+    }
+
+    if (pass && !/^\d{6}$/.test(pass)) {
+        showToast("Password must be 6 digits!");
+        return;
+    }
+
+    const ok = await customConfirm(
+        "CREATE WORKSPACE?",
+        `Initialize ${pass ? '<b>PROTECTED</b>' : 'public'} workspace <b>"${name}"</b>?`,
+        "Create Now",
+        false
+    );
+    if (!ok) return;
+
+    // Initialize with default state
+    masterPlayers = deepClone(DEFAULT_PLAYERS);
+    initializeDefaultState();
+    
+    // Set password and state in payload
+    const payload = {
+        version: 1,
+        masterPlayers: deepClone(masterPlayers),
+        pool: deepClone(state.pool),
+        categories: deepClone(state.categories),
+        updatedAt: Date.now(),
+        password: pass || null
+    };
+
+    try {
+        const res = await fetch(`${SHARED_STATE_API}?workspace=${encodeURIComponent(name)}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        
+        if (res.ok) {
+            enterWorkspace(name);
+        } else {
+            showToast("Creation failed");
+        }
+    } catch (err) {
+        showToast("Error creating workspace");
+    }
+}
+
+// Event Listeners
+if (createWorkspaceBtn) {
+    createWorkspaceBtn.addEventListener("click", handleCreateWorkspace);
+}
+if (newWorkspaceNameInput) {
+    newWorkspaceNameInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") handleCreateWorkspace();
+    });
+}
+if (uploadPlanBtn) {
+    uploadPlanBtn.addEventListener("click", () => saveSharedStateOnline(true));
+}
+if (browseWorkspacesBtn) {
+    browseWorkspacesBtn.addEventListener("click", () => {
+        window.location.href = window.location.pathname; // Clear query params
+    });
+}
+
+// =========================
 // INIT
 // =========================
-loadMasterPlayers();
-loadState();
-render();
-loadSharedStateOnStartup().finally(() => {
-    startSharedSyncPolling();
-});
+initWorkspaceFlow();

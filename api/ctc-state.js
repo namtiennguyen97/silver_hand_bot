@@ -32,6 +32,7 @@ function sanitizePayload(body) {
         masterPlayers,
         pool,
         categories: cleanedCategories,
+        note: typeof body.note === "string" ? body.note.trim() : null,
         updatedAt: Number(body.updatedAt) || Date.now()
     };
 }
@@ -80,17 +81,21 @@ async function listWorkspaces() {
         
         // Peek at content to check if protected (Best effort)
         let protectedWorkspace = false;
+        let note = null;
         try {
             const data = await (await fetch(b.url, { cache: "no-store" })).json();
             if (data.password) protectedWorkspace = true;
+            if (data.note) note = data.note;
         } catch (e) {}
 
         return {
             name,
+            displayName: name === "Main-Plan" ? "Public Plan" : name,
             pathname: b.pathname,
             uploadedAt: b.uploadedAt,
             size: b.size,
-            protected: protectedWorkspace
+            protected: protectedWorkspace,
+            note: note
         };
     }));
 
@@ -99,18 +104,22 @@ async function listWorkspaces() {
     const legacyBlob = legacyResult?.blobs?.find(b => b.pathname === "ctc-shared-state.json");
     if (legacyBlob && !workspaces.find(w => w.name === "Main-Plan")) {
         let legacyProtected = false;
+        let legacyNote = null;
         try {
             const data = await (await fetch(legacyBlob.url, { cache: "no-store" })).json();
             if (data.password) legacyProtected = true;
+            if (data.note) legacyNote = data.note;
         } catch (e) {}
 
         workspaces.push({
             name: "Main-Plan",
+            displayName: "Public Plan",
             pathname: legacyBlob.pathname,
             uploadedAt: legacyBlob.uploadedAt,
             size: legacyBlob.size,
             isLegacy: true,
-            protected: legacyProtected
+            protected: legacyProtected,
+            note: legacyNote
         });
     }
 

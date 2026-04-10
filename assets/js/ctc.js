@@ -142,6 +142,7 @@ const uploadPlanBtn = document.getElementById("uploadPlanBtn");
 const uploadBtnText = document.getElementById("uploadBtnText");
 const activeWorkspaceBadge = document.getElementById("activeWorkspaceBadge");
 const browseWorkspacesBtn = document.getElementById("browseWorkspacesBtn");
+const newWorkspaceNoteInput = document.getElementById("newWorkspaceNote");
 
 // Confirm Modal Elements
 const dynamicConfirmModal = document.getElementById("dynamicConfirmModal");
@@ -500,15 +501,20 @@ async function loadSharedStateOnStartup(password = null) {
 
         if (json.ok && json.data) {
             if (json.data.requiresPassword) {
-                // Trigger Keypad
+                // If it was already a password attempt from URL, then it was WRONG
+                if (password) {
+                    showToast("INVALID ACCESS CODE");
+                }
+                
+                // Trigger Keypad for beautiful entry
                 const pass = await showTacticalKeypad();
                 if (pass) {
-                    await loadSharedStateOnStartup(pass);
+                    return await loadSharedStateOnStartup(pass);
                 } else {
                     // Aborted - go back to browser
                     window.location.href = window.location.pathname;
+                    return false;
                 }
-                return;
             }
 
             // Valid data fetched - apply it
@@ -521,9 +527,12 @@ async function loadSharedStateOnStartup(password = null) {
             saveState();
             render();
             showToast(`Remote data sync: ${activeWorkspace}`);
+            return true;
         }
+        return false;
     } catch (err) {
         console.error("Failed to load shared state:", err);
+        return false;
     }
 }
 
@@ -1646,18 +1655,24 @@ async function initWorkspaceFlow() {
 
     if (activeWorkspace) {
         document.title = `CTC Planner - ${activeWorkspace}`;
-        activeWorkspaceBadge.innerHTML = `<i class="fa-solid fa-terminal"></i> WORKSPACE: ${escapeHtml(activeWorkspace)}`;
+        const displayLabel = activeWorkspace === "Main-Plan" ? "Public Plan" : activeWorkspace;
+        activeWorkspaceBadge.innerHTML = `<i class="fa-solid fa-terminal"></i> WORKSPACE: ${escapeHtml(displayLabel)}`;
         activeWorkspaceBadge.classList.remove("hidden");
         
-        workspaceBrowser.classList.add("hidden");
-        mainApp.classList.remove("hidden");
-        mainApp.classList.add("app-fade-in");
-
         loadMasterPlayers();
         loadState();
         render();
 
-        await loadSharedStateOnStartup();
+        const password = params.get("password");
+        const success = await loadSharedStateOnStartup(password);
+
+        if (success) {
+            workspaceBrowser.classList.add("hidden");
+            mainApp.classList.remove("hidden");
+            mainApp.classList.add("app-fade-in");
+        } else {
+            // Failed or requires password - handled inside loadSharedStateOnStartup or redirect
+        }
     } else {
         showWorkspaceBrowser();
     }
@@ -1694,17 +1709,21 @@ function renderWorkspaceList(list) {
     workspaceList.innerHTML = list.map(ws => {
         const date = new Date(ws.uploadedAt).toLocaleString();
         const isLegacy = ws.name === "Main-Plan";
+        const displayName = ws.displayName || (isLegacy ? "Public Plan" : ws.name);
+        
         return `
-            <div class="wb-card ${isLegacy ? 'legacy-card' : ''}" onclick="enterWorkspace('${ws.name}')">
+            <div class="wb-card ${isLegacy ? 'legacy-card' : ''}" onclick="window.handleWorkspaceSelection(event, '${ws.name}', ${ws.protected})">
                 <div class="wb-name">
                     ${isLegacy ? '<i class="fa-solid fa-star" style="color:var(--amber); margin-right:8px;"></i>' : '<i class="fa-solid fa-folder" style="margin-right:8px; opacity:0.6;"></i>'}
-                    ${escapeHtml(ws.name)}
+                    ${escapeHtml(displayName)}
                     ${ws.protected ? '<i class="fa-solid fa-lock protected-badge" title="Password Protected"></i>' : ''}
                 </div>
+                ${ws.note ? `<div class="wb-note">${escapeHtml(ws.note)}</div>` : ''}
                 <div class="wb-meta">
                     <span><i class="fa-regular fa-clock"></i> Updated: ${date}</span>
                     <span><i class="fa-solid fa-database"></i> Size: ${(ws.size / 1024).toFixed(1)} KB</span>
                 </div>
+                
                 <div class="wb-actions">
                     <button class="mini-btn" onclick="deleteWorkspace(event, '${ws.name}')">
                         <i class="fa-solid fa-trash-can"></i>
@@ -1715,9 +1734,23 @@ function renderWorkspaceList(list) {
     }).join("");
 }
 
-window.enterWorkspace = (name) => {
+window.handleWorkspaceSelection = async (e, name, isProtected) => {
+    if (isProtected) {
+        const pass = await showTacticalKeypad();
+        if (pass) {
+            window.enterWorkspace(name, pass);
+        }
+    } else {
+        window.enterWorkspace(name);
+    }
+};
+
+window.enterWorkspace = (name, password = null) => {
     const url = new URL(window.location.href);
     url.searchParams.set("workspace", name);
+    if (password) {
+        url.searchParams.set("password", password);
+    }
     window.location.href = url.toString();
 };
 
@@ -1745,6 +1778,7 @@ window.deleteWorkspace = async (e, name) => {
 async function handleCreateWorkspace() {
     const name = newWorkspaceNameInput.value.trim().replace(/[^a-zA-Z0-9-_]/g, "");
     const pass = newWorkspacePassInput.value.trim();
+    const note = newWorkspaceNoteInput ? newWorkspaceNoteInput.value.trim() : "";
     
     if (!name) {
         showToast("Invalid workspace name!");
@@ -1775,7 +1809,8 @@ async function handleCreateWorkspace() {
         pool: deepClone(state.pool),
         categories: deepClone(state.categories),
         updatedAt: Date.now(),
-        password: pass || null
+        password: pass || null,
+        note: note || null
     };
 
     try {

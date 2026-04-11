@@ -21,7 +21,7 @@
         "Resource Scramble (T.2): Hãy luôn check map để ý hòm vàng, và KHÔNG được buộc hòm vàng.",
         "Camp Invasion T.3 21:30 — Hãy lưu ý nhặt air drop ở phase 2 để kill boss nhanh nhất có thể.",
         "Bạn có thể dùng xe cộ để húc lùi boss trong camp invasion câu thêm giờ.",
-        "Resource Scramble- Khi bạn bị đối phương cố gắng hất khỏi xe, hãy spam phím F (PC) hoặc spam nút leo lại xe (mobile).",
+        "Resource Scramble- Khi bạn bị hất khỏi xe, hãy spam nút leo lại xe.",
         "Bạn có thể sử dụng chức năng dịch thuật bằng AI ở mục New thông tin",
         "Shelter Land không chỉ là vinh quang — đó là minh chứng của sự đoàn kết toàn camp.",
         "Nếu bạn muốn biết lịch event camp ingame hôm nay: Chọn schedule-> Weekly -> Camp affair.",
@@ -29,7 +29,7 @@
         "Không được chia sẻ code của tài khoản ingame cho người lạ- Họ có thể chiếm đoạt tài khoản.",
         "Mini-game: Mỗi quyết định APPROVE / REJECT trong Inspector đều ảnh hưởng đến Camp Stability.",
         "Mini-game: Sử dụng Scan Truth cẩn thận — bạn chỉ có 1 lượt mỗi phiên Inspector.",
-        "Boss Camp (T.5 22:00): Ở phase 1- đừng giết zombies ở địa điểm spawn- Hãy def tại cổng manor mà zombie target.",
+        "Boss Camp (T.5 22:00): Ở phase 1- Hãy def tại cổng manor mà zombie target- không phải nơi spawn.",
         "Lợi ích camp luôn được đặt lên hàng đầu — đó là giá trị cốt lõi của SAO-ĐÊM.",
         "Rival camps không phải lúc nào cũng là kẻ thù- Mọi thứ vẫn có thể thay đổi.",
         "Điều mayor ghét nhất đó là bị hiểu lầm là một kẻ tự cao tự đại.",
@@ -124,7 +124,7 @@
     function startTips() {
         if (!tipTextEl) return;
         tipTextEl.textContent = LOADING_TIPS[tipIndex];
-        tipInterval = setInterval(showNextTip, 4000);
+        tipInterval = setInterval(showNextTip, 6000);
     }
 
     // ── Show "Press any key" ──────────────────────────────────

@@ -211,7 +211,7 @@ function initGamingHUD() {
         });
     }
 
-    withEffect(btnBattle, () => window.PageTransition ? window.PageTransition.go('drama.html') : (window.location.href = 'drama.html'));
+    withEffect(btnBattle, () => window.location.href = 'drama.html');
     withEffect(btnNews, () => {
         openModalByKey("news");
         fetchNews();

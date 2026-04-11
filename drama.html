@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DRAMA ARCHIVE – SAO-ĐÊM</title>
   <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
-  <!-- PAGE TRANSITION: must load first to detect incoming navigation flag -->
-  <script src="assets/js/page_transition.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/loading.css">
-  <link rel="stylesheet" href="assets/css/page_transition.css">
+  <link rel="stylesheet" href="assets/css/hud_nav.css">
   <link rel="stylesheet" href="assets/css/drama.css">
   <link rel="stylesheet" href="assets/css/vn_overlay.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -49,20 +47,30 @@
 
 <!-- LOADING SCREEN -->
 <div id="loadingOverlay">
-  <div class="loading-wrapper">
-    <div class="loading-text">
-      <span class="sao">SAO &nbsp;</span><span class="dem"> ĐÊM</span>
-    </div>
-    <div class="loading-progress">
-      <div class="progress-bar" id="loadingProgress"></div>
-      <div class="loading-info">
-        <span id="loadingStatus">INITIALIZING...</span>
-        <span id="loadingPercentage">0%</span>
-      </div>
-    </div>
-    <div class="line top"></div>
-    <div class="line bottom"></div>
+  <div class="loading-bg-layer"></div>
+  <div class="loading-scanlines"></div>
+  <div class="loading-corner-tl">
+    <div class="corner-line">DRAMA ARCHIVE // SAO-ĐÊM</div>
+    <div class="corner-line">ARCHIVE DATA LOADING</div>
   </div>
+  <div class="loading-hud-panel">
+    <div class="loading-title-row">
+      <div class="loading-logo"><span class="sao">SAO&nbsp;</span><span class="dem">&nbsp;ĐÊM</span></div>
+      <div class="loading-label-text">LOADING...</div>
+    </div>
+    <div class="loading-bar-row">
+      <div class="loading-bar-track"><div class="loading-bar-fill" id="loadingBarFill"></div></div>
+      <div class="loading-pct" id="loadingPercentage">0%</div>
+    </div>
+    <div class="loading-status-row">
+      <span class="loading-status-text" id="loadingStatus">INITIALIZING...</span>
+    </div>
+    <div class="loading-tip-row">
+      <div class="loading-tip-label">TIP</div>
+      <div class="loading-tip-text" id="loadingTipText"></div>
+    </div>
+  </div>
+  <div id="loadingPressAny">PRESS ANY KEY TO CONTINUE</div>
 </div>
 
 <!-- BACKGROUND -->
@@ -77,11 +85,11 @@
   
   <!-- TOP HUD CONTROLS -->
   <div class="stage-nav-wrap">
-    <button class="stage-btn-control nav-back" onclick="window.PageTransition ? window.PageTransition.go('index.html') : (window.location.href='index.html')">
+    <button class="stage-btn-control nav-back" onclick="window.location.href='index.html'">
       <span class="btn-icon">Esc</span>
       <span class="btn-text">BACK</span>
     </button>
-    <button class="stage-btn-control nav-home" onclick="window.PageTransition ? window.PageTransition.go('index.html') : (window.location.href='index.html')">
+    <button class="stage-btn-control nav-home" onclick="window.location.href='index.html'">
       <span class="btn-icon"><i class="fa-solid fa-house"></i></span>
       <span class="btn-text">HOME</span>
     </button>

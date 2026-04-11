@@ -18,25 +18,23 @@
 
     const LOADING_TIPS = [
         "Nhớ tham gia Patrol hàng ngày lúc 19:00 để nhận điểm cống hiến cho camp.",
-        "Kiểm tra cert phụ của bạn — một số skill combo có thể tăng damage tổng lên đến 30%.",
-        "Resource Scramble (T.2 19:00–20:30): luôn ưu tiên vị trí hòm gần spawn của camp.",
-        "Camp Invasion T.3 21:30 — Tất cả member có mặt sẽ nhận được bonus điểm ưu tiên.",
-        "Kẻ đứng sau thường là kẻ sống sót — đừng bao giờ rush vào Boss Camp một mình.",
-        "Cert chính mở toàn bộ skill tree. Cert phụ chỉ cho phép chọn một số skill cố định.",
-        "Nhớ chia sẻ tọa độ Safe Zone với đồng đội trong các sự kiện lớn.",
-        "Golden Knight là danh hiệu tối thiểu để được cân nhắc làm Official của camp.",
+        "Resource Scramble (T.2): Hãy luôn check map để ý hòm vàng, và KHÔNG được buộc hòm vàng.",
+        "Camp Invasion T.3 21:30 — Hãy lưu ý nhặt air drop ở phase 2 để kill boss nhanh nhất có thể.",
+        "Bạn có thể dùng xe cộ để húc lùi boss trong camp invasion câu thêm giờ.",
+        "Resource Scramble- Khi bạn bị đối phương cố gắng hất khỏi xe, hãy spam phím F (PC) hoặc spam nút leo lại xe (mobile).",
+        "Bạn có thể sử dụng chức năng dịch thuật bằng AI ở mục New thông tin",
         "Shelter Land không chỉ là vinh quang — đó là minh chứng của sự đoàn kết toàn camp.",
-        "Hãy kiểm tra bảng thông báo trong game mỗi ngày để không bỏ lỡ event giới hạn.",
+        "Nếu bạn muốn biết lịch event camp ingame hôm nay: Chọn schedule-> Weekly -> Camp affair.",
         "CTC returner cần được xét duyệt kỹ — không phải ai rời camp cũng có thể quay về.",
-        "Đừng chia sẻ passcode camp với người chưa được xác nhận danh tính.",
-        "Mỗi quyết định APPROVE / REJECT trong Inspector đều ảnh hưởng đến Camp Stability.",
-        "Sử dụng Scan Truth cẩn thận — bạn chỉ có 1 lượt mỗi phiên Inspector.",
-        "Boss Camp (T.5 22:00): mang đủ supply, hộp máu dự phòng và đội hình tối thiểu 6 người.",
+        "Không được chia sẻ code của tài khoản ingame cho người lạ- Họ có thể chiếm đoạt tài khoản.",
+        "Mini-game: Mỗi quyết định APPROVE / REJECT trong Inspector đều ảnh hưởng đến Camp Stability.",
+        "Mini-game: Sử dụng Scan Truth cẩn thận — bạn chỉ có 1 lượt mỗi phiên Inspector.",
+        "Boss Camp (T.5 22:00): Ở phase 1- đừng giết zombies ở địa điểm spawn- Hãy def tại cổng manor mà zombie target.",
         "Lợi ích camp luôn được đặt lên hàng đầu — đó là giá trị cốt lõi của SAO-ĐÊM.",
-        "Rival camps không phải lúc nào cũng là kẻ thù — ngoại giao đúng lúc có thể cứu cả server.",
-        "Hãy giúp thành viên mới định hướng cert trong tuần đầu — retention rate quyết định sức mạnh camp.",
-        "Chú ý kỹ ngôn ngữ và hành vi trong intel chat — gián điệp thường lộ qua cách nói chuyện.",
-        "Diamond Knight là cột mốc quan trọng — mở khóa nhiều đặc quyền trong hệ thống camp.",
+        "Rival camps không phải lúc nào cũng là kẻ thù- Mọi thứ vẫn có thể thay đổi.",
+        "Điều mayor ghét nhất đó là bị hiểu lầm là một kẻ tự cao tự đại.",
+        "Camp Sao Đêm có lúc thăng lúc trầm. Nhưng cũng có những thành công nhất định.",
+        "Những người đóng góp lớn nhất và là trụ cột của camp: Chychy và DL.",
     ];
 
     // ── State ────────────────────────────────────────────────
@@ -134,9 +132,25 @@
         if (!pressAnyEl || promptShown) return;
         promptShown = true;
 
+        // Add state for CSS transitions (hides bar row)
+        overlay.classList.add('loading-complete');
+
+        // Move "Press any key" text into the HUD panel for visual replacement
+        const hudPanel = overlay.querySelector('.loading-hud-panel');
+        const tipRow   = overlay.querySelector('.loading-tip-row');
+        if (hudPanel && tipRow) {
+            hudPanel.insertBefore(pressAnyEl, tipRow);
+        } else if (hudPanel) {
+            hudPanel.appendChild(pressAnyEl);
+        }
+
         if (statusEl) statusEl.textContent = 'SYSTEM READY';
         
-        // Final pulse to ensure bar is full
+        // Change the main "LOADING..." label to "READY..."
+        const labelEl = overlay.querySelector('.loading-label-text');
+        if (labelEl) labelEl.textContent = 'READY...';
+        
+        // Ensure progress is at max state
         renderProgress(100);
 
         // Small delay for visual impact

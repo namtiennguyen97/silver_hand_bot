@@ -152,6 +152,18 @@
     display: flex;
     align-items: center;
     gap: 16px;
+    transition: opacity 0.4s ease, transform 0.4s ease, height 0.4s ease;
+}
+
+#loadingOverlay.loading-complete .loading-bar-row,
+#loadingOverlay.loading-complete .loading-status-row {
+    opacity: 0;
+    visibility: hidden;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
 }
 
 .loading-bar-track {
@@ -238,6 +250,7 @@
 .loading-tip-row {
     border-top: 1px solid rgba(0, 255, 213, 0.1);
     padding-top: 12px;
+    margin-top: 4px;
     display: flex;
     align-items: flex-start;
     gap: 12px;
@@ -322,7 +335,19 @@
     opacity: 0;
     transform: translateY(6px);
     pointer-events: none;
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+/* New: styles for when moved into HUD panel via JS */
+.loading-hud-panel #loadingPressAny {
+    position: static;
+    margin: 15px 0 10px; /* Increased top margin for separation from logo */
+    text-align: center;
+    width: 100%;
+    font-size: clamp(14px, 2.5vw, 18px);
+    transform: none;
+    white-space: nowrap; /* Prevent wrapping */
+    transition: opacity 0.5s ease;
 }
 
 #loadingPressAny.visible {
@@ -401,6 +426,7 @@ body.finished #loadingOverlay {
         font-size: 11px;
         letter-spacing: 2px;
         transform: translateY(10px);
+        white-space: nowrap; /* Prevent wrapping on mobile */
     }
 
     #loadingPressAny.visible {

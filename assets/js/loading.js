@@ -13,9 +13,8 @@
     const BG_BASE_PC      = 'assets/img/loading_bg/pc/';
     const BG_BASE_MOBILE  = 'assets/img/loading_bg/mobile/';
 
-    // Minimum time before "PRESS ANY KEY" can appear (ms)
-    // The bar reaches 100% during this period regardless of actual load speed
-    const MIN_LOAD_MS = 1800;
+    // Minimum time before animation starts (ms) - just a tiny buffer for flicker
+    const MIN_LOAD_MS = 0;
 
     const LOADING_TIPS = [
         "Nhớ tham gia Patrol hàng ngày lúc 19:00 để nhận điểm cống hiến cho camp.",
@@ -46,7 +45,8 @@
     let tipIndex        = Math.floor(Math.random() * LOADING_TIPS.length);
     let tipInterval     = null;
     let rafId           = null;
-    let readyToGo       = false; // both page loaded + min time elapsed
+    let readyToGo       = false; 
+    let promptShown     = false;
 
     // ── DOM refs ─────────────────────────────────────────────
     const overlay    = document.getElementById('loadingOverlay');
@@ -98,10 +98,17 @@
     function tickLoading() {
         if (loadingPercent < loadingTarget) {
             const gap  = loadingTarget - loadingPercent;
-            const step = Math.max(0.3, gap * 0.03);
+            // Faster steps: 0.1 minimum, but 8% of the gap per frame (very responsive)
+            const step = Math.max(0.1, gap * 0.08); 
             loadingPercent = Math.min(loadingTarget, loadingPercent + step);
             renderProgress(Math.floor(loadingPercent));
         }
+
+        // Trigger prompt strictly when reached 100%
+        if (loadingPercent >= 100 && !promptShown) {
+            showPressAny();
+        }
+
         rafId = requestAnimationFrame(tickLoading);
     }
 
@@ -124,24 +131,26 @@
 
     // ── Show "Press any key" ──────────────────────────────────
     function showPressAny() {
-        if (!pressAnyEl) return;
+        if (!pressAnyEl || promptShown) return;
+        promptShown = true;
 
-        // Fill bar fully
-        loadingTarget = 100;
+        if (statusEl) statusEl.textContent = 'SYSTEM READY';
+        
+        // Final pulse to ensure bar is full
+        renderProgress(100);
 
-        // Small delay so bar visually hits 100% first
+        // Small delay for visual impact
         setTimeout(() => {
-            if (statusEl) statusEl.textContent = 'SYSTEM READY';
             pressAnyEl.classList.add('visible');
 
             // Attach listeners
-            const dismiss = () => {
+            const dismiss = (e) => {
                 if (!readyToGo) return;
                 readyToGo = false;
 
                 // Remove listeners
-                document.removeEventListener('keydown',  dismiss);
-                document.removeEventListener('pointerdown', dismiss);
+                document.removeEventListener('keydown',     dismiss);
+                document.removeEventListener('pointerdown',  dismiss);
 
                 pressAnyEl.classList.remove('visible');
                 pressAnyEl.classList.add('clicked');
@@ -157,17 +166,9 @@
             };
 
             readyToGo = true;
-            document.addEventListener('keydown',    dismiss);
-            document.addEventListener('pointerdown', dismiss);
-        }, 400);
-    }
-
-    // ── Dual-gate: page load + min time ──────────────────────
-    let pageLoaded  = false;
-    let minElapsed  = false;
-
-    function tryShowPressAny() {
-        if (pageLoaded && minElapsed) showPressAny();
+            document.addEventListener('keydown',     dismiss);
+            document.addEventListener('pointerdown',  dismiss);
+        }, 200);
     }
 
     // ── Boot ─────────────────────────────────────────────────
@@ -176,25 +177,24 @@
     renderProgress(0);
     tickLoading();
 
-    // Progress milestones
+    // Progress milestones (Authentic)
     document.addEventListener('DOMContentLoaded', () => {
-        loadingTarget = 30;
+        if (loadingTarget < 40) loadingTarget = 40;
     });
 
     document.addEventListener('readystatechange', () => {
-        if (document.readyState === 'interactive') loadingTarget = 65;
+        if (document.readyState === 'interactive' && loadingTarget < 75) {
+            loadingTarget = 75;
+        }
     });
 
     window.addEventListener('load', () => {
-        loadingTarget = 95;
-        pageLoaded = true;
-        tryShowPressAny();
+        loadingTarget = 100;
     });
 
-    // Minimum time before prompt can appear (ensures bar animates nicely)
+    // Fallback security - if something hangs, reach 100 anyway after 6s
     setTimeout(() => {
-        minElapsed = true;
-        tryShowPressAny();
-    }, MIN_LOAD_MS);
+        loadingTarget = 100;
+    }, 6000);
 
 })();

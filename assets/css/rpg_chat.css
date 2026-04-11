@@ -8,7 +8,7 @@
     bottom: 24px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 100001; /* Above almost anything */
+    z-index: 1100000; /* Above tutorial components */
     width: 92%;
     max-width: 440px;
     pointer-events: none;
@@ -86,12 +86,6 @@
     left: -2px;
     border-right: none;
     border-bottom: none;
-}
-#spotlight {
-    position: fixed;
-    z-index: 10001;
-    pointer-events: none;
-    will-change: top, left, width, height;
 }
 .rpg-corner.bottom-right {
     bottom: -2px;

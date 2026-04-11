@@ -2,26 +2,30 @@
     display: none;
     position: fixed;
     inset: 0;
-    z-index: 20000;
-    background: transparent; /* QUAN TRỌNG: bỏ lớp tối ở đây */
+    z-index: 1000000;
+    background: transparent;
+    /* QUAN TRỌNG: bỏ lớp tối ở đây */
     pointer-events: auto;
 }
+
 #spotlight {
     position: fixed;
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.03);
     box-shadow:
-        0 0 0 9999px rgba(2, 6, 23, 0.62), /* chỉ tối vừa phải */
+        0 0 0 9999px rgba(2, 6, 23, 0.62),
+        /* chỉ tối vừa phải */
         0 0 0 2px rgba(34, 211, 238, 0.9),
         0 0 18px rgba(34, 211, 238, 0.28),
         inset 0 0 14px rgba(34, 211, 238, 0.08);
     transition: all 0.25s ease;
     pointer-events: none;
-    z-index: 20001;
+    z-index: 1000001;
 }
+
 .tutorial-active {
     position: relative !important;
-    z-index: 20002 !important;
+    z-index: 1000002 !important;
     border-radius: 14px;
     outline: 2px solid rgba(34, 211, 238, 0.95);
     outline-offset: 3px;
@@ -30,31 +34,25 @@
     box-shadow:
         0 0 14px rgba(34, 211, 238, 0.22),
         0 0 36px rgba(34, 211, 238, 0.14);
+    pointer-events: none !important;
 }
-.tutorial-active {
-    position: relative !important;
-    z-index: 20002 !important;
-    border-radius: 14px;
-    outline: 2px solid rgba(34, 211, 238, 0.95);
-    outline-offset: 3px;
-    animation: tutorialPulse 1.6s ease-in-out infinite;
-    filter: brightness(1.18) saturate(1.12);
-    box-shadow:
-        0 0 14px rgba(34, 211, 238, 0.22),
-        0 0 36px rgba(34, 211, 238, 0.14);
-}
+
 @keyframes tutorialPulse {
-    0%, 100% {
+
+    0%,
+    100% {
         box-shadow:
             0 0 10px rgba(34, 211, 238, 0.16),
             0 0 24px rgba(34, 211, 238, 0.10);
     }
+
     50% {
         box-shadow:
             0 0 18px rgba(34, 211, 238, 0.24),
             0 0 42px rgba(34, 211, 238, 0.16);
     }
 }
+
 #tooltip {
     position: fixed;
     z-index: 20003;
@@ -65,10 +63,11 @@
     border-radius: 18px;
     padding: 18px;
     box-shadow:
-        0 12px 32px rgba(0,0,0,0.28),
+        0 12px 32px rgba(0, 0, 0, 0.28),
         0 0 20px rgba(34, 211, 238, 0.08);
     backdrop-filter: blur(8px);
 }
+
 #tutorial-overlay {
     background: transparent;
 }
@@ -78,4 +77,30 @@ body.tutorial-lock {
     overflow: hidden !important;
     overscroll-behavior: none;
     touch-action: none;
+}
+
+/* RPG Chat Focus during Tutorial */
+.tutorial-lock .rpg-chat-box {
+    background: #000c14 !important;
+    /* Solid opaque back to avoid shadow bleed */
+    border: 2px solid #5ef2d6 !important;
+    box-shadow:
+        0 0 35px rgba(94, 242, 214, 0.4),
+        inset 0 0 20px rgba(94, 242, 214, 0.2) !important;
+    animation: chatFocusPulse 2s ease-in-out infinite !important;
+    filter: brightness(1) contrast(1.1);
+}
+
+@keyframes chatFocusPulse {
+
+    0%,
+    100% {
+        border-color: rgba(94, 242, 214, 0.6);
+        box-shadow: 0 0 25px rgba(94, 242, 214, 0.2);
+    }
+
+    50% {
+        border-color: rgba(94, 242, 214, 1);
+        box-shadow: 0 0 45px rgba(94, 242, 214, 0.5);
+    }
 }

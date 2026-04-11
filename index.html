@@ -11,9 +11,14 @@
   <link rel="stylesheet" href="assets/css/loading.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+  <link rel="stylesheet" href="assets/css/ctc-tutorial-fixed.css">
 </head>
 <body>
 <!-- CYBER LIST OVERLAY (LEGACY) -->
+<div id="tutorial-overlay">
+  <div id="spotlight"></div>
+</div>
+
 <div id="cyberOverlay" class="cyber-overlay">
 </div>
 
@@ -313,9 +318,10 @@
         </div>
         <div class="setting-row" id="settingAccountRow" style="margin-top: 15px; border-top: 1px solid rgba(0,255,255,0.1); padding-top: 15px;">
             <span class="setting-label">ACCOUNT IDENTITY</span>
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <button id="btnManageAccount" class="mode-btn" style="padding: 5px 12px; border: 1px solid var(--hud-cyan, #00ffff); background: transparent; color: var(--hud-cyan, #00ffff); cursor: pointer; font-size: 10px;">ESTABLISH ID</button>
                 <button onclick="localStorage.removeItem('silverhand_user'); window.location.reload();" class="mode-btn" style="padding: 5px 12px; border: 1px solid #ff3366; background: transparent; color: #ff3366; cursor: pointer; font-size: 10px;">DEBUG: CLEAR AUTH</button>
+                <button onclick="localStorage.removeItem('sao-dem-tutorial-done'); localStorage.removeItem('sao-dem-ctc-tutorial-done'); localStorage.removeItem('sao-dem-index-tutorial-done'); window.location.reload();" class="mode-btn" style="padding: 5px 12px; border: 1px solid #ff9d00; background: transparent; color: #ff9d00; cursor: pointer; font-size: 10px;">DEBUG: RESET TUTORIALS</button>
             </div>
         </div>
     </div>
@@ -564,6 +570,7 @@
 <script src="assets/js/vn_engine.js"></script>
 <script src="assets/js/index_main.js"></script>
 <script src="assets/js/auth_vn.js"></script>
+<script src="assets/js/index-tutorial.js"></script>
 
 <audio id="bgmAudio" loop src="assets/sounds/abyss_theme.mp3" preload="auto"></audio>
 

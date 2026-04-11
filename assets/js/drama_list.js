@@ -57,17 +57,6 @@ const STAGE_DATA = [
         x: 75, y: 50,
         description: "It locked!",
         rules: []
-    },
-    {
-        id: "26-25",
-        title: "Camp Invasion",
-        status: "locked",
-        type: "drama",
-        img: "assets/img/drama/smirk.png",
-        link: null,
-        x: 90, y: 65,
-        description: "It locked!",
-        rules: []
     }
 ];
 

@@ -1670,6 +1670,9 @@ async function initWorkspaceFlow() {
             workspaceBrowser.classList.add("hidden");
             mainApp.classList.remove("hidden");
             mainApp.classList.add("app-fade-in");
+            
+            // Trigger tutorial only when workspace is ready
+            window.dispatchEvent(new Event("ctc:workspace-ready"));
         } else {
             // Failed or requires password - handled inside loadSharedStateOnStartup or redirect
         }

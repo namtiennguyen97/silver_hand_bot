@@ -35,6 +35,7 @@
         "Điều mayor ghét nhất đó là bị hiểu lầm là một kẻ tự cao tự đại.",
         "Camp Sao Đêm có lúc thăng lúc trầm. Nhưng cũng có những thành công nhất định.",
         "Những người đóng góp lớn nhất và là trụ cột của camp: Chychy và DL.",
+        "Trang web này chỉ phục vụ mục đích for-fun của mayor- sẽ cringe nên mọi người hoan hỉ.",
     ];
 
     // ── State ────────────────────────────────────────────────

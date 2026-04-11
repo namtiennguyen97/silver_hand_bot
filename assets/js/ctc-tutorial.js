@@ -242,13 +242,29 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    window.addEventListener("app:loaded", () => {
+    function tryStartAutoTutorial() {
         if (localStorage.getItem("sao-dem-ctc-tutorial-done")) return;
+
+        // Check both conditions: workspace is loaded AND loading screen is dismissed
+        const isWorkspaceReady = window.ctcWorkspaceReady;
+        const isLoadingFinished = document.body.classList.contains("finished");
+
+        if (!isWorkspaceReady || !isLoadingFinished) return;
+
         setTimeout(() => {
             overlay.style.display = "block";
             document.body.classList.add("tutorial-lock");
             showStep(currentStep);
         }, 500);
+    }
+
+    window.addEventListener("ctc:workspace-ready", () => {
+        window.ctcWorkspaceReady = true;
+        tryStartAutoTutorial();
+    });
+
+    window.addEventListener("app:loaded", () => {
+        tryStartAutoTutorial();
     });
 
     const helpBtn = document.getElementById("startTutorialBtn");

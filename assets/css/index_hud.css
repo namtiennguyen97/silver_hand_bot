@@ -526,7 +526,7 @@ body.finished #hud-root {
 
 .hud-time-val {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 22px;
+  font-size: 14px;
   font-weight: 400;
   color: #fff;
   letter-spacing: 0px;

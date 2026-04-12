@@ -48,8 +48,8 @@
     enableBlocker();
 
     // ── Config ──────────────────────────────────────────────
-    const PC_BG_COUNT     = 10;
-    const MOBILE_BG_COUNT = 10;
+    const PC_BG_COUNT     = 11;
+    const MOBILE_BG_COUNT = 11;
     const BG_BASE_PC      = 'assets/img/loading_bg/pc/';
     const BG_BASE_MOBILE  = 'assets/img/loading_bg/mobile/';
 

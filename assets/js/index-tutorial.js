@@ -130,6 +130,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function startTutorial() {
+        currentStep = 0;
+        overlay.style.display = "block";
+        document.body.classList.add("tutorial-lock");
+        showStep(currentStep);
+    }
+
     function tryStartAutoTutorial() {
         if (localStorage.getItem("sao-dem-index-tutorial-done")) return;
 
@@ -139,9 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         setTimeout(() => {
-            overlay.style.display = "block";
-            document.body.classList.add("tutorial-lock");
-            showStep(currentStep);
+            startTutorial();
         }, 1500); // Slight delay after HUD sync effect
     }
 
@@ -149,8 +154,12 @@ document.addEventListener("DOMContentLoaded", () => {
         tryStartAutoTutorial();
     });
 
-    // Also support manual re-trigger via Guide button (if user clicks Guide when no tutorial active, maybe offer help)
-    // Or just bind to the Guide button specifically if it exists
+    // #hudBtnGuide (graduation cap) — click to replay tutorial at any time
     const guideBtn = document.getElementById("hudBtnGuide");
-    // For now we just let the auto-trigger handle first-time users.
+    if (guideBtn) {
+        guideBtn.addEventListener("click", () => {
+            localStorage.removeItem("sao-dem-index-tutorial-done");
+            startTutorial();
+        });
+    }
 });

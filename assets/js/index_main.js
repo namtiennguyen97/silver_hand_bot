@@ -292,7 +292,6 @@ function initGamingHUD() {
     withEffect(btnNotice, () => { openModalByKey("news"); fetchNews(); });
     withEffect(btnMail, () => showRPGChat("No new tactical messages in your decrypted inbox.", 'assets/img/mayor_5.png', 'Silver-Hand'));
     withEffect(btnActivities, () => openModalByKey("infoA"));
-    withEffect(btnGuide, () => openModalByKey("infoB"));
 
     window.bgmVolume = parseFloat(localStorage.getItem('pgrBgmVolume') || '0.4');
     window.sfxVolume = parseFloat(localStorage.getItem('pgrSfxVolume') || '0.6');

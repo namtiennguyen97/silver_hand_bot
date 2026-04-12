@@ -7,6 +7,46 @@
  */
 
 (function () {
+    // ── Shared dismiss reference ─────────────────────────────
+    // dismissFn is set by showPressAny(); blockEvent calls it when readyToGo is true
+    let dismissFn = null;
+
+    // ── Capture-phase blocker ────────────────────────────────
+    // Intercepts ALL pointer/touch events at the top of the capture chain.
+    // When the user is waiting on "Press any key", forwards to dismissFn first,
+    // then still swallows the event so it never reaches elements behind the overlay.
+    function blockEvent(e) {
+        if (dismissFn && (e.type === 'pointerdown' || e.type === 'keydown')) {
+            dismissFn(e);
+        }
+        // Always eat pointer events so nothing behind the overlay is clickable
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        if (e.type !== 'keydown') e.preventDefault();
+    }
+
+    // keydown is NOT in the pointer list below so we add it separately when needed
+    const BLOCK_POINTER_EVENTS = ['pointerdown', 'pointerup', 'pointermove',
+                                   'mousedown',  'mouseup',   'click',
+                                   'touchstart', 'touchend',  'touchmove'];
+
+    function enableBlocker() {
+        BLOCK_POINTER_EVENTS.forEach(type =>
+            document.addEventListener(type, blockEvent, { capture: true })
+        );
+        // Also swallow keydown events (blockEvent forwards to dismissFn if needed)
+        document.addEventListener('keydown', blockEvent, { capture: true });
+    }
+
+    function disableBlocker() {
+        BLOCK_POINTER_EVENTS.forEach(type =>
+            document.removeEventListener(type, blockEvent, { capture: true })
+        );
+        document.removeEventListener('keydown', blockEvent, { capture: true });
+    }
+
+    enableBlocker();
+
     // ── Config ──────────────────────────────────────────────
     const PC_BG_COUNT     = 10;
     const MOBILE_BG_COUNT = 10;
@@ -158,14 +198,11 @@
         setTimeout(() => {
             pressAnyEl.classList.add('visible');
 
-            // Attach listeners
+        // Set dismissFn — blockEvent will call this when readyToGo is true
             const dismiss = (e) => {
                 if (!readyToGo) return;
                 readyToGo = false;
-
-                // Remove listeners
-                document.removeEventListener('keydown',     dismiss);
-                document.removeEventListener('pointerdown',  dismiss);
+                dismissFn = null; // unregister so blockEvent no longer forwards
 
                 pressAnyEl.classList.remove('visible');
                 pressAnyEl.classList.add('clicked');
@@ -173,16 +210,17 @@
                 clearInterval(tipInterval);
                 cancelAnimationFrame(rafId);
 
-                // Fade out
+                // Fade out; only unblock pointer events AFTER overlay is fully gone
                 setTimeout(() => {
                     document.body.classList.add('finished');
                     window.dispatchEvent(new Event('app:loaded'));
+                    // Overlay CSS transition is 0.6 s — remove blocker after it finishes
+                    setTimeout(disableBlocker, 650);
                 }, 350);
             };
 
             readyToGo = true;
-            document.addEventListener('keydown',     dismiss);
-            document.addEventListener('pointerdown',  dismiss);
+            dismissFn = dismiss; // blockEvent forwards pointerdown/keydown here
         }, 200);
     }
 

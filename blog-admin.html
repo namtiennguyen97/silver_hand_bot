@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Admin - Silverhand</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00ffff;
+            --primary-glow: rgba(0, 255, 255, 0.4);
+            --bg: #050a14;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.6);
+            --danger: #ff4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Particles Background */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        header {
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .btn {
+            background: var(--card-bg);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--primary);
+            color: var(--bg);
+            box-shadow: 0 0 20px var(--primary-glow);
+            transform: translateY(-2px);
+        }
+
+        .btn.danger {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .btn.danger:hover {
+            background: var(--danger);
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .post-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .post-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .post-thumb {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--border);
+            background: #111;
+        }
+
+        .post-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .post-category {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .post-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .post-desc {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            background: rgba(0,0,0,0.2);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: #0a1120;
+            border: 1px solid var(--primary);
+            width: 90%;
+            max-width: 600px;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 0.8rem;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            background: #111;
+            border: 2px dashed var(--border);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 0.5rem;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .loader {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--card-bg);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 3000;
+        }
+
+        .toast {
+            background: #111;
+            border-left: 4px solid var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            margin-top: 1rem;
+            border-radius: 4px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 5rem 0;
+            color: var(--text-dim);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+
+    <header>
+        <h1>SILVERHAND BLOG ADMIN</h1>
+        <button class="btn" onclick="openModal()">+ NEW POST</button>
+    </header>
+
+    <main>
+        <div id="post-list" class="post-grid">
+            <!-- Posts will be loaded here -->
+            <div class="empty-state">Loading posts...</div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modal-title" class="modal-title">NEW POST</h2>
+                <button class="btn" style="padding: 0.4rem 0.8rem;" onclick="closeModal()">X</button>
+            </div>
+            <form id="post-form">
+                <input type="hidden" id="post-id">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="post-title" required placeholder="Nhập tiêu đề...">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="post-category">
+                        <option value="Update">Update</option>
+                        <option value="News">News</option>
+                        <option value="Event">Event</option>
+                        <option value="Guide">Guide</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="post-desc" rows="5" required placeholder="Nhập mô tả ngắn..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Thumbnail</label>
+                    <input type="file" id="post-image" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                    <div class="image-preview" onclick="document.getElementById('post-image').click()">
+                        <img id="image-preview-img" src="" style="display: none;">
+                        <span id="image-placeholder">Click to upload image</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn danger" onclick="closeModal()">CANCEL</button>
+                    <button type="submit" class="btn">SAVE POST</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="loader" class="loader">
+        <div class="spinner"></div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        const API_URL = '/api/blog';
+        let posts = [];
+        let currentImageBase64 = '';
+        let currentImageName = '';
+
+        // Initialize Background
+        function initBg() {
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            for (let i = 0; i < 50; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2,
+                    speedX: (Math.random() - 0.5) * 0.5,
+                    speedY: (Math.random() - 0.5) * 0.5
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#00ffff';
+                particles.forEach(p => {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // Fetch Posts
+        async function fetchPosts() {
+            showLoader(true);
+            try {
+                const res = await fetch(API_URL);
+                posts = await res.json();
+                renderPosts();
+            } catch (err) {
+                showToast('Failed to fetch posts', 'danger');
+            } finally {
+                showLoader(false);
+            }
+        }
+
+        function renderPosts() {
+            const list = document.getElementById('post-list');
+            if (posts.length === 0) {
+                list.innerHTML = '<div class="empty-state">No posts found. Create your first one!</div>';
+                return;
+            }
+
+            list.innerHTML = posts.map(post => `
+                <div class="post-card">
+                    <img src="${post.imageUrl || 'https://via.placeholder.com/400x200?text=No+Image'}" class="post-thumb" alt="${post.title}">
+                    <div class="post-content">
+                        <span class="post-category">${post.category}</span>
+                        <h3 class="post-title">${post.title}</h3>
+                        <p class="post-desc">${post.description}</p>
+                    </div>
+                    <div class="post-actions">
+                        <button class="btn" style="flex: 1;" onclick="editPost('${post.id}')">EDIT</button>
+                        <button class="btn danger" style="padding: 0.8rem;" onclick="deletePost('${post.id}')">DEL</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Modal Controls
+        function openModal(post = null) {
+            document.getElementById('modal').style.display = 'flex';
+            const form = document.getElementById('post-form');
+            form.reset();
+            document.getElementById('post-id').value = '';
+            document.getElementById('image-preview-img').style.display = 'none';
+            document.getElementById('image-placeholder').style.display = 'block';
+            currentImageBase64 = '';
+            currentImageName = '';
+            
+            if (post) {
+                document.getElementById('modal-title').innerText = 'EDIT POST';
+                document.getElementById('post-id').value = post.id;
+                document.getElementById('post-title').value = post.title;
+                document.getElementById('post-category').value = post.category;
+                document.getElementById('post-desc').value = post.description;
+                if (post.imageUrl) {
+                    const img = document.getElementById('image-preview-img');
+                    img.src = post.imageUrl;
+                    img.style.display = 'block';
+                    document.getElementById('image-placeholder').style.display = 'none';
+                }
+            } else {
+                document.getElementById('modal-title').innerText = 'NEW POST';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // Image Preview
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            currentImageName = file.name;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentImageBase64 = e.target.result;
+                const img = document.getElementById('image-preview-img');
+                img.src = currentImageBase64;
+                img.style.display = 'block';
+                document.getElementById('image-placeholder').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Form Submit
+        document.getElementById('post-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('post-id').value;
+            const data = {
+                title: document.getElementById('post-title').value,
+                category: document.getElementById('post-category').value,
+                description: document.getElementById('post-desc').value,
+                imageBase64: currentImageBase64,
+                imageName: currentImageName
+            };
+
+            showLoader(true);
+            try {
+                let res;
+                if (id) {
+                    res = await fetch(API_URL, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ...data, id })
+                    });
+                } else {
+                    res = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                }
+
+                if (res.ok) {
+                    showToast(id ? 'Post updated!' : 'Post created!');
+                    closeModal();
+                    fetchPosts();
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (err) {
+                showToast('Action failed: ' + err.message, 'danger');
+            } finally {
+                showLoader(false);
+            }
+        };
+
+        // Actions
+        window.editPost = (id) => {
+            const post = posts.find(p => p.id === id);
+            if (post) openModal(post);
+        };
+
+        window.deletePost = async (id) => {
+            if (!confirm('Are you sure you want to delete this post?')) return;
+            
+            showLoader(true);
+            try {
+                const res = await fetch(`${API_URL}?id=${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    showToast('Post deleted!');
+                    fetchPosts();
+                } else {
+                    throw new Error('Failed to delete');
+                }
+            } catch (err) {
+                showToast(err.message, 'danger');
+            } finally {
+                showLoader(false);
+            }
+        };
+
+        // UI Helpers
+        function showLoader(show) {
+            document.getElementById('loader').style.display = show ? 'block' : 'none';
+        }
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            if (type === 'danger') toast.style.borderColor = 'var(--danger)';
+            toast.innerText = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Init
+        initBg();
+        fetchPosts();
+    </script>
+</body>
+</html>

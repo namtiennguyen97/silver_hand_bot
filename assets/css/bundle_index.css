@@ -4884,7 +4884,8 @@ body.finished #hud-root {
   .hud-action-menu { width: 180px; }
   .btn-battle .btn-main-label { font-size: 20px; }
   .hud-bottom-left { width: 100%; }
-  .hud-promo-banner { height: 80px; }
+  .hud-promo-banner { height: 90px; }
+  .hud-system-status { height: 90px; justify-content: center; }
   .hud-resources { display: none; }
   
   /* Profile Mobile Adjustments */

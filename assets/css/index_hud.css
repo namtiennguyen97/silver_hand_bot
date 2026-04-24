@@ -560,7 +560,8 @@ body.finished #hud-root {
   .btn-sub-label { display: none; } /* Hide sub-label on very small screens */
   .btn-battle .btn-main-label { font-size: 16px; }
   .hud-bottom-left { width: 100%; }
-  .hud-promo-banner { height: 80px; }
+  .hud-promo-banner { height: 90px; }
+  .hud-system-status { height: 90px; justify-content: center; }
   
   /* Profile Mobile Adjustments */
   .hud-profile { 

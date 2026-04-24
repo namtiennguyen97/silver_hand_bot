@@ -37,7 +37,7 @@ export default async function handler(req, res) {
         }
 
         if (method === 'POST') {
-            const { title, category, description, imageBase64, imageName } = req.body;
+            const { title, category, description, imageBase64, imageName, isFeatured } = req.body;
             
             let imageUrl = '';
             if (imageBase64) {
@@ -63,6 +63,7 @@ export default async function handler(req, res) {
                 category: category || 'General',
                 description: description || '',
                 imageUrl,
+                isFeatured: isFeatured || false,
                 createdAt: new Date().toISOString(),
             };
 
@@ -79,7 +80,7 @@ export default async function handler(req, res) {
         }
 
         if (method === 'PUT') {
-            const { id, title, category, description, imageBase64, imageName } = req.body;
+            const { id, title, category, description, imageBase64, imageName, isFeatured } = req.body;
             
             const { blobs } = await list({ prefix: METADATA_PATH });
             const existingBlob = blobs.find(b => b.pathname === METADATA_PATH);
@@ -107,6 +108,7 @@ export default async function handler(req, res) {
                 title: title || posts[postIndex].title,
                 category: category || posts[postIndex].category,
                 description: description || posts[postIndex].description,
+                isFeatured: isFeatured !== undefined ? isFeatured : posts[postIndex].isFeatured,
                 updatedAt: new Date().toISOString(),
             };
 

@@ -196,7 +196,7 @@ function initGamingHUD() {
 
     const btnBattle = document.getElementById('hudBtnBattle');
     const btnNews = document.getElementById('hudBtnMembers'); // Re-named "News" in HTML
-    const btnTasks = document.getElementById('hudBtnTasks');
+    const btnBlog = document.getElementById('hudBtnBlog');
     const btnRD = document.getElementById('hudBtnRD');
     const btnSetting = document.getElementById('hudBtnSetting');
     const btnProfile = document.getElementById('hudProfile');
@@ -216,7 +216,7 @@ function initGamingHUD() {
         openModalByKey("news");
         fetchNews();
     });
-    withEffect(btnTasks, () => openModalByKey("infoA"));
+    withEffect(btnBlog, () => window.location.href = 'blog.html');
     withEffect(btnRD, () => window.location.href = 'ctc-planer.html');
     withEffect(btnSetting, () => {
         openModalByKey("setting");

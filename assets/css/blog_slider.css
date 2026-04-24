@@ -5,7 +5,7 @@
     padding: 0 !important;
     overflow: hidden;
     background: #000 !important;
-    height: 120px !important; /* Ensure consistent height */
+    height: 120px; /* Ensure consistent height */
 }
 
 /* Hide legacy placeholder when slider is used */

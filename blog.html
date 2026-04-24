@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COMMUNITY ARCHIVE – SAO-ĐÊM</title>
+  <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/loading.css">
+  <link rel="stylesheet" href="assets/css/hud_nav.css">
+  <link rel="stylesheet" href="assets/css/blog.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loadingOverlay">
+  <div class="loading-bg-layer"></div>
+  <div class="loading-scanlines"></div>
+  <div class="loading-corner-tl">
+    <div class="corner-line">COMMUNITY ARCHIVE // SAO-ĐÊM</div>
+    <div class="corner-line">DATABASE ACCESS GRANTED</div>
+  </div>
+  <div class="loading-hud-panel">
+    <div class="loading-title-row">
+      <div class="loading-logo"><span class="sao">SAO&nbsp;</span><span class="dem">&nbsp;ĐÊM</span></div>
+      <div class="loading-label-text">LOADING...</div>
+    </div>
+    <div class="loading-bar-row">
+      <div class="loading-bar-track"><div class="loading-bar-fill" id="loadingBarFill"></div></div>
+      <div class="loading-pct" id="loadingPercentage">0%</div>
+    </div>
+    <div class="loading-status-row">
+      <span class="loading-status-text" id="loadingStatus">INITIALIZING...</span>
+    </div>
+    <div class="loading-tip-row">
+      <div class="loading-tip-label">TIP</div>
+      <div class="loading-tip-text" id="loadingTipText"></div>
+    </div>
+  </div>
+  <div id="loadingPressAny">PRESS ANY KEY TO CONTINUE</div>
+</div>
+
+<!-- BACKGROUND -->
+<div class="blog-bg-layer">
+  <img src="assets/img/drama_bg.png" alt="Futuristic Background">
+  <div class="bg-overlay"></div>
+  <div id="blogParticles"></div>
+</div>
+
+<!-- HUD NAVIGATION -->
+<div class="stage-nav-wrap">
+    <button class="stage-btn-control nav-back" onclick="window.location.href='index.html'">
+      <span class="btn-icon">Esc</span>
+      <span class="btn-text">BACK</span>
+    </button>
+    <button class="stage-btn-control nav-home" onclick="window.location.href='index.html'">
+      <span class="btn-icon"><i class="fa-solid fa-house"></i></span>
+      <span class="btn-text">HOME</span>
+    </button>
+</div>
+
+<div class="blog-container">
+    <div class="blog-header-section">
+        <div style="margin-bottom: 10px;">
+            <div style="font-family: 'Orbitron', sans-serif; font-size: 10px; color: var(--blog-cyan); opacity: 0.8; letter-spacing: 2px;">// ACCESSING COMMUNITY DATABASE</div>
+            <h1 style="font-family: 'Orbitron', sans-serif; font-size: 28px; margin: 5px 0; color: #fff; text-shadow: 0 0 15px var(--blog-cyan);">COMMUNITY BLOG</h1>
+        </div>
+
+        <div class="blog-search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="blogSearch" placeholder="SEARCH ARCHIVES BY KEYWORD...">
+        </div>
+
+        <div class="blog-filters">
+            <button class="filter-btn active" data-category="All">All Categories</button>
+            <button class="filter-btn" data-category="Update">Updates</button>
+            <button class="filter-btn" data-category="News">News</button>
+            <button class="filter-btn" data-category="Discuss">Discuss</button>
+            <button class="filter-btn" data-category="Drama">Drama</button>
+        </div>
+    </div>
+
+    <div class="blog-grid" id="blogGrid">
+        <!-- Blog cards will be rendered here -->
+        <div class="blog-empty">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <span>SYNCHRONIZING WITH SERVER...</span>
+        </div>
+    </div>
+
+    <div class="blog-pagination" id="blogPagination">
+        <!-- Pagination buttons will be rendered here -->
+    </div>
+</div>
+
+<!-- BLOG DETAIL MODAL -->
+<div class="blog-detail-overlay" id="blogDetailOverlay">
+    <div class="blog-detail-panel">
+        <button class="detail-close" id="closeDetail">X</button>
+        <div id="blogDetailContent">
+            <!-- Content will be rendered here -->
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/loading.js"></script>
+<script src="assets/js/blog.js"></script>
+<script>
+    // Audio settings consistency
+    window.bgmVolume = parseFloat(localStorage.getItem('pgrBgmVolume') || '0.4');
+    window.sfxVolume = parseFloat(localStorage.getItem('pgrSfxVolume') || '0.6');
+    window.clickAudio = new Audio('assets/sounds/nierMail.mp3');
+    window.cancelAudio = new Audio('assets/sounds/nierMenu.wav');
+
+    window.playSfx = function(audio) {
+        if (!audio) return;
+        const clone = audio.cloneNode();
+        clone.volume = window.sfxVolume !== undefined ? window.sfxVolume : 0.6;
+        if (clone.volume > 0) clone.play().catch(() => {});
+    };
+
+    document.addEventListener('click', (e) => {
+        const cancelTarget = e.target.closest('.nav-back, .nav-home, .detail-close');
+        const clickTarget = e.target.closest('button, .blog-card');
+        if (cancelTarget) window.playSfx(window.cancelAudio);
+        else if (clickTarget) window.playSfx(window.clickAudio);
+    });
+</script>
+
+</body>
+</html>

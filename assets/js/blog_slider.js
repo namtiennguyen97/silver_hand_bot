@@ -8,14 +8,19 @@ async function initBlogSlider() {
     if (!banner) return;
 
     try {
-        const response = await fetch('/api/blog');
+        const response = await fetch('/api/blog?t=' + Date.now());
         if (!response.ok) throw new Error('Failed to fetch blog posts');
         
-        const posts = await response.json();
+        const allPosts = await response.json();
+        
+        // Filter only featured posts for the index slider
+        // Check for true boolean OR "true" string to be safe
+        const posts = (allPosts || []).filter(p => p.isFeatured === true || p.isFeatured === "true");
 
-        // If no posts, keep the default banner content or hide it
-        if (!posts || posts.length === 0) {
-            console.log('No blog posts found for slider.');
+        // If no featured posts, hide the banner or show a placeholder
+        if (posts.length === 0) {
+            console.log('No featured blog posts found for slider.');
+            banner.style.display = 'none';
             return;
         }
 
@@ -147,7 +152,7 @@ function showPostDetail(post) {
             <span style="color: #ff0055; font-weight: bold; font-size: 10px; font-family: 'Orbitron';">[ ${post.category.toUpperCase()} ]</span>
         </div>
         ${post.imageUrl ? `<img src="${post.imageUrl}" style="width: 100%; border-radius: 4px; margin-bottom: 15px; border: 1px solid rgba(0,255,255,0.3);">` : ''}
-        <div style="font-family: 'Inter', sans-serif; line-height: 1.8; color: #cff0f0; white-space: pre-wrap;">${post.description}</div>
+        <div style="font-family: 'Inter', sans-serif; line-height: 1.8; color: #cff0f0;">${post.description}</div>
     `;
 
     if (window.toggleHUD) window.toggleHUD(false);

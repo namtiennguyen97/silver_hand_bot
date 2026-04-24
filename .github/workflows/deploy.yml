@@ -19,3 +19,4 @@ jobs:
           script: |
             cd /var/www/mysite
             git pull origin master
+            vercel --prod

@@ -64,6 +64,7 @@ export default async function handler(req, res) {
                 description: description || '',
                 imageUrl,
                 isFeatured: isFeatured || false,
+                views: 0,
                 createdAt: new Date().toISOString(),
             };
 
@@ -152,6 +153,33 @@ export default async function handler(req, res) {
             });
 
             return res.status(200).json({ message: 'Deleted' });
+        }
+
+        if (method === 'PATCH') {
+            // Increment view count for a post
+            const { id } = req.body;
+            if (!id) return res.status(400).json({ error: 'Missing post id' });
+
+            const { blobs } = await list({ prefix: METADATA_PATH });
+            const existingBlob = blobs.find(b => b.pathname === METADATA_PATH);
+            if (!existingBlob) return res.status(404).json({ error: 'Metadata not found' });
+
+            const resp = await fetch(existingBlob.url);
+            let posts = await resp.json();
+
+            const postIndex = posts.findIndex(p => p.id === id);
+            if (postIndex === -1) return res.status(404).json({ error: 'Post not found' });
+
+            posts[postIndex].views = (posts[postIndex].views || 0) + 1;
+
+            await put(METADATA_PATH, JSON.stringify(posts), {
+                access: 'public',
+                addRandomSuffix: false,
+                addOverwrite: true,
+                allowOverwrite: true,
+            });
+
+            return res.status(200).json({ views: posts[postIndex].views });
         }
 
         return res.status(405).json({ error: 'Method not allowed' });

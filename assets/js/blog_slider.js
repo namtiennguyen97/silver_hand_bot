@@ -146,10 +146,18 @@ function showPostDetail(post) {
     
     if (!modal || !title || !content) return;
 
+    // Track view — fire-and-forget
+    fetch('/api/blog', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: post.id })
+    }).catch(() => {});
+
     title.innerText = post.title;
     content.innerHTML = `
-        <div style="margin-bottom: 15px; border-bottom: 1px solid rgba(0,255,255,0.2); padding-bottom: 10px;">
+        <div style="margin-bottom: 15px; border-bottom: 1px solid rgba(0,255,255,0.2); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
             <span style="color: #ff0055; font-weight: bold; font-size: 10px; font-family: 'Orbitron';">[ ${post.category.toUpperCase()} ]</span>
+            <span style="color: rgba(94,242,214,0.6); font-size: 10px; font-family: 'Share Tech Mono', monospace;">👁 ${((post.views || 0) + 1).toLocaleString()} views</span>
         </div>
         ${post.imageUrl ? `<img src="${post.imageUrl}" style="width: 100%; border-radius: 4px; margin-bottom: 15px; border: 1px solid rgba(0,255,255,0.3);">` : ''}
         <div style="font-family: 'Inter', sans-serif; line-height: 1.8; color: #cff0f0;">${post.description}</div>

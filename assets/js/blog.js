@@ -69,7 +69,15 @@ async function initBlogPage() {
             return;
         }
 
-        blogGrid.innerHTML = paginatedPosts.map(post => `
+        blogGrid.innerHTML = paginatedPosts.map(post => {
+            const views = post.views || 0;
+            const plainText = (() => {
+                const tmp = document.createElement('div');
+                tmp.innerHTML = post.description || '';
+                return (tmp.textContent || tmp.innerText || '').trim();
+            })();
+            const preview = plainText.length > 100 ? plainText.slice(0, 100).trimEnd() + '…' : plainText;
+            return `
             <div class="blog-card" onclick="openPostDetail('${post.id}')">
                 <div class="card-img-wrap">
                     <div class="card-tag">${post.category}</div>
@@ -77,14 +85,17 @@ async function initBlogPage() {
                 </div>
                 <div class="card-body">
                     <div class="card-title">${post.title}</div>
-                    <div class="card-desc">${post.description}</div>
+                    <div class="card-desc">${preview}</div>
                 </div>
                 <div class="card-footer">
                     <div class="card-date">// LOGGED: ${post.id.substring(0, 8)}</div>
-                    <div class="card-btn">READ MORE <i class="fa-solid fa-arrow-right"></i></div>
+                    <div class="card-meta-right">
+                        <span class="card-views"><i class="fa-solid fa-eye"></i> ${views.toLocaleString()}</span>
+                        <div class="card-btn">READ MORE <i class="fa-solid fa-arrow-right"></i></div>
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            </div>`;
+        }).join('');
 
         // Scroll to top of grid when page changes
         if (currentPage > 1 || paginatedPosts.length > 0) {
@@ -120,15 +131,37 @@ async function initBlogPage() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    // Track view — fire-and-forget, update local count optimistically
+    async function trackView(id) {
+        const post = allPosts.find(p => p.id === id);
+        if (!post) return;
+        // Optimistic update
+        post.views = (post.views || 0) + 1;
+        try {
+            await fetch('/api/blog', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+        } catch (err) {
+            // Silent fail — don't disrupt UX
+            console.warn('[Blog] View track failed:', err);
+        }
+    }
+
     // Modal Controls
     window.openPostDetail = (id) => {
         const post = allPosts.find(p => p.id === id);
         if (!post) return;
 
+        // Track view (non-blocking)
+        trackView(id);
+
         detailContent.innerHTML = `
             <div class="detail-header">
                 <div class="detail-tag">[ ${post.category.toUpperCase()} ]</div>
                 <h1 class="detail-title">${post.title}</h1>
+                <div class="detail-views"><i class="fa-solid fa-eye"></i> ${(post.views || 0).toLocaleString()} views</div>
             </div>
             ${post.imageUrl ? `<img src="${post.imageUrl}" class="detail-img" alt="${post.title}">` : ''}
             <div class="detail-content">${post.description}</div>

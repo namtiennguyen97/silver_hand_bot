@@ -270,6 +270,37 @@ body {
     transform: translateX(5px);
 }
 
+/* View count & read-more right group */
+.card-meta-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.card-views {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: rgba(94, 242, 214, 0.55);
+    white-space: nowrap;
+}
+.card-views i { font-size: 11px; }
+
+/* Views in detail modal */
+.detail-views {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: rgba(94, 242, 214, 0.6);
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 0.5px;
+}
+.detail-views i { font-size: 13px; }
+
 /* Detail View Modal (Custom HUD Style) */
 .blog-detail-overlay {
     position: fixed;

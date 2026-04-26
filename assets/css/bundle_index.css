@@ -4836,6 +4836,11 @@ body.finished #hud-root {
   padding: 10px 20px;
   backdrop-filter: var(--hud-blur);
   border-right: 2px solid var(--hud-cyan);
+  /* Fixed width prevents layout shift when clock text width changes */
+  min-width: 160px;
+  width: 160px;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .hud-battery-wrap {
@@ -4871,11 +4876,15 @@ body.finished #hud-root {
 }
 
 .hud-time-val {
-  font-family: var(--hud-font);
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 400;
   color: #fff;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  display: block;
+  text-align: right;
+  width: 100%;
 }
 
 /* --- Mobile Responsive --- */

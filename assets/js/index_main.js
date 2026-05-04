@@ -1,8 +1,8 @@
 /* ===============================
    CONFIG
 ================================ */
-const VIDEO_W   = 1280;
-const VIDEO_H   = 720;
+const VIDEO_W = 1280;
+const VIDEO_H = 720;
 const CONTENT_W = 475;
 
 /* ===============================
@@ -15,12 +15,12 @@ const rpgChatContent = document.getElementById('rpgChatContent');
 let video = videoMain;
 
 window.bgMode = localStorage.getItem('pgrBgMode') || '3D';
-window.setBgMode = function(mode) {
+window.setBgMode = function (mode) {
     window.bgMode = mode;
     localStorage.setItem('pgrBgMode', mode);
     const v = document.getElementById('videoMain');
     const img = document.getElementById('imageMain');
-    
+
     if (mode === '2D') {
         if (v) {
             v.pause();
@@ -30,7 +30,7 @@ window.setBgMode = function(mode) {
     } else {
         if (v) {
             v.style.display = 'block';
-            v.play().catch(()=>{});
+            v.play().catch(() => { });
         }
         if (img) img.style.display = 'none';
     }
@@ -49,29 +49,29 @@ function layoutVideo() {
 
     if (isMobile) {
         const scaleContent = vw / CONTENT_W;
-        const scaleVideo   = vw / VIDEO_W;
-        const scale        = Math.max(scaleContent, scaleVideo);
+        const scaleVideo = vw / VIDEO_W;
+        const scale = Math.max(scaleContent, scaleVideo);
 
         renderW = VIDEO_W * scale;
         renderH = VIDEO_H * scale;
 
         const contentCenterX = (VIDEO_W / 2) * scale;
-        const screenCenter   = vw / 2;
+        const screenCenter = vw / 2;
 
         left = (screenCenter - contentCenterX);
-        top  = (vh - renderH) / 2;
+        top = (vh - renderH) / 2;
     } else {
         const scaleByH = vh / VIDEO_H;
         renderH = VIDEO_H * scaleByH;
         renderW = VIDEO_W * scaleByH;
 
         left = (vw - renderW) / 2;
-        top  = 0;
+        top = 0;
     }
 
     if (videoMain) {
         // Use translate3d for better performance (GPU acceleration)
-        videoMain.style.width  = renderW + 'px';
+        videoMain.style.width = renderW + 'px';
         videoMain.style.height = renderH + 'px';
         videoMain.style.transform = `translate3d(${left}px, ${top}px, 0)`;
         // Reset top/left in case they were set
@@ -91,7 +91,7 @@ function layoutVideo() {
             // We use the same scaling logic as mobile to determine the "active" HUD width
             const scaleByH = vh / VIDEO_H;
             const hudWidth = CONTENT_W * scaleByH;
-            
+
             hudRoot.style.width = hudWidth + 'px';
             hudRoot.style.height = '100%';
             hudRoot.style.top = '0';
@@ -128,7 +128,8 @@ const modalData = {
     infoC: { title: "🔐 Code Heart Lock Zone", template: "tpl-infoC" },
     aboutMe: { title: "Personal Profile", template: "tpl-aboutMe" },
     news: { title: "LATEST NEWS", template: "tpl-news" },
-    setting: { title: "SYSTEM SETTINGS", template: "tpl-setting" }
+    setting: { title: "SYSTEM SETTINGS", template: "tpl-setting" },
+    schedule: { title: "ALARM SCHEDULE", template: "tpl-schedule" }
 };
 
 function openModalByKey(key) {
@@ -139,10 +140,20 @@ function openModalByKey(key) {
     const tpl = document.getElementById(data.template);
     if (tpl) modalContent.appendChild(tpl.content.cloneNode(true));
     modal.style.display = "flex";
-    
+
     // Performance optimization: pause video when opening modal
     if (videoMain && window.bgMode !== '2D') {
         videoMain.pause();
+    }
+    // Restore checkbox states for schedule
+    if (key === 'schedule') {
+        setTimeout(() => {
+            const prefs = JSON.parse(localStorage.getItem('notification_prefs') || '{}');
+            Object.keys(prefs).forEach(id => {
+                const cb = document.getElementById(`notify-${id}`);
+                if (cb) cb.checked = prefs[id];
+            });
+        }, 10);
     }
 }
 
@@ -168,7 +179,7 @@ const optionActions = {
 ================================ */
 function initGamingHUD() {
     const hudRoot = document.getElementById('hud-root');
-    
+
     const toggleHUD = (visible) => {
         if (!hudRoot) return;
         if (visible) {
@@ -197,7 +208,7 @@ function initGamingHUD() {
     const btnBattle = document.getElementById('hudBtnBattle');
     const btnNews = document.getElementById('hudBtnMembers'); // Re-named "News" in HTML
     const btnBlog = document.getElementById('hudBtnBlog');
-    const btnRD = document.getElementById('hudBtnRD');
+    const btnSchedule = document.getElementById('hudBtnSchedule');
     const btnSetting = document.getElementById('hudBtnSetting');
     const btnProfile = document.getElementById('hudProfile');
 
@@ -217,14 +228,14 @@ function initGamingHUD() {
         fetchNews();
     });
     withEffect(btnBlog, () => window.location.href = 'blog.html');
-    withEffect(btnRD, () => window.location.href = 'ctc-planer.html');
+    withEffect(btnSchedule, () => openModalByKey("schedule"));
     withEffect(btnSetting, () => {
         openModalByKey("setting");
         const bgmSlider = document.getElementById('bgmSlider');
         const sfxSlider = document.getElementById('sfxSlider');
         const bgmValue = document.getElementById('bgmValue');
         const sfxValue = document.getElementById('sfxValue');
-        
+
         if (bgmSlider) {
             bgmSlider.value = window.bgmVolume !== undefined ? window.bgmVolume * 100 : 40;
             if (bgmValue) bgmValue.textContent = bgmSlider.value + "%";
@@ -236,12 +247,12 @@ function initGamingHUD() {
                 const a = document.getElementById('bgmAudio');
                 if (a) {
                     a.volume = window.bgmVolume;
-                    if (v > 0 && a.paused) a.play().catch(()=>{});
+                    if (v > 0 && a.paused) a.play().catch(() => { });
                     else if (v === 0) a.pause();
                 }
             };
         }
-        
+
         if (sfxSlider) {
             sfxSlider.value = window.sfxVolume !== undefined ? window.sfxVolume * 100 : 60;
             if (sfxValue) sfxValue.textContent = sfxSlider.value + "%";
@@ -252,10 +263,10 @@ function initGamingHUD() {
                 localStorage.setItem('pgrSfxVolume', window.sfxVolume);
             };
         }
-        
+
         const btnMode3D = document.getElementById('btnMode3D');
         const btnMode2D = document.getElementById('btnMode2D');
-        
+
         if (btnMode3D && btnMode2D) {
             const updateBgModeUI = () => {
                 if (window.bgMode === '2D') {
@@ -353,7 +364,7 @@ function initGamingHUD() {
 window.addEventListener('load', () => {
     window.setBgMode(window.bgMode);
     syncLayout();
-    
+
     // HUD SYNC EFFECT
     window.addEventListener('app:loaded', () => {
         const hudSync = document.createElement('div');
@@ -363,7 +374,7 @@ window.addEventListener('load', () => {
             <div class="hud-scan-line"></div>
         `;
         document.body.appendChild(hudSync);
-        
+
         initGamingHUD();
 
         setTimeout(() => {
@@ -379,7 +390,7 @@ window.addEventListener('resize', syncLayout);
 
 document.addEventListener('click', (e) => {
     if (typeof suppressChatOutsideClose !== 'undefined' && suppressChatOutsideClose) return;
-    if (document.body.classList.contains('tutorial-lock')) return; 
+    if (document.body.classList.contains('tutorial-lock')) return;
 
     if (chatOverlay && chatOverlay.style.display === 'block' && !chatOverlay.contains(e.target)) {
         hideRPGChat();
@@ -399,10 +410,10 @@ if (closeModal) {
         modal.style.display = "none";
         if (window.toggleHUD) window.toggleHUD(true);
         if (window.playSfx && window.cancelAudio) window.playSfx(window.cancelAudio);
-        
+
         // Performance optimization: resume video when closing modal
         if (videoMain && window.bgMode !== '2D') {
-            videoMain.play().catch(()=>{});
+            videoMain.play().catch(() => { });
         }
     };
 }
@@ -417,10 +428,10 @@ if (modal) {
             modal.style.display = "none";
             if (window.toggleHUD) window.toggleHUD(true);
             window.playSfx(window.cancelAudio);
-            
+
             // Performance optimization: resume video when closing modal
             if (videoMain && window.bgMode !== '2D') {
-                videoMain.play().catch(()=>{});
+                videoMain.play().catch(() => { });
             }
         }
     };
@@ -433,7 +444,7 @@ document.addEventListener("touchstart", (e) => { if (e.touches.length > 1) e.pre
 document.addEventListener("gesturestart", (e) => e.preventDefault());
 
 // BIO GALLERY LOGIC
-window.initAboutMeGallery = function(container) {
+window.initAboutMeGallery = function (container) {
     const trigger = container.querySelector("#bioAvatarTrigger");
     const gallery = document.getElementById("bioGallery");
     const galleryImg = document.getElementById("galleryImg");
@@ -498,11 +509,11 @@ async function fetchNews() {
     if (!container) return;
 
     try {
-        const apiUrl = "/api/news"; 
+        const apiUrl = "/api/news";
         const response = await fetch(apiUrl);
         if (!response.ok) throw new Error("HTTP Status " + response.status);
         const data = await response.json();
-        
+
         if (data.news && data.news.length > 0) {
             container.innerHTML = "";
             const headerEl = document.createElement("div");
@@ -654,11 +665,11 @@ async function translateNewsDetail(lang, url) {
 const clickAudio = new Audio('assets/sounds/nierMail.mp3');
 window.cancelAudio = new Audio('assets/sounds/nierMenu.wav');
 
-window.playSfx = function(audio) {
+window.playSfx = function (audio) {
     if (!audio) return;
     const soundClone = audio.cloneNode();
     soundClone.volume = window.sfxVolume !== undefined ? window.sfxVolume : 0.6;
-    if (soundClone.volume > 0) soundClone.play().catch(()=>{});
+    if (soundClone.volume > 0) soundClone.play().catch(() => { });
 }
 
 document.addEventListener('click', (e) => {
@@ -671,3 +682,93 @@ document.addEventListener('click', (e) => {
         window.playSfx(clickAudio);
     }
 });
+
+// --- NOTIFICATION & WEB PUSH SYSTEM ---
+// VAPID Public Key (Placeholder - Generate yours if needed)
+const VAPID_PUBLIC_KEY = "BGFuAyQj_1e0AwOAUciHPHCh0VADRHJH_h-hF7SjlVev0Vaqd0is5WlPM_mpX5U-R3rW-SIAeygMHKuxX8CVVVo";
+
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
+
+// Register SW
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+        console.log('[SW] Registered');
+    }).catch(err => console.error('[SW] Error', err));
+}
+
+window.toggleNotification = async function (id, enabled) {
+    const prefs = JSON.parse(localStorage.getItem('notification_prefs') || '{}');
+    prefs[id] = enabled;
+    localStorage.setItem('notification_prefs', JSON.stringify(prefs));
+
+    if (!("Notification" in window)) return;
+
+    if (Notification.permission !== "granted") {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") return;
+    }
+
+    // Get Subscription
+    try {
+        const registration = await navigator.serviceWorker.ready;
+        let subscription = await registration.pushManager.getSubscription();
+
+        if (enabled && !subscription) {
+            // Subscribe if not already
+            subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+            });
+        }
+
+        if (subscription) {
+            // Sync with server
+            await fetch('/api/notifications', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    subscription: subscription,
+                    preferences: prefs
+                })
+            });
+            console.log('[Notification] Prefs synced');
+        }
+    } catch (err) {
+        console.error('[Notification] Error syncing:', err);
+    }
+};
+
+window.toggleScheduleExpand = function (el) {
+    const group = el.closest('.schedule-group');
+    if (group) {
+        group.classList.toggle('expanded');
+    }
+};
+
+window.toggleMainNotification = function (parentId, enabled, childIds) {
+    // Prevent event from expanding the accordion when clicking the switch
+    if (window.event) window.event.stopPropagation();
+
+    // Toggle all children to match parent
+    childIds.forEach(id => {
+        const childCb = document.getElementById(`notify-${id}`);
+        if (childCb) {
+            childCb.checked = enabled;
+            // Trigger actual subscription for each child
+            window.toggleNotification(id, enabled);
+        }
+    });
+
+    // Also sync the parent state itself
+    window.toggleNotification(parentId, enabled);
+};
+

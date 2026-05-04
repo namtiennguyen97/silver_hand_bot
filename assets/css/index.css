@@ -503,5 +503,208 @@ button#sendBtn:active {
         0 0 22px rgba(124, 58, 237, 0.6);
 }
 
+/* ===============================
+   SCHEDULE & NOTIFICATION (PREMIUM)
+================================ */
+.schedule-container {
+  padding: 5px;
+  font-family: 'Orbitron', sans-serif;
+  color: #fff;
+  position: relative;
+}
+
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid rgba(94, 242, 214, 0.2);
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.schedule-header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background: var(--hud-cyan, #00ffff);
+  box-shadow: 0 0 10px var(--hud-cyan);
+}
+
+.schedule-title {
+  font-weight: 900;
+  font-size: 16px;
+  color: var(--hud-cyan, #00ffff);
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  letter-spacing: 2px;
+}
+
+.schedule-subtitle {
+  font-size: 8px;
+  opacity: 0.5;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+.schedule-status-tag {
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid var(--hud-cyan);
+  color: var(--hud-cyan);
+  font-size: 9px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  box-shadow: inset 0 0 5px rgba(0, 255, 255, 0.2);
+}
+
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.schedule-item {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.schedule-item:hover {
+  background: rgba(0, 255, 255, 0.05);
+  border-color: rgba(0, 255, 255, 0.2);
+  transform: translateX(5px);
+}
+
+.schedule-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  color: var(--hud-cyan);
+  font-size: 18px;
+  box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.1);
+}
+
+.schedule-info {
+  flex-grow: 1;
+}
+
+.schedule-name {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+.schedule-time {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 4px;
+}
+
+.schedule-time .highlight {
+  color: var(--hud-cyan);
+  font-weight: bold;
+}
+
+/* --- GAME STYLE SWITCH --- */
+.game-switch {
+  position: relative;
+  width: 55px;
+  height: 24px;
+}
+
+.game-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 4px;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: "OFF";
+  height: 18px;
+  width: 24px;
+  left: 2px;
+  bottom: 2px;
+  background-color: #333;
+  color: #666;
+  font-size: 8px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 2px;
+}
+
+input:checked + .switch-slider {
+  border-color: var(--hud-cyan);
+  background: rgba(0, 255, 255, 0.1);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+input:checked + .switch-slider:before {
+  content: "ON";
+  transform: translateX(25px);
+  background-color: var(--hud-cyan);
+  color: #000;
+  box-shadow: 0 0 15px var(--hud-cyan);
+}
+
+.schedule-footer {
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer-note {
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 1px;
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--hud-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--hud-cyan);
+  animation: footer-pulse 1.5s infinite;
+}
+
+@keyframes footer-pulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+
 
 

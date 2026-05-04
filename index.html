@@ -13,6 +13,7 @@
 
   <link rel="stylesheet" href="assets/css/ctc-tutorial-fixed.css">
   <link rel="stylesheet" href="assets/css/blog_slider.css">
+  <link rel="stylesheet" href="assets/css/schedule_premium.css">
 </head>
 <body>
 <!-- CYBER LIST OVERLAY (LEGACY) -->
@@ -152,9 +153,9 @@
                 <span class="btn-main-label">BLOG</span>
                 <span class="btn-sub-label">COMMUNITY ARCHIVE.EXE</span>
             </button>
-            <button class="hud-action-btn" id="hudBtnRD">
-                <span class="btn-main-label">Wiki</span>
-                <span class="btn-sub-label">Collection diary</span>
+            <button class="hud-action-btn" id="hudBtnSchedule">
+                <span class="btn-main-label">SCHEDULE</span>
+                <span class="btn-sub-label">// NOTIFICATION.EXE</span>
             </button>
             <button class="hud-action-btn" id="hudBtnSetting">
                 <span class="btn-main-label">SETTING</span>
@@ -379,6 +380,104 @@
           <span class="event-hour">22:00</span>
         </div>
       </div>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-schedule">
+  <div class="schedule-container">
+    <div class="schedule-header">
+      <div class="schedule-title-wrap">
+        <div class="schedule-title">ALARM REGISTRY</div>
+        <div class="schedule-subtitle">// NEURAL NOTIFICATION SYNC</div>
+      </div>
+      <div class="schedule-status-tag">ACTIVE</div>
+    </div>
+
+    <div class="schedule-list">
+      <!-- Camp Resource Scramble -->
+      <div class="schedule-item">
+        <div class="schedule-icon"><i class="fa-solid fa-box-open"></i></div>
+        <div class="schedule-info">
+          <div class="schedule-name">Resource Scramble</div>
+          <div class="schedule-time">09:00 VN | <span class="highlight">EVERY WEEK</span></div>
+        </div>
+        <label class="game-switch">
+          <input type="checkbox" id="notify-resource-scramble" onchange="window.toggleNotification('resource-scramble', this.checked)">
+          <span class="switch-slider"></span>
+        </label>
+      </div>
+
+      <!-- Camp Invasion -->
+      <div class="schedule-group">
+        <div class="schedule-item main-item" onclick="window.toggleScheduleExpand(this)">
+          <div class="schedule-icon"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="schedule-info">
+            <div class="schedule-name">Camp Invasion</div>
+            <div class="schedule-time">21:30 VN | <span class="highlight">MULTI-ALARM</span></div>
+          </div>
+          <div class="expand-arrow"><i class="fa-solid fa-chevron-down"></i></div>
+          <label class="game-switch">
+            <input type="checkbox" id="notify-camp-invasion" onchange="window.toggleMainNotification('camp-invasion', this.checked, ['camp-invasion-10h', 'camp-invasion-21h20'])">
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+        <div class="schedule-details">
+          <div class="detail-item">
+            <div class="detail-label">Nhắc nhở buổi sáng (10:00 VN)</div>
+            <label class="game-switch mini">
+              <input type="checkbox" id="notify-camp-invasion-10h" onchange="window.toggleNotification('camp-invasion-10h', this.checked)">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Nhắc nhở trước trận (21:20 VN)</div>
+            <label class="game-switch mini">
+              <input type="checkbox" id="notify-camp-invasion-21h20" onchange="window.toggleNotification('camp-invasion-21h20', this.checked)">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boss Camp -->
+      <div class="schedule-group">
+        <div class="schedule-item main-item" onclick="window.toggleScheduleExpand(this)">
+          <div class="schedule-icon"><i class="fa-solid fa-skull-crossbones"></i></div>
+          <div class="schedule-info">
+            <div class="schedule-name">Boss Camp</div>
+            <div class="schedule-time">22:00 VN | <span class="highlight">MULTI-ALARM</span></div>
+          </div>
+          <div class="expand-arrow"><i class="fa-solid fa-chevron-down"></i></div>
+          <label class="game-switch">
+            <input type="checkbox" id="notify-boss-camp" onchange="window.toggleMainNotification('boss-camp', this.checked, ['boss-camp-10h', 'boss-camp-21h50'])">
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+        <div class="schedule-details">
+          <div class="detail-item">
+            <div class="detail-label">Nhắc nhở buổi sáng (10:00 VN)</div>
+            <label class="game-switch mini">
+              <input type="checkbox" id="notify-boss-camp-10h" onchange="window.toggleNotification('boss-camp-10h', this.checked)">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Nhắc nhở trước trận (21:50 VN)</div>
+            <label class="game-switch mini">
+              <input type="checkbox" id="notify-boss-camp-21h50" onchange="window.toggleNotification('boss-camp-21h50', this.checked)">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="schedule-footer">
+        <div class="footer-note">
+            <span class="pulse-dot"></span>
+            SYSTEM REQUIRES BROWSER NOTIFICATION PERMISSION
+        </div>
     </div>
   </div>
 </template>

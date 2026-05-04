@@ -82,6 +82,19 @@ export default async function handler(req, res) {
                 return res.status(200).json({ ok: true, user: newUser });
             }
 
+            if (action === "update_prefs") {
+                if (!username || !passcode) return res.status(400).json({ error: "Missing info" });
+                const accountList = data.accounts || [];
+                const userIndex = accountList.findIndex(a => a.username === username && a.passcode === passcode);
+                if (userIndex === -1) return res.status(401).json({ error: "Invalid credentials" });
+                
+                const { notification_prefs } = req.body;
+                accountList[userIndex].notification_prefs = notification_prefs;
+                data.accounts = accountList;
+                await writeAccounts(data);
+                return res.status(200).json({ ok: true });
+            }
+
             if (action === "login") {
                 const user = data.accounts.find(a => a.username === username && a.passcode === passcode);
                 if (user) {

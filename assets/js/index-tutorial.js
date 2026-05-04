@@ -19,8 +19,8 @@ document.addEventListener("DOMContentLoaded", () => {
             text: "<b>Latest News</b>.<br><br>Stay updated with the official camp broadcasts and global server announcements."
         },
         {
-            selector: "#hudBtnRD",
-            text: "<b>CTC Planner</b>.<br><br>Deploy here to coordinate team assignments and tactical distribution for camp battles."
+            selector: "#hudBtnSchedule",
+            text: "<b>Event Schedule</b>.<br><br>Register for tactical notifications for camp events like Resource Scramble, Invasion, and Boss Raid."
         },
         {
             selector: "#hudBtnSetting",

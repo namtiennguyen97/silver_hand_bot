@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <title>SAO-ĐÊM</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet">
   <!-- CSS dùng lại (Bundled for Performance) -->
   <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
   <link rel="stylesheet" href="assets/css/bundle_index.css">
@@ -15,665 +18,695 @@
   <link rel="stylesheet" href="assets/css/blog_slider.css">
   <link rel="stylesheet" href="assets/css/schedule_premium.css">
 </head>
+
 <body>
-<!-- CYBER LIST OVERLAY (LEGACY) -->
-<div id="tutorial-overlay">
-  <div id="spotlight"></div>
-</div>
-
-<div id="cyberOverlay" class="cyber-overlay">
-</div>
-
-<!-- VISUAL NOVEL INTRO OVERLAY -->
-<div id="vnOverlay">
-  <div id="vnChoiceOverlay" class="vn-choice-overlay"></div>
-  <div class="vn-stage">
-    <div class="vn-char left dim" id="vnCharLeft">
-      <img src="assets/img/system.png" alt="opponent" id="vnImgLeft">
-    </div>
-    <div class="vn-char right active" id="vnCharRight">
-      <img src="assets/img/mayor_dialogue_1.png" alt="Mayor" id="vnImgRight">
-    </div>
+  <!-- CYBER LIST OVERLAY (LEGACY) -->
+  <div id="tutorial-overlay">
+    <div id="spotlight"></div>
   </div>
-  <div class="vn-dialogue" id="vnDialogue">
-    <div class="vn-speaker-tag" id="vnSpeakerTag">MAYOR AI</div>
-    <div class="vn-text" id="vnText"></div>
-    <div class="vn-controls">
-      <div class="vn-progress" id="vnProgress"></div>
-      <div style="display:flex;gap:10px;align-items:center">
-        <button class="vn-skip-btn" id="vnSkipBtn">⏩ SKIP ALL</button>
-        <span class="vn-next-indicator" id="vnNextIndicator">▼</span>
+
+  <div id="cyberOverlay" class="cyber-overlay">
+  </div>
+
+  <!-- VISUAL NOVEL INTRO OVERLAY -->
+  <div id="vnOverlay">
+    <div id="vnChoiceOverlay" class="vn-choice-overlay"></div>
+    <div class="vn-stage">
+      <div class="vn-char left dim" id="vnCharLeft">
+        <img src="assets/img/system.png" alt="opponent" id="vnImgLeft">
+      </div>
+      <div class="vn-char right active" id="vnCharRight">
+        <img src="assets/img/mayor_dialogue_1.png" alt="Mayor" id="vnImgRight">
       </div>
     </div>
-  </div>
-</div>
-
-<!-- ACCOUNT REGISTRATION / LOGIN MODAL -->
-<div id="authModal">
-  <div class="auth-container">
-    <div id="authStep1">
-      <div class="auth-header">
-        <div class="auth-title">ESTABLISH IDENTITY</div>
-      </div>
-      <div class="avatar-upload-box">
-        <img src="assets/img/unknown_avatar.png" alt="Avatar" class="avatar-preview" id="avatarPreview">
-        <div class="upload-info">
-            <input type="file" id="avatarInput" hidden accept="image/*">
-            <button class="upload-btn" onclick="document.getElementById('avatarInput').click()">UPLOAD BIO IMAGE</button>
-            <div style="font-size:7px; color:rgba(0,255,255,0.4); margin-top:5px; font-family:'Orbitron'">// SELECT SOURCE NODE</div>
+    <div class="vn-dialogue" id="vnDialogue">
+      <div class="vn-speaker-tag" id="vnSpeakerTag">MAYOR AI</div>
+      <div class="vn-text" id="vnText"></div>
+      <div class="vn-controls">
+        <div class="vn-progress" id="vnProgress"></div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="vn-skip-btn" id="vnSkipBtn">⏩ SKIP ALL</button>
+          <span class="vn-next-indicator" id="vnNextIndicator">▼</span>
         </div>
       </div>
-      <div class="passcode-wrapper">
+    </div>
+  </div>
+
+  <!-- ACCOUNT REGISTRATION / LOGIN MODAL -->
+  <div id="authModal">
+    <div class="auth-container">
+      <div id="authStep1">
+        <div class="auth-header">
+          <div class="auth-title">ESTABLISH IDENTITY</div>
+        </div>
+        <div class="avatar-upload-box">
+          <img src="assets/img/unknown_avatar.png" alt="Avatar" class="avatar-preview" id="avatarPreview">
+          <div class="upload-info">
+            <input type="file" id="avatarInput" hidden accept="image/*">
+            <button class="upload-btn" onclick="document.getElementById('avatarInput').click()">UPLOAD BIO
+              IMAGE</button>
+            <div style="font-size:7px; color:rgba(0,255,255,0.4); margin-top:5px; font-family:'Orbitron'">// SELECT
+              SOURCE NODE</div>
+          </div>
+        </div>
+        <div class="passcode-wrapper">
           <div id="authStatus">SET YOUR 8-DIGIT PASSCODE</div>
           <div class="passcode-display">
-            <div class="pass-dot"></div><div class="pass-dot"></div><div class="pass-dot"></div><div class="pass-dot"></div>
-            <div class="pass-dot"></div><div class="pass-dot"></div><div class="pass-dot"></div><div class="pass-dot"></div>
+            <div class="pass-dot"></div>
+            <div class="pass-dot"></div>
+            <div class="pass-dot"></div>
+            <div class="pass-dot"></div>
+            <div class="pass-dot"></div>
+            <div class="pass-dot"></div>
+            <div class="pass-dot"></div>
+            <div class="pass-dot"></div>
           </div>
+        </div>
+        <div class="numpad-grid">
+          <button class="num-btn" data-val="1" data-label="KEY 01">1</button>
+          <button class="num-btn" data-val="2" data-label="KEY 02">2</button>
+          <button class="num-btn" data-val="3" data-label="KEY 03">3</button>
+          <button class="num-btn" data-val="4" data-label="KEY 04">4</button>
+          <button class="num-btn" data-val="5" data-label="KEY 05">5</button>
+          <button class="num-btn" data-val="6" data-label="KEY 06">6</button>
+          <button class="num-btn" data-val="7" data-label="KEY 07">7</button>
+          <button class="num-btn" data-val="8" data-label="KEY 08">8</button>
+          <button class="num-btn" data-val="9" data-label="KEY 09">9</button>
+          <button class="num-btn special" data-val="clear" data-label="RESET">CLR</button>
+          <button class="num-btn" data-val="0" data-label="KEY 00">0</button>
+          <button class="num-btn special" data-val="back" data-label="DELETE">DEL</button>
+        </div>
       </div>
-      <div class="numpad-grid">
-        <button class="num-btn" data-val="1" data-label="KEY 01">1</button>
-        <button class="num-btn" data-val="2" data-label="KEY 02">2</button>
-        <button class="num-btn" data-val="3" data-label="KEY 03">3</button>
-        <button class="num-btn" data-val="4" data-label="KEY 04">4</button>
-        <button class="num-btn" data-val="5" data-label="KEY 05">5</button>
-        <button class="num-btn" data-val="6" data-label="KEY 06">6</button>
-        <button class="num-btn" data-val="7" data-label="KEY 07">7</button>
-        <button class="num-btn" data-val="8" data-label="KEY 08">8</button>
-        <button class="num-btn" data-val="9" data-label="KEY 09">9</button>
-        <button class="num-btn special" data-val="clear" data-label="RESET">CLR</button>
-        <button class="num-btn" data-val="0" data-label="KEY 00">0</button>
-        <button class="num-btn special" data-val="back" data-label="DELETE">DEL</button>
-      </div>
-    </div>
 
-    <!-- Step 2: Nickname Input -->
-    <div id="authStep2" style="display:none">
+      <!-- Step 2: Nickname Input -->
+      <div id="authStep2" style="display:none">
         <div class="auth-header">
           <div class="auth-title">IDENTIFICATION ID</div>
         </div>
         <div class="nickname-box">
-            <div class="input-label">// ENTER TACTICIAN NICKNAME</div>
-            <input type="text" id="nicknameInput" class="tech-input" placeholder="REQUIRED FIELD" maxlength="20">
-            <div class="input-glitch"></div>
+          <div class="input-label">// ENTER TACTICIAN NICKNAME</div>
+          <input type="text" id="nicknameInput" class="tech-input" placeholder="REQUIRED FIELD" maxlength="20">
+          <div class="input-glitch"></div>
         </div>
-    </div>
+      </div>
 
-    <div class="auth-footer">
+      <div class="auth-footer">
         <button class="submit-btn" id="mainSubmitBtn" disabled>FINALIZE REGISTRATION</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- =============================================
+  <!-- =============================================
      GAMING HUD - NEW OVERLAY
 ============================================= -->
-<div id="hud-root">
-  <!-- TOP ROW: Profile & Resources -->
+  <div id="hud-root">
+    <!-- TOP ROW: Profile & Resources -->
     <div class="hud-top-row">
-        <!-- TOP LEFT: Profile -->
-        <div class="hud-section">
-            <div class="hud-profile" id="hudProfile">
-                <div class="hud-level-wrap">
-                    <div class="hud-level-circle">
-                        <span class="hud-level-val">146</span>
-                        <span class="hud-level-label">LEVEL</span>
-                    </div>
-                    <div class="level-ring-rotate"></div>
-                </div>
-                <div class="hud-profile-info">
-                    <div class="hud-profile-name">Silver Hand</div>
-                    <div class="hud-exp-bar-wrap">
-                        <div class="hud-exp-bar-fill" style="width: 75%"></div>
-                        <div class="hud-exp-val">EXP 75%</div>
-                    </div>
-
-                    <div class="hud-profile-id">ID: 30197479</div>
-                </div>
+      <!-- TOP LEFT: Profile -->
+      <div class="hud-section">
+        <div class="hud-profile" id="hudProfile">
+          <div class="hud-level-wrap">
+            <div class="hud-level-circle">
+              <span class="hud-level-val">146</span>
+              <span class="hud-level-label">LEVEL</span>
             </div>
-        </div>
+            <div class="level-ring-rotate"></div>
+          </div>
+          <div class="hud-profile-info">
+            <div class="hud-profile-name">Silver Hand</div>
+            <div class="hud-exp-bar-wrap">
+              <div class="hud-exp-bar-fill" style="width: 75%"></div>
+              <div class="hud-exp-val">EXP 75%</div>
+            </div>
 
-        <!-- TOP CENTER: Removed time sync per request -->
-        <!-- TOP RIGHT: Resources REMOVED PER REQUEST -->
-        <div class="hud-section">
+            <div class="hud-profile-id">ID: 30197479</div>
+          </div>
         </div>
+      </div>
+
+      <!-- TOP CENTER: Removed time sync per request -->
+      <!-- TOP RIGHT: Resources REMOVED PER REQUEST -->
+      <div class="hud-section">
+      </div>
     </div>
 
     <!-- MIDDLE ROW: Action Menu -->
     <div class="hud-mid-row">
-        <div class="hud-action-menu">
-            <button class="hud-action-btn btn-battle" id="hudBtnBattle">
-                <span class="btn-main-label">CAMPAIGN</span>
-                <span class="btn-sub-label">// CAMPAIGN ARCHIVE.EXE</span>
-            </button>
-            <button class="hud-action-btn" id="hudBtnMembers">
-                <span class="btn-main-label">NEWS</span>
-                <span class="btn-sub-label">OFFICIAL BROADCAST SYNC</span>
-            </button>
-            <button class="hud-action-btn" id="hudBtnBlog">
-                <span class="btn-main-label">BLOG</span>
-                <span class="btn-sub-label">COMMUNITY ARCHIVE.EXE</span>
-            </button>
-            <button class="hud-action-btn" id="hudBtnSchedule">
-                <span class="btn-main-label">SCHEDULE</span>
-                <span class="btn-sub-label">// NOTIFICATION.EXE</span>
-            </button>
-            <button class="hud-action-btn" id="hudBtnSetting">
-                <span class="btn-main-label">SETTING</span>
-                <span class="btn-sub-label">SYSTEM PREFERENCES</span>
-            </button>
-        </div>
+      <div class="hud-action-menu">
+        <button class="hud-action-btn btn-battle" id="hudBtnBattle">
+          <span class="btn-main-label">CAMPAIGN</span>
+          <span class="btn-sub-label">// CAMPAIGN ARCHIVE.EXE</span>
+        </button>
+        <button class="hud-action-btn" id="hudBtnMembers">
+          <span class="btn-main-label">NEWS</span>
+          <span class="btn-sub-label">OFFICIAL BROADCAST SYNC</span>
+        </button>
+        <button class="hud-action-btn" id="hudBtnBlog">
+          <span class="btn-main-label">BLOG</span>
+          <span class="btn-sub-label">COMMUNITY ARCHIVE.EXE</span>
+        </button>
+        <button class="hud-action-btn" id="hudBtnSchedule">
+          <span class="btn-main-label">SCHEDULE</span>
+          <span class="btn-sub-label">// NOTIFICATION.EXE</span>
+        </button>
+        <button class="hud-action-btn" id="hudBtnSetting">
+          <span class="btn-main-label">SETTING</span>
+          <span class="btn-sub-label">SYSTEM PREFERENCES</span>
+        </button>
+      </div>
     </div>
 
     <!-- BOTTOM ROW: Utilities & Status -->
     <div class="hud-bottom-row">
-        <!-- BOTTOM LEFT: Utility & Promo -->
-        <div class="hud-bottom-left">
-            <div class="hud-utility-icons">
-                <div class="hud-util-btn" id="hudBtnNotice" title="Notice">
-                    <i class="fa-solid fa-bullhorn"></i>
-                </div>
-                <div class="hud-util-btn" id="hudBtnMail" title="Mail">
-                    <i class="fa-solid fa-envelope"></i>
-                    <div class="hud-cyan-glow" style="position:absolute; top:-2px; right:-2px; width:8px; height:8px; background:var(--hud-cyan); border-radius:50%"></div>
-                </div>
-                <div class="hud-util-btn" id="hudBtnActivities" title="Activities">
-                    <i class="fa-solid fa-calendar-check"></i>
-                </div>
-                <div class="hud-util-btn" id="hudBtnGuide" title="Guide">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                </div>
+      <!-- BOTTOM LEFT: Utility & Promo -->
+      <div class="hud-bottom-left">
+        <div class="hud-utility-icons">
+          <div class="hud-util-btn" id="hudBtnNotice" title="Notice">
+            <i class="fa-solid fa-bullhorn"></i>
+          </div>
+          <div class="hud-util-btn" id="hudBtnMail" title="Mail">
+            <i class="fa-solid fa-envelope"></i>
+            <div class="hud-cyan-glow"
+              style="position:absolute; top:-2px; right:-2px; width:8px; height:8px; background:var(--hud-cyan); border-radius:50%">
             </div>
-            <div class="hud-promo-banner" id="hudPromoBanner">
-                <div class="banner-tag">OFFICIAL BROADCAST</div>
-                <img src="assets/img/drama/smirk.png" alt="Promo" style="object-position: top center;">
-            </div>
+          </div>
+          <div class="hud-util-btn" id="hudBtnActivities" title="Activities">
+            <i class="fa-solid fa-calendar-check"></i>
+          </div>
+          <div class="hud-util-btn" id="hudBtnGuide" title="Guide">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
         </div>
-
-        <!-- BOTTOM RIGHT: System Status -->
-        <div class="hud-section">
-            <div class="hud-system-status">
-                <div class="hud-battery-wrap">
-                    <span id="hudBatteryVal">...%</span>
-                    <div class="battery-icon-outer">
-                        <div class="battery-level-bar" id="hudBatteryBar"></div>
-                    </div>
-                </div>
-                <div class="hud-time-val" id="hudTimeBottom">00:00:00</div>
-                <div style="font-family: var(--hud-font); font-size: 8px; color: var(--hud-cyan); opacity: 0.8; letter-spacing: 1px; margin-top: -5px;">HOPE 101 TIME</div>
-            </div>
+        <div class="hud-promo-banner" id="hudPromoBanner">
+          <div class="banner-tag">OFFICIAL BROADCAST</div>
+          <img src="assets/img/drama/smirk.png" alt="Promo" style="object-position: top center;">
         </div>
-    </div>
-</div>
+      </div>
 
-
-<div id="stage">
-	<div id="ambient"></div>
-	
-	<!-- Video nền duy nhất (Đã tối ưu) -->
-	<video
-		id="videoMain"
-		class="bg-video active"
-		src="assets/videos/mobile_workspace_mayor.mp4"
-		poster="assets/img/mayor_mobile_workspace.png"
-		autoplay
-		muted
-		loop
-		playsinline
-		preload="auto"
-		style="will-change: transform, opacity"
-	></video>
-	
-	<!-- 2D Background Fallback -->
-	<img
-		id="imageMain"
-		src="assets/img/mayor_mobile_workspace.png"
-		alt="2D Background"
-		style="display: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; z-index: 1;"
-	>
-	
-	<div id="videoTransitionMask"></div>
-</div>
-
-<!-- Overlay chat, ẩn mặc định -->
-<div id="rpgChatOverlay">
-	<div class="rpg-chat-box">
-		<!-- HUD Corner decorations -->
-		<div class="rpg-corner top-left"></div>
-		<div class="rpg-corner bottom-right"></div>
-		
-		<div class="rpg-speaker-tag" id="rpgSpeakerName">Silver-Hand</div>
-		
-		<div class="rpg-avatar">
-			<img src="assets/img/mayor_5.png" alt="Avatar">
-			<div class="avatar-scanline"></div>
-		</div>
-		
-		<div class="rpg-chat-content-wrapper">
-			<div class="rpg-chat-content" id="rpgChatContent">
-				<!-- Text sẽ render từng chữ bằng JS -->
-			</div>
-			<div class="rpg-next-indicator" id="rpgNextIndicator">▼</div>
-		</div>
-	</div>
-</div>
-
-<div id="loadingOverlay">
-  <div class="loading-bg-layer"></div>
-  <div class="loading-scanlines"></div>
-  <div class="loading-corner-tl">
-    <div class="corner-line">SAO-ĐÊM // SYSTEM BOOT</div>
-    <div class="corner-line">v4.0.0 — AUTHORIZED</div>
-  </div>
-  <div class="loading-hud-panel">
-    <div class="loading-title-row">
-      <div class="loading-logo"><span class="sao">SAO&nbsp;</span><span class="dem">&nbsp;ĐÊM</span></div>
-      <div class="loading-label-text">LOADING...</div>
-    </div>
-    <div class="loading-bar-row">
-      <div class="loading-bar-track"><div class="loading-bar-fill" id="loadingBarFill"></div></div>
-      <div class="loading-pct" id="loadingPercentage">0%</div>
-    </div>
-    <div class="loading-status-row">
-      <span class="loading-status-text" id="loadingStatus">INITIALIZING...</span>
-    </div>
-    <div class="loading-tip-row">
-      <div class="loading-tip-label">TIP</div>
-      <div class="loading-tip-text" id="loadingTipText"></div>
+      <!-- BOTTOM RIGHT: System Status -->
+      <div class="hud-section">
+        <div class="hud-system-status">
+          <div class="hud-battery-wrap">
+            <span id="hudBatteryVal">...%</span>
+            <div class="battery-icon-outer">
+              <div class="battery-level-bar" id="hudBatteryBar"></div>
+            </div>
+          </div>
+          <div class="hud-time-val" id="hudTimeBottom">00:00:00</div>
+          <div
+            style="font-family: var(--hud-font); font-size: 8px; color: var(--hud-cyan); opacity: 0.8; letter-spacing: 1px; margin-top: -5px;">
+            HOPE 101 TIME</div>
+        </div>
+      </div>
     </div>
   </div>
-  <div id="loadingPressAny">PRESS ANY KEY TO CONTINUE</div>
-</div>
 
-<!-- MODAL -->
-<div class="modal" id="infoModal">
-  <div class="modal-content ai-modal-content">
-    <div class="hud-br-corner"></div>
-    <h2 id="modalTitle"></h2>
-    <div class="ai-training-box">
-      <div class="ai-content" id="modalContent"></div>
-    </div>
-    <button id="closeModal" class="close-btn">Close</button>
+
+  <div id="stage">
+    <div id="ambient"></div>
+
+    <!-- Video nền duy nhất (Đã tối ưu) -->
+    <video id="videoMain" class="bg-video active" src="assets/videos/mobile_workspace_mayor.mp4"
+      poster="assets/img/mayor_mobile_workspace.png" autoplay muted loop playsinline preload="auto"
+      style="will-change: transform, opacity"></video>
+
+    <!-- 2D Background Fallback -->
+    <img id="imageMain" src="assets/img/mayor_mobile_workspace.png" alt="2D Background"
+      style="display: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; z-index: 1;">
+
+    <div id="videoTransitionMask"></div>
   </div>
-</div>
+
+  <!-- Overlay chat, ẩn mặc định -->
+  <div id="rpgChatOverlay">
+    <div class="rpg-chat-box">
+      <!-- HUD Corner decorations -->
+      <div class="rpg-corner top-left"></div>
+      <div class="rpg-corner bottom-right"></div>
+
+      <div class="rpg-speaker-tag" id="rpgSpeakerName">Silver-Hand</div>
+
+      <div class="rpg-avatar">
+        <img src="assets/img/mayor_5.png" alt="Avatar">
+        <div class="avatar-scanline"></div>
+      </div>
+
+      <div class="rpg-chat-content-wrapper">
+        <div class="rpg-chat-content" id="rpgChatContent">
+          <!-- Text sẽ render từng chữ bằng JS -->
+        </div>
+        <div class="rpg-next-indicator" id="rpgNextIndicator">▼</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="loadingOverlay">
+    <div class="loading-bg-layer"></div>
+    <div class="loading-scanlines"></div>
+    <div class="loading-corner-tl">
+      <div class="corner-line">SAO-ĐÊM // SYSTEM BOOT</div>
+      <div class="corner-line">v4.0.0 — AUTHORIZED</div>
+    </div>
+    <div class="loading-hud-panel">
+      <div class="loading-title-row">
+        <div class="loading-logo"><span class="sao">SAO&nbsp;</span><span class="dem">&nbsp;ĐÊM</span></div>
+        <div class="loading-label-text">LOADING...</div>
+      </div>
+      <div class="loading-bar-row">
+        <div class="loading-bar-track">
+          <div class="loading-bar-fill" id="loadingBarFill"></div>
+        </div>
+        <div class="loading-pct" id="loadingPercentage">0%</div>
+      </div>
+      <div class="loading-status-row">
+        <span class="loading-status-text" id="loadingStatus">INITIALIZING...</span>
+      </div>
+      <div class="loading-tip-row">
+        <div class="loading-tip-label">TIP</div>
+        <div class="loading-tip-text" id="loadingTipText"></div>
+      </div>
+    </div>
+    <div id="loadingPressAny">PRESS ANY KEY TO CONTINUE</div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal" id="infoModal">
+    <div class="modal-content ai-modal-content">
+      <div class="hud-br-corner"></div>
+      <h2 id="modalTitle"></h2>
+      <div class="ai-training-box">
+        <div class="ai-content" id="modalContent"></div>
+      </div>
+      <button id="closeModal" class="close-btn">Close</button>
+    </div>
+  </div>
 
 
-<!-- ================== MODAL TEMPLATES ================== -->
+  <!-- ================== MODAL TEMPLATES ================== -->
 
-<template id="tpl-setting">
+  <template id="tpl-setting">
     <div class="setting-container">
-        <div class="setting-row">
-            <span class="setting-label">BACKGROUND MUSIC (BGM)</span>
-            <input type="range" id="bgmSlider" class="cyber-slider" min="0" max="100" value="40">
-            <span id="bgmValue" class="setting-val">40%</span>
-        </div>
-        <div class="setting-row">
-            <span class="setting-label">SYSTEM EFFECTS (SFX)</span>
-            <input type="range" id="sfxSlider" class="cyber-slider" min="0" max="100" value="60">
-            <span id="sfxValue" class="setting-val">60%</span>
-        </div>
-        <div class="setting-row" style="margin-top: 15px; display: flex; align-items: center; justify-content: space-between;">
-            <span class="setting-label">BACKGROUND MODE</span>
-            <div class="bg-mode-controls" style="display: flex; gap: 10px;">
-                <button id="btnMode3D" class="mode-btn" style="padding: 5px 15px; border: 1px solid var(--hud-cyan, #00ffff); background: var(--hud-cyan, #00ffff); color: #000; cursor: pointer; font-weight: bold;">3D</button>
-                <button id="btnMode2D" class="mode-btn" style="padding: 5px 15px; border: 1px solid var(--hud-cyan, #00ffff); background: transparent; color: var(--hud-cyan, #00ffff); cursor: pointer; font-weight: bold;">2D</button>
-            </div>
-        </div>
-        <div class="setting-row" id="settingAccountRow" style="margin-top: 15px; border-top: 1px solid rgba(0,255,255,0.1); padding-top: 15px;">
-            <span class="setting-label">ACCOUNT IDENTITY</span>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button id="btnManageAccount" class="mode-btn" style="padding: 5px 12px; border: 1px solid var(--hud-cyan, #00ffff); background: transparent; color: var(--hud-cyan, #00ffff); cursor: pointer; font-size: 10px;">ESTABLISH ID</button>
-                <button onclick="localStorage.removeItem('silverhand_user'); window.location.reload();" class="mode-btn" style="padding: 5px 12px; border: 1px solid #ff3366; background: transparent; color: #ff3366; cursor: pointer; font-size: 10px;">DEBUG: CLEAR AUTH</button>
-                <button onclick="localStorage.removeItem('sao-dem-tutorial-done'); localStorage.removeItem('sao-dem-ctc-tutorial-done'); localStorage.removeItem('sao-dem-index-tutorial-done'); window.location.reload();" class="mode-btn" style="padding: 5px 12px; border: 1px solid #ff9d00; background: transparent; color: #ff9d00; cursor: pointer; font-size: 10px;">DEBUG: RESET TUTORIALS</button>
-            </div>
-        </div>
-    </div>
-</template>
-
-<template id="tpl-infoA">
-  <div class="event-schedule">
-    <div class="event-note">
-      <span class="event-note-icon">⚠</span>
-      <span>Đây là giờ <b>Việt Nam</b>, không phải giờ In-game</span>
-    </div>
-    <div class="event-list">
-      <div class="event-row">
-        <div class="event-row-icon">📦</div>
-        <div class="event-row-body">
-          <div class="event-row-label">Resource Scramble</div>
-          <div class="event-row-desc">Nhặt hòm tiếp tế</div>
-        </div>
-        <div class="event-row-time">
-          <span class="event-day">T.2</span>
-          <span class="event-hour">19:00 – 20:30</span>
+      <div class="setting-row">
+        <span class="setting-label">BACKGROUND MUSIC (BGM)</span>
+        <input type="range" id="bgmSlider" class="cyber-slider" min="0" max="100" value="40">
+        <span id="bgmValue" class="setting-val">40%</span>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">SYSTEM EFFECTS (SFX)</span>
+        <input type="range" id="sfxSlider" class="cyber-slider" min="0" max="100" value="60">
+        <span id="sfxValue" class="setting-val">60%</span>
+      </div>
+      <div class="setting-row"
+        style="margin-top: 15px; display: flex; align-items: center; justify-content: space-between;">
+        <span class="setting-label">BACKGROUND MODE</span>
+        <div class="bg-mode-controls" style="display: flex; gap: 10px;">
+          <button id="btnMode3D" class="mode-btn"
+            style="padding: 5px 15px; border: 1px solid var(--hud-cyan, #00ffff); background: var(--hud-cyan, #00ffff); color: #000; cursor: pointer; font-weight: bold;">3D</button>
+          <button id="btnMode2D" class="mode-btn"
+            style="padding: 5px 15px; border: 1px solid var(--hud-cyan, #00ffff); background: transparent; color: var(--hud-cyan, #00ffff); cursor: pointer; font-weight: bold;">2D</button>
         </div>
       </div>
-      <div class="event-row">
-        <div class="event-row-icon">🛡️</div>
-        <div class="event-row-body">
-          <div class="event-row-label">Patrol</div>
-          <div class="event-row-desc">Tuần tra hàng ngày</div>
-        </div>
-        <div class="event-row-time">
-          <span class="event-day">Hằng ngày</span>
-          <span class="event-hour">19:00</span>
-        </div>
-      </div>
-      <div class="event-row">
-        <div class="event-row-icon">⚔️</div>
-        <div class="event-row-body">
-          <div class="event-row-label">Camp Invasion</div>
-          <div class="event-row-desc">Def camp – phòng thủ căn cứ</div>
-        </div>
-        <div class="event-row-time">
-          <span class="event-day">T.3</span>
-          <span class="event-hour">21:30</span>
-        </div>
-      </div>
-      <div class="event-row">
-        <div class="event-row-icon">💀</div>
-        <div class="event-row-body">
-          <div class="event-row-label">Boss Camp</div>
-          <div class="event-row-desc">Raid boss camp lớn</div>
-        </div>
-        <div class="event-row-time">
-          <span class="event-day">T.5</span>
-          <span class="event-hour">22:00</span>
+      <div class="setting-row" id="settingAccountRow"
+        style="margin-top: 15px; border-top: 1px solid rgba(0,255,255,0.1); padding-top: 15px;">
+        <span class="setting-label">ACCOUNT IDENTITY</span>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button id="btnManageAccount" class="mode-btn"
+            style="padding: 5px 12px; border: 1px solid var(--hud-cyan, #00ffff); background: transparent; color: var(--hud-cyan, #00ffff); cursor: pointer; font-size: 10px;">ESTABLISH
+            ID</button>
+          <button onclick="localStorage.removeItem('silverhand_user'); window.location.reload();" class="mode-btn"
+            style="padding: 5px 12px; border: 1px solid #ff3366; background: transparent; color: #ff3366; cursor: pointer; font-size: 10px;">DEBUG:
+            CLEAR AUTH</button>
+          <button
+            onclick="localStorage.removeItem('sao-dem-tutorial-done'); localStorage.removeItem('sao-dem-ctc-tutorial-done'); localStorage.removeItem('sao-dem-index-tutorial-done'); window.location.reload();"
+            class="mode-btn"
+            style="padding: 5px 12px; border: 1px solid #ff9d00; background: transparent; color: #ff9d00; cursor: pointer; font-size: 10px;">DEBUG:
+            RESET TUTORIALS</button>
         </div>
       </div>
     </div>
-  </div>
-</template>
+  </template>
 
-<template id="tpl-schedule">
-  <div class="schedule-container">
-    <div class="schedule-header">
-      <div class="schedule-title-wrap">
-        <div class="schedule-title">ALARM REGISTRY</div>
-        <div class="schedule-subtitle">// NEURAL NOTIFICATION SYNC</div>
+  <template id="tpl-infoA">
+    <div class="event-schedule">
+      <div class="event-note">
+        <span class="event-note-icon">⚠</span>
+        <span>Đây là giờ <b>Việt Nam</b>, không phải giờ In-game</span>
       </div>
-      <div class="schedule-status-tag">ACTIVE</div>
-    </div>
-
-    <div class="schedule-list">
-      <!-- Camp Resource Scramble -->
-      <div class="schedule-item">
-        <div class="schedule-icon"><i class="fa-solid fa-box-open"></i></div>
-        <div class="schedule-info">
-          <div class="schedule-name">Resource Scramble</div>
-          <div class="schedule-time">09:00 VN | <span class="highlight">EVERY WEEK</span></div>
-        </div>
-        <label class="game-switch">
-          <input type="checkbox" id="notify-resource-scramble" onchange="window.toggleNotification('resource-scramble', this.checked)">
-          <span class="switch-slider"></span>
-        </label>
-      </div>
-
-      <!-- Camp Invasion -->
-      <div class="schedule-group">
-        <div class="schedule-item main-item" onclick="window.toggleScheduleExpand(this)">
-          <div class="schedule-icon"><i class="fa-solid fa-shield-halved"></i></div>
-          <div class="schedule-info">
-            <div class="schedule-name">Camp Invasion</div>
-            <div class="schedule-time">21:30 VN | <span class="highlight">MULTI-ALARM</span></div>
+      <div class="event-list">
+        <div class="event-row">
+          <div class="event-row-icon">📦</div>
+          <div class="event-row-body">
+            <div class="event-row-label">Resource Scramble</div>
+            <div class="event-row-desc">Nhặt hòm tiếp tế</div>
           </div>
-          <div class="expand-arrow"><i class="fa-solid fa-chevron-down"></i></div>
+          <div class="event-row-time">
+            <span class="event-day">T.2</span>
+            <span class="event-hour">19:00 – 20:30</span>
+          </div>
+        </div>
+        <div class="event-row">
+          <div class="event-row-icon">🛡️</div>
+          <div class="event-row-body">
+            <div class="event-row-label">Patrol</div>
+            <div class="event-row-desc">Tuần tra hàng ngày</div>
+          </div>
+          <div class="event-row-time">
+            <span class="event-day">Hằng ngày</span>
+            <span class="event-hour">19:00</span>
+          </div>
+        </div>
+        <div class="event-row">
+          <div class="event-row-icon">⚔️</div>
+          <div class="event-row-body">
+            <div class="event-row-label">Camp Invasion</div>
+            <div class="event-row-desc">Def camp – phòng thủ căn cứ</div>
+          </div>
+          <div class="event-row-time">
+            <span class="event-day">T.3</span>
+            <span class="event-hour">21:30</span>
+          </div>
+        </div>
+        <div class="event-row">
+          <div class="event-row-icon">💀</div>
+          <div class="event-row-body">
+            <div class="event-row-label">Boss Camp</div>
+            <div class="event-row-desc">Raid boss camp lớn</div>
+          </div>
+          <div class="event-row-time">
+            <span class="event-day">T.5</span>
+            <span class="event-hour">22:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-schedule">
+    <div class="schedule-container">
+      <div class="schedule-header">
+        <div class="schedule-title-wrap">
+          <div class="schedule-title">ALARM REGISTRY</div>
+          <div class="schedule-subtitle">// NEURAL NOTIFICATION SYNC</div>
+        </div>
+        <div class="schedule-status-tag">ACTIVE</div>
+      </div>
+
+      <div class="schedule-list">
+        <!-- Camp Resource Scramble -->
+        <div class="schedule-item">
+          <div class="schedule-icon"><i class="fa-solid fa-box-open"></i></div>
+          <div class="schedule-info">
+            <div class="schedule-name">Resource Scramble</div>
+            <div class="schedule-time">09:00 INGAME | <span class="highlight">EVERY WEEK</span></div>
+          </div>
           <label class="game-switch">
-            <input type="checkbox" id="notify-camp-invasion" onchange="window.toggleMainNotification('camp-invasion', this.checked, ['camp-invasion-10h', 'camp-invasion-21h20'])">
+            <input type="checkbox" id="notify-resource-scramble"
+              onchange="window.toggleNotification('resource-scramble', this.checked)">
             <span class="switch-slider"></span>
           </label>
         </div>
-        <div class="schedule-details">
-          <div class="detail-item">
-            <div class="detail-label">Nhắc nhở buổi sáng (10:00 VN)</div>
-            <label class="game-switch mini">
-              <input type="checkbox" id="notify-camp-invasion-10h" onchange="window.toggleNotification('camp-invasion-10h', this.checked)">
+
+        <!-- Camp Invasion -->
+        <div class="schedule-group">
+          <div class="schedule-item main-item" onclick="window.toggleScheduleExpand(this)">
+            <div class="schedule-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="schedule-info">
+              <div class="schedule-name">Camp Invasion</div>
+              <div class="schedule-time">22:30 INGAME | <span class="highlight">MULTI-ALARM</span></div>
+            </div>
+            <div class="expand-arrow"><i class="fa-solid fa-chevron-down"></i></div>
+            <label class="game-switch">
+              <input type="checkbox" id="notify-camp-invasion"
+                onchange="window.toggleMainNotification('camp-invasion', this.checked, ['camp-invasion-10h', 'camp-invasion-21h20'])">
               <span class="switch-slider"></span>
             </label>
           </div>
-          <div class="detail-item">
-            <div class="detail-label">Nhắc nhở trước trận (21:20 VN)</div>
-            <label class="game-switch mini">
-              <input type="checkbox" id="notify-camp-invasion-21h20" onchange="window.toggleNotification('camp-invasion-21h20', this.checked)">
+          <div class="schedule-details">
+            <div class="detail-item">
+              <div class="detail-label">Morning reminder (11:00 INGAME)</div>
+              <label class="game-switch mini">
+                <input type="checkbox" id="notify-camp-invasion-10h"
+                  onchange="window.toggleNotification('camp-invasion-10h', this.checked)">
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Pre-battle reminder (22:20 INGAME)</div>
+              <label class="game-switch mini">
+                <input type="checkbox" id="notify-camp-invasion-21h20"
+                  onchange="window.toggleNotification('camp-invasion-21h20', this.checked)">
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Boss Camp -->
+        <div class="schedule-group">
+          <div class="schedule-item main-item" onclick="window.toggleScheduleExpand(this)">
+            <div class="schedule-icon"><i class="fa-solid fa-skull-crossbones"></i></div>
+            <div class="schedule-info">
+              <div class="schedule-name">Boss Camp</div>
+              <div class="schedule-time">23:00 INGAME | <span class="highlight">MULTI-ALARM</span></div>
+            </div>
+            <div class="expand-arrow"><i class="fa-solid fa-chevron-down"></i></div>
+            <label class="game-switch">
+              <input type="checkbox" id="notify-boss-camp"
+                onchange="window.toggleMainNotification('boss-camp', this.checked, ['boss-camp-10h', 'boss-camp-21h50'])">
               <span class="switch-slider"></span>
             </label>
+          </div>
+          <div class="schedule-details">
+            <div class="detail-item">
+              <div class="detail-label">Morning reminder (11:00 INGAME)</div>
+              <label class="game-switch mini">
+                <input type="checkbox" id="notify-boss-camp-10h"
+                  onchange="window.toggleNotification('boss-camp-10h', this.checked)">
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Pre-battle reminder (22:50 INGAME)</div>
+              <label class="game-switch mini">
+                <input type="checkbox" id="notify-boss-camp-21h50"
+                  onchange="window.toggleNotification('boss-camp-21h50', this.checked)">
+                <span class="switch-slider"></span>
+              </label>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Boss Camp -->
-      <div class="schedule-group">
-        <div class="schedule-item main-item" onclick="window.toggleScheduleExpand(this)">
-          <div class="schedule-icon"><i class="fa-solid fa-skull-crossbones"></i></div>
-          <div class="schedule-info">
-            <div class="schedule-name">Boss Camp</div>
-            <div class="schedule-time">22:00 VN | <span class="highlight">MULTI-ALARM</span></div>
-          </div>
-          <div class="expand-arrow"><i class="fa-solid fa-chevron-down"></i></div>
-          <label class="game-switch">
-            <input type="checkbox" id="notify-boss-camp" onchange="window.toggleMainNotification('boss-camp', this.checked, ['boss-camp-10h', 'boss-camp-21h50'])">
-            <span class="switch-slider"></span>
-          </label>
-        </div>
-        <div class="schedule-details">
-          <div class="detail-item">
-            <div class="detail-label">Nhắc nhở buổi sáng (10:00 VN)</div>
-            <label class="game-switch mini">
-              <input type="checkbox" id="notify-boss-camp-10h" onchange="window.toggleNotification('boss-camp-10h', this.checked)">
-              <span class="switch-slider"></span>
-            </label>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">Nhắc nhở trước trận (21:50 VN)</div>
-            <label class="game-switch mini">
-              <input type="checkbox" id="notify-boss-camp-21h50" onchange="window.toggleNotification('boss-camp-21h50', this.checked)">
-              <span class="switch-slider"></span>
-            </label>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="schedule-footer">
+      <div class="schedule-footer">
         <div class="footer-note">
-            <span class="pulse-dot"></span>
-            SYSTEM REQUIRES BROWSER NOTIFICATION PERMISSION
+          <span class="pulse-dot"></span>
+          SYSTEM REQUIRES BROWSER NOTIFICATION PERMISSION
         </div>
-    </div>
-  </div>
-</template>
-
-<template id="tpl-infoB">
-  <div class="ai-section">
-    <p class="ai-paragraph">
-      📌 <b>Sau bản update ngày <span class="highlight">31/12/2025</span></b>, hệ thống
-      <b>Cert</b> trong LifeAfter đã được <b>chia rõ rệt</b> và có nhiều cải tiến mới.
-    </p>
-    <p class="ai-paragraph">
-      Ngoài <b>Cert chính</b>, người chơi giờ đây có thể chọn thêm
-      <b class="neon-text">Cert Part-time (Cert phụ)</b>.
-    </p>
-    <div class="ai-warning">
-      ⚠️ <b>Lưu ý quan trọng:</b><br>
-      Cert phụ <u>không mở toàn bộ kỹ năng</u> của nghề đó.
-      Hệ thống chỉ cho phép chọn <b>một số skill cố định</b>.
-      <br><br>
-      👉 Ví dụ: Không thể vừa chơi nghề súng, vừa chế tạo giáp – súng như nghề chế.
-    </div>
-    <h3 class="ai-title">⚔️ Nghề cơ bản</h3>
-    <img src="assets/img/guide/cert/basic_skill.png" class="ai-img" alt="Basic Cert Skill">
-    <img src="assets/img/guide/cert/skill_path.png" class="ai-img" alt="Cert Skill Path">
-    <h3 class="ai-title">🧩 Nghề phụ (Cert Part-time)</h3>
-    <img src="assets/img/guide/cert/additional_skill.png" class="ai-img" alt="Additional Cert Skill">
-  </div>
-</template>
-
-<template id="tpl-infoC">
-  <div class="ai-content">
-    <div class="map-block">
-      <div class="map-title">SILENT PLAIN</div>
-      <div class="code-list">
-        <span class="code-chip">006</span>
-        <span class="code-chip">1205</span>
-        <span class="code-chip">3326</span>
-        <span class="code-chip">8254</span>
       </div>
     </div>
-    <div class="map-block">
-      <div class="map-title">MOUNT GRAY BEAR</div>
-      <div class="code-list">
-        <span class="code-chip">96</span>
-        <span class="code-chip">222</span>
-        <span class="code-chip">333</span>
-        <span class="code-chip">451</span>
-        <span class="code-chip">777</span>
+  </template>
+
+  <template id="tpl-infoB">
+    <div class="ai-section">
+      <p class="ai-paragraph">
+        📌 <b>Sau bản update ngày <span class="highlight">31/12/2025</span></b>, hệ thống
+        <b>Cert</b> trong LifeAfter đã được <b>chia rõ rệt</b> và có nhiều cải tiến mới.
+      </p>
+      <p class="ai-paragraph">
+        Ngoài <b>Cert chính</b>, người chơi giờ đây có thể chọn thêm
+        <b class="neon-text">Cert Part-time (Cert phụ)</b>.
+      </p>
+      <div class="ai-warning">
+        ⚠️ <b>Lưu ý quan trọng:</b><br>
+        Cert phụ <u>không mở toàn bộ kỹ năng</u> của nghề đó.
+        Hệ thống chỉ cho phép chọn <b>một số skill cố định</b>.
+        <br><br>
+        👉 Ví dụ: Không thể vừa chơi nghề súng, vừa chế tạo giáp – súng như nghề chế.
+      </div>
+      <h3 class="ai-title">⚔️ Nghề cơ bản</h3>
+      <img src="assets/img/guide/cert/basic_skill.png" class="ai-img" alt="Basic Cert Skill">
+      <img src="assets/img/guide/cert/skill_path.png" class="ai-img" alt="Cert Skill Path">
+      <h3 class="ai-title">🧩 Nghề phụ (Cert Part-time)</h3>
+      <img src="assets/img/guide/cert/additional_skill.png" class="ai-img" alt="Additional Cert Skill">
+    </div>
+  </template>
+
+  <template id="tpl-infoC">
+    <div class="ai-content">
+      <div class="map-block">
+        <div class="map-title">SILENT PLAIN</div>
+        <div class="code-list">
+          <span class="code-chip">006</span>
+          <span class="code-chip">1205</span>
+          <span class="code-chip">3326</span>
+          <span class="code-chip">8254</span>
+        </div>
+      </div>
+      <div class="map-block">
+        <div class="map-title">MOUNT GRAY BEAR</div>
+        <div class="code-list">
+          <span class="code-chip">96</span>
+          <span class="code-chip">222</span>
+          <span class="code-chip">333</span>
+          <span class="code-chip">451</span>
+          <span class="code-chip">777</span>
+        </div>
       </div>
     </div>
-  </div>
-</template>
+  </template>
 
-<template id="tpl-aboutMe">
-  <div class="bio-container">
-    <div class="bio-header">
-      <div class="bio-avatar-wrapper" style="cursor:pointer" id="bioAvatarTrigger">
-        <div class="bio-avatar-clip">
+  <template id="tpl-aboutMe">
+    <div class="bio-container">
+      <div class="bio-header">
+        <div class="bio-avatar-wrapper" style="cursor:pointer" id="bioAvatarTrigger">
+          <div class="bio-avatar-clip">
             <img src="assets/img/mayor_profile.gif" alt="Avatar">
             <div class="bio-avatar-scan"></div>
+          </div>
+        </div>
+        <div class="bio-main-info">
+          <div class="bio-name">Silver-Hand</div>
+          <div class="bio-title">Game ID: 30197479</div>
+
+          <div class="bio-stats-grid">
+            <div class="bio-stat-item">
+              <div class="bio-stat-label">Gender</div>
+              <div class="bio-stat-value">Male</div>
+            </div>
+            <div class="bio-stat-item">
+              <div class="bio-stat-label">Birth Date</div>
+              <div class="bio-stat-value">10-10-1997</div>
+            </div>
+            <div class="bio-stat-item">
+              <div class="bio-stat-label">Join Date</div>
+              <div class="bio-stat-value">15-03-2023</div>
+            </div>
+            <div class="bio-stat-item">
+              <div class="bio-stat-label">Server</div>
+              <div class="bio-stat-value">Labyrinth</div>
+            </div>
+            <div class="bio-stat-item">
+              <div class="bio-stat-label">Camp</div>
+              <div class="bio-stat-value">SAO-ĐÊM</div>
+            </div>
+            <div class="bio-stat-item">
+              <div class="bio-stat-label">Position</div>
+              <div class="bio-stat-value">Mayor</div>
+            </div>
+
+          </div>
         </div>
       </div>
-      <div class="bio-main-info">
-        <div class="bio-name">Silver-Hand</div>
-        <div class="bio-title">Game ID: 30197479</div>
-        
-        <div class="bio-stats-grid">
-            <div class="bio-stat-item">
-                <div class="bio-stat-label">Gender</div>
-                <div class="bio-stat-value">Male</div>
-            </div>
-            <div class="bio-stat-item">
-                <div class="bio-stat-label">Birth Date</div>
-                <div class="bio-stat-value">10-10-1997</div>
-            </div>
-            <div class="bio-stat-item">
-                <div class="bio-stat-label">Join Date</div>
-                <div class="bio-stat-value">15-03-2023</div>
-            </div>
-            <div class="bio-stat-item">
-                <div class="bio-stat-label">Server</div>
-                <div class="bio-stat-value">Labyrinth</div>
-            </div>
-            <div class="bio-stat-item">
-                <div class="bio-stat-label">Camp</div>
-                <div class="bio-stat-value">SAO-ĐÊM</div>
-            </div>
-            <div class="bio-stat-item">
-                <div class="bio-stat-label">Position</div>
-                <div class="bio-stat-value">Mayor</div>
-            </div>
-      
+
+      <div class="bio-section">
+        <div class="bio-section-title">
+          <span>Mission Statement</span>
+          <span style="opacity:0.4; font-size:9px">ACCESSED: 2026.03.26</span>
+        </div>
+        <div class="bio-text">
+          Vốn dĩ không phải là người chơi giỏi trong những tựa game bắn súng, tuy nhiên vẫn gắn bó vì nhiều lý do khác
+          nhau. Quan điểm trong việc tranh chấp đó là nhẫn nhịn. Lợi ích camp luôn được đặt lên hàng đầu.
         </div>
       </div>
-    </div>
 
-    <div class="bio-section">
-      <div class="bio-section-title">
-        <span>Mission Statement</span>
-        <span style="opacity:0.4; font-size:9px">ACCESSED: 2026.03.26</span>
+      <div class="bio-section">
+        <div class="bio-section-title">
+          <span>History Chronicle</span>
+          <span style="opacity:0.4; font-size:9px">ARCHIVE_01: STATUS CORE</span>
+        </div>
+
+        <div class="bio-chronicle">
+          <div class="chronicle-item">
+            <div class="chronicle-date">15-03-2023</div>
+            <div class="chronicle-event">Lần đầu đăng nhập game. Thuộc hệ người chơi <b>Chill</b> (Xây nhà & PVE).
+              <i>(Tạo acc trễ 6 tháng so với server)</i>.</div>
+          </div>
+          <div class="chronicle-item">
+            <div class="chronicle-date">17-03-2023</div>
+            <div class="chronicle-event">Gia nhập camp <b>SAO-ĐÊM</b> (Member). Chỉ chơi PVE và không quan tâm thế sự.
+            </div>
+          </div>
+          <div class="chronicle-item">
+            <div class="chronicle-date">03-07-2023</div>
+            <div class="chronicle-event">Bổ nhiệm làm <b>Official Camp</b>. Tập trung hoạt động nhỏ lẻ, ẩn mình và không
+              dính drama server.</div>
+          </div>
+          <div class="chronicle-item">
+            <div class="chronicle-date">CUỐI NĂM 2023</div>
+            <div class="chronicle-event">Lần đầu đạt danh hiệu <b>Golden Knight</b>.</div>
+          </div>
+          <div class="chronicle-item">
+            <div class="chronicle-date">NĂM 2024</div>
+            <div class="chronicle-event">Mở rộng quan hệ với dàn Official & Mayor. Bắt đầu hỗ trợ giúp đỡ các thành viên
+              trong camp.</div>
+          </div>
+          <div class="chronicle-item">
+            <div class="chronicle-date">THÁNG 10-2024</div>
+            <div class="chronicle-event">Camp chiến thắng <b>Shelter Land</b> đầu tiên và vẻ vang nhất server.</div>
+          </div>
+          <div class="chronicle-item">
+            <div class="chronicle-date">CUỐI THÁNG 12-2024</div>
+            <div class="chronicle-event">Chính thức trở thành <b>Mayor (Thị trưởng)</b>. Tập trung phát triển camp. Đạt
+              hạng <b>Diamond Knight</b>.</div>
+          </div>
+          <div class="chronicle-item">
+            <div class="chronicle-date">NĂM 2025</div>
+            <div class="chronicle-event">Bắt đầu tham gia đóng góp ý kiến về đồng minh, nhưng vẫn ưu tiên <b>Camp
+                SAO-ĐÊM</b> lên hàng đầu.</div>
+          </div>
+          <div class="chronicle-item">
+            <div class="chronicle-date">THÁNG 08-2025</div>
+            <div class="chronicle-event"><b>Mở cửa Quốc tế</b>: Cho phép người nước ngoài gia nhập để chuẩn bị cho
+              Shelter Land.</div>
+          </div>
+          <div class="chronicle-item">
+            <div class="chronicle-date">ĐẦU NĂM 2026</div>
+            <div class="chronicle-event">Camp SAO-ĐÊM đạt danh hiệu <b>Shelter Land</b> lần thứ 2.</div>
+          </div>
+        </div>
       </div>
-      <div class="bio-text">
-        Vốn dĩ không phải là người chơi giỏi trong những tựa game bắn súng, tuy nhiên vẫn gắn bó vì nhiều lý do khác nhau. Quan điểm trong việc tranh chấp đó là nhẫn nhịn. Lợi ích camp luôn được đặt lên hàng đầu.
+
+      <div class="bio-footer">
+        SYSTEM_ID: 30197479 | AUTHORIZED BY MAYOR
       </div>
     </div>
+  </template>
 
-    <div class="bio-section">
-      <div class="bio-section-title">
-        <span>History Chronicle</span>
-        <span style="opacity:0.4; font-size:9px">ARCHIVE_01: STATUS CORE</span>
-      </div>
-      
-      <div class="bio-chronicle">
-          <div class="chronicle-item">
-              <div class="chronicle-date">15-03-2023</div>
-              <div class="chronicle-event">Lần đầu đăng nhập game. Thuộc hệ người chơi <b>Chill</b> (Xây nhà & PVE). <i>(Tạo acc trễ 6 tháng so với server)</i>.</div>
-          </div>
-          <div class="chronicle-item">
-              <div class="chronicle-date">17-03-2023</div>
-              <div class="chronicle-event">Gia nhập camp <b>SAO-ĐÊM</b> (Member). Chỉ chơi PVE và không quan tâm thế sự.</div>
-          </div>
-          <div class="chronicle-item">
-              <div class="chronicle-date">03-07-2023</div>
-              <div class="chronicle-event">Bổ nhiệm làm <b>Official Camp</b>. Tập trung hoạt động nhỏ lẻ, ẩn mình và không dính drama server.</div>
-          </div>
-          <div class="chronicle-item">
-              <div class="chronicle-date">CUỐI NĂM 2023</div>
-              <div class="chronicle-event">Lần đầu đạt danh hiệu <b>Golden Knight</b>.</div>
-          </div>
-          <div class="chronicle-item">
-              <div class="chronicle-date">NĂM 2024</div>
-              <div class="chronicle-event">Mở rộng quan hệ với dàn Official & Mayor. Bắt đầu hỗ trợ giúp đỡ các thành viên trong camp.</div>
-          </div>
-          <div class="chronicle-item">
-              <div class="chronicle-date">THÁNG 10-2024</div>
-              <div class="chronicle-event">Camp chiến thắng <b>Shelter Land</b> đầu tiên và vẻ vang nhất server.</div>
-          </div>
-          <div class="chronicle-item">
-              <div class="chronicle-date">CUỐI THÁNG 12-2024</div>
-              <div class="chronicle-event">Chính thức trở thành <b>Mayor (Thị trưởng)</b>. Tập trung phát triển camp. Đạt hạng <b>Diamond Knight</b>.</div>
-          </div>
-          <div class="chronicle-item">
-              <div class="chronicle-date">NĂM 2025</div>
-              <div class="chronicle-event">Bắt đầu tham gia đóng góp ý kiến về đồng minh, nhưng vẫn ưu tiên <b>Camp SAO-ĐÊM</b> lên hàng đầu.</div>
-          </div>
-          <div class="chronicle-item">
-              <div class="chronicle-date">THÁNG 08-2025</div>
-              <div class="chronicle-event"><b>Mở cửa Quốc tế</b>: Cho phép người nước ngoài gia nhập để chuẩn bị cho Shelter Land.</div>
-          </div>
-          <div class="chronicle-item">
-              <div class="chronicle-date">ĐẦU NĂM 2026</div>
-              <div class="chronicle-event">Camp SAO-ĐÊM đạt danh hiệu <b>Shelter Land</b> lần thứ 2.</div>
-          </div>
-      </div>
-    </div>
-
-    <div class="bio-footer">
-      SYSTEM_ID: 30197479 | AUTHORIZED BY MAYOR
-    </div>
-  </div>
-</template>
-
-<template id="tpl-news">
+  <template id="tpl-news">
     <div class="news-lang-wrapper" id="newsLangWrapper" style="display: none;">
-        <select id="newsLangSelect" class="news-lang-select">
-            <option value="en">🇺🇸 ENGLISH</option>
-            <option value="vi">🇻🇳 VIETNAMESE</option>
-        </select>
+      <select id="newsLangSelect" class="news-lang-select">
+        <option value="en">🇺🇸 ENGLISH</option>
+        <option value="vi">🇻🇳 VIETNAMESE</option>
+      </select>
     </div>
     <div class="news-container" id="newsContainer"></div>
     <div class="news-detail-view" id="newsDetail">
-        <button class="news-back-btn" id="newsBackBtn">Back</button>
-        <div class="news-detail-body" id="newsDetailBody"></div>
+      <button class="news-back-btn" id="newsBackBtn">Back</button>
+      <div class="news-detail-body" id="newsDetailBody"></div>
     </div>
-</template>
+  </template>
 
-<!-- Bio Gallery Overlay -->
-<div class="bio-gallery-overlay" id="bioGallery">
+  <!-- Bio Gallery Overlay -->
+  <div class="bio-gallery-overlay" id="bioGallery">
     <div class="gallery-screen">
-        <div class="gallery-close" id="closeGallery">Close System</div>
-        <div class="gallery-nav prev" id="prevGallery">Prev</div>
-        <img src="" class="gallery-image" id="galleryImg">
-        <div class="gallery-nav next" id="nextGallery">Next</div>
+      <div class="gallery-close" id="closeGallery">Close System</div>
+      <div class="gallery-nav prev" id="prevGallery">Prev</div>
+      <img src="" class="gallery-image" id="galleryImg">
+      <div class="gallery-nav next" id="nextGallery">Next</div>
     </div>
-</div>
+  </div>
 
-<script src="assets/js/loading.js"></script>
-<script src="assets/js/heartlock_zone_info.js"></script>
-<script src="assets/js/rpg_chat.js"></script>
-<script src="assets/js/vn_engine.js"></script>
-<script src="assets/js/index_main.js"></script>
-<script src="assets/js/auth_vn.js"></script>
-<script src="assets/js/index-tutorial.js"></script>
-<script src="assets/js/blog_slider.js"></script>
+  <script src="assets/js/loading.js"></script>
+  <script src="assets/js/heartlock_zone_info.js"></script>
+  <script src="assets/js/rpg_chat.js"></script>
+  <script src="assets/js/vn_engine.js"></script>
+  <script src="assets/js/index_main.js"></script>
+  <script src="assets/js/auth_vn.js"></script>
+  <script src="assets/js/index-tutorial.js"></script>
+  <script src="assets/js/blog_slider.js"></script>
 
-<audio id="bgmAudio" loop src="assets/sounds/abyss_theme.mp3" preload="auto"></audio>
+  <audio id="bgmAudio" loop src="assets/sounds/abyss_theme.mp3" preload="auto"></audio>
 
 </body>
+
 </html>

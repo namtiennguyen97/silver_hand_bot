@@ -158,7 +158,8 @@ function openModalByKey(key) {
 }
 
 const optionActions = {
-    "Event Time": () => openModalByKey("infoA"),
+    "Event Time": () => window.location.href = "schedule.html",
+
     "Heart Lock Zone Code": () => openModalByKey("infoC"),
     "About me": () => {
         openModalByKey("aboutMe");
@@ -302,7 +303,8 @@ function initGamingHUD() {
 
     withEffect(btnNotice, () => { openModalByKey("news"); fetchNews(); });
     withEffect(btnMail, () => showRPGChat("No new tactical messages in your decrypted inbox.", 'assets/img/mayor_5.png', 'Silver-Hand'));
-    withEffect(btnActivities, () => openModalByKey("infoA"));
+    withEffect(btnActivities, () => window.location.href = 'schedule.html');
+
 
     window.bgmVolume = parseFloat(localStorage.getItem('pgrBgmVolume') || '0.4');
     window.sfxVolume = parseFloat(localStorage.getItem('pgrSfxVolume') || '0.6');

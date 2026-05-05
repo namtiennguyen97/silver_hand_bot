@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ALARM REGISTRY // SAO-ĐÊM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/jpeg" href="assets/img/mayor_avatar.jpg">
+    <link rel="apple-touch-icon" href="assets/img/mayor_avatar.jpg">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="assets/css/ctc-tutorial-fixed.css">
+    <!-- Base styles for consistency -->
+
+    <link rel="stylesheet" href="assets/css/bundle_index.css">
+    <!-- Premium Schedule Styles -->
+    <link rel="stylesheet" href="assets/css/schedule_premium.css">
+    <!-- RPG Chat Styles -->
+    <link rel="stylesheet" href="assets/css/rpg_chat.css">
+</head>
+
+
+<body class="schedule-page">
+    <div class="bg-overlay"></div>
+    <div class="scanlines"></div>
+    <div class="cyber-bg" id="cyberBg"></div>
+
+
+    <!-- Tutorial Overlay -->
+    <div id="tutorial-overlay">
+        <div id="spotlight"></div>
+    </div>
+
+    <!-- Help Button -->
+
+    <button class="help-fab" id="helpBtn" title="How to use?">
+        <i class="fa-solid fa-question"></i>
+    </button>
+
+    <!-- RPG Chat Overlay (Copied from index.html) -->
+    <div id="rpgChatOverlay">
+        <div class="rpg-chat-box">
+            <div class="rpg-corner top-left"></div>
+            <div class="rpg-corner bottom-right"></div>
+            <div class="rpg-speaker-tag" id="rpgSpeakerName">Silver-Hand</div>
+            <div class="rpg-avatar">
+                <img src="assets/img/mayor_5.png" alt="Avatar">
+                <div class="avatar-scanline"></div>
+            </div>
+            <div class="rpg-chat-content-wrapper">
+                <div class="rpg-chat-content" id="rpgChatContent"></div>
+                <div class="rpg-next-indicator" id="rpgNextIndicator">▼</div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-wrapper">
+        <a disabled class="back-link">
+            <i class="fa-solid fa-arrow-left"></i> RETURN TO HUB <span class="highlight">(Locked)</span>
+        </a>
+
+        <div class="schedule-container">
+            <div class="schedule-header">
+                <div class="schedule-title-wrap">
+                    <div class="schedule-title">CAMP EVENT REGISTRY</div>
+                    <div class="schedule-subtitle">// Require browser notification permission</div>
+                </div>
+                <div class="schedule-status-tag">ACTIVE</div>
+            </div>
+
+            <div class="schedule-list">
+                <!-- Camp Resource Scramble -->
+                <div class="schedule-item">
+                    <div class="schedule-icon"><i class="fa-solid fa-box-open"></i></div>
+                    <div class="schedule-info">
+                        <div class="schedule-name">Resource Scramble</div>
+                        <div class="schedule-time"><span class="highlight">MON:</span> Random 19:00 - 21:30 INGAME</div>
+                    </div>
+                    <label class="game-switch">
+                        <input type="checkbox" id="notify-resource-scramble"
+                            onchange="window.toggleNotification('resource-scramble', this.checked)">
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Camp Invasion -->
+                <div class="schedule-group">
+                    <div class="schedule-item main-item" onclick="window.toggleScheduleExpand(this)">
+                        <div class="schedule-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="schedule-info">
+                            <div class="schedule-name">Camp Invasion</div>
+                            <div class="schedule-time"><span class="highlight">TUE :</span> 22:30 INGAME | <span
+                                    class="highlight">MULTI-ALARM</span>
+                            </div>
+                        </div>
+                        <div class="expand-arrow"><i class="fa-solid fa-chevron-down"></i></div>
+                        <label class="game-switch">
+                            <input type="checkbox" id="notify-camp-invasion"
+                                onchange="window.toggleMainNotification('camp-invasion', this.checked, ['camp-invasion-10h', 'camp-invasion-21h20'])">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                    <div class="schedule-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Morning reminder (11:00 INGAME)</div>
+                            <label class="game-switch mini">
+                                <input type="checkbox" id="notify-camp-invasion-10h"
+                                    onchange="window.toggleNotification('camp-invasion-10h', this.checked)">
+                                <span class="switch-slider"></span>
+                            </label>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Pre-battle reminder (22:20 INGAME)</div>
+                            <label class="game-switch mini">
+                                <input type="checkbox" id="notify-camp-invasion-21h20"
+                                    onchange="window.toggleNotification('camp-invasion-21h20', this.checked)">
+                                <span class="switch-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Boss Camp -->
+                <div class="schedule-group">
+                    <div class="schedule-item main-item" onclick="window.toggleScheduleExpand(this)">
+                        <div class="schedule-icon"><i class="fa-solid fa-skull-crossbones"></i></div>
+                        <div class="schedule-info">
+                            <div class="schedule-name">Boss Camp</div>
+                            <div class="schedule-time"><span class="highlight">THU : </span>23:00 INGAME | <span
+                                    class="highlight">MULTI-ALARM</span></div>
+                        </div>
+                        <div class="expand-arrow"><i class="fa-solid fa-chevron-down"></i></div>
+                        <label class="game-switch">
+                            <input type="checkbox" id="notify-boss-camp"
+                                onchange="window.toggleMainNotification('boss-camp', this.checked, ['boss-camp-10h', 'boss-camp-21h50'])">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                    <div class="schedule-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Morning reminder (11:00 INGAME)</div>
+                            <label class="game-switch mini">
+                                <input type="checkbox" id="notify-boss-camp-10h"
+                                    onchange="window.toggleNotification('boss-camp-10h', this.checked)">
+                                <span class="switch-slider"></span>
+                            </label>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Pre-battle reminder (22:50 INGAME)</div>
+                            <label class="game-switch mini">
+                                <input type="checkbox" id="notify-boss-camp-21h50"
+                                    onchange="window.toggleNotification('boss-camp-21h50', this.checked)">
+                                <span class="switch-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="schedule-footer">
+                <div class="footer-note">
+                    <span class="pulse-dot"></span>
+                    SYSTEM REQUIRES BROWSER NOTIFICATION PERMISSION
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/rpg_chat.js"></script>
+    <script src="assets/js/schedule_main.js"></script>
+
+</body>
+
+</html>

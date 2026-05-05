@@ -272,3 +272,166 @@ input:checked + .switch-slider:before {
 .game-switch.mini input:checked + .switch-slider:before {
     transform: translateX(18px);
 }
+
+/* --- STANDALONE PAGE STYLES --- */
+body.schedule-page {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+}
+
+.schedule-page .bg-overlay {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(0, 15, 25, 0.9) 0%, #000 100%);
+    z-index: -2;
+}
+
+/* Cyber Squares Background */
+.cyber-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.cyber-square {
+    position: absolute;
+    background: rgba(0, 255, 255, 0.15);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+    animation: float-up linear infinite;
+    pointer-events: none;
+}
+
+@keyframes float-up {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.6;
+    }
+    90% {
+        opacity: 0.6;
+    }
+    100% {
+        transform: translateY(-20vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+
+.schedule-page .scanlines {
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 255, 0.02) 2px,
+        rgba(0, 255, 255, 0.02) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+}
+
+.schedule-page .container-wrapper {
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+    position: relative;
+    z-index: 5;
+    animation: content-slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.schedule-page .schedule-container {
+    background: rgba(0, 15, 20, 0.9);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    box-shadow: 
+        0 0 30px rgba(0, 255, 255, 0.1),
+        inset 0 0 20px rgba(0, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+}
+
+@keyframes content-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes footer-pulse {
+    0% { opacity: 0.4; box-shadow: 0 0 2px #00ffff; }
+    50% { opacity: 1; box-shadow: 0 0 10px #00ffff; }
+    100% { opacity: 0.4; box-shadow: 0 0 2px #00ffff; }
+}
+
+/* Back Button for Standalone */
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(0, 255, 255, 0.6);
+    text-decoration: none;
+    font-size: 10px;
+    font-family: 'Orbitron', sans-serif;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+}
+
+.back-link:hover {
+    color: #00ffff;
+    transform: translateX(-5px);
+}
+
+/* Help FAB */
+.help-fab {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(0, 255, 255, 0.1);
+    border: 2px solid #00ffff;
+    color: #00ffff;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.help-fab:hover {
+    background: #00ffff;
+    color: #000;
+    box-shadow: 0 0 25px #00ffff;
+    transform: scale(1.1) rotate(15deg);
+}
+
+.help-fab i {
+    filter: drop-shadow(0 0 5px currentColor);
+}
+
+/* Tutorial Lock */
+body.tutorial-lock {
+    overflow: hidden;
+}
+
+

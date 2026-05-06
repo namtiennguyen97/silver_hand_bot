@@ -1,6 +1,10 @@
-import { put, list, del } from "@vercel/blob";
+import { createClient } from '@supabase/supabase-js'
 
-const WORKSPACE_PREFIX = "ctc/workspace-";
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+)
+
 const CATEGORIES = [
     "Attack team 1",
     "Beacon team 2",
@@ -37,95 +41,6 @@ function sanitizePayload(body) {
     };
 }
 
-async function getWorkspaceUrl(workspaceName) {
-    const pathname = workspaceName === "Main-Plan" ? "ctc-shared-state.json" : `${WORKSPACE_PREFIX}${workspaceName}.json`;
-    const result = await list({
-        prefix: pathname,
-        limit: 1
-    });
-    const found = result?.blobs?.find(b => b.pathname === pathname);
-    return found?.url || null;
-}
-
-async function readWorkspace(workspaceName) {
-    const url = await getWorkspaceUrl(workspaceName);
-    if (!url) return null;
-
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) return null;
-
-    return await res.json();
-}
-
-async function writeWorkspace(workspaceName, payload) {
-    const pathname = workspaceName === "Main-Plan" ? "ctc-shared-state.json" : `${WORKSPACE_PREFIX}${workspaceName}.json`;
-    const json = JSON.stringify(payload);
-
-    const blob = await put(pathname, json, {
-        access: "public",
-        addRandomSuffix: false,
-        contentType: "application/json; charset=utf-8",
-        allowOverwrite: true
-    });
-
-    return blob;
-}
-
-async function listWorkspaces() {
-    const result = await list({
-        prefix: WORKSPACE_PREFIX
-    });
-
-    const workspaces = await Promise.all(result.blobs.map(async b => {
-        const name = b.pathname.replace(WORKSPACE_PREFIX, "").replace(".json", "");
-        
-        // Peek at content to check if protected (Best effort)
-        let protectedWorkspace = false;
-        let note = null;
-        try {
-            const data = await (await fetch(b.url, { cache: "no-store" })).json();
-            if (data.password) protectedWorkspace = true;
-            if (data.note) note = data.note;
-        } catch (e) {}
-
-        return {
-            name,
-            displayName: name === "Main-Plan" ? "Public Plan" : name,
-            pathname: b.pathname,
-            uploadedAt: b.uploadedAt,
-            size: b.size,
-            protected: protectedWorkspace,
-            note: note
-        };
-    }));
-
-    // Legacy check
-    const legacyResult = await list({ prefix: "ctc-shared-state.json", limit: 1 });
-    const legacyBlob = legacyResult?.blobs?.find(b => b.pathname === "ctc-shared-state.json");
-    if (legacyBlob && !workspaces.find(w => w.name === "Main-Plan")) {
-        let legacyProtected = false;
-        let legacyNote = null;
-        try {
-            const data = await (await fetch(legacyBlob.url, { cache: "no-store" })).json();
-            if (data.password) legacyProtected = true;
-            if (data.note) legacyNote = data.note;
-        } catch (e) {}
-
-        workspaces.push({
-            name: "Main-Plan",
-            displayName: "Public Plan",
-            pathname: legacyBlob.pathname,
-            uploadedAt: legacyBlob.uploadedAt,
-            size: legacyBlob.size,
-            isLegacy: true,
-            protected: legacyProtected,
-            note: legacyNote
-        });
-    }
-
-    return workspaces;
-}
-
 export default async function handler(req, res) {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS,DELETE");
@@ -142,11 +57,20 @@ export default async function handler(req, res) {
     try {
         if (req.method === "GET") {
             if (workspaceName) {
-                const data = await readWorkspace(workspaceName);
+                const { data, error } = await supabase
+                    .from('ctc_plans')
+                    .select('*')
+                    .eq('name', workspaceName)
+                    .single();
+
+                if (error && error.code !== 'PGRST116') throw error; // PGRST116 is 'No rows found'
+                
                 if (!data) return res.status(200).json({ ok: true, data: null });
 
+                const payload = data.data;
+
                 // Verify password if set
-                if (data.password && data.password !== providedPassword) {
+                if (payload.password && payload.password !== providedPassword) {
                     return res.status(200).json({
                         ok: true,
                         data: { requiresPassword: true }
@@ -154,17 +78,32 @@ export default async function handler(req, res) {
                 }
 
                 // Remove password from returned data for security
-                delete data.password;
+                delete payload.password;
 
                 return res.status(200).json({
                     ok: true,
-                    data: data
+                    data: payload
                 });
             } else {
-                const list = await listWorkspaces();
+                // List all workspaces
+                const { data, error } = await supabase
+                    .from('ctc_plans')
+                    .select('name, updated_at, data')
+                    .order('updated_at', { ascending: false });
+
+                if (error) throw error;
+
+                const workspaces = (data || []).map(row => ({
+                    name: row.name,
+                    displayName: row.name === "Main-Plan" ? "Public Plan" : row.name,
+                    uploadedAt: row.updated_at,
+                    protected: !!row.data.password,
+                    note: row.data.note
+                }));
+
                 return res.status(200).json({
                     ok: true,
-                    data: list
+                    data: workspaces
                 });
             }
         }
@@ -175,7 +114,16 @@ export default async function handler(req, res) {
             }
 
             const payload = sanitizePayload(req.body);
-            await writeWorkspace(workspaceName, payload);
+            
+            const { error } = await supabase
+                .from('ctc_plans')
+                .upsert({ 
+                    name: workspaceName, 
+                    data: payload,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'name' });
+
+            if (error) throw error;
 
             return res.status(200).json({
                 ok: true,
@@ -187,10 +135,14 @@ export default async function handler(req, res) {
             if (!workspaceName) {
                 return res.status(400).json({ ok: false, error: "Missing workspace name" });
             }
-            const url = await getWorkspaceUrl(workspaceName);
-            if (url) {
-                await del(url);
-            }
+
+            const { error } = await supabase
+                .from('ctc_plans')
+                .delete()
+                .eq('name', workspaceName);
+
+            if (error) throw error;
+
             return res.status(200).json({ ok: true });
         }
 

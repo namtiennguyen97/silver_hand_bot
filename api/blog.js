@@ -1,13 +1,31 @@
-import { put, list, del } from '@vercel/blob';
+import { put, del } from '@vercel/blob';
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+)
 
 export const config = {
   runtime: 'nodejs',
 };
 
-const METADATA_PATH = 'blog/metadata.json';
+// Helper to map DB record to Frontend object
+function mapPost(post) {
+    return {
+        id: post.id.toString(),
+        title: post.title,
+        category: post.category,
+        description: post.description,
+        imageUrl: post.image_url,
+        isFeatured: post.is_featured,
+        views: post.views,
+        createdAt: post.created_at,
+        updatedAt: post.updated_at
+    };
+}
 
 export default async function handler(req, res) {
-    // Enable CORS
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -16,24 +34,19 @@ export default async function handler(req, res) {
         'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
     );
 
-    if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
-    }
+    if (req.method === 'OPTIONS') return res.status(200).end();
 
     const { method } = req;
 
     try {
         if (method === 'GET') {
-            const { blobs } = await list({ prefix: METADATA_PATH });
-            if (blobs.length === 0) {
-                return res.status(200).json([]);
-            }
-            // Find the one that matches METADATA_PATH exactly or just the latest
-            const latest = blobs.find(b => b.pathname === METADATA_PATH) || blobs[0];
-            const response = await fetch(latest.url);
-            const data = await response.json();
-            return res.status(200).json(data);
+            const { data, error } = await supabase
+                .from('blog_posts')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            return res.status(200).json((data || []).map(mapPost));
         }
 
         if (method === 'POST') {
@@ -49,141 +62,94 @@ export default async function handler(req, res) {
                 imageUrl = blob.url;
             }
 
-            let posts = [];
-            const { blobs } = await list({ prefix: METADATA_PATH });
-            const existingBlob = blobs.find(b => b.pathname === METADATA_PATH);
-            if (existingBlob) {
-                const resp = await fetch(existingBlob.url);
-                posts = await resp.json();
-            }
+            const { data, error } = await supabase
+                .from('blog_posts')
+                .insert({
+                    title: title || 'No Title',
+                    category: category || 'General',
+                    description: description || '',
+                    image_url: imageUrl,
+                    is_featured: isFeatured || false,
+                    views: 0
+                })
+                .select()
+                .single();
 
-            const newPost = {
-                id: Date.now().toString(),
-                title: title || 'No Title',
-                category: category || 'General',
-                description: description || '',
-                imageUrl,
-                isFeatured: isFeatured || false,
-                views: 0,
-                createdAt: new Date().toISOString(),
-            };
-
-            posts.unshift(newPost);
-
-            await put(METADATA_PATH, JSON.stringify(posts), {
-                access: 'public',
-                addRandomSuffix: false,
-                addOverwrite: true,
-                allowOverwrite: true, // Thêm cả 2 để đảm bảo tương thích
-            });
-
-            return res.status(201).json(newPost);
+            if (error) throw error;
+            return res.status(201).json(mapPost(data));
         }
 
         if (method === 'PUT') {
             const { id, title, category, description, imageBase64, imageName, isFeatured } = req.body;
             
-            const { blobs } = await list({ prefix: METADATA_PATH });
-            const existingBlob = blobs.find(b => b.pathname === METADATA_PATH);
-            if (!existingBlob) return res.status(404).json({ error: 'Metadata not found' });
-            
-            const resp = await fetch(existingBlob.url);
-            let posts = await resp.json();
+            const { data: current, error: fetchError } = await supabase
+                .from('blog_posts')
+                .select('*')
+                .eq('id', id)
+                .single();
 
-            const postIndex = posts.findIndex(p => p.id === id);
-            if (postIndex === -1) return res.status(404).json({ error: 'Post not found' });
+            if (fetchError) return res.status(404).json({ error: 'Post not found' });
 
+            let imageUrl = current.image_url;
             if (imageBase64) {
-                // Try to delete old image if it's a blob URL
-                if (posts[postIndex].imageUrl && posts[postIndex].imageUrl.includes('public.blob.vercel-storage.com')) {
-                    try { await del(posts[postIndex].imageUrl); } catch(e) { console.error("Del error", e); }
+                if (imageUrl && imageUrl.includes('public.blob.vercel-storage.com')) {
+                    try { await del(imageUrl); } catch(e) {}
                 }
                 const buffer = Buffer.from(imageBase64.split(',')[1], 'base64');
                 const randomId = Math.random().toString(36).substring(2, 7);
                 const blob = await put(`blog/images/${Date.now()}-${randomId}-${imageName || 'image.png'}`, buffer, { access: 'public' });
-                posts[postIndex].imageUrl = blob.url;
+                imageUrl = blob.url;
             }
 
-            posts[postIndex] = {
-                ...posts[postIndex],
-                title: title || posts[postIndex].title,
-                category: category || posts[postIndex].category,
-                description: description || posts[postIndex].description,
-                isFeatured: isFeatured !== undefined ? isFeatured : posts[postIndex].isFeatured,
-                updatedAt: new Date().toISOString(),
-            };
+            const { data, error } = await supabase
+                .from('blog_posts')
+                .update({
+                    title: title || current.title,
+                    category: category || current.category,
+                    description: description || current.description,
+                    image_url: imageUrl,
+                    is_featured: isFeatured !== undefined ? isFeatured : current.is_featured,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', id)
+                .select()
+                .single();
 
-            await put(METADATA_PATH, JSON.stringify(posts), {
-                access: 'public',
-                addRandomSuffix: false,
-                addOverwrite: true,
-                allowOverwrite: true,
-            });
-
-            return res.status(200).json(posts[postIndex]);
+            if (error) throw error;
+            return res.status(200).json(mapPost(data));
         }
 
         if (method === 'DELETE') {
             const { id } = req.query;
-            
-            const { blobs } = await list({ prefix: METADATA_PATH });
-            const existingBlob = blobs.find(b => b.pathname === METADATA_PATH);
-            if (!existingBlob) return res.status(404).json({ error: 'Metadata not found' });
-            
-            const resp = await fetch(existingBlob.url);
-            let posts = await resp.json();
+            const { data: post, error: fetchError } = await supabase.from('blog_posts').select('image_url').eq('id', id).single();
+            if (fetchError) return res.status(404).json({ error: 'Post not found' });
 
-            const postIndex = posts.findIndex(p => p.id === id);
-            if (postIndex === -1) return res.status(404).json({ error: 'Post not found' });
-
-            const post = posts[postIndex];
-
-            // Delete image
-            if (post.imageUrl && post.imageUrl.includes('public.blob.vercel-storage.com')) {
-                try { await del(post.imageUrl); } catch(e) { console.error("Del error", e); }
+            if (post.image_url && post.image_url.includes('public.blob.vercel-storage.com')) {
+                try { await del(post.image_url); } catch(e) {}
             }
 
-            posts.splice(postIndex, 1);
-
-            await put(METADATA_PATH, JSON.stringify(posts), {
-                access: 'public',
-                addRandomSuffix: false,
-                addOverwrite: true,
-                allowOverwrite: true,
-            });
-
+            const { error } = await supabase.from('blog_posts').delete().eq('id', id);
+            if (error) throw error;
             return res.status(200).json({ message: 'Deleted' });
         }
 
         if (method === 'PATCH') {
-            // Increment view count for a post
             const { id } = req.body;
-            if (!id) return res.status(400).json({ error: 'Missing post id' });
+            const { data, error: fetchError } = await supabase.from('blog_posts').select('views').eq('id', id).single();
+            if (fetchError) throw fetchError;
 
-            const { blobs } = await list({ prefix: METADATA_PATH });
-            const existingBlob = blobs.find(b => b.pathname === METADATA_PATH);
-            if (!existingBlob) return res.status(404).json({ error: 'Metadata not found' });
+            const { data: updated, error } = await supabase
+                .from('blog_posts')
+                .update({ views: (data.views || 0) + 1 })
+                .eq('id', id)
+                .select('views')
+                .single();
 
-            const resp = await fetch(existingBlob.url);
-            let posts = await resp.json();
-
-            const postIndex = posts.findIndex(p => p.id === id);
-            if (postIndex === -1) return res.status(404).json({ error: 'Post not found' });
-
-            posts[postIndex].views = (posts[postIndex].views || 0) + 1;
-
-            await put(METADATA_PATH, JSON.stringify(posts), {
-                access: 'public',
-                addRandomSuffix: false,
-                addOverwrite: true,
-                allowOverwrite: true,
-            });
-
-            return res.status(200).json({ views: posts[postIndex].views });
+            if (error) throw error;
+            return res.status(200).json({ views: updated.views });
         }
 
         return res.status(405).json({ error: 'Method not allowed' });
-
     } catch (error) {
         console.error('Blog API Error:', error);
         return res.status(500).json({ error: error.message });

@@ -405,8 +405,8 @@
     <div class="schedule-container">
       <div class="schedule-header">
         <div class="schedule-title-wrap">
-          <div class="schedule-title">ALARM REGISTRY</div>
-          <div class="schedule-subtitle">// NEURAL NOTIFICATION SYNC</div>
+          <div class="schedule-title">SAO-ĐÊM // CAMP EVENT REGISTRY</div>
+          <div class="schedule-subtitle">// Require browser notification permission</div>
         </div>
         <div class="schedule-status-tag">ACTIVE</div>
       </div>
@@ -417,7 +417,7 @@
           <div class="schedule-icon"><i class="fa-solid fa-box-open"></i></div>
           <div class="schedule-info">
             <div class="schedule-name">Resource Scramble</div>
-            <div class="schedule-time">09:00 INGAME | <span class="highlight">EVERY WEEK</span></div>
+            <div class="schedule-time"><span class="highlight">MON:</span> Random 19:00 - 21:30 INGAME</div>
           </div>
           <label class="game-switch">
             <input type="checkbox" id="notify-resource-scramble"
@@ -432,7 +432,9 @@
             <div class="schedule-icon"><i class="fa-solid fa-shield-halved"></i></div>
             <div class="schedule-info">
               <div class="schedule-name">Camp Invasion</div>
-              <div class="schedule-time">22:30 INGAME | <span class="highlight">MULTI-ALARM</span></div>
+              <div class="schedule-time"><span class="highlight">TUE :</span> 22:30 INGAME | <span
+                  class="highlight">MULTI-ALARM</span>
+              </div>
             </div>
             <div class="expand-arrow"><i class="fa-solid fa-chevron-down"></i></div>
             <label class="game-switch">
@@ -467,7 +469,8 @@
             <div class="schedule-icon"><i class="fa-solid fa-skull-crossbones"></i></div>
             <div class="schedule-info">
               <div class="schedule-name">Boss Camp</div>
-              <div class="schedule-time">23:00 INGAME | <span class="highlight">MULTI-ALARM</span></div>
+              <div class="schedule-time"><span class="highlight">THU : </span>23:00 INGAME | <span
+                  class="highlight">MULTI-ALARM</span></div>
             </div>
             <div class="expand-arrow"><i class="fa-solid fa-chevron-down"></i></div>
             <label class="game-switch">
@@ -494,6 +497,19 @@
               </label>
             </div>
           </div>
+        </div>
+
+        <!-- Debug Dev -->
+        <div class="schedule-item">
+          <div class="schedule-icon"><i class="fa-solid fa-bug"></i></div>
+          <div class="schedule-info">
+            <div class="schedule-name">Debug dev <span class="highlight-danger">(not recommended)</span></div>
+            <div class="schedule-time">Testing notification registration</div>
+          </div>
+          <label class="game-switch">
+            <input type="checkbox" id="notify-debug-dev" onchange="window.toggleNotification('debug-dev', this.checked)">
+            <span class="switch-slider"></span>
+          </label>
         </div>
       </div>
 

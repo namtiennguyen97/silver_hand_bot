@@ -111,6 +111,63 @@
     font-weight: bold;
 }
 
+/* Toast Notifications */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.cyber-toast {
+    background: rgba(5, 15, 20, 0.95);
+    border-left: 3px solid #00ffff;
+    color: #fff;
+    padding: 12px 20px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(0, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 280px;
+    backdrop-filter: blur(8px);
+    animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    border-radius: 4px;
+    pointer-events: auto;
+    border: 1px solid rgba(0, 255, 255, 0.1);
+    text-transform: uppercase;
+}
+
+.cyber-toast i {
+    color: #00ffff;
+    font-size: 14px;
+    filter: drop-shadow(0 0 5px #00ffff);
+}
+
+.cyber-toast.error {
+    border-left-color: #ff3366;
+}
+
+.cyber-toast.error i {
+    color: #ff3366;
+    filter: drop-shadow(0 0 5px #ff3366);
+}
+
+@keyframes toastIn {
+    from { transform: translateX(100%) skewX(-5deg); opacity: 0; }
+    to { transform: translateX(0) skewX(0); opacity: 1; }
+}
+
+@keyframes toastOut {
+    to { transform: translateX(120%) scale(0.8); opacity: 0; }
+}
+
 /* --- GAME STYLE SWITCH --- */
 .game-switch {
     position: relative;

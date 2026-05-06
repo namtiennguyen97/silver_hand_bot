@@ -23,16 +23,42 @@ if ('serviceWorker' in navigator) {
     }).catch(err => console.error('[SW] Error', err));
 }
 
+function showToast(message, isError = false) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `cyber-toast ${isError ? 'error' : ''}`;
+    toast.innerHTML = `
+        <i class="fa-solid ${isError ? 'fa-triangle-exclamation' : 'fa-circle-check'}"></i>
+        <span>${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    // Auto remove after 3s
+    setTimeout(() => {
+        toast.style.animation = 'toastOut 0.4s forwards';
+        setTimeout(() => toast.remove(), 400);
+    }, 3000);
+}
+
 window.toggleNotification = async function (id, enabled) {
     const prefs = JSON.parse(localStorage.getItem('notification_prefs') || '{}');
     prefs[id] = enabled;
     localStorage.setItem('notification_prefs', JSON.stringify(prefs));
 
-    if (!("Notification" in window)) return;
+    if (!("Notification" in window)) {
+        showToast("Browser does not support notifications", true);
+        return;
+    }
 
     if (Notification.permission !== "granted") {
         const permission = await Notification.requestPermission();
-        if (permission !== "granted") return;
+        if (permission !== "granted") {
+            showToast("Neural link denied by system", true);
+            return;
+        }
     }
 
     // Get Subscription
@@ -59,9 +85,11 @@ window.toggleNotification = async function (id, enabled) {
                 })
             });
             console.log('[Notification] Prefs synced');
+            showToast(`${id.toUpperCase()} STATUS: ${enabled ? 'CONNECTED' : 'DISCONNECTED'}`);
         }
     } catch (err) {
         console.error('[Notification] Error syncing:', err);
+        showToast("Neural sync failed", true);
     }
 };
 

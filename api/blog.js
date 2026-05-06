@@ -135,18 +135,28 @@ export default async function handler(req, res) {
 
         if (method === 'PATCH') {
             const { id } = req.body;
-            const { data, error: fetchError } = await supabase.from('blog_posts').select('views').eq('id', id).single();
-            if (fetchError) throw fetchError;
+            if (!id) return res.status(400).json({ error: 'Missing post id' });
 
-            const { data: updated, error } = await supabase
-                .from('blog_posts')
-                .update({ views: (data.views || 0) + 1 })
-                .eq('id', id)
-                .select('views')
-                .single();
+            // Use the RPC function we created in SQL for better performance and concurrency
+            const { error } = await supabase.rpc('increment_views', { 
+                post_id: parseInt(id) 
+            });
 
-            if (error) throw error;
-            return res.status(200).json({ views: updated.views });
+            if (error) {
+                // Fallback if RPC is not yet created
+                console.warn('RPC increment_views failed, falling back to manual update:', error.message);
+                const { data, error: fetchError } = await supabase.from('blog_posts').select('views').eq('id', id).single();
+                if (fetchError) throw fetchError;
+                
+                await supabase
+                    .from('blog_posts')
+                    .update({ views: (data.views || 0) + 1 })
+                    .eq('id', id);
+                
+                return res.status(200).json({ views: (data.views || 0) + 1 });
+            }
+
+            return res.status(200).json({ ok: true });
         }
 
         return res.status(405).json({ error: 'Method not allowed' });

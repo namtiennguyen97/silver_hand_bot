@@ -650,15 +650,28 @@
 
         // Fetch Posts
         async function fetchPosts() {
+            const list = document.getElementById('post-list');
+            // Show a "refreshing" state in the list
+            if (posts.length > 0) {
+                list.style.opacity = '0.5';
+                list.style.pointerEvents = 'none';
+            }
+            
             showLoader(true);
             try {
-                const res = await fetch(API_URL + '?t=' + Date.now());
+                // Ensure we always get fresh data from the server
+                const res = await fetch(`${API_URL}?t=${Date.now()}`, {
+                    headers: { 'Cache-Control': 'no-cache' }
+                });
                 posts = await res.json();
                 renderPosts();
             } catch (err) {
+                console.error('Fetch error:', err);
                 showToast('Failed to fetch posts', 'danger');
             } finally {
                 showLoader(false);
+                list.style.opacity = '1';
+                list.style.pointerEvents = 'auto';
             }
         }
 
@@ -834,7 +847,8 @@
 
         // Actions
         window.editPost = (id) => {
-            const post = posts.find(p => p.id === id);
+            // Compare IDs as strings to be safe
+            const post = posts.find(p => p.id.toString() === id.toString());
             if (post) openModal(post);
         };
 

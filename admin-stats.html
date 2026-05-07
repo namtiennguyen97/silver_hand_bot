@@ -6,6 +6,7 @@
     <title>SITE STATISTICS - ADMIN</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/admin-check.js"></script>
     <style>
         :root {
             --bg: #050a14;
@@ -162,13 +163,35 @@
             pointer-events: none;
             z-index: 100;
         }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+            header div {
+                justify-content: flex-start;
+            }
+            h1 {
+                font-size: 18px;
+                letter-spacing: 1px;
+            }
+            .refresh-btn {
+                padding: 10px;
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="scanline"></div>
     <div class="container">
         <header>
-            <h1><i class="fa-solid fa-chart-line"></i> SITE_ANALYTICS.EXE</h1>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <a href="admin.html" class="refresh-btn" style="padding: 5px 10px; border-radius: 50%;"><i class="fa-solid fa-arrow-left"></i></a>
+                <h1><i class="fa-solid fa-chart-line"></i> SITE_ANALYTICS.EXE</h1>
+            </div>
             <button class="refresh-btn" onclick="loadStats()">REFRESH DATA</button>
         </header>
 
@@ -209,7 +232,10 @@
             tbody.innerHTML = '<tr><td colspan="3" class="loader">DECRYPTING_DATA...</td></tr>';
 
             try {
-                const res = await fetch('/api/stats?t=' + Date.now());
+                const token = localStorage.getItem('admin_token');
+                const res = await fetch('/api/stats?t=' + Date.now(), {
+                    headers: { 'Authorization': token }
+                });
                 const data = await res.json();
 
                 if (!data || data.length === 0) {

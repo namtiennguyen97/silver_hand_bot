@@ -37,6 +37,16 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     const { method } = req;
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'silverhand2026';
+    const VALID_TOKEN = btoa('admin:' + ADMIN_PASSWORD);
+
+    // Secure methods: POST, PUT, DELETE, PATCH
+    if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+        const authHeader = req.headers.authorization;
+        if (authHeader !== VALID_TOKEN) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+    }
 
     try {
         if (method === 'GET') {

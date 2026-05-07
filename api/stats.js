@@ -15,6 +15,9 @@ export default async function handler(req, res) {
 
     if (method === 'OPTIONS') return res.status(200).end();
 
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'silverhand2026';
+    const VALID_TOKEN = btoa('admin:' + ADMIN_PASSWORD);
+
     try {
         if (method === 'POST') {
             const { path } = req.body;
@@ -28,6 +31,16 @@ export default async function handler(req, res) {
         }
 
         if (method === 'GET') {
+            // Basic auth check for sensitive data
+            const authHeader = req.headers.authorization;
+            if (authHeader !== VALID_TOKEN) {
+                // Also check query param as fallback for simple fetch calls
+                const tokenParam = req.query.token;
+                if (tokenParam !== VALID_TOKEN) {
+                    return res.status(401).json({ error: 'Unauthorized' });
+                }
+            }
+
             // Fetch all stats for admin
             const { data, error } = await supabase
                 .from('site_stats')

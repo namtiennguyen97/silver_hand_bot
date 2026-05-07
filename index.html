@@ -146,7 +146,36 @@
 
       <!-- TOP CENTER: Removed time sync per request -->
       <!-- TOP RIGHT: Resources REMOVED PER REQUEST -->
-      <div class="hud-section">
+      <div class="hud-section" style="display: flex; justify-content: flex-end; align-items: flex-start;">
+        <style>
+          .hud-admin-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px;
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: var(--hud-cyan, #00ffff);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            margin-top: 15px;
+            margin-right: 15px;
+            pointer-events: auto;
+          }
+          .hud-admin-btn:hover {
+            background: var(--hud-cyan, #00ffff);
+            color: #000;
+            box-shadow: 0 0 15px var(--hud-cyan);
+            border-color: var(--hud-cyan);
+          }
+        </style>
+        <a href="admin.html" class="hud-admin-btn">
+          <i class="fa-solid fa-user-gear"></i>
+          <span>ADMIN_ACCESS</span>
+        </a>
       </div>
     </div>
 
@@ -194,7 +223,7 @@
             <i class="fa-solid fa-calendar-check"></i>
           </div>
           <div class="hud-util-btn" id="hudBtnGuide" title="Guide">
-            <i class="fa-solid fa-graduation-cap"></i>
+            <i class="fa-solid fa-circle-info"></i>
           </div>
         </div>
         <div class="hud-promo-banner" id="hudPromoBanner">
@@ -333,6 +362,8 @@
           <button id="btnManageAccount" class="mode-btn"
             style="padding: 5px 12px; border: 1px solid var(--hud-cyan, #00ffff); background: transparent; color: var(--hud-cyan, #00ffff); cursor: pointer; font-size: 10px;">ESTABLISH
             ID</button>
+          <a href="admin.html" class="mode-btn"
+            style="padding: 5px 12px; border: 1px solid var(--hud-cyan, #00ffff); background: var(--hud-cyan, #00ffff); color: #000; cursor: pointer; font-size: 10px; text-decoration: none; font-weight: bold;">ADMIN PANEL</a>
           <button onclick="localStorage.removeItem('silverhand_user'); window.location.reload();" class="mode-btn"
             style="padding: 5px 12px; border: 1px solid #ff3366; background: transparent; color: #ff3366; cursor: pointer; font-size: 10px;">DEBUG:
             CLEAR AUTH</button>
@@ -574,11 +605,17 @@
   <template id="tpl-aboutMe">
     <div class="bio-container">
       <div class="bio-header">
-        <div class="bio-avatar-wrapper" style="cursor:pointer" id="bioAvatarTrigger">
-          <div class="bio-avatar-clip">
-            <img src="assets/img/mayor_profile.gif" alt="Avatar">
-            <div class="bio-avatar-scan"></div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+          <div class="bio-avatar-wrapper" style="margin: 0;">
+            <div class="bio-avatar-clip">
+              <img src="assets/img/mayor_profile.gif" alt="Avatar">
+              <div class="bio-avatar-scan"></div>
+            </div>
           </div>
+          <a href="admin.html" 
+             style="color: #000; font-size: 10px; text-decoration: none; border: 1px solid var(--hud-cyan); padding: 4px 15px; display: inline-block; letter-spacing: 2px; font-family: 'Orbitron', sans-serif; background: var(--hud-cyan, #00ffff); font-weight: bold; box-shadow: 0 0 10px rgba(0,255,255,0.5); transition: all 0.3s; text-align: center; width: 100%;"
+             onmouseover="this.style.boxShadow='0 0 20px var(--hud-cyan)'; this.style.transform='scale(1.05)'" 
+             onmouseout="this.style.boxShadow='0 0 10px rgba(0,255,255,0.5)'; this.style.transform='scale(1)'">LOGIN ADMIN</a>
         </div>
         <div class="bio-main-info">
           <div class="bio-name">Silver-Hand</div>

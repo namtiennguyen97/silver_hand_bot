@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN DASHBOARD - SILVERHAND</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/admin-check.js"></script>
+    <style>
+        :root {
+            --bg: #050a14;
+            --primary: #00ffff;
+            --primary-glow: rgba(0, 255, 255, 0.4);
+            --accent: #ff00ff;
+            --accent-glow: rgba(255, 0, 255, 0.4);
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(0, 255, 255, 0.2);
+            --text: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Share Tech Mono', monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Cyberpunk Background Effects */
+        .scanline {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .cyber-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            opacity: 0.1;
+            perspective: 500px;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2;
+            opacity: 0.3;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            margin-bottom: 60px;
+            text-align: center;
+            position: relative;
+        }
+
+        .admin-tag {
+            display: inline-block;
+            background: var(--primary);
+            color: #000;
+            padding: 4px 12px;
+            font-weight: 900;
+            font-size: 12px;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(24px, 5vw, 42px);
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px var(--primary-glow);
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: var(--text-dim);
+            letter-spacing: 4px;
+            font-size: 14px;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        /* Admin Card */
+        .admin-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 40px 30px;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .admin-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            transition: all 0.3s;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--primary);
+            background: rgba(0, 255, 255, 0.05);
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.1);
+        }
+
+        .admin-card:hover::before {
+            width: 100%;
+            opacity: 0.1;
+        }
+
+        .card-icon {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 25px;
+            text-shadow: 0 0 15px var(--primary-glow);
+            transition: all 0.3s;
+        }
+
+        .admin-card:hover .card-icon {
+            transform: scale(1.1);
+            color: #fff;
+        }
+
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .card-meta {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 10px;
+            opacity: 0.3;
+            letter-spacing: 1px;
+        }
+
+        /* Back to Hub Card */
+        .card-hub {
+            border-color: var(--accent);
+        }
+        .card-hub .card-icon, .card-hub .card-title {
+            color: var(--accent);
+        }
+        .card-hub::before {
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+        .card-hub:hover {
+            border-color: var(--accent);
+            background: rgba(255, 0, 255, 0.05);
+        }
+
+        /* Footer Info */
+        .footer-info {
+            margin-top: auto;
+            padding-top: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff00;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            header {
+                margin-bottom: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanline"></div>
+    <div class="cyber-grid"></div>
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="container">
+        <header>
+            <div class="admin-tag">SECURITY CLEARANCE: LEVEL 5</div>
+            <h1>SYSTEM_ADMIN</h1>
+            <div class="subtitle">// SILVERHAND_BOT CONTROL CENTER //</div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Blog Management -->
+            <a href="blog-admin.html" class="admin-card">
+                <div class="card-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+                <div class="card-title">BLOG_MANAGER</div>
+                <div class="card-desc">Create and edit blog posts, update news, and manage featured content on the main slider.</div>
+                <div class="card-meta">MODULE: BLOG.EXE</div>
+            </a>
+
+            <!-- System Analytics -->
+            <a href="admin-stats.html" class="admin-card">
+                <div class="card-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="card-title">ANALYTICS_HUB</div>
+                <div class="card-desc">Real-time visitor tracking, page view statistics, and traffic analysis for all site modules.</div>
+                <div class="card-meta">MODULE: STATS.EXE</div>
+            </a>
+
+            <!-- Back to Hub (Logout) -->
+            <a href="javascript:void(0)" onclick="adminLogout()" class="admin-card card-hub">
+                <div class="card-icon"><i class="fa-solid fa-door-open"></i></div>
+                <div class="card-title">EXIT_ADMIN</div>
+                <div class="card-desc">Terminate administrative session and return to the main SAO-ĐÊM dashboard.</div>
+                <div class="card-meta">COMMAND: LOGOUT()</div>
+            </a>
+        </div>
+
+        <div class="footer-info">
+            <div class="system-time">
+                SYSTEM TIME: <span id="clock">00:00:00</span><br>
+                DATE: <span id="date">2026.05.07</span>
+            </div>
+            <div class="status-badge">
+                <div class="pulse"></div>
+                SYSTEM STATUS: OPTIMAL
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Clock functionality
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString('en-GB');
+            document.getElementById('date').textContent = now.getFullYear() + '.' + 
+                String(now.getMonth() + 1).padStart(2, '0') + '.' + 
+                String(now.getDate()).padStart(2, '0');
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function adminLogout() {
+            localStorage.removeItem('admin_token');
+            sessionStorage.clear(); // Clear any session storage just in case
+            window.location.replace('index.html');
+        }
+
+        // Background Particles
+        function initBg() {
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            for (let i = 0; i < 60; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 0.5,
+                    speedX: (Math.random() - 0.5) * 0.4,
+                    speedY: (Math.random() - 0.5) * 0.4,
+                    color: Math.random() > 0.5 ? '#00ffff' : '#ff00ff'
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+                    
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = 0.4;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+        initBg();
+    </script>
+</body>
+</html>

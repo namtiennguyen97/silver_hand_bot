@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITEM MANAGER // LIFEAFTER - ADMIN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/admin-check.js"></script>
+    <style>
+        :root {
+            --bg: #050a14;
+            --primary: #00ffff;
+            --primary-glow: rgba(0, 255, 255, 0.4);
+            --accent: #ff00ff;
+            --border: rgba(0, 255, 255, 0.2);
+            --glass: rgba(255, 255, 255, 0.05);
+            --text: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Share Tech Mono', monospace; min-height: 100vh; overflow-x: hidden; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        
+        /* Header */
+        .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .title-wrap h1 { font-family: 'Orbitron', sans-serif; font-size: 28px; color: var(--primary); letter-spacing: 4px; }
+        .title-wrap p { opacity: 0.5; font-size: 12px; margin-top: 5px; }
+
+        /* Actions Bar */
+        .actions-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; gap: 20px; }
+        .search-box { flex: 1; position: relative; }
+        .search-box input { width: 100%; background: var(--glass); border: 1px solid var(--border); padding: 12px 15px 12px 40px; color: #fff; font-family: inherit; outline: none; }
+        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
+        
+        .add-btn { background: var(--primary); color: #000; border: none; padding: 12px 25px; font-family: 'Orbitron', sans-serif; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; }
+        .add-btn:hover { box-shadow: 0 0 20px var(--primary-glow); transform: translateY(-2px); }
+
+        /* Item Table */
+        .table-wrap { background: var(--glass); border: 1px solid var(--border); overflow-x: auto; backdrop-filter: blur(10px); }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { padding: 15px; background: rgba(0, 255, 255, 0.05); font-family: 'Orbitron', sans-serif; font-size: 11px; color: var(--primary); border-bottom: 1px solid var(--border); }
+        td { padding: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 14px; }
+        
+        .item-row:hover { background: rgba(255, 255, 255, 0.02); }
+        .item-info { display: flex; align-items: center; gap: 15px; }
+        .item-img { width: 40px; height: 40px; background: #000; border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; padding: 5px; }
+        .item-img img { max-width: 100%; max-height: 100%; }
+
+        .rarity-badge { padding: 2px 8px; font-size: 10px; font-weight: bold; border-radius: 2px; text-transform: uppercase; }
+        .rarity-rare { background: rgba(0, 112, 221, 0.2); color: #0070dd; border: 1px solid #0070dd; }
+        .rarity-epic { background: rgba(163, 53, 238, 0.2); color: #a335ee; border: 1px solid #a335ee; }
+        .rarity-legendary { background: rgba(255, 128, 0, 0.2); color: #ff8000; border: 1px solid #ff8000; }
+        .rarity-collector { background: rgba(255, 204, 0, 0.2); color: #ffcc00; border: 1px solid #ffcc00; }
+
+        .op-btn { background: none; border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; width: 32px; height: 32px; cursor: pointer; transition: 0.3s; margin-right: 5px; }
+        .op-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .op-btn.del:hover { border-color: #ff4444; color: #ff4444; }
+
+        /* Modal (Form) */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(10px); }
+        .modal-card { width: 100%; max-width: 600px; background: #0c121d; border: 1px solid var(--primary); position: relative; animation: modalIn 0.3s ease-out; }
+        @keyframes modalIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .modal-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { font-family: 'Orbitron', sans-serif; font-size: 18px; color: var(--primary); }
+        
+        .modal-body { padding: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-height: 70vh; overflow-y: auto; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group.full { grid-column: 1 / -1; }
+        label { font-size: 11px; color: var(--primary); opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
+        input, select { background: #0c121d; border: 1px solid var(--border); padding: 12px; color: #fff; font-family: inherit; outline: none; appearance: none; }
+        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2300ffff'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 15px center; padding-right: 40px; }
+        option { background: #0c121d; color: #fff; padding: 10px; }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
+
+        /* Dynamic Stats UI */
+        .stats-container { grid-column: 1 / -1; margin-top: 10px; border-top: 1px solid rgba(0, 255, 255, 0.1); padding-top: 20px; }
+        .stats-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .add-stat-btn { background: rgba(0, 255, 255, 0.1); border: 1px dashed var(--primary); color: var(--primary); padding: 5px 15px; font-size: 11px; cursor: pointer; transition: 0.3s; font-family: 'Orbitron', sans-serif; }
+        .add-stat-btn:hover { background: var(--primary); color: #000; }
+        
+        .stat-row { display: grid; grid-template-columns: 1fr 100px 40px; gap: 10px; margin-bottom: 10px; animation: rowIn 0.2s ease-out; }
+        @keyframes rowIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        .remove-stat { background: none; border: 1px solid rgba(255, 68, 68, 0.3); color: #ff4444; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; }
+        .remove-stat:hover { background: #ff4444; color: #fff; }
+
+        .modal-footer { padding: 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 15px; }
+        .cancel-btn { background: none; border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 10px 20px; cursor: pointer; font-family: inherit; font-size: 12px; }
+        .save-btn { background: var(--primary); color: #000; border: none; padding: 10px 30px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-weight: bold; font-size: 12px; }
+
+        .back-link { color: var(--primary); text-decoration: none; font-size: 14px; margin-bottom: 20px; display: inline-block; transition: 0.3s; }
+        .back-link:hover { text-shadow: 0 0 10px var(--primary); }
+
+        /* Responsive Mobile Fixes */
+        @media (max-width: 768px) {
+            .container { padding: 20px 15px; }
+            .header { flex-direction: column; align-items: flex-start; gap: 20px; }
+            .add-btn { width: 100%; justify-content: center; }
+            .actions-bar { flex-direction: column; align-items: stretch; }
+            
+            .modal-card { width: 95vw; max-height: 90vh; }
+            .modal-body { grid-template-columns: 1fr; padding: 15px; }
+            .stat-row { grid-template-columns: 1fr 80px 35px; gap: 5px; }
+            
+            th:nth-child(4), td:nth-child(4) { display: none; } /* Hide stats column on very small mobile */
+            .item-info span { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="admin.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> BACK_TO_DASHBOARD</a>
+        
+        <header class="header">
+            <div class="title-wrap">
+                <h1>ITEM_MANAGER</h1>
+                <p>// LIFEAFTER EQUIPMENT DATABASE CONTROL //</p>
+            </div>
+            <button class="add-btn" onclick="openModal()"><i class="fa-solid fa-plus"></i> ADD_NEW_ITEM</button>
+        </header>
+
+        <div class="actions-bar">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search by name, type, or rarity...">
+            </div>
+            <select style="background: var(--glass); border: 1px solid var(--border); color: #fff; padding: 12px; font-family: inherit;">
+                <option value="">ALL CATEGORIES</option>
+                <option value="weapon1">Primary Weapon</option>
+                <option value="armor">Armor</option>
+                <option value="head">Headgear</option>
+            </select>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ITEM_INFO</th>
+                        <th>CATEGORY</th>
+                        <th>RARITY</th>
+                        <th>STATS</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="itemTableBody">
+                    <!-- Sample Item 1 -->
+                    <tr class="item-row">
+                        <td>
+                            <div class="item-info">
+                                <div class="item-img"><img src="https://cdn-icons-png.flaticon.com/512/583/583626.png"></div>
+                                <span>Arc Electromagnetic Collector</span>
+                            </div>
+                        </td>
+                        <td>Primary Weapon</td>
+                        <td><span class="rarity-badge rarity-collector">Collector</span></td>
+                        <td>Atk+238, FP+2.2</td>
+                        <td>
+                            <button class="op-btn" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                            <button class="op-btn del" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <!-- Sample Item 2 -->
+                    <tr class="item-row">
+                        <td>
+                            <div class="item-info">
+                                <div class="item-img"><img src="https://cdn-icons-png.flaticon.com/512/3534/3534064.png"></div>
+                                <span>Bio-Organic Armor</span>
+                            </div>
+                        </td>
+                        <td>Armor</td>
+                        <td><span class="rarity-badge rarity-legendary">Legendary</span></td>
+                        <td>Armor+145, HP+800</td>
+                        <td>
+                            <button class="op-btn" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                            <button class="op-btn del" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal" id="itemModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2 id="modalTitle">ADD NEW EQUIPMENT</h2>
+                <i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeModal()"></i>
+            </div>
+            <div class="modal-body">
+                <div class="form-group full">
+                    <label>ITEM NAME</label>
+                    <input type="text" placeholder="e.g. Arc Electromagnetic Collector">
+                </div>
+                <div class="form-group">
+                    <label>CATEGORY</label>
+                    <select id="itemCategory" onchange="toggleWeaponSubtype()">
+                        <option value="headwear">Headwear</option>
+                        <option value="armor">Armor</option>
+                        <option value="shield">Shield</option>
+                        <option value="weapon">Weapon</option>
+                    </select>
+                </div>
+                <div class="form-group" id="weaponSubtypeGroup" style="display:none">
+                    <label>WEAPON TYPE</label>
+                    <select id="itemSubtype">
+                        <option value="light">Light Firearm (AKM, Rifle...)</option>
+                        <option value="heavy">Heavy Firearm (Sniper, Howitzer...)</option>
+                        <option value="non_firearm">Non-Firearm (Melee)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>RARITY</label>
+                    <select id="itemRarity">
+                        <option value="Rare">Rare</option>
+                        <option value="Epic">Epic</option>
+                        <option value="Legendary">Legendary</option>
+                        <option value="Collector">Collector</option>
+                    </select>
+                </div>
+                <div class="form-group full">
+                    <label>ITEM IMAGE (UPLOAD)</label>
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <input type="file" id="itemFile" accept="image/*" onchange="previewImage(this)" style="flex: 1;">
+                        <div id="imgPreview" style="width: 50px; height: 50px; border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; background: #000;">
+                            <i class="fa-solid fa-image" style="opacity: 0.3;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Stats Area -->
+                <div class="stats-container">
+                    <div class="stats-header">
+                        <label>EQUIPMENT_ATTRIBUTES</label>
+                        <button class="add-stat-btn" onclick="addStatRow()"><i class="fa-solid fa-plus"></i> ADD STAT</button>
+                    </div>
+                    <div id="dynamicStatsList">
+                        <!-- Stat rows added here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeModal()">CANCEL</button>
+                <button class="save-btn" onclick="saveItem()">SAVE_DATA</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ALL_STATS = [
+            "HP Cap", "Attack Power", "Armor", "Max Shield",
+            "DMG Bonus", "DMG Reduction", "Crit Chance", "Crit Immunity Rate",
+            "Precision", "Misdirection", "Increase Short-range Damage", 
+            "Short-range Damage Reduction", "Long-range Damage Up", 
+            "Reduce Long-range Damage", "Headshot Damage Increase",
+            "Crit Damage Bonus", "Reduce Crit Damage", "Vitality",
+            "Explosion Damage Increase", "Damage to Infected Up"
+        ];
+
+        function addStatRow(statName = "", statValue = "") {
+            const container = document.getElementById('dynamicStatsList');
+            const row = document.createElement('div');
+            row.className = 'stat-row';
+            
+            // Tìm các stats chưa được chọn
+            const usedStats = Array.from(document.querySelectorAll('.stat-row select')).map(s => s.value);
+            const availableStats = ALL_STATS.filter(s => !usedStats.includes(s) || s === statName);
+
+            let options = ALL_STATS.map(s => {
+                const isUsed = usedStats.includes(s) && s !== statName;
+                return `<option value="${s}" ${s === statName ? 'selected' : ''} ${isUsed ? 'disabled' : ''}>${s}</option>`;
+            }).join('');
+            
+            row.innerHTML = `
+                <select onchange="updateAvailableStats()">${options}</select>
+                <input type="text" placeholder="Value" value="${statValue}">
+                <button class="remove-stat" onclick="this.parentElement.remove(); updateAvailableStats();"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(row);
+            updateAvailableStats();
+        }
+
+        function updateAvailableStats() {
+            const selects = document.querySelectorAll('.stat-row select');
+            const usedValues = Array.from(selects).map(s => s.value);
+
+            selects.forEach(select => {
+                const currentValue = select.value;
+                Array.from(select.options).forEach(opt => {
+                    if (opt.value !== currentValue && usedValues.includes(opt.value)) {
+                        opt.disabled = true;
+                        opt.style.opacity = '0.3';
+                    } else {
+                        opt.disabled = false;
+                        opt.style.opacity = '1';
+                    }
+                });
+            });
+        }
+
+        function toggleWeaponSubtype() {
+            const cat = document.getElementById('itemCategory').value;
+            const group = document.getElementById('weaponSubtypeGroup');
+            group.style.display = (cat === 'weapon') ? 'flex' : 'none';
+        }
+
+        function previewImage(input) {
+            const preview = document.getElementById('imgPreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" style="max-width:100%; max-height:100%">`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.innerHTML = `<i class="fa-solid fa-image" style="opacity: 0.3;"></i>`;
+            }
+        }
+
+        function openModal() {
+            document.getElementById('itemModal').style.display = 'flex';
+            document.getElementById('dynamicStatsList').innerHTML = ''; 
+            document.getElementById('imgPreview').innerHTML = `<i class="fa-solid fa-image" style="opacity: 0.3;"></i>`;
+            document.getElementById('itemFile').value = '';
+            toggleWeaponSubtype();
+            addStatRow(); 
+        }
+        function closeModal() {
+            document.getElementById('itemModal').style.display = 'none';
+        }
+        function saveItem() {
+            alert('INTERFACE ONLY: Data will be saved to Supabase in the next phase.');
+            closeModal();
+        }
+    </script>
+</body>
+</html>

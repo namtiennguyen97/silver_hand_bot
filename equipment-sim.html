@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EQUIPMENT SIMULATOR // SAO-ĐÊM</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00ffff;
+            --primary-glow: rgba(0, 255, 255, 0.4);
+            --secondary: #ff00ff;
+            --bg-dark: #0a0a0c;
+            --panel-bg: rgba(20, 20, 25, 0.9);
+            --border-cyan: rgba(0, 255, 255, 0.3);
+            --hud-font: 'Orbitron', sans-serif;
+            --mono-font: 'Share Tech Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Background Effects */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--border-cyan) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-cyan) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.05;
+            z-index: -1;
+        }
+
+        /* Main Container */
+        .sim-container {
+            width: 98vw;
+            height: 95vh;
+            max-width: 1200px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-cyan);
+            backdrop-filter: blur(15px);
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            grid-template-rows: 60px 1fr 80px;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .sim-header {
+            grid-column: 1 / -1;
+            border-bottom: 1px solid var(--border-cyan);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .sim-title {
+            font-family: var(--hud-font);
+            font-size: 18px;
+            letter-spacing: 3px;
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Character Section */
+        .char-section {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid var(--border-cyan);
+            background: radial-gradient(circle, rgba(0, 255, 255, 0.05) 0%, transparent 80%);
+        }
+
+        .char-preview {
+            height: 90%;
+            max-width: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.3));
+        }
+
+        /* Slots */
+        .slot {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--border-cyan);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+            z-index: 5;
+        }
+
+        .slot:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .slot.active {
+            border-color: var(--secondary);
+            box-shadow: 0 0 15px var(--secondary);
+        }
+
+        .slot i {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.1);
+        }
+
+        .slot img {
+            width: 90%;
+            height: 90%;
+            object-fit: contain;
+        }
+
+        /* Slot Positions - Desktop */
+        .slot[data-type="headwear"] {
+            top: 10%;
+            left: 15%;
+        }
+
+        .slot[data-type="armor"] {
+            top: 28%;
+            left: 15%;
+        }
+
+        .slot[data-type="shield"] {
+            top: 46%;
+            left: 15%;
+        }
+
+        .slot[data-type="main_weapon"] {
+            top: 64%;
+            left: 15%;
+        }
+
+        .slot[data-type="ring"] {
+            top: 10%;
+            right: 15%;
+        }
+
+        .slot[data-type="belt"] {
+            top: 28%;
+            right: 15%;
+        }
+
+        .slot[data-type="necklace"] {
+            top: 46%;
+            right: 15%;
+        }
+
+        .slot[data-type="aux_weapon"] {
+            top: 64%;
+            right: 15%;
+        }
+
+        /* Inventory */
+        .inv-section {
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid var(--border-cyan);
+        }
+
+        .inv-header {
+            padding: 15px;
+            font-family: var(--hud-font);
+            font-size: 11px;
+            border-bottom: 1px solid var(--border-cyan);
+            color: var(--primary);
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        .inv-grid {
+            flex: 1;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 75px;
+            gap: 8px;
+            overflow-y: auto;
+        }
+
+        .inv-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .inv-item:hover {
+            border-color: var(--primary);
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        .inv-item img {
+            width: 85%;
+            height: 85%;
+            object-fit: contain;
+        }
+
+        /* Rarity Styles */
+        .inv-item[data-rarity="Rare"] {
+            border-color: #0070dd;
+        }
+
+        .inv-item[data-rarity="Epic"] {
+            border-color: #a335ee;
+        }
+
+        .inv-item[data-rarity="Legendary"] {
+            border-color: #ff8000;
+        }
+
+        .inv-item[data-rarity="Collector"] {
+            border-color: #ffcc00;
+        }
+
+        /* Stats */
+        .stats-section {
+            grid-column: 1 / -1;
+            border-top: 1px solid var(--border-cyan);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 40px;
+            background: rgba(0, 255, 255, 0.02);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-family: var(--hud-font);
+            font-size: 9px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-family: var(--mono-font);
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        /* Detail Overlay */
+        .detail-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+
+        .detail-card {
+            width: 320px;
+            background: #111116;
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            position: relative;
+        }
+
+        .detail-top-bar {
+            height: 3px;
+            background: var(--primary);
+            width: 100%;
+        }
+
+        .detail-content {
+            padding: 20px;
+        }
+
+        .detail-header {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-img-box {
+            width: 80px;
+            height: 80px;
+            background: #000;
+            border: 1px solid var(--border-cyan);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .detail-img-box img {
+            width: 85%;
+            height: 85%;
+            object-fit: contain;
+        }
+
+        .detail-name {
+            font-family: var(--hud-font);
+            font-size: 14px;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .detail-rarity {
+            font-size: 10px;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .detail-stats {
+            margin-bottom: 25px;
+        }
+
+        .detail-stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--mono-font);
+            font-size: 13px;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .detail-stat-val {
+            color: var(--primary);
+        }
+
+        .equip-btn {
+            width: 100%;
+            background: var(--primary);
+            border: none;
+            color: #000;
+            padding: 12px;
+            font-family: var(--hud-font);
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .equip-btn.unequip {
+            background: #ff4444;
+            color: #fff;
+        }
+
+        .equip-btn:hover {
+            box-shadow: 0 0 15px currentColor;
+            filter: brightness(1.2);
+        }
+
+        .close-detail {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            color: #fff;
+            opacity: 0.5;
+        }
+
+        /* Manor Selector */
+        .manor-selector {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid var(--border-cyan);
+            padding: 5px 15px;
+            z-index: 10;
+        }
+
+        .manor-label {
+            font-family: var(--hud-font);
+            font-size: 10px;
+            color: var(--primary);
+            letter-spacing: 1px;
+        }
+
+        .manor-val-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .manor-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 14px;
+            opacity: 0.6;
+            transition: 0.2s;
+        }
+
+        .manor-btn:hover {
+            opacity: 1;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .manor-level {
+            font-family: var(--mono-font);
+            font-size: 20px;
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+            color: #fff;
+        }
+
+        /* Mobile */
+        .mobile-nav {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .sim-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 50px 1fr 60px;
+                height: 100vh;
+                width: 100vw;
+                max-width: none;
+                border: none;
+            }
+
+            .inv-section,
+            .stats-section {
+                display: none;
+            }
+
+            .mobile-nav {
+                display: grid;
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                height: 60px;
+                background: #111;
+                border-top: 1px solid var(--border-cyan);
+                grid-template-columns: repeat(3, 1fr);
+                z-index: 100;
+            }
+
+            .nav-item {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                font-size: 10px;
+                font-family: var(--hud-font);
+                color: rgba(255, 255, 255, 0.5);
+                cursor: pointer;
+            }
+
+            .nav-item.active {
+            color: var(--primary);
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        .mobile-panel {
+            position: absolute;
+            bottom: 60px;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: #0c0c0f;
+            border-top: 1px solid var(--primary);
+            z-index: 90;
+            transition: height 0.3s ease;
+            overflow: hidden;
+        }
+
+        .mobile-panel.open {
+            height: 70%;
+        }
+
+        /* Vault Styles */
+        .vault-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--border-cyan); }
+        .add-custom-btn { background: var(--primary); color: #000; border: none; padding: 5px 12px; font-family: var(--hud-font); font-weight: bold; cursor: pointer; font-size: 10px; }
+        
+        .admin-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(10px); }
+        .modal-card { width: 95%; max-width: 500px; background: #111116; border: 1px solid var(--primary); color: #fff; box-shadow: 0 0 30px rgba(0,255,255,0.2); }
+        .modal-body { padding: 30px 20px; max-height: 80vh; overflow-y: auto; display: grid; gap: 20px; }
+        
+        .admin-modal input, .admin-modal select { 
+            background: #0c121d; 
+            border: 1px solid var(--border-cyan); 
+            padding: 14px; 
+            color: #fff; 
+            font-family: inherit; 
+            outline: none; 
+            appearance: none;
+            font-size: 14px;
+        }
+        .admin-modal select { 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2300ffff'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E"); 
+            background-repeat: no-repeat; 
+            background-position: right 15px center; 
+            padding-right: 40px; 
+        }
+        .admin-modal option { background: #0c121d; color: #fff; }
+        
+        .stat-row { display: grid; grid-template-columns: 1fr 100px 45px; gap: 12px; margin-bottom: 12px; align-items: center; }
+        
+        @media (max-width: 600px) {
+            .stat-row { 
+                grid-template-columns: 1fr 50px; 
+                grid-template-areas: "select select" "input delete"; 
+                gap: 8px;
+                padding: 10px;
+                background: rgba(255,255,255,0.02);
+                border: 1px solid rgba(0,255,255,0.1);
+            }
+            .stat-row select { grid-area: select; }
+            .stat-row input { grid-area: input; }
+            .stat-row button { grid-area: delete; height: 45px; }
+            
+            .modal-card { width: 98vw; }
+            .modal-body { padding: 20px 15px; }
+        }
+
+        .remove-stat { background: none; border: 1px solid rgba(255,0,0,0.3); color: #ff4444; height: 100%; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+
+        #rarityGroup { transition: opacity 0.3s, transform 0.3s; }
+        .hidden { display: none !important; }
+
+        /* Icon Gallery */
+        .icon-selector-label { font-size: 10px; color: var(--primary); opacity: 0.7; margin-bottom: 8px; display: block; }
+        .icon-gallery { 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 10px; 
+            background: rgba(0,0,0,0.3); 
+            padding: 10px; 
+            border: 1px solid var(--border-cyan); 
+            max-height: 150px; 
+            overflow-y: auto; 
+        }
+        .icon-opt { 
+            aspect-ratio: 1; 
+            background: #000; 
+            border: 1px solid rgba(0,255,255,0.2); 
+            cursor: pointer; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            transition: 0.2s;
+            font-size: 28px;
+            color: #fff;
+        }
+        .icon-opt:hover { border-color: var(--primary); background: #080808; }
+        .icon-opt.selected { 
+            border-color: var(--primary); 
+            background: rgba(0,255,255,0.1); 
+            box-shadow: inset 0 0 15px var(--primary-glow); 
+            color: var(--primary);
+        }
+        
+        .inv-item i { font-size: 24px; color: #fff; }
+        .detail-img-box i { font-size: 64px; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.3); }
+
+        @keyframes scanline {
+                padding: 15px;
+                font-family: var(--hud-font);
+                font-size: 12px;
+                color: var(--primary);
+                border-bottom: 1px solid var(--border-cyan);
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .slot {
+                width: 50px;
+                height: 50px;
+            }
+
+            .slot[data-type="headwear"] {
+                top: 5%;
+                left: 5%;
+            }
+
+            .slot[data-type="ring"] {
+                top: 5%;
+                right: 5%;
+            }
+
+            .slot[data-type="armor"] {
+                top: 22%;
+                left: 5%;
+            }
+
+            .slot[data-type="belt"] {
+                top: 22%;
+                right: 5%;
+            }
+
+            .slot[data-type="shield"] {
+                top: 39%;
+                left: 5%;
+            }
+
+            .slot[data-type="necklace"] {
+                top: 39%;
+                right: 5%;
+            }
+
+            .slot[data-type="main_weapon"] {
+                top: 56%;
+                left: 5%;
+            }
+
+            .slot[data-type="aux_weapon"] {
+                top: 56%;
+                right: 5%;
+            }
+
+            .char-preview {
+                height: 70%;
+                margin-top: -30px;
+            }
+        }
+
+        @keyframes scanline {
+            0% {
+                transform: translateY(-100%);
+            }
+
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        .scanline {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(transparent, rgba(0, 255, 255, 0.1), transparent);
+            height: 20%;
+            animation: scanline 3s linear infinite;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-grid"></div>
+    <div class="sim-container">
+        <header class="sim-header">
+            <div style="display: flex; flex-direction: column;">
+                <div class="sim-title">LIFEAFTER // SIMULATOR</div>
+                <div style="font-family: var(--mono-font); font-size: 9px; color: var(--primary); opacity: 0.7; letter-spacing: 1px;">SURVIVAL EQUIPMENT ATTRIBUTE ANALYZER</div>
+            </div>
+            <div style="font-family: var(--mono-font); font-size: 10px; opacity: 0.5; text-align: right;">v1.2.0 // SYSTEM_STABLE</div>
+        </header>
+
+        <section class="char-section">
+            <div class="scanline"></div>
+
+            <!-- Manor Selector -->
+            <div class="manor-selector">
+                <span class="manor-label">MANOR LEVEL</span>
+                <div class="manor-val-wrap">
+                    <button class="manor-btn" onclick="changeManorLevel(-1)"><i
+                            class="fa-solid fa-caret-left"></i></button>
+                    <span class="manor-level" id="manorDisplay">1</span>
+                    <button class="manor-btn" onclick="changeManorLevel(1)"><i
+                            class="fa-solid fa-caret-right"></i></button>
+                </div>
+            </div>
+
+            <img src="assets/img/equipments/ide_female.png" alt="Character" class="char-preview">
+            <div class="slots-container">
+                <!-- Left Side Slots -->
+                <div class="slot" data-type="headwear"><i class="fa-solid fa-helmet-safety"></i></div>
+                <div class="slot" data-type="armor"><i class="fa-solid fa-shirt"></i></div>
+                <div class="slot" data-type="shield"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="slot" data-type="main_weapon"><i class="fa-solid fa-gun"></i></div>
+
+                <!-- Right Side Slots -->
+                <div class="slot" data-type="ring" style="opacity: 0.3;"><i class="fa-solid fa-ring"></i></div>
+                <div class="slot" data-type="belt" style="opacity: 0.3;"><i class="fa-solid fa-hard-hat"></i></div>
+                <div class="slot" data-type="necklace" style="opacity: 0.3;"><i class="fa-solid fa-gem"></i></div>
+                <div class="slot" data-type="aux_weapon"><i class="fa-solid fa-sword"></i></div>
+            </div>
+        </section>
+
+        <section class="inv-section">
+            <div class="inv-header">BACKPACK // ITEMS</div>
+            <div class="inv-grid" id="invGrid"></div>
+        </section>
+
+        <section class="stats-section">
+            <div class="stat-item"><span class="stat-label">ATTACK POWER</span><span class="stat-value"
+                    id="stat-atk">0.0</span></div>
+            <div class="stat-item"><span class="stat-label">ARMOR</span><span class="stat-value"
+                    id="stat-armor">0.0</span></div>
+            <div class="stat-item"><span class="stat-label">CRIT RATE</span><span class="stat-value"
+                    id="stat-crit">0.0%</span></div>
+            <div class="stat-item"><span class="stat-label">FIREPOWER</span><span class="stat-value"
+                    id="stat-fp">0.0</span></div>
+            <div class="stat-item"><span class="stat-label">MAX HP</span><span class="stat-value"
+                    id="stat-hp">0.0</span></div>
+        </section>
+
+        <div class="mobile-panel" id="panelAttributes">
+            <div class="panel-header"><span>TOTAL ATTRIBUTES</span><i class="fa-solid fa-xmark"
+                    onclick="togglePanel('Attributes', false)"></i></div>
+            <div style="padding: 20px;" id="mobileStatsContainer"></div>
+        </div>
+
+        <div class="mobile-panel" id="panelBackpack">
+            <div class="panel-header"><span>BACKPACK // ITEMS</span><i class="fa-solid fa-xmark"
+                    onclick="togglePanel('Backpack', false)"></i></div>
+            <div class="inv-grid" id="mobileInvGrid"></div>
+        </div>
+
+        <div class="mobile-panel" id="panelVault">
+            <div class="vault-header">
+                <span style="font-family: var(--hud-font); font-size: 12px; color: var(--primary);">CUSTOM_ITEM_VAULT</span>
+                <div style="display:flex; gap: 10px;">
+                    <button class="add-custom-btn" style="background:none; border:1px solid #ff4444; color:#ff4444;" onclick="clearVault()">CLEAR ALL</button>
+                    <button class="add-custom-btn" onclick="openCreatorModal()">+ CREATE NEW</button>
+                </div>
+            </div>
+            <div class="inv-grid" id="vaultGrid"></div>
+        </div>
+
+        <nav class="mobile-nav">
+            <div class="nav-item" id="nav-Attributes" onclick="togglePanel('Attributes')"><i class="fa-solid fa-user"></i><span>Attributes</span></div>
+            <div class="nav-item" id="nav-Backpack" onclick="togglePanel('Backpack')"><i class="fa-solid fa-briefcase"></i><span>Backpack</span></div>
+            <div class="nav-item" id="nav-Vault" onclick="togglePanel('Vault')"><i class="fa-solid fa-boxes-stacked"></i><span>Vault</span></div>
+        </nav>
+
+        <!-- Item Creator Modal -->
+        <div class="admin-modal" id="creatorModal">
+            <div class="modal-card">
+                <div class="vault-header">
+                    <span style="font-family: var(--hud-font); color: var(--primary);">NEW_EQUIPMENT_DATA</span>
+                    <i class="fa-solid fa-xmark" style="cursor:pointer" onclick="closeCreatorModal()"></i>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>ITEM NAME</label>
+                        <input type="text" id="customName" placeholder="e.g. My Bio-Armor">
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div class="form-group">
+                            <label>CATEGORY</label>
+                            <select id="customCategory" onchange="toggleWeaponType()">
+                                <option value="headwear">Headwear</option>
+                                <option value="armor">Armor</option>
+                                <option value="shield">Shield</option>
+                                <option value="weapon">Weapon</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="rarityGroup">
+                            <label>RARITY</label>
+                            <select id="customRarity">
+                                <option value="Rare">Rare</option>
+                                <option value="Epic">Epic</option>
+                                <option value="Legendary">Legendary</option>
+                                <option value="Collector">Collector</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="weaponTypeGroup" style="display:none">
+                        <label>WEAPON SUBTYPE</label>
+                        <select id="customSubtype">
+                            <option value="light">Light Firearm</option>
+                            <option value="heavy">Heavy Firearm</option>
+                            <option value="non_firearm">Non-Firearm</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="icon-selector-label">SELECT ITEM ICON</label>
+                        <div class="icon-gallery" id="iconPicker">
+                            <!-- Icons will be injected here -->
+                        </div>
+                    </div>
+                    
+                    <div class="stats-container">
+                        <div class="vault-header" style="border:none; padding: 10px 0;">
+                            <label>ATTRIBUTES</label>
+                            <button class="add-custom-btn" style="background:rgba(0,255,255,0.1); border:1px dashed var(--primary); color:var(--primary)" onclick="addStatRow()">+ ADD</button>
+                        </div>
+                        <div id="dynamicStatsList"></div>
+                    </div>
+                </div>
+                <div class="vault-header" style="justify-content: flex-end; gap: 15px;">
+                    <button class="add-custom-btn" style="background:none; border:1px solid #444; color:#fff" onclick="closeCreatorModal()">CANCEL</button>
+                    <button class="add-custom-btn" onclick="saveCustomItem()">SAVE_TO_VAULT</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-overlay" id="detailOverlay">
+            <div class="detail-card">
+                <div class="detail-top-bar"></div>
+                <i class="fa-solid fa-xmark close-detail" onclick="closeDetail()"></i>
+                <div class="detail-content">
+                    <div class="detail-header">
+                        <div class="detail-img-box"><img src="" id="detailImg"></div>
+                        <div class="detail-name-wrap">
+                            <div class="detail-name" id="detailName">ITEM</div>
+                            <div class="detail-rarity" id="detailRarity">RARE</div>
+                        </div>
+                    </div>
+                    <div class="detail-stats" id="detailStatsList"></div>
+                    <button class="equip-btn" id="equipBtn">EQUIP ITEM</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ITEMS_DB = [
+            { id: 1, name: 'Arc Electromagnetic Collector', type: 'weapon', rarity: 'Collector', stats: { 'Attack Power': 238, 'Precision': 15.5 }, img: 'https://cdn-icons-png.flaticon.com/512/583/583626.png' },
+            { id: 2, name: 'Bio-Organic Armor', type: 'armor', rarity: 'Legendary', stats: { 'Armor': 145, 'HP Cap': 800 }, img: 'https://cdn-icons-png.flaticon.com/512/3534/3534064.png' }
+        ];
+
+        const ALL_STATS = [
+            "HP Cap", "Attack Power", "Armor", "Max Shield",
+            "DMG Bonus", "DMG Reduction", "Crit Chance", "Crit Immunity Rate",
+            "Precision", "Misdirection", "Increase Short-range Damage", 
+            "Short-range Damage Reduction", "Long-range Damage Up", 
+            "Reduce Long-range Damage", "Headshot Damage Increase",
+            "Crit Damage Bonus", "Reduce Crit Damage", "Vitality",
+            "Explosion Damage Increase", "Damage to Infected Up"
+        ];
+
+        const PRESET_ICONS = [
+            'fa-solid fa-gun', 
+            'fa-solid fa-shield-halved', 
+            'fa-solid fa-shirt', 
+            'fa-solid fa-helmet-safety', 
+            'fa-solid fa-knife-kitchen', 
+            'fa-solid fa-crosshairs', 
+            'fa-solid fa-microchip',
+            'fa-solid fa-user-shield',
+            'fa-solid fa-person-rays'
+        ];
+
+        let selectedIcon = PRESET_ICONS[0];
+        let equipped = {};
+        let manorLevel = 1;
+        let customItems = JSON.parse(localStorage.getItem('la_custom_items') || '[]');
+
+        function init() {
+            renderInventory();
+            renderVault();
+            initSlots();
+            updateTotalStats();
+            document.getElementById('mobileStatsContainer').innerHTML = document.querySelector('.stats-section').innerHTML;
+        }
+
+        function changeManorLevel(delta) {
+            manorLevel += delta;
+            if (manorLevel < 1) manorLevel = 1;
+            if (manorLevel > 30) manorLevel = 30;
+            document.getElementById('manorDisplay').textContent = manorLevel;
+            // logic tính toán stats theo manor sẽ thêm sau
+        }
+
+        function togglePanel(name, force) {
+            const panel = document.getElementById('panel' + name);
+            const isOpen = force !== undefined ? force : !panel.classList.contains('open');
+            document.querySelectorAll('.mobile-panel').forEach(p => p.classList.remove('open'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if (isOpen) {
+                panel.classList.add('open');
+                document.querySelectorAll('.nav-item').forEach(n => { if (n.innerText.includes(name)) n.classList.add('active'); });
+            }
+        }
+
+        function renderInventory() {
+            const allItems = [...ITEMS_DB, ...customItems];
+            [document.getElementById('invGrid'), document.getElementById('mobileInvGrid')].forEach(grid => {
+                grid.innerHTML = '';
+                allItems.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'inv-item';
+                    div.dataset.rarity = item.rarity;
+                    if (item.img && item.img.includes('fa-')) {
+                        div.innerHTML = `<i class="${item.img}"></i>`;
+                    } else {
+                        div.innerHTML = `<img src="${item.img || 'https://cdn-icons-png.flaticon.com/512/583/583626.png'}">`;
+                    }
+                    div.onclick = () => showDetail(item);
+                    div.ondblclick = (e) => {
+                        e.stopPropagation();
+                        equipItem(item);
+                    };
+                    grid.appendChild(div);
+                });
+            });
+        }
+
+        function renderVault() {
+            const grid = document.getElementById('vaultGrid');
+            grid.innerHTML = '';
+            customItems.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'inv-item';
+                div.dataset.rarity = item.rarity;
+                if (item.img && item.img.includes('fa-')) {
+                    div.innerHTML = `<i class="${item.img}"></i>`;
+                } else {
+                    div.innerHTML = `<img src="${item.img || 'https://cdn-icons-png.flaticon.com/512/583/583626.png'}">`;
+                }
+                div.onclick = () => showDetail(item);
+                const delBtn = document.createElement('div');
+                delBtn.innerHTML = '×';
+                delBtn.style = "position:absolute; top:-5px; right:-5px; background:red; color:white; width:15px; height:15px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:10px; cursor:pointer;";
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    deleteCustomItem(index);
+                };
+                div.style.position = 'relative';
+                div.appendChild(delBtn);
+                grid.appendChild(div);
+            });
+        }
+
+        function renderIconPicker() {
+            const picker = document.getElementById('iconPicker');
+            picker.innerHTML = '';
+            PRESET_ICONS.forEach(icon => {
+                const div = document.createElement('div');
+                div.className = 'icon-opt' + (selectedIcon === icon ? ' selected' : '');
+                div.innerHTML = `<i class="${icon}"></i>`;
+                div.onclick = () => {
+                    selectedIcon = icon;
+                    renderIconPicker();
+                };
+                picker.appendChild(div);
+            });
+        }
+
+        function openCreatorModal() {
+            document.getElementById('creatorModal').style.display = 'flex';
+            document.getElementById('dynamicStatsList').innerHTML = '';
+            document.getElementById('customCategory').value = 'headwear'; 
+            selectedIcon = PRESET_ICONS[0];
+            renderIconPicker();
+            toggleWeaponType();
+            addStatRow();
+        }
+
+        function closeCreatorModal() {
+            document.getElementById('creatorModal').style.display = 'none';
+        }
+
+        function addStatRow() {
+            const container = document.getElementById('dynamicStatsList');
+            const row = document.createElement('div');
+            row.className = 'stat-row';
+            const usedStats = Array.from(document.querySelectorAll('#dynamicStatsList select')).map(s => s.value);
+            
+            let options = ALL_STATS.map(s => {
+                const isUsed = usedStats.includes(s);
+                return `<option value="${s}" ${isUsed ? 'disabled' : ''}>${s}</option>`;
+            }).join('');
+
+            row.innerHTML = `
+                <select onchange="updateAvailableStats()">${options}</select>
+                <input type="number" placeholder="0">
+                <button class="remove-stat" onclick="this.parentElement.remove(); updateAvailableStats();">×</button>
+            `;
+            container.appendChild(row);
+            updateAvailableStats();
+        }
+
+        function updateAvailableStats() {
+            const selects = document.querySelectorAll('#dynamicStatsList select');
+            const usedValues = Array.from(selects).map(s => s.value);
+            selects.forEach(select => {
+                const cur = select.value;
+                Array.from(select.options).forEach(opt => {
+                    opt.disabled = (opt.value !== cur && usedValues.includes(opt.value));
+                    opt.style.opacity = opt.disabled ? '0.3' : '1';
+                });
+            });
+        }
+
+        function toggleWeaponType() {
+            const cat = document.getElementById('customCategory').value;
+            const raritySelect = document.getElementById('customRarity');
+            const rarityGroup = document.getElementById('rarityGroup');
+            const weaponGroup = document.getElementById('weaponTypeGroup');
+            
+            weaponGroup.style.display = (cat === 'weapon') ? 'block' : 'none';
+            
+            // Hiện rarity cho Weapon và Armor, ẩn cho các loại khác
+            if (cat === 'weapon' || cat === 'armor') {
+                rarityGroup.classList.remove('hidden');
+                if (cat === 'weapon') {
+                    raritySelect.innerHTML = `
+                        <option value="Normal">Normal</option>
+                        <option value="Rain">Rain-Edition</option>
+                        <option value="Snow">Snow-Edition</option>
+                        <option value="Collector">Collection</option>
+                    `;
+                } else {
+                    raritySelect.innerHTML = `
+                        <option value="Rare">Rare</option>
+                        <option value="Epic">Epic</option>
+                        <option value="Legendary">Legendary</option>
+                        <option value="Collector">Collector</option>
+                    `;
+                }
+            } else {
+                rarityGroup.classList.add('hidden');
+            }
+        }
+
+        function saveCustomItem() {
+            const name = document.getElementById('customName').value || 'Unnamed Item';
+            const cat = document.getElementById('customCategory').value;
+            const rarity = document.getElementById('customRarity').value;
+            
+            const stats = {};
+            document.querySelectorAll('#dynamicStatsList .stat-row').forEach(row => {
+                const key = row.querySelector('select').value;
+                const val = row.querySelector('input').value;
+                if (key && val) stats[key] = parseFloat(val);
+            });
+
+            const newItem = {
+                id: 'custom_' + Date.now(),
+                name: name,
+                type: cat,
+                rarity: rarity,
+                stats: stats,
+                img: selectedIcon
+            };
+
+            customItems.push(newItem);
+            localStorage.setItem('la_custom_items', JSON.stringify(customItems));
+            renderInventory();
+            renderVault();
+            closeCreatorModal();
+        }
+
+        function clearVault() {
+            if (confirm('Are you sure you want to delete ALL custom items?')) {
+                customItems = [];
+                localStorage.removeItem('la_custom_items');
+                renderInventory();
+                renderVault();
+            }
+        }
+
+        function deleteCustomItem(index) {
+            customItems.splice(index, 1);
+            localStorage.setItem('la_custom_items', JSON.stringify(customItems));
+            renderInventory();
+            renderVault();
+        }
+
+        function initSlots() {
+            document.querySelector('.char-section').onclick = (e) => {
+                if (e.target.classList.contains('char-section') || e.target.classList.contains('char-preview')) {
+                    if (window.innerWidth <= 768) {
+                        document.querySelectorAll('.mobile-panel').forEach(p => p.classList.remove('open'));
+                        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                    }
+                }
+            };
+
+            document.querySelectorAll('.slot').forEach(slot => {
+                slot.onclick = (e) => {
+                    e.stopPropagation();
+                    document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+                    slot.classList.add('active');
+                    if (window.innerWidth <= 768) togglePanel('Backpack', true);
+                };
+            });
+        }
+
+        function showDetail(item) {
+            document.getElementById('detailOverlay').style.display = 'flex';
+            const imgBox = document.querySelector('.detail-img-box');
+            if (item.img && item.img.includes('fa-')) {
+                imgBox.innerHTML = `<i class="${item.img}"></i>`;
+            } else {
+                imgBox.innerHTML = `<img src="${item.img}" id="detailImg">`;
+            }
+            document.getElementById('detailName').textContent = item.name;
+            document.getElementById('detailRarity').textContent = item.rarity;
+            const statsList = document.getElementById('detailStatsList');
+            statsList.innerHTML = '';
+            for (const [key, val] of Object.entries(item.stats)) {
+                statsList.innerHTML += `<div class="detail-stat-row"><span>${key.toUpperCase()}</span><span class="detail-stat-val">+${val}</span></div>`;
+            }
+
+            const btn = document.getElementById('equipBtn');
+            const isEquipped = equipped[item.type] && equipped[item.type].id === item.id;
+
+            if (isEquipped) {
+                btn.textContent = 'UNEQUIP';
+                btn.classList.add('unequip');
+                btn.onclick = () => unequipItem(item.type);
+            } else {
+                btn.textContent = 'EQUIP ITEM';
+                btn.classList.remove('unequip');
+                btn.onclick = () => equipItem(item);
+            }
+        }
+
+        function closeDetail() { document.getElementById('detailOverlay').style.display = 'none'; }
+
+        function equipItem(item) {
+            equipped[item.type] = item;
+            updateSlotUI(item.type);
+            updateTotalStats();
+            closeDetail();
+            if (window.innerWidth <= 768) togglePanel('Backpack', false);
+        }
+
+        function unequipItem(type) {
+            delete equipped[type];
+            updateSlotUI(type);
+            updateTotalStats();
+            closeDetail();
+        }
+
+        const SLOT_ICONS = {
+            headwear: 'fa-helmet-safety', armor: 'fa-shirt', shield: 'fa-shield-halved', main_weapon: 'fa-gun',
+            ring: 'fa-ring', belt: 'fa-hard-hat', necklace: 'fa-gem', aux_weapon: 'fa-sword'
+        };
+
+        function updateSlotUI(type) {
+            document.querySelectorAll(`.slot[data-type="${type}"]`).forEach(slot => {
+                const item = equipped[type];
+                if (item) {
+                    if (item.img && item.img.includes('fa-')) {
+                        slot.innerHTML = `<i class="${item.img}"></i>`;
+                    } else {
+                        slot.innerHTML = `<img src="${item.img}">`;
+                    }
+                    slot.style.borderColor = 'var(--secondary)';
+                    slot.style.boxShadow = '0 0 10px var(--secondary)';
+                } else {
+                    slot.innerHTML = `<i class="fa-solid ${SLOT_ICONS[type]}"></i>`;
+                    slot.style.borderColor = 'var(--border-cyan)';
+                    slot.style.boxShadow = 'none';
+                }
+            });
+        }
+
+        function updateTotalStats() {
+            let total = {};
+            ALL_STATS.forEach(s => total[s] = 0);
+            
+            Object.values(equipped).forEach(item => {
+                for (const [key, val] of Object.entries(item.stats)) {
+                    if (total.hasOwnProperty(key)) total[key] += val;
+                }
+            });
+
+            // Update UI mapping (có thể mở rộng thêm IDs ở đây)
+            const map = {
+                'Attack Power': 'stat-atk',
+                'Armor': 'stat-armor',
+                'Crit Chance': 'stat-crit',
+                'HP Cap': 'stat-hp'
+            };
+
+            for (const [statName, id] of Object.entries(map)) {
+                document.querySelectorAll(`#${id}`).forEach(el => {
+                    let val = total[statName] || 0;
+                    el.textContent = statName.includes('Chance') ? val.toFixed(1) + '%' : val.toFixed(1);
+                });
+            }
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

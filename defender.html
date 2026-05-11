@@ -615,6 +615,7 @@
         <button class="btn-exit" onclick="window.location.href='campaign.html'">RETURN TO ARCHIVE</button>
       </div>
     </div>
+    <audio id="gameBgm" src="assets/sounds/war_and_war_intrumental.mp3" type="audio/mpeg" loop></audio>
   </div>
 
   <script src="assets/js/loading.js"></script>
@@ -747,6 +748,44 @@
       splitOnHit: false,
       bounceCount: 0,
       knockbackForce: 0
+    };
+
+    /* =============================================
+       SFX SYSTEM
+    ============================================= */
+    window.sfxVolume = parseFloat(localStorage.getItem('pgrSfxVolume') || '0.6');
+    const shootingSfx = new Audio('assets/sounds/shooting.mp3');
+    shootingSfx.load();
+    const alertSfx = new Audio('assets/sounds/alert_warning.ogg');
+    alertSfx.load();
+    const zombieSfx = new Audio('assets/sounds/zombies.mp3');
+    zombieSfx.load();
+
+    /* =============================================
+       BGM SYSTEM
+    ============================================= */
+    const gameBgmPlayer = document.getElementById('gameBgm');
+    function getBgmVolume() {
+      let v = parseFloat(localStorage.getItem('pgrBgmVolume'));
+      if (isNaN(v)) v = 0.5;
+      return Math.max(0, Math.min(1, v));
+    }
+    window.bgmVolume = getBgmVolume();
+
+    window.playSfx = function (audio, volume = null) {
+      if (!audio) return;
+      let soundClone;
+      if (audio instanceof Audio) {
+        soundClone = audio.cloneNode();
+      } else if (typeof audio === 'string') {
+        soundClone = new Audio(`assets/sounds/${audio}.mp3`);
+      } else {
+        return;
+      }
+      // Use provided volume, or global sfxVolume, or default to 0.6
+      const baseVol = window.sfxVolume !== undefined ? window.sfxVolume : 0.6;
+      soundClone.volume = volume !== null ? volume : baseVol;
+      if (soundClone.volume > 0) soundClone.play().catch(() => { });
     };
 
     /* =============================================
@@ -1035,6 +1074,11 @@
       const rate = Math.max(12, CONFIG.enemySpawnRate - (level * 3));
       if (frameCount % rate === 0) {
         enemies.push(new Enemy());
+        
+        // Occasionally play zombie sound when they spawn
+        if (window.playSfx && Math.random() < 0.1) {
+          window.playSfx(zombieSfx, 0.2);
+        }
       }
     }
 
@@ -1068,9 +1112,7 @@
       }
 
       if (window.playSfx) {
-        const laserSfx = new Audio('assets/sounds/nierMail.mp3');
-        laserSfx.volume = 0.2;
-        window.playSfx(laserSfx);
+        window.playSfx(shootingSfx, 0.2);
       }
 
       // Trigger fire animation
@@ -1425,14 +1467,42 @@
       void intro.offsetWidth; // Trigger reflow
       intro.classList.add('map-intro-active');
 
+      if (window.playSfx) {
+        window.playSfx(alertSfx);
+      }
+
       setTimeout(() => {
         intro.style.display = 'none';
         gamePaused = false;
+
+        // Start BGM after intro finishes
+        if (gameBgmPlayer) {
+          window.bgmVolume = getBgmVolume(); // Refresh volume
+          gameBgmPlayer.volume = window.bgmVolume;
+          gameBgmPlayer.currentTime = 0;
+          const playPromise = gameBgmPlayer.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(e => {
+              console.error("BGM Playback failed:", e);
+              const retryPlay = () => {
+                gameBgmPlayer.play();
+                document.removeEventListener('click', retryPlay);
+              };
+              document.addEventListener('click', retryPlay);
+            });
+          }
+        }
       }, 2500);
     }
 
     function endGame() {
       gameRunning = false;
+      
+      // Stop BGM on game over
+      if (gameBgmPlayer) {
+        gameBgmPlayer.pause();
+      }
+
       overlay.style.display = 'flex';
       overlay.style.opacity = 1;
       startMenu.style.display = 'none';

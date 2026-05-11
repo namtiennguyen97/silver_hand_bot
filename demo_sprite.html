@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprite Animation Preview - Silver Hand</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-cyan: #00f2ff;
+            --primary-pink: #ff00c8;
+            --bg-dark: #0a0a0c;
+            --glass-bg: rgba(20, 20, 25, 0.8);
+            --glass-border: rgba(0, 242, 255, 0.3);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 242, 255, 0.1) 0%, transparent 80%),
+                linear-gradient(rgba(0, 242, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.05) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            border-radius: 4px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 242, 255, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        .container::before {
+            content: "SYSTEM DIAGNOSTIC: SPRITE_PREVIEW_v1.0";
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            color: var(--primary-cyan);
+            opacity: 0.5;
+            letter-spacing: 2px;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: var(--primary-cyan);
+            text-shadow: 0 0 15px var(--primary-cyan);
+            letter-spacing: 4px;
+        }
+
+        /* PREVIEW BOX */
+        .preview-box {
+            width: 300px;
+            height: 400px;
+            margin: 0 auto 40px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .preview-box::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 242, 255, 0.05) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        #spriteDisplay {
+            width: 0;
+            height: 0;
+            background-image: url('assets/img/defender/silver_hand_ide.jpg');
+            background-repeat: no-repeat;
+            /* Dynamics sizes will be set by JS */
+        }
+
+        /* CONTROLS */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid var(--primary-cyan);
+            color: var(--primary-cyan);
+            padding: 12px 24px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            letter-spacing: 1px;
+            min-width: 150px;
+        }
+
+        .btn:hover {
+            background: var(--primary-cyan);
+            color: #000;
+            box-shadow: 0 0 20px var(--primary-cyan);
+            transform: translateY(-2px);
+        }
+
+        .btn.active {
+            background: var(--primary-cyan);
+            color: #000;
+            box-shadow: 0 0 15px var(--primary-cyan);
+        }
+
+        .info-panel {
+            margin-top: 30px;
+            font-size: 11px;
+            color: #888;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--primary-cyan);
+            border-radius: 50%;
+            margin-right: 5px;
+            box-shadow: 0 0 5px var(--primary-cyan);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>NEURAL SPRITE PREVIEW</h1>
+        
+        <div class="preview-box">
+            <div id="spriteDisplay"></div>
+        </div>
+
+        <div class="controls">
+            <button class="btn active" onclick="setAnimation(0, this)">01 // IDLE POSE</button>
+            <button class="btn" onclick="setAnimation(1, this)">02 // RELOAD SEQ</button>
+            <button class="btn" onclick="setAnimation(2, this)">03 // HAIR BRUSH</button>
+        </div>
+
+        <div class="info-panel">
+            <div><span class="status-dot"></span> CONNECTION: STABLE</div>
+            <div>ENTITY: SILVER_HAND_CATGIRL</div>
+            <div>GRID: 6x3 SEQUENCE</div>
+        </div>
+    </div>
+
+    <script>
+        const spriteDisplay = document.getElementById('spriteDisplay');
+        const img = new Image();
+        img.src = 'assets/img/defender/silver_hand_ide.jpg';
+
+        const COLS = 6;
+        const ROWS = 3;
+        let currentFrame = 0;
+        let currentRow = 0;
+        let frameWidth = 0;
+        let frameHeight = 0;
+        let animSpeed = 150; // ms
+
+        img.onload = () => {
+            frameWidth = img.width / COLS;
+            frameHeight = img.height / ROWS;
+
+            // Set display size
+            spriteDisplay.style.width = frameWidth + 'px';
+            spriteDisplay.style.height = frameHeight + 'px';
+            spriteDisplay.style.backgroundSize = `${img.width}px ${img.height}px`;
+            
+            startAnimation();
+        };
+
+        function startAnimation() {
+            setInterval(() => {
+                currentFrame = (currentFrame + 1) % COLS;
+                updateFrame();
+            }, animSpeed);
+        }
+
+        function updateFrame() {
+            const posX = -(currentFrame * frameWidth);
+            const posY = -(currentRow * frameHeight);
+            spriteDisplay.style.backgroundPosition = `${posX}px ${posY}px`;
+        }
+
+        function setAnimation(row, btn) {
+            currentRow = row;
+            currentFrame = 0;
+            
+            // UI updates
+            document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            updateFrame();
+        }
+
+        // Handle load error
+        img.onerror = () => {
+            document.body.innerHTML = `
+                <div style="color: #ff3366; text-align: center; font-family: 'Orbitron';">
+                    <h2>ERROR: ASSET_NOT_FOUND</h2>
+                    <p>Make sure 'assets/img/defender/silver_hand_ide.jpg' exists.</p>
+                </div>
+            `;
+        };
+    </script>
+</body>
+</html>

@@ -21,6 +21,23 @@ const STAGE_DATA = [
         tags: ["CLEARED", "3 DAYS", "SAO-ĐÊM"]
     },
     {
+        id: "DEFENDER",
+        title: "SAO-ĐÊM Defender",
+        status: "unlocked",
+        type: "minigame",
+        img: "assets/img/mayor_avatar.jpg",
+        link: "defender.html",
+        x: 22, y: 35,
+        description: "Protect the SAO-ĐÊM perimeter from incoming threats. Stationary defense mode active. Neutralize all descending enemies.",
+        rules: [
+            {icon: "🔫", text: "Stationary defense — aim and fire"},
+            {icon: "👾", text: "Enemies descend from the top"},
+            {icon: "🛡️", text: "Don't let them reach the bottom"},
+            {icon: "💥", text: "Survive as long as possible"}
+        ],
+        tags: ["NEW", "ACTION", "DEFENSE"]
+    },
+    {
         id: "CTC_PLANER",
         title: "CTC Planer",
         status: "unlocked",

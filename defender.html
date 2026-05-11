@@ -658,24 +658,52 @@
     };
     playerImg.src = 'assets/img/defender/player.jpg';
 
-    const zombieImg = new Image();
-    zombieImg.onload = () => {
-      console.log(`Zombie sprite loaded: ${zombieImg.width}x${zombieImg.height}`);
-      const cols = 6;
-      const rows = 6;
-      window.zombieGrid = {
-        fw: Math.floor(zombieImg.width / cols),
-        fh: Math.floor(zombieImg.height / rows),
-        sequences: {
-          walk: { row: 0, length: 6, loop: true, speed: 8 },
-          fall: { row: 2, length: 4, loop: false, speed: 6, next: 'getup' },
-          getup: { row: 3, length: 4, loop: false, speed: 8, next: 'walk' },
-          attack: { row: 4, length: 4, loop: false, speed: 6, next: 'walk' },
-          die: { row: 5, length: 6, loop: false, speed: 7 }
+    const ZOMBIE_TYPES = {
+      normal: {
+        src: 'assets/img/defender/zombie.png',
+        cols: 6, rows: 7,
+        img: new Image(),
+        grid: null,
+        stats: { hpBase: 80, hpScale: 35, speedMult: 1.0, radiusMult: 1.0, animSpeedMult: 1.0 }
+      },
+      tank: {
+        src: 'assets/img/defender/zombie_tank.png',
+        cols: 8, rows: 7,
+        img: new Image(),
+        grid: null,
+        stats: { hpBase: 400, hpScale: 100, speedMult: 0.6, radiusMult: 1.8, animSpeedMult: 0.8 },
+        seqOverrides: {
+          walk: 7,
+          fall: 6,
+          getup: 5,
+          attack: 7,
+          hit: 4,
+          die_collapse: 7,
+          die_explode: 6
         }
-      };
+      }
     };
-    zombieImg.src = 'assets/img/defender/zombie.png';
+
+    // Initialize Zombie Types
+    Object.keys(ZOMBIE_TYPES).forEach(key => {
+      const type = ZOMBIE_TYPES[key];
+      type.img.onload = () => {
+        type.grid = {
+          fw: type.img.width / type.cols,
+          fh: type.img.height / type.rows,
+          sequences: {
+            walk:        { row: 0, length: type.seqOverrides?.walk || 6, loop: true,  speed: 8 / type.stats.animSpeedMult },
+            fall:        { row: 1, length: type.seqOverrides?.fall || 5, loop: false, speed: 6 / type.stats.animSpeedMult },
+            getup:       { row: 2, length: type.seqOverrides?.getup || 5, loop: false, speed: 8 / type.stats.animSpeedMult },
+            attack:      { row: 3, length: type.seqOverrides?.attack || 6, loop: false, speed: 5 / type.stats.animSpeedMult },
+            hit:         { row: 4, length: type.seqOverrides?.hit || 4, loop: false, speed: 4 / type.stats.animSpeedMult },
+            die_collapse:{ row: 5, length: type.seqOverrides?.die_collapse || 6, loop: false, speed: 7 / type.stats.animSpeedMult },
+            die_explode: { row: 6, length: type.seqOverrides?.die_explode || 6, loop: false, speed: 6 / type.stats.animSpeedMult }
+          }
+        };
+      };
+      type.img.src = type.src;
+    });
 
     let width, height;
     let gameRunning = false;
@@ -702,7 +730,7 @@
       playerY: 0.82,
       enemySpawnRate: 85,
       projectileSpeed: 12, // Faster bullets
-      enemySpeedBase: 0.9, // Slower enemies
+      enemySpeedBase: 0.25, // Much slower enemies
       fireRateDelay: 60, // Slower base fire rate (1 shot/sec)
       colors: {
         cyan: '#00f2ff',
@@ -725,7 +753,7 @@
        CLASSES
     ============================================= */
     class Projectile {
-      constructor(x, y, angle, isCrit = false, bounces = 0) {
+      constructor(x, y, angle, isCrit = false, bounces = 0, canSplit = true) {
         this.x = x;
         this.y = y;
         this.angle = angle;
@@ -735,6 +763,7 @@
         this.isCrit = isCrit;
         this.pierceLeft = CONFIG.pierceCount;
         this.bouncesLeft = bounces;
+        this.canSplit = canSplit;
       }
 
       update() {
@@ -778,24 +807,46 @@
         this.radius = Math.random() * 5 + 15;
         this.x = Math.random() * (width - this.radius * 2) + this.radius;
         this.y = -this.radius;
-        this.speed = Math.random() * 0.8 + CONFIG.enemySpeedBase;
+        
+        // Determine type based on random weights
+        const rand = Math.random();
+        this.zType = 'normal';
+        if (level >= 10 && rand < 0.2) this.zType = 'tank';
+        else if (rand < 0.4) this.type = 'zigzag'; // Keep movement type zigzag
+        
+        const config = ZOMBIE_TYPES[this.zType] || ZOMBIE_TYPES.normal;
+        
+        // Stats and scaling
+        const levelSpeedBoost = (level - 1) * 0.03; 
+        this.radius *= config.stats.radiusMult;
+        this.speed = (Math.random() * 0.2 + CONFIG.enemySpeedBase * config.stats.speedMult) + levelSpeedBoost;
+        
         this.active = true;
-        this.color = Math.random() > 0.3 ? CONFIG.colors.pink : CONFIG.colors.gold;
         this.angle = 0;
         this.knockbackY = 0;
-        this.maxHp = 50 + (level * 15);
+        
+        this.maxHp = config.stats.hpBase + (level * config.stats.hpScale); 
         this.hp = this.maxHp;
 
-        // Animation
+        // Visuals
+        this.color = this.zType === 'tank' ? '#ff4400' : (this.type === 'zigzag' ? CONFIG.colors.cyan : (Math.random() > 0.3 ? CONFIG.colors.pink : CONFIG.colors.gold));
+        this.sinOffset = Math.random() * Math.PI * 2;
+        this.sinSpeed = 0.04;
+        this.sinAmp = this.type === 'zigzag' ? 2.5 : 0;
+
+        // Animation state
         this.state = 'walk';
         this.frameIndex = 0;
         this.animTimer = 0;
         this.isDead = false;
         this.deathComplete = false;
+        this.isAttacking = false;
+        this.dieState = Math.random() < 0.5 ? 'die_collapse' : 'die_explode';
       }
 
       setState(newState) {
-        if (this.isDead && newState !== 'die') return;
+        // When dead, only allow death animation states
+        if (this.isDead && newState !== 'die_collapse' && newState !== 'die_explode') return;
         if (this.state === newState) return;
         this.state = newState;
         this.frameIndex = 0;
@@ -804,18 +855,32 @@
 
       update() {
         if (!this.isDead) {
-          this.y += this.speed + this.knockbackY;
-          this.knockbackY *= 0.9;
+          if (!this.isAttacking) {
+            this.y += this.speed + this.knockbackY;
+            this.knockbackY *= 0.9;
 
-          if (this.y > height + this.radius) {
-            this.active = false;
-            takeDamage(10);
+            // Zigzag movement logic
+            if (this.type === 'zigzag') {
+              this.x += Math.sin(frameCount * this.sinSpeed + this.sinOffset) * this.sinAmp;
+              // Keep within bounds
+              if (this.x < this.radius) this.x = this.radius;
+              if (this.x > width - this.radius) this.x = width - this.radius;
+            }
+
+            // Stop when reaching the player zone and start attacking
+            const attackStopY = height * CONFIG.playerY - 45;
+            if (this.y >= attackStopY) {
+              this.y = attackStopY;
+              this.isAttacking = true;
+              this.setState('attack');
+            }
           }
         }
 
         // Animation logic
-        if (window.zombieGrid) {
-          const seq = window.zombieGrid.sequences[this.state];
+        const config = ZOMBIE_TYPES[this.zType] || ZOMBIE_TYPES.normal;
+        if (config.grid) {
+          const seq = config.grid.sequences[this.state];
           if (seq) {
             this.animTimer++;
             if (this.animTimer >= seq.speed) {
@@ -824,14 +889,26 @@
               if (this.frameIndex >= seq.length) {
                 if (seq.loop) {
                   this.frameIndex = 0;
+                } else if (this.state === 'attack') {
+                  // Loop attack and deal damage each full cycle
+                  this.frameIndex = 0;
+                  if (!this.isDead) takeDamage(8);
+                } else if (this.state === 'fall') {
+                  this.setState('getup');
+                } else if (this.state === 'getup') {
+                  this.isAttacking = false;
+                  this.setState('walk');
+                } else if (this.state === 'hit') {
+                  if (this.isAttacking) {
+                    this.setState('attack');
+                  } else {
+                    this.setState('walk');
+                  }
+                } else if (this.state === 'die_collapse' || this.state === 'die_explode') {
+                  this.deathComplete = true;
+                  this.active = false;
                 } else {
                   this.frameIndex = seq.length - 1;
-                  if (seq.next) {
-                    this.setState(seq.next);
-                  } else if (this.state === 'die') {
-                    this.deathComplete = true;
-                    this.active = false;
-                  }
                 }
               }
             }
@@ -843,30 +920,50 @@
         ctx.save();
         ctx.translate(this.x, this.y);
 
-        // HP Bar (only if not dead)
-        if (!this.isDead) {
-          const barW = this.radius * 2;
-          const barH = 4;
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-          ctx.fillRect(-barW / 2, -this.radius - 20, barW, barH);
-          ctx.fillStyle = this.hp / this.maxHp > 0.3 ? this.color : '#ff0000';
-          ctx.fillRect(-barW / 2, -this.radius - 20, barW * (this.hp / this.maxHp), barH);
-        }
+        const config = ZOMBIE_TYPES[this.zType] || ZOMBIE_TYPES.normal;
+        const currentImg = config.img;
+        const currentGrid = config.grid;
 
-        if (zombieImg.complete && window.zombieGrid) {
-          const g = window.zombieGrid;
+        if (currentImg.complete && currentGrid) {
+          const g = currentGrid;
           const seq = g.sequences[this.state];
           const sx = this.frameIndex * g.fw;
           const sy = seq.row * g.fh;
+ 
+          // Separate parameters for each zombie type to avoid one affecting the other
+          let shMult = 1.0;
+          let yOffset = 0.95;
+          
+          if (this.zType === 'tank') {
+            shMult = 1.0; // Tank is tall enough with 7 rows, no extra height needed
+            yOffset = 0.93;
+          } else {
+            shMult = 1.25; // Normal zombie needs extra height for feet
+            yOffset = 0.9;
+          }
 
-          // Adjusted draw size to ensure full body visibility
-          const drawSize = this.radius * 5; 
+          const sh = g.fh * shMult; 
+          const sw = g.fw; 
+          const aspect = sh / g.fw;
+          const dw = this.radius * 5; 
+          const dh = dw * aspect;
+
           ctx.drawImage(
-            zombieImg,
-            sx, sy, g.fw, g.fh,
-            -drawSize / 2, -drawSize / 2, drawSize, drawSize
+            currentImg,
+            sx, sy, sw, sh,
+            -dw / 2, -dh * yOffset, dw, dh
           );
 
+          // HP Bar (drawn AFTER sprite so it is on top)
+          if (!this.isDead) {
+            const barW = this.radius * 2;
+            const barH = 4;
+            const barY = -dh * 0.9; // Position above the zombie's head
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fillRect(-barW / 2, barY, barW, barH);
+            ctx.fillStyle = this.hp / this.maxHp > 0.3 ? this.color : '#ff0000';
+            ctx.fillRect(-barW / 2, barY, barW * (this.hp / this.maxHp), barH);
+          }
         } else {
           // Fallback
           ctx.rotate(this.angle);
@@ -879,13 +976,11 @@
             const ang = (i / 6) * Math.PI * 2;
             const px = Math.cos(ang) * this.radius;
             const py = Math.sin(ang) * this.radius;
-            if (i === 0) ctx.moveTo(px, py);
-            else ctx.lineTo(px, py);
+            if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
           }
           ctx.closePath();
           ctx.stroke();
         }
-
         ctx.restore();
       }
     }
@@ -937,7 +1032,7 @@
     }
 
     function spawnEnemy() {
-      const rate = Math.max(20, CONFIG.enemySpawnRate - (level * 2));
+      const rate = Math.max(12, CONFIG.enemySpawnRate - (level * 3));
       if (frameCount % rate === 0) {
         enemies.push(new Enemy());
       }
@@ -1091,6 +1186,7 @@
       }
 
       // Update enemies & Collisions
+      const newProjectiles = [];
       for (let i = enemies.length - 1; i >= 0; i--) {
         const e = enemies[i];
         e.update();
@@ -1111,7 +1207,7 @@
             if (CONFIG.knockbackForce > 0) {
               e.knockbackY = -CONFIG.knockbackForce;
               if (CONFIG.knockbackForce > 1) {
-                e.setState('fall');
+                e.setState('hit'); // Temporarily use 'hit' instead of 'fall'
               }
             }
 
@@ -1121,9 +1217,12 @@
             e.hp -= dmg;
 
             // Split logic
-            if (CONFIG.splitOnHit) {
-              projectiles.push(new Projectile(e.x, e.y, p.angle - 0.5, false, 0));
-              projectiles.push(new Projectile(e.x, e.y, p.angle + 0.5, false, 0));
+            if (CONFIG.splitOnHit && p.canSplit) {
+              const offsetX = Math.cos(p.angle) * 10;
+              const offsetY = Math.sin(p.angle) * 10;
+              newProjectiles.push(new Projectile(e.x + offsetX, e.y + offsetY, p.angle - 0.5, false, 0, false));
+              newProjectiles.push(new Projectile(e.x + offsetX, e.y + offsetY, p.angle + 0.5, false, 0, false));
+              p.canSplit = false;
             }
 
             createExplosion(e.x, e.y, e.color);
@@ -1138,13 +1237,17 @@
 
             if (e.hp <= 0 && !e.isDead) {
               e.isDead = true;
-              e.setState('die');
+              e.setState(e.dieState);
               score += 100;
               gainXp(25);
               break;
             }
           }
         }
+      }
+      // Add split projectiles to main array after loop
+      if (newProjectiles.length > 0) {
+        projectiles.push(...newProjectiles);
       }
 
       // Update particles

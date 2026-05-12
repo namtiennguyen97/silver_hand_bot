@@ -11,6 +11,7 @@
     href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="assets/css/loading.css">
+  <link rel="stylesheet" href="assets/css/rpg_chat.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
@@ -567,7 +568,7 @@
 
     <div id="mapIntro">
       <div class="map-intro-text">
-        HOPE 101 ZONE
+        CAMP INVASION
         <div class="map-intro-line"></div>
       </div>
     </div>
@@ -585,6 +586,7 @@
       <div class="pause-title">SYSTEM PAUSED</div>
       <p style="margin-bottom: 30px; color: #aaa;">MISSION INTERRUPTED</p>
       <button class="btn-start" onclick="togglePause()">RESUME MISSION</button>
+      <button class="btn-start" style="margin-top: 15px; border-color: #ff3366; color: #ff3366; font-size: 11px;" onclick="restartFromPause()">RESTART MISSION</button>
     </div>
 
     <!-- START MENU -->
@@ -608,9 +610,27 @@
       </div>
     </div>
     <audio id="gameBgm" src="assets/sounds/war_and_war_intrumental.mp3" type="audio/mpeg" loop></audio>
+
+    <!-- RPG CHAT OVERLAY -->
+    <div id="rpgChatOverlay">
+      <div class="rpg-chat-box">
+        <div class="rpg-corner top-left"></div>
+        <div class="rpg-corner bottom-right"></div>
+        <div class="rpg-speaker-tag" id="rpgSpeakerName">Silver-Hand</div>
+        <div class="rpg-avatar">
+          <img src="assets/img/mayor_5.png" alt="Avatar">
+          <div class="avatar-scanline"></div>
+        </div>
+        <div class="rpg-chat-content-wrapper">
+          <div class="rpg-chat-content" id="rpgChatContent"></div>
+          <div class="rpg-next-indicator" id="rpgNextIndicator">▼</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="assets/js/loading.js"></script>
+  <script src="assets/js/rpg_chat.js"></script>
   <script>
     /* =============================================
        GAME CONSTANTS & STATE
@@ -654,59 +674,84 @@
     const ZOMBIE_TYPES = {
       normal: {
         src: 'assets/img/defender/zombie.png',
-        cols: 10, rows: 8,
-        stats: { hpBase: 80, hpScale: 35, speedMult: 1.0, radiusMult: 1.0, animSpeedMult: 1.0, scoreValue: 100, expValue: 25 },
+        cols: 8, rows: 8,
+        stats: { hpBase: 80, hpScale: 35, speedMult: 1.0, radiusMult: 1.35, animSpeedMult: 1.0, scoreValue: 100, expValue: 25 },
         render: {
-          drawScale: 5.0,  // Multiplier for radius to determine width
-          yOffset: 0.95,    // Vertical alignment offset
-          shMult: 1.0,    // Height multiplier (already uniform in new asset)
+          drawScale: 5.0,
+          yOffset: 0.95,
+          shMult: 1.0,
         },
         sequences: {
-          walk:        { row: 0, length: 10, cols: 10, loop: true,  speed: 8 },
-          fall:        { row: 1, length: 10, cols: 10, loop: false, speed: 6 },
-          getup:       { row: 2, length: 10, cols: 10, loop: false, speed: 8 },
-          attack:      { row: 3, length: 10, cols: 10, loop: false, speed: 5 },
-          hit:         { row: 4, length: 10, cols: 10, loop: false, speed: 4 },
-          die_collapse:{ row: 5, length: 10, cols: 10, loop: false, speed: 7 },
-          die_explode: { row: 6, length: 10, cols: 10, loop: false, speed: 6 }
+          walk: { row: 0, length: 8, cols: 8, loop: true, speed: 8 },
+          hit: { row: 1, length: 8, cols: 8, loop: false, speed: 4 },
+          fall: { row: 1, length: 8, cols: 8, loop: false, speed: 6 },
+          getup: { row: 2, length: 8, cols: 8, loop: false, speed: 8 },
+          attack: { row: 3, length: 8, cols: 8, loop: false, speed: 5 },
+          die_collapse: { row: 4, length: 8, cols: 8, loop: false, speed: 7 },
+          die_explode: { row: 5, length: 8, cols: 8, loop: false, speed: 6 },
+          spawn: { row: 6, length: 8, cols: 8, loop: false, speed: 10 },
+          run: { row: 7, length: 8, cols: 8, loop: true, speed: 6 }
         }
       },
       female: {
         src: 'assets/img/defender/zombie_female.png',
         cols: 10, rows: 8,
-        stats: { hpBase: 65, hpScale: 30, speedMult: 1.25, radiusMult: 0.95, animSpeedMult: 1.1, scoreValue: 120, expValue: 30 },
+        stats: { hpBase: 65, hpScale: 30, speedMult: 1.25, radiusMult: 1.35, animSpeedMult: 1.1, scoreValue: 120, expValue: 30 },
         render: {
-          drawScale: 5.0,
+          drawScale: 3.2,
           yOffset: 0.95,
           shMult: 1.0,
         },
         sequences: {
-          walk:        { row: 0, length: 10, cols: 10, loop: true,  speed: 7 },
-          fall:        { row: 1, length: 10, cols: 10, loop: false, speed: 6 },
-          getup:       { row: 2, length: 10, cols: 10, loop: false, speed: 8 },
-          attack:      { row: 3, length: 10, cols: 10, loop: false, speed: 5 },
-          hit:         { row: 4, length: 10, cols: 10, loop: false, speed: 4 },
-          die_collapse:{ row: 5, length: 10, cols: 10, loop: false, speed: 7 },
-          die_explode: { row: 6, length: 10, cols: 10, loop: false, speed: 6 }
+          walk: { row: 0, length: 10, cols: 10, loop: true, speed: 7 },
+          hit: { row: 1, length: 10, cols: 10, loop: false, speed: 4 },
+          fall: { row: 1, length: 10, cols: 10, loop: false, speed: 6 },
+          getup: { row: 2, length: 10, cols: 10, loop: false, speed: 8 },
+          attack: { row: 3, length: 10, cols: 10, loop: false, speed: 5 },
+          die_collapse: { row: 4, length: 10, cols: 10, loop: false, speed: 7 },
+          die_explode: { row: 5, length: 10, cols: 10, loop: false, speed: 6 },
+          spawn: { row: 6, length: 10, cols: 10, loop: false, speed: 10 },
+          run: { row: 7, length: 10, cols: 10, loop: true, speed: 6 }
         }
       },
       tank: {
         src: 'assets/img/defender/zombie_tank.png',
         cols: 8, rows: 8,
-        stats: { hpBase: 400, hpScale: 100, speedMult: 0.6, radiusMult: 1.6, animSpeedMult: 0.8, scoreValue: 500, expValue: 150 },
+        stats: { hpBase: 400, hpScale: 100, speedMult: 0.35, radiusMult: 1.6, animSpeedMult: 0.8, scoreValue: 500, expValue: 150 },
         render: {
           drawScale: 5.0,
           yOffset: 0.95,
           shMult: 1.0,
         },
         sequences: {
-          walk:        { row: 0, length: 8, cols: 8, loop: true,  speed: 10 },
-          fall:        { row: 1, length: 8, cols: 8, loop: false, speed: 8 },
-          getup:       { row: 2, length: 8, cols: 8, loop: false, speed: 10 },
-          attack:      { row: 3, length: 8, cols: 8, loop: false, speed: 7 },
-          hit:         { row: 4, length: 8, cols: 8, loop: false, speed: 5 },
-          die_collapse:{ row: 5, length: 8, cols: 8, loop: false, speed: 9 },
-          die_explode: { row: 6, length: 8, cols: 8, loop: false, speed: 8 }
+          walk: { row: 0, length: 16, cols: 8, loop: true, speed: 10 },
+          attack: { row: 2, length: 16, cols: 8, loop: false, speed: 7 },
+          hit: { row: 4, length: 8, cols: 8, loop: false, speed: 5 },
+          fall: { row: 4, length: 8, cols: 8, loop: false, speed: 5 },
+          die_collapse: { row: 5, length: 8, cols: 8, loop: false, speed: 9 },
+          getup: { row: 6, length: 8, cols: 8, loop: false, speed: 10 },
+          die_explode: { row: 7, length: 8, cols: 8, loop: false, speed: 8 }
+        }
+      },
+      child: {
+        src: 'assets/img/defender/zombie.png',
+        cols: 8, rows: 8,
+        stats: { hpBase: 40, hpScale: 15, speedMult: 1.4, radiusMult: 1.35, animSpeedMult: 1.4, scoreValue: 80, expValue: 15 },
+        render: {
+          drawScale: 5.0,
+          yOffset: 0.95,
+          shMult: 1.0,
+        },
+        sequences: {
+          walk: { row: 0, length: 8, cols: 8, loop: true, speed: 8 },
+          hit: { row: 1, length: 8, cols: 8, loop: false, speed: 4 },
+          fall: { row: 1, length: 8, cols: 8, loop: false, speed: 6 },
+          getup: { row: 2, length: 8, cols: 8, loop: false, speed: 8 },
+          attack: { row: 3, length: 8, cols: 8, loop: false, speed: 5 },
+          die_collapse: { row: 4, length: 8, cols: 8, loop: false, speed: 7 },
+          die_explode: { row: 5, length: 8, cols: 8, loop: false, speed: 6 },
+          spawn: { row: 6, length: 8, cols: 8, loop: false, speed: 10 },
+          run: { row: 7, length: 8, cols: 8, loop: true, speed: 6 }
         }
       }
     };
@@ -866,32 +911,34 @@
         this.radius = 18; // Standardized base radius for uniformity
         this.x = Math.random() * (width - this.radius * 2) + this.radius;
         this.y = -this.radius;
-        
+
         // Use passed type
         this.zType = zType;
-        
+
         const config = ZOMBIE_TYPES[this.zType] || ZOMBIE_TYPES.normal;
-        
+
         // Stats and scaling
-        const levelSpeedBoost = (level - 1) * 0.03; 
+        const levelSpeedBoost = (level - 1) * 0.03;
         this.radius *= config.stats.radiusMult;
         this.speed = (Math.random() * 0.2 + CONFIG.enemySpeedBase * config.stats.speedMult) + levelSpeedBoost;
-        
+
         this.active = true;
         this.angle = 0;
         this.knockbackY = 0;
-        
-        this.maxHp = config.stats.hpBase + (level * config.stats.hpScale); 
+
+        this.maxHp = config.stats.hpBase + (level * config.stats.hpScale);
         this.hp = this.maxHp;
 
-        // Visuals
-        this.color = this.zType === 'tank' ? '#ff4400' : (this.type === 'zigzag' ? CONFIG.colors.cyan : (Math.random() > 0.3 ? CONFIG.colors.pink : CONFIG.colors.gold));
+        // Visuals & Movement Type
+        this.isZigzag = (this.zType === 'female' || this.zType === 'child') && Math.random() < 0.35;
+        this.color = this.zType === 'tank' ? '#ff4400' : (this.isZigzag ? CONFIG.colors.cyan : (Math.random() > 0.3 ? CONFIG.colors.pink : CONFIG.colors.gold));
+
         this.sinOffset = Math.random() * Math.PI * 2;
-        this.sinSpeed = 0.04;
-        this.sinAmp = this.type === 'zigzag' ? 2.5 : 0;
+        this.sinSpeed = this.zType === 'child' ? 0.04 : 0.02;
+        this.sinAmp = this.isZigzag ? (this.zType === 'child' ? 3.0 : 1.8) : 0;
 
         // Animation state
-        this.state = 'walk';
+        this.state = this.isZigzag ? 'run' : 'walk';
         this.frameIndex = 0;
         this.animTimer = 0;
         this.isDead = false;
@@ -916,7 +963,7 @@
             this.knockbackY *= 0.9;
 
             // Zigzag movement logic
-            if (this.type === 'zigzag') {
+            if (this.isZigzag) {
               this.x += Math.sin(frameCount * this.sinSpeed + this.sinOffset) * this.sinAmp;
               // Keep within bounds
               if (this.x < this.radius) this.x = this.radius;
@@ -949,16 +996,11 @@
                   // Loop attack and deal damage each full cycle
                   this.frameIndex = 0;
                   if (!this.isDead) takeDamage(8);
-                } else if (this.state === 'fall') {
-                  this.setState('getup');
-                } else if (this.state === 'getup') {
-                  this.isAttacking = false;
-                  this.setState('walk');
-                } else if (this.state === 'hit') {
+                } else if (this.state === 'fall' || this.state === 'hit') {
                   if (this.isAttacking) {
                     this.setState('attack');
                   } else {
-                    this.setState('walk');
+                    this.setState(this.isZigzag ? 'run' : 'walk');
                   }
                 } else if (this.state === 'die_collapse' || this.state === 'die_explode') {
                   this.deathComplete = true;
@@ -983,31 +1025,28 @@
           const seq = config.sequences[this.state];
           const frameIdx = Math.floor(this.frameIndex);
           const safeFrame = Math.min(frameIdx, seq.length - 1);
-          
+
           const totalW = currentImg.width;
           const totalH = currentImg.height;
           const totalCols = seq.cols || config.cols;
           const totalRows = config.rows;
 
-          // Exact pixel boundaries for 1024/8 (128px frames)
-          const sx = Math.floor(safeFrame * (totalW / totalCols));
-          const sy = Math.floor(seq.row * (totalH / totalRows));
-          const sw = Math.floor((safeFrame + 1) * (totalW / totalCols)) - sx;
-          const sh = Math.floor((seq.row + 1) * (totalH / totalRows)) - sy;
- 
+          // Calculate row and col for multi-row animations
+          const actualRow = seq.row + Math.floor(safeFrame / totalCols);
+          const actualCol = safeFrame % totalCols;
+
+          const sx = Math.floor(actualCol * (totalW / totalCols));
+          const sy = Math.floor(actualRow * (totalH / totalRows));
+          const sw = Math.floor((actualCol + 1) * (totalW / totalCols)) - sx;
+          const sh = Math.floor((actualRow + 1) * (totalH / totalRows)) - sy;
+
           const render = config.render || { drawScale: 5, yOffset: 0.95, shMult: 1.0 };
-          const drawSh = sh * (render.shMult || 1.0); 
+          const drawSh = sh * (render.shMult || 1.0);
           const aspect = drawSh / sw;
-          
-          const dw = this.radius * (render.drawScale || 5.0); 
+
+          const dw = this.radius * (render.drawScale || 5.0);
           const dh = dw * aspect;
 
-          // Flip sprite horizontally if on the right side of the screen
-          const shouldFlip = this.zType === 'tank' && this.x > width / 2;
-          
-          if (shouldFlip) {
-            ctx.scale(-1, 1);
-          }
 
           ctx.drawImage(
             currentImg,
@@ -1095,7 +1134,7 @@
       const rate = Math.max(12, CONFIG.enemySpawnRate - (level * 3));
       if (frameCount % rate === 0) {
         let type = 'normal';
-        
+
         // Difficulty scaling
         const tankProb = level >= 10 ? 0.2 : (level >= 5 ? 0.1 : 0);
         const rand = Math.random();
@@ -1103,12 +1142,15 @@
         if (rand < tankProb) {
           type = 'tank';
         } else {
-          // 50/50 split between normal and female for visual variety
-          type = Math.random() < 0.5 ? 'normal' : 'female';
+          // Weighted split for variety
+          const typeRand = Math.random();
+          if (typeRand < 0.4) type = 'normal';
+          else if (typeRand < 0.75) type = 'female';
+          else type = 'child';
         }
 
         enemies.push(new Enemy(type));
-        
+
         // Occasionally play zombie sound when they spawn
         if (window.playSfx && Math.random() < 0.1) {
           window.playSfx(zombieSfx, 0.2);
@@ -1287,13 +1329,13 @@
           const dy = e.y - p.y;
           const distSq = dx * dx + dy * dy;
           const radiusSum = e.radius + 15;
-          
+
           if (distSq < radiusSum * radiusSum) { // Comparing squared distances
             // Knockback
             if (CONFIG.knockbackForce > 0) {
               e.knockbackY = -CONFIG.knockbackForce;
               if (CONFIG.knockbackForce > 1) {
-                e.setState('hit'); // Temporarily use 'hit' instead of 'fall'
+                e.setState('fall');
               }
             }
 
@@ -1414,11 +1456,11 @@
       ctx.restore();
 
       projectiles.forEach(p => p.draw());
-      
+
       // Y-sorting: Sort enemies by their Y coordinate so those closer to the bottom are drawn on top
       const sortedEnemies = [...enemies].sort((a, b) => a.y - b.y);
       sortedEnemies.forEach(e => e.draw());
-      
+
       particles.forEach(p => p.draw());
     }
 
@@ -1489,9 +1531,43 @@
       frameCount = 0;
       lastFireTime = 0;
       gameRunning = true;
-      gamePaused = true; // Pause for intro
+      gamePaused = true;
       overlay.style.display = 'none';
+      document.getElementById('pauseOverlay').style.display = 'none';
 
+      // RPG Chat Intro
+      if (window.showRPGChat) {
+        const introMessages = [
+          "Why no one join camp invasion today?",
+          "None of the matter, this dead camp has only me. I will fight anyway."
+        ];
+        let msgIndex = 0;
+
+        const showNextMessage = () => {
+          if (msgIndex < introMessages.length) {
+            window.showRPGChat(introMessages[msgIndex], "assets/img/mayor_5.png", "Silver-Hand");
+            msgIndex++;
+          } else {
+            // Restore original function and start game
+            window.hideRPGChat = originalHide;
+            startMapIntro();
+          }
+        };
+
+        // Override hideRPGChat to trigger next message
+        const originalHide = window.hideRPGChat;
+        window.hideRPGChat = function () {
+          originalHide();
+          showNextMessage();
+        };
+
+        showNextMessage();
+      } else {
+        startMapIntro();
+      }
+    }
+
+    function startMapIntro() {
       // Reset HUD
       document.getElementById('shieldBar').style.width = '100%';
       document.getElementById('hpBar').style.width = '100%';
@@ -1545,7 +1621,7 @@
 
     function endGame() {
       gameRunning = false;
-      
+
       // Stop BGM on game over
       if (gameBgmPlayer) {
         gameBgmPlayer.pause();
@@ -1568,6 +1644,12 @@
       if (!gameRunning || buffOverlay.style.display === 'flex') return;
       gamePaused = !gamePaused;
       document.getElementById('pauseOverlay').style.display = gamePaused ? 'flex' : 'none';
+    }
+
+    function restartFromPause() {
+      gamePaused = false;
+      document.getElementById('pauseOverlay').style.display = 'none';
+      startGame();
     }
 
     window.addEventListener('keydown', (e) => {

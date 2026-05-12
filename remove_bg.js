@@ -36,8 +36,8 @@ async function processImage(fileName, backgroundType = 'white') {
 }
 
 async function main() {
-  await processImage('zombie.png', 'white');
-  await processImage('zombie_tank.png', 'white');
+  await processImage('zombie.png', 'black');
+  await processImage('zombie_tank.png', 'black');
   await processImage('zombie_female.png', 'black');
 }
 

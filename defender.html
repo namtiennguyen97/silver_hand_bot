@@ -138,8 +138,24 @@
     .bars-wrap {
       display: flex;
       flex-direction: column;
-      gap: 5px;
-      width: 150px;
+      gap: 12px; /* Increased gap for labels */
+      position: relative;
+    }
+
+    .defense-bars {
+      position: absolute;
+      bottom: 22%; /* Just above the defense line */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70%;
+      z-index: 110;
+      pointer-events: none;
+    }
+
+    .top-left-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .bar-outer {
@@ -487,6 +503,24 @@
       animation: lineSwipe 2.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
     }
 
+    @keyframes shake {
+      0% { transform: translate(0,0); }
+      10% { transform: translate(-5px,-5px); }
+      20% { transform: translate(5px,5px); }
+      30% { transform: translate(-5px,5px); }
+      40% { transform: translate(5px,-5px); }
+      50% { transform: translate(-5px,-5px); }
+      60% { transform: translate(5px,5px); }
+      70% { transform: translate(-5px,5px); }
+      80% { transform: translate(5px,-5px); }
+      90% { transform: translate(-5px,-5px); }
+      100% { transform: translate(0,0); }
+    }
+
+    .shake-active {
+      animation: shake 0.1s infinite;
+    }
+
     /* RESPONSIVE */
     @media (max-width: 600px) {
       #gameContainer {
@@ -534,17 +568,11 @@
 
     <div id="hud">
       <div class="hud-top">
-        <div class="hud-stat">
-          <div class="bars-wrap">
-            <div class="bar-outer">
-              <div class="bar-label">SHIELD</div>
-              <div class="bar-fill bar-shield" id="shieldBar"></div>
-            </div>
-            <div class="bar-outer">
-              <div class="bar-label">VITALITY</div>
-              <div class="bar-fill bar-hp" id="hpBar"></div>
-            </div>
+        <div class="hud-stat top-left-ctrl">
+          <div class="btn-pause" onclick="togglePause()" style="width: 30px; height: 30px; font-size: 12px; margin-top: 0;">
+            <i class="fa-solid fa-pause"></i>
           </div>
+          <div style="font-size: 8px; color: var(--primary-cyan); opacity: 0.8; font-family: 'Orbitron';">PAUSE</div>
         </div>
         <div class="hud-stat score-wrap">
           <div class="stat-label">DATA CAPTURED</div>
@@ -559,6 +587,21 @@
     </div>
 
     <canvas id="gameCanvas"></canvas>
+
+    <!-- NEW DEFENSE BARS POSITION -->
+    <div class="defense-bars" id="barsWrap" style="opacity: 0; transition: opacity 0.5s ease;">
+      <div style="font-size: 10px; color: var(--primary-cyan); font-family: 'Orbitron'; margin-bottom: 8px; letter-spacing: 2px; text-shadow: 0 0 10px var(--primary-cyan);">CAMP BARRIER</div>
+      <div class="bars-wrap">
+        <div class="bar-outer">
+          <div class="bar-label">SHIELD</div>
+          <div class="bar-fill bar-shield" id="shieldBar"></div>
+        </div>
+        <div class="bar-outer">
+          <div class="bar-label">VITALITY</div>
+          <div class="bar-fill bar-hp" id="hpBar"></div>
+        </div>
+      </div>
+    </div>
 
     <div class="hud-controls">
       <div class="btn-pause" onclick="togglePause()">
@@ -767,6 +810,9 @@
           seq.speed /= (type.stats.animSpeedMult || 1.0);
         });
         console.log(`Zombie type [${key}] loaded.`);
+        // Pre-calculate frame dimensions for faster rendering
+        type.fw = type.img.width / type.cols;
+        type.fh = type.img.height / type.rows;
       };
       type.img.src = type.src;
     });
@@ -784,6 +830,7 @@
     let xpToNextLevel = 100;
     let frameCount = 0;
     let lastFireTime = 0;
+    let lastDisplayedScore = -1;
 
     // Player Animation
     // Frames: 0=Idle, 1=Firing-1, 2=Firing-2, 3=Firing-2dup, 4=Reload
@@ -896,13 +943,9 @@
         const thickness = this.isCrit ? 4 : 2;
 
         ctx.fillStyle = this.isCrit ? CONFIG.colors.gold : CONFIG.colors.cyan;
-        ctx.shadowBlur = this.isCrit ? 20 : 10;
-        ctx.shadowColor = ctx.fillStyle;
-
         ctx.fillRect(-length / 2, -thickness / 2, length, thickness);
 
         ctx.restore();
-        ctx.shadowBlur = 0;
       }
     }
 
@@ -910,7 +953,7 @@
       constructor(zType = 'normal') {
         this.radius = 18; // Standardized base radius for uniformity
         this.x = Math.random() * (width - this.radius * 2) + this.radius;
-        this.y = -this.radius;
+        this.y = -this.radius; // Default, will be overridden for special spawns
 
         // Use passed type
         this.zType = zType;
@@ -944,7 +987,16 @@
         this.isDead = false;
         this.deathComplete = false;
         this.isAttacking = false;
-        this.dieState = Math.random() < 0.5 ? 'die_collapse' : 'die_explode';
+        this.dieState = this.zType === 'female' ? 'die_collapse' : (Math.random() < 0.5 ? 'die_collapse' : 'die_explode');
+
+        // Randomly start with spawn animation for female zombies (emerging from ground)
+        if (this.zType === 'female' && Math.random() < 0.35) {
+          this.state = 'spawn';
+          // Appear randomly between 15% and 55% of the screen height to be visible
+          this.y = (height * 0.15) + Math.random() * (height * 0.4);
+        } else {
+          this.y = -this.radius;
+        }
       }
 
       setState(newState) {
@@ -958,7 +1010,9 @@
 
       update() {
         if (!this.isDead) {
-          if (!this.isAttacking) {
+          if (this.state === 'spawn') {
+            // Stay in place while spawning
+          } else if (!this.isAttacking) {
             this.y += this.speed + this.knockbackY;
             this.knockbackY *= 0.9;
 
@@ -1002,6 +1056,8 @@
                   } else {
                     this.setState(this.isZigzag ? 'run' : 'walk');
                   }
+                } else if (this.state === 'spawn') {
+                  this.setState(this.isZigzag ? 'run' : 'walk');
                 } else if (this.state === 'die_collapse' || this.state === 'die_explode') {
                   this.deathComplete = true;
                   this.active = false;
@@ -1035,12 +1091,15 @@
           const actualRow = seq.row + Math.floor(safeFrame / totalCols);
           const actualCol = safeFrame % totalCols;
 
-          const sx = Math.floor(actualCol * (totalW / totalCols));
-          const sy = Math.floor(actualRow * (totalH / totalRows));
-          const sw = Math.floor((actualCol + 1) * (totalW / totalCols)) - sx;
-          const sh = Math.floor((actualRow + 1) * (totalH / totalRows)) - sy;
-
           const render = config.render || { drawScale: 5, yOffset: 0.95, shMult: 1.0 };
+          const fw = config.fw || (currentImg.width / config.cols);
+          const fh = config.fh || (currentImg.height / config.rows);
+
+          const sx = Math.floor(actualCol * fw);
+          const sy = Math.floor(actualRow * fh);
+          const sw = Math.floor((actualCol + 1) * fw) - sx;
+          const sh = Math.floor((actualRow + 1) * fh) - sy;
+
           const drawSh = sh * (render.shMult || 1.0);
           const aspect = drawSh / sw;
 
@@ -1254,6 +1313,19 @@
       frameCount++;
       spawnEnemy();
 
+      // Check if any zombie is attacking to show/hide HP bars
+      let someoneAttacking = false;
+      for (let i = 0; i < enemies.length; i++) {
+        if (enemies[i].isAttacking && !enemies[i].isDead) {
+          someoneAttacking = true;
+          break;
+        }
+      }
+      const barsWrap = document.getElementById('barsWrap');
+      if (barsWrap) {
+        barsWrap.style.opacity = someoneAttacking ? "1" : "0";
+      }
+
       // Auto-targeting (Optimized with squared distance)
       if (enemies.length > 0) {
         let nearest = null;
@@ -1386,9 +1458,11 @@
         if (p.alpha <= 0) particles.splice(i, 1);
       }
 
-      // UI Updates
-      scoreDisplay.textContent = score.toString().padStart(5, '0');
-      // Bars are updated in takeDamage and gainXp/levelUp if needed, but primarily in takeDamage
+      // UI Updates (Only on change)
+      if (score !== lastDisplayedScore) {
+        scoreDisplay.textContent = score.toString().padStart(5, '0');
+        lastDisplayedScore = score;
+      }
     }
 
     function draw() {
@@ -1455,13 +1529,19 @@
 
       ctx.restore();
 
-      projectiles.forEach(p => p.draw());
+      for (let i = 0; i < projectiles.length; i++) {
+        projectiles[i].draw();
+      }
 
-      // Y-sorting: Sort enemies by their Y coordinate so those closer to the bottom are drawn on top
-      const sortedEnemies = [...enemies].sort((a, b) => a.y - b.y);
-      sortedEnemies.forEach(e => e.draw());
+      // Y-sorting: Sort in-place to avoid allocation
+      enemies.sort((a, b) => a.y - b.y);
+      for (let i = 0; i < enemies.length; i++) {
+        enemies[i].draw();
+      }
 
-      particles.forEach(p => p.draw());
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].draw();
+      }
     }
 
     function loop(time) {
@@ -1620,18 +1700,34 @@
     }
 
     function endGame() {
-      gameRunning = false;
-
-      // Stop BGM on game over
-      if (gameBgmPlayer) {
-        gameBgmPlayer.pause();
+      // Trigger cinematic failure effects
+      gameContainer.classList.add('shake-active');
+      
+      // Spawn lots of explosions along the barrier
+      const py = height * CONFIG.playerY;
+      for(let i=0; i<20; i++) {
+        setTimeout(() => {
+          createExplosion(Math.random() * width, py + (Math.random()*40 - 20), '#ff3366');
+          createExplosion(Math.random() * width, py + (Math.random()*40 - 20), '#ffffff');
+          if (window.playSfx) window.playSfx(alertSfx, 0.1);
+        }, i * 50);
       }
 
-      overlay.style.display = 'flex';
-      overlay.style.opacity = 1;
-      startMenu.style.display = 'none';
-      gameOverMenu.style.display = 'block';
-      finalScoreDisplay.textContent = score;
+      setTimeout(() => {
+        gameRunning = false;
+        gameContainer.classList.remove('shake-active');
+
+        // Stop BGM on game over
+        if (gameBgmPlayer) {
+          gameBgmPlayer.pause();
+        }
+
+        overlay.style.display = 'flex';
+        overlay.style.opacity = 1;
+        startMenu.style.display = 'none';
+        gameOverMenu.style.display = 'block';
+        finalScoreDisplay.textContent = score;
+      }, 1500); // 1.5s delay for the explosion show
     }
 
     document.getElementById('startBtn').addEventListener('click', startGame);

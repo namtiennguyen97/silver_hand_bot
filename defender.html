@@ -591,14 +591,6 @@
     <div id="overlay">
       <div class="menu-panel" id="startMenu">
         <h1>SAO-ĐÊM DEFENDER</h1>
-        <p>
-          The perimeter has been breached. Descending data entities are attempting to infiltrate the core.
-          Neutralize them before they reach the bottom.
-        </p>
-        <div style="margin-bottom: 30px; font-size: 14px; color: var(--primary-cyan);">
-          <i class="fa-solid fa-mouse-pointer"></i> MOUSE TO AIM & FIRE<br>
-          <i class="fa-solid fa-keyboard"></i> SPACE TO FIRE
-        </div>
         <button class="btn-start" id="startBtn">INITIALIZE DEFENSE</button>
         <br>
         <button class="btn-exit" onclick="window.location.href='campaign.html'">ABORT MISSION</button>
@@ -662,46 +654,74 @@
     const ZOMBIE_TYPES = {
       normal: {
         src: 'assets/img/defender/zombie.png',
-        cols: 6, rows: 7,
-        img: new Image(),
-        grid: null,
-        stats: { hpBase: 80, hpScale: 35, speedMult: 1.0, radiusMult: 1.0, animSpeedMult: 1.0 }
+        cols: 10, rows: 8,
+        stats: { hpBase: 80, hpScale: 35, speedMult: 1.0, radiusMult: 1.0, animSpeedMult: 1.0, scoreValue: 100, expValue: 25 },
+        render: {
+          drawScale: 5.0,  // Multiplier for radius to determine width
+          yOffset: 0.95,    // Vertical alignment offset
+          shMult: 1.0,    // Height multiplier (already uniform in new asset)
+        },
+        sequences: {
+          walk:        { row: 0, length: 10, cols: 10, loop: true,  speed: 8 },
+          fall:        { row: 1, length: 10, cols: 10, loop: false, speed: 6 },
+          getup:       { row: 2, length: 10, cols: 10, loop: false, speed: 8 },
+          attack:      { row: 3, length: 10, cols: 10, loop: false, speed: 5 },
+          hit:         { row: 4, length: 10, cols: 10, loop: false, speed: 4 },
+          die_collapse:{ row: 5, length: 10, cols: 10, loop: false, speed: 7 },
+          die_explode: { row: 6, length: 10, cols: 10, loop: false, speed: 6 }
+        }
+      },
+      female: {
+        src: 'assets/img/defender/zombie_female.png',
+        cols: 10, rows: 8,
+        stats: { hpBase: 65, hpScale: 30, speedMult: 1.25, radiusMult: 0.95, animSpeedMult: 1.1, scoreValue: 120, expValue: 30 },
+        render: {
+          drawScale: 5.0,
+          yOffset: 0.95,
+          shMult: 1.0,
+        },
+        sequences: {
+          walk:        { row: 0, length: 10, cols: 10, loop: true,  speed: 7 },
+          fall:        { row: 1, length: 10, cols: 10, loop: false, speed: 6 },
+          getup:       { row: 2, length: 10, cols: 10, loop: false, speed: 8 },
+          attack:      { row: 3, length: 10, cols: 10, loop: false, speed: 5 },
+          hit:         { row: 4, length: 10, cols: 10, loop: false, speed: 4 },
+          die_collapse:{ row: 5, length: 10, cols: 10, loop: false, speed: 7 },
+          die_explode: { row: 6, length: 10, cols: 10, loop: false, speed: 6 }
+        }
       },
       tank: {
         src: 'assets/img/defender/zombie_tank.png',
-        cols: 8, rows: 7,
-        img: new Image(),
-        grid: null,
-        stats: { hpBase: 400, hpScale: 100, speedMult: 0.6, radiusMult: 1.8, animSpeedMult: 0.8 },
-        seqOverrides: {
-          walk: 7,
-          fall: 6,
-          getup: 5,
-          attack: 7,
-          hit: 4,
-          die_collapse: 7,
-          die_explode: 6
+        cols: 8, rows: 8,
+        stats: { hpBase: 400, hpScale: 100, speedMult: 0.6, radiusMult: 1.6, animSpeedMult: 0.8, scoreValue: 500, expValue: 150 },
+        render: {
+          drawScale: 5.0,
+          yOffset: 0.95,
+          shMult: 1.0,
+        },
+        sequences: {
+          walk:        { row: 0, length: 8, cols: 8, loop: true,  speed: 10 },
+          fall:        { row: 1, length: 8, cols: 8, loop: false, speed: 8 },
+          getup:       { row: 2, length: 8, cols: 8, loop: false, speed: 10 },
+          attack:      { row: 3, length: 8, cols: 8, loop: false, speed: 7 },
+          hit:         { row: 4, length: 8, cols: 8, loop: false, speed: 5 },
+          die_collapse:{ row: 5, length: 8, cols: 8, loop: false, speed: 9 },
+          die_explode: { row: 6, length: 8, cols: 8, loop: false, speed: 8 }
         }
       }
     };
 
-    // Initialize Zombie Types
+    // Initialize Zombie Assets
     Object.keys(ZOMBIE_TYPES).forEach(key => {
       const type = ZOMBIE_TYPES[key];
+      type.img = new Image();
       type.img.onload = () => {
-        type.grid = {
-          fw: type.img.width / type.cols,
-          fh: type.img.height / type.rows,
-          sequences: {
-            walk:        { row: 0, length: type.seqOverrides?.walk || 6, loop: true,  speed: 8 / type.stats.animSpeedMult },
-            fall:        { row: 1, length: type.seqOverrides?.fall || 5, loop: false, speed: 6 / type.stats.animSpeedMult },
-            getup:       { row: 2, length: type.seqOverrides?.getup || 5, loop: false, speed: 8 / type.stats.animSpeedMult },
-            attack:      { row: 3, length: type.seqOverrides?.attack || 6, loop: false, speed: 5 / type.stats.animSpeedMult },
-            hit:         { row: 4, length: type.seqOverrides?.hit || 4, loop: false, speed: 4 / type.stats.animSpeedMult },
-            die_collapse:{ row: 5, length: type.seqOverrides?.die_collapse || 6, loop: false, speed: 7 / type.stats.animSpeedMult },
-            die_explode: { row: 6, length: type.seqOverrides?.die_explode || 6, loop: false, speed: 6 / type.stats.animSpeedMult }
-          }
-        };
+        // Adjust sequence speeds
+        Object.keys(type.sequences).forEach(sKey => {
+          const seq = type.sequences[sKey];
+          seq.speed /= (type.stats.animSpeedMult || 1.0);
+        });
+        console.log(`Zombie type [${key}] loaded.`);
       };
       type.img.src = type.src;
     });
@@ -842,16 +862,13 @@
     }
 
     class Enemy {
-      constructor() {
-        this.radius = Math.random() * 5 + 15;
+      constructor(zType = 'normal') {
+        this.radius = 18; // Standardized base radius for uniformity
         this.x = Math.random() * (width - this.radius * 2) + this.radius;
         this.y = -this.radius;
         
-        // Determine type based on random weights
-        const rand = Math.random();
-        this.zType = 'normal';
-        if (level >= 10 && rand < 0.2) this.zType = 'tank';
-        else if (rand < 0.4) this.type = 'zigzag'; // Keep movement type zigzag
+        // Use passed type
+        this.zType = zType;
         
         const config = ZOMBIE_TYPES[this.zType] || ZOMBIE_TYPES.normal;
         
@@ -918,8 +935,8 @@
 
         // Animation logic
         const config = ZOMBIE_TYPES[this.zType] || ZOMBIE_TYPES.normal;
-        if (config.grid) {
-          const seq = config.grid.sequences[this.state];
+        if (config.img && config.img.complete) {
+          const seq = config.sequences[this.state];
           if (seq) {
             this.animTimer++;
             if (this.animTimer >= seq.speed) {
@@ -961,43 +978,48 @@
 
         const config = ZOMBIE_TYPES[this.zType] || ZOMBIE_TYPES.normal;
         const currentImg = config.img;
-        const currentGrid = config.grid;
 
-        if (currentImg.complete && currentGrid) {
-          const g = currentGrid;
-          const seq = g.sequences[this.state];
-          const sx = this.frameIndex * g.fw;
-          const sy = seq.row * g.fh;
- 
-          // Separate parameters for each zombie type to avoid one affecting the other
-          let shMult = 1.0;
-          let yOffset = 0.95;
+        if (currentImg && currentImg.complete) {
+          const seq = config.sequences[this.state];
+          const frameIdx = Math.floor(this.frameIndex);
+          const safeFrame = Math.min(frameIdx, seq.length - 1);
           
-          if (this.zType === 'tank') {
-            shMult = 1.0; // Tank is tall enough with 7 rows, no extra height needed
-            yOffset = 0.93;
-          } else {
-            shMult = 1.25; // Normal zombie needs extra height for feet
-            yOffset = 0.9;
-          }
+          const totalW = currentImg.width;
+          const totalH = currentImg.height;
+          const totalCols = seq.cols || config.cols;
+          const totalRows = config.rows;
 
-          const sh = g.fh * shMult; 
-          const sw = g.fw; 
-          const aspect = sh / g.fw;
-          const dw = this.radius * 5; 
+          // Exact pixel boundaries for 1024/8 (128px frames)
+          const sx = Math.floor(safeFrame * (totalW / totalCols));
+          const sy = Math.floor(seq.row * (totalH / totalRows));
+          const sw = Math.floor((safeFrame + 1) * (totalW / totalCols)) - sx;
+          const sh = Math.floor((seq.row + 1) * (totalH / totalRows)) - sy;
+ 
+          const render = config.render || { drawScale: 5, yOffset: 0.95, shMult: 1.0 };
+          const drawSh = sh * (render.shMult || 1.0); 
+          const aspect = drawSh / sw;
+          
+          const dw = this.radius * (render.drawScale || 5.0); 
           const dh = dw * aspect;
+
+          // Flip sprite horizontally if on the right side of the screen
+          const shouldFlip = this.zType === 'tank' && this.x > width / 2;
+          
+          if (shouldFlip) {
+            ctx.scale(-1, 1);
+          }
 
           ctx.drawImage(
             currentImg,
             sx, sy, sw, sh,
-            -dw / 2, -dh * yOffset, dw, dh
+            -dw / 2, -dh * (render.yOffset || 0.95), dw, dh
           );
 
           // HP Bar (drawn AFTER sprite so it is on top)
           if (!this.isDead) {
             const barW = this.radius * 2;
             const barH = 4;
-            const barY = -dh * 0.9; // Position above the zombie's head
+            const barY = -dh * (render.yOffset || 0.9) - 5; // Position above the zombie's head
             ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
             ctx.fillRect(-barW / 2, barY, barW, barH);
             ctx.fillStyle = this.hp / this.maxHp > 0.3 ? this.color : '#ff0000';
@@ -1009,8 +1031,7 @@
           ctx.beginPath();
           ctx.lineWidth = 2;
           ctx.strokeStyle = this.color;
-          ctx.shadowBlur = 8;
-          ctx.shadowColor = this.color;
+          // Optimized: Removed expensive shadowBlur
           for (let i = 0; i < 6; i++) {
             const ang = (i / 6) * Math.PI * 2;
             const px = Math.cos(ang) * this.radius;
@@ -1046,10 +1067,9 @@
 
       draw() {
         ctx.globalAlpha = this.alpha;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fillStyle = this.color;
-        ctx.fill();
+        // Optimized: Using fillRect instead of arc for performance
+        ctx.fillRect(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
         ctx.globalAlpha = 1;
       }
     }
@@ -1060,6 +1080,7 @@
     let projectiles = [];
     let enemies = [];
     let particles = [];
+    const MAX_PARTICLES = 100; // Performance limit
     let playerX = 0;
     let mouseAngle = -Math.PI / 2;
 
@@ -1073,7 +1094,20 @@
     function spawnEnemy() {
       const rate = Math.max(12, CONFIG.enemySpawnRate - (level * 3));
       if (frameCount % rate === 0) {
-        enemies.push(new Enemy());
+        let type = 'normal';
+        
+        // Difficulty scaling
+        const tankProb = level >= 10 ? 0.2 : (level >= 5 ? 0.1 : 0);
+        const rand = Math.random();
+
+        if (rand < tankProb) {
+          type = 'tank';
+        } else {
+          // 50/50 split between normal and female for visual variety
+          type = Math.random() < 0.5 ? 'normal' : 'female';
+        }
+
+        enemies.push(new Enemy(type));
         
         // Occasionally play zombie sound when they spawn
         if (window.playSfx && Math.random() < 0.1) {
@@ -1121,7 +1155,9 @@
     }
 
     function createExplosion(x, y, color) {
-      for (let i = 0; i < 15; i++) {
+      if (particles.length > MAX_PARTICLES) return; // Prevent lag
+      const pCount = 8; // Reduced from 15
+      for (let i = 0; i < pCount; i++) {
         particles.push(new Particle(x, y, color));
       }
     }
@@ -1176,20 +1212,24 @@
       frameCount++;
       spawnEnemy();
 
-      // Auto-targeting
+      // Auto-targeting (Optimized with squared distance)
       if (enemies.length > 0) {
-        // Find nearest enemy
         let nearest = null;
-        let minDist = Infinity;
+        let minDistSq = Infinity;
         const py = height * CONFIG.playerY;
 
-        enemies.forEach(e => {
-          const d = Math.hypot(e.x - playerX, e.y - py);
-          if (d < minDist) {
-            minDist = d;
+        for (let i = 0; i < enemies.length; i++) {
+          const e = enemies[i];
+          if (e.isDead) continue; // Skip dead zombies
+
+          const dx = e.x - playerX;
+          const dy = e.y - py;
+          const dSq = dx * dx + dy * dy;
+          if (dSq < minDistSq) {
+            minDistSq = dSq;
             nearest = e;
           }
-        });
+        }
 
         if (nearest) {
           mouseAngle = Math.atan2(nearest.y - py, nearest.x - playerX);
@@ -1238,13 +1278,17 @@
           continue;
         }
 
-        // Check collision with all projectiles
+        // Check collision with all projectiles (Optimized)
         for (let j = projectiles.length - 1; j >= 0; j--) {
           const p = projectiles[j];
           if (!p.active) continue;
 
-          const dist = Math.hypot(e.x - p.x, e.y - p.y);
-          if (dist < e.radius + 15) { // Hitbox buffer
+          const dx = e.x - p.x;
+          const dy = e.y - p.y;
+          const distSq = dx * dx + dy * dy;
+          const radiusSum = e.radius + 15;
+          
+          if (distSq < radiusSum * radiusSum) { // Comparing squared distances
             // Knockback
             if (CONFIG.knockbackForce > 0) {
               e.knockbackY = -CONFIG.knockbackForce;
@@ -1280,8 +1324,9 @@
             if (e.hp <= 0 && !e.isDead) {
               e.isDead = true;
               e.setState(e.dieState);
-              score += 100;
-              gainXp(25);
+              const config = ZOMBIE_TYPES[e.zType] || ZOMBIE_TYPES.normal;
+              score += config.stats.scoreValue || 100;
+              gainXp(config.stats.expValue || 25);
               break;
             }
           }
@@ -1292,11 +1337,12 @@
         projectiles.push(...newProjectiles);
       }
 
-      // Update particles
-      particles.forEach((p, i) => {
+      // Update particles (Optimized Loop)
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
         p.update();
         if (p.alpha <= 0) particles.splice(i, 1);
-      });
+      }
 
       // UI Updates
       scoreDisplay.textContent = score.toString().padStart(5, '0');
@@ -1355,8 +1401,6 @@
         ctx.globalCompositeOperation = 'source-over';
       } else {
         // Fallback to shapes
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = CONFIG.colors.cyan;
         ctx.strokeStyle = CONFIG.colors.cyan;
         ctx.lineWidth = 3;
         ctx.strokeRect(-10, -30, 20, 30);
@@ -1370,7 +1414,11 @@
       ctx.restore();
 
       projectiles.forEach(p => p.draw());
-      enemies.forEach(e => e.draw());
+      
+      // Y-sorting: Sort enemies by their Y coordinate so those closer to the bottom are drawn on top
+      const sortedEnemies = [...enemies].sort((a, b) => a.y - b.y);
+      sortedEnemies.forEach(e => e.draw());
+      
       particles.forEach(p => p.draw());
     }
 

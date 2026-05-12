@@ -644,11 +644,8 @@
       </div>
     </div>
 
-    <div class="hud-controls">
-      <div class="btn-pause" onclick="togglePause()">
-        <i class="fa-solid fa-pause"></i>
-      </div>
-    </div>
+    <!-- Removed redundant pause button -->
+    <div class="hud-controls" style="display:none;"></div>
 
     <div id="mapIntro">
       <div class="map-intro-text">
@@ -739,7 +736,7 @@
       en: {
         initialize: "INITIALIZE DEFENSE", abort: "ABORT MISSION", loading: "MISSION DATA LOADING",
         initializing: "INITIALIZING...", pressAny: "PRESS ANY KEY TO CONTINUE", shield: "SHIELD",
-        vitality: "VITALITY", captured: "EXP Combat", level: "LEVEL", camp_barrier: "CAMP BARRIER",
+        vitality: "VITALITY", captured: "DATA CAPTURED", level: "LEVEL", camp_barrier: "CAMP BARRIER",
         choose_protocol: "CHOOSE A PROTOCOL", paused: "SYSTEM PAUSED", interrupted: "MISSION INTERRUPTED",
         resume: "RESUME MISSION", restart: "RESTART MISSION", failed: "MISSION FAILED",
         failed_desc: "The perimeter has been compromised. All data lost.", final_score: "FINAL SCORE",
@@ -757,7 +754,7 @@
       vn: {
         initialize: "KHỞI CHẠY PHÒNG THỦ", abort: "HỦY BỎ NHIỆM VỤ", loading: "ĐANG TẢI DỮ LIỆU NHIỆM VỤ",
         initializing: "ĐANG KHỞI TẠO...", pressAny: "NHẤN PHÍM BẤT KỲ ĐỂ TIẾP TỤC", shield: "GIÁP TRỤ",
-        vitality: "SINH LỰC", captured: "EXP Combat", level: "CẤP ĐỘ", camp_barrier: "HÀNG RÀO CĂN CỨ",
+        vitality: "SINH LỰC", captured: "DỮ LIỆU THU THẬP", level: "CẤP ĐỘ", camp_barrier: "HÀNG RÀO CĂN CỨ",
         choose_protocol: "CHỌN HỖ TRỢ", paused: "TẠM DỪNG", interrupted: "NHIỆM VỤ BỊ GIÁN ĐOẠN",
         resume: "TIẾP TỤC NHIỆM VỤ", restart: "KHỞI ĐỘNG LẠI", failed: "NHIỆM VỤ THẤT BẠI",
         failed_desc: "Hàng rào đã bị phá vỡ. Def camp thất bại.", final_score: "ĐIỂM SỐ CUỐI CÙNG",
@@ -826,8 +823,11 @@
          if (el.textContent.includes('VITALITY') || el.textContent.includes('SINH')) el.textContent = t.vitality;
       });
 
-      const capturedLabel = document.querySelector('.top-hud .stat-label');
+      const capturedLabel = document.querySelector('.hud-top .stat-label');
       if (capturedLabel) capturedLabel.textContent = t.captured;
+
+      const hudPauseLabel = document.querySelector('.top-left-ctrl div:last-child');
+      if (hudPauseLabel) hudPauseLabel.textContent = t.pause;
 
       const buffTitle = document.querySelector('.buff-title');
       if (buffTitle) buffTitle.textContent = t.choose_protocol;
@@ -1780,7 +1780,7 @@
       // Level 5+ Buffs
       { id: 'fireRate', name: 'Rapid Fire', nameVn: 'Xả đạn nhanh', desc: 'Increases firing speed by 10%.', descVn: 'Tăng tốc độ xả đạn thêm 10%.', icon: 'fa-gauge-high', minLevel: 5, action: () => CONFIG.fireRateDelay = Math.max(5, CONFIG.fireRateDelay * 0.9) },
       { id: 'bounce', name: 'Ricochet', nameVn: 'Đạn nảy', desc: 'Bullets bounce off screen edges.', descVn: 'Đạn có khả năng nảy khi chạm cạnh màn hình.', icon: 'fa-reply-all', minLevel: 5, special: true, action: () => CONFIG.bounceCount++ },
-      { id: 'knockback', name: 'Shockwave', nameVn: 'Sóng xung kích', desc: 'Adds +10% knockback effect to bullets.', icon: 'fa-shield-halved', minLevel: 5, action: () => CONFIG.knockbackForce += 0.5 },
+      { id: 'knockback', name: 'Shockwave', nameVn: 'Sóng xung kích', desc: 'Adds +10% knockback effect to bullets.', descVn: 'Tăng thêm 10% hiệu ứng đẩy lùi cho mỗi viên đạn.', icon: 'fa-shield-halved', minLevel: 5, action: () => CONFIG.knockbackForce += 0.5 },
       // Level 10+ Buffs
       { id: 'drone', name: 'Repair Drone', nameVn: 'Drone sửa chữa', desc: 'Heals 5% barrier HP every 20s.', descVn: 'Hồi 5% máu rào chắn mỗi 20 giây.', icon: 'fa-mendeley', minLevel: 10, special: true, action: () => { droneActive = true; lastDroneTime = frameCount; } },
       { id: 'double', name: 'Double Shot', nameVn: 'Khai hỏa kép', desc: 'Chance to fire twice in a row.', descVn: 'Có tỉ lệ bắn liên tiếp 2 lần.', icon: 'fa-gun', minLevel: 10, action: () => CONFIG.doubleShotChance += 0.05 }

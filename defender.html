@@ -259,6 +259,22 @@
       letter-spacing: 3px;
     }
 
+    .buff-level-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 8px;
+      font-family: 'Orbitron', sans-serif;
+      color: #fff;
+      background: rgba(0, 242, 255, 0.2);
+      border: 1px solid var(--primary-cyan);
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+    }
+
     .buff-grid {
       display: flex;
       flex-wrap: wrap;
@@ -396,6 +412,31 @@
 
     .btn-exit:hover {
       color: #fff;
+    }
+
+    .lang-selection {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .btn-lang {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 242, 255, 0.2);
+      color: #888;
+      padding: 5px 15px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-lang.active {
+      border-color: var(--primary-cyan);
+      color: var(--primary-cyan);
+      background: rgba(0, 242, 255, 0.1);
+      box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
     }
 
     /* GAME OVER */
@@ -636,20 +677,36 @@
     <div id="overlay">
       <div class="menu-panel" id="startMenu">
         <h1>SAO-ĐÊM DEFENDER</h1>
+        <div class="lang-selection">
+          <button class="btn-lang active" id="lang-en" onclick="setLang('en')">ENGLISH</button>
+          <button class="btn-lang" id="lang-vn" onclick="setLang('vn')">TIẾNG VIỆT</button>
+        </div>
         <button class="btn-start" id="startBtn">INITIALIZE DEFENSE</button>
         <br>
-        <button class="btn-exit" onclick="window.location.href='campaign.html'">ABORT MISSION</button>
+        <button class="btn-exit" id="abortBtn" onclick="window.location.href='campaign.html'">ABORT MISSION</button>
       </div>
 
       <!-- GAME OVER MENU -->
       <div class="menu-panel" id="gameOver">
-        <h1>MISSION FAILED</h1>
-        <p>The perimeter has been compromised. All data lost.</p>
-        <div class="stat-label">FINAL SCORE</div>
+        <h1 id="failTitle">MISSION FAILED</h1>
+        <p id="failDesc">The perimeter has been compromised. All data lost.</p>
+        <div class="stat-label" id="finalScoreLabel">FINAL SCORE</div>
         <div class="final-score" id="finalScore">0</div>
         <button class="btn-start" id="restartBtn">RETRY MISSION</button>
         <br>
-        <button class="btn-exit" onclick="window.location.href='campaign.html'">RETURN TO ARCHIVE</button>
+        <button class="btn-exit" id="returnBtn" onclick="window.location.href='campaign.html'">RETURN TO ARCHIVE</button>
+      </div>
+
+      <!-- VICTORY MENU -->
+      <div class="menu-panel" id="victoryMenu" style="display:none;">
+        <h1 id="winTitle" style="color: var(--primary-gold);">MISSION ACCOMPLISHED</h1>
+        <p id="winDesc">Congratulations! You have successfully defended the camp.</p>
+        <p id="winDemo" style="font-size: 10px; opacity: 0.7;">[DEMO VERSION COMPLETED]</p>
+        <div class="stat-label" id="winScoreLabel">FINAL SCORE</div>
+        <div class="final-score" id="winScore">0</div>
+        <button class="btn-start" id="restartWinBtn">PLAY AGAIN</button>
+        <br>
+        <button class="btn-exit" id="winReturnBtn" onclick="window.location.href='campaign.html'">RETURN TO ARCHIVE</button>
       </div>
     </div>
     <audio id="gameBgm" src="assets/sounds/war_and_war_intrumental.mp3" type="audio/mpeg" loop></audio>
@@ -675,6 +732,132 @@
   <script src="assets/js/loading.js"></script>
   <script src="assets/js/rpg_chat.js"></script>
   <script>
+    /* =============================================
+       LOCALIZATION SYSTEM
+    ============================================= */
+    const TRANSLATIONS = {
+      en: {
+        initialize: "INITIALIZE DEFENSE", abort: "ABORT MISSION", loading: "MISSION DATA LOADING",
+        initializing: "INITIALIZING...", pressAny: "PRESS ANY KEY TO CONTINUE", shield: "SHIELD",
+        vitality: "VITALITY", captured: "EXP Combat", level: "LEVEL", camp_barrier: "CAMP BARRIER",
+        choose_protocol: "CHOOSE A PROTOCOL", paused: "SYSTEM PAUSED", interrupted: "MISSION INTERRUPTED",
+        resume: "RESUME MISSION", restart: "RESTART MISSION", failed: "MISSION FAILED",
+        failed_desc: "The perimeter has been compromised. All data lost.", final_score: "FINAL SCORE",
+        retry: "RETRY MISSION", return: "RETURN TO ARCHIVE", camp_invasion: "CAMP INVASION",
+        tip: "TIP", pause: "PAUSE",
+        victory: "MISSION ACCOMPLISHED",
+        victory_desc: "Congratulations! You have successfully defended the camp.",
+        victory_demo: "[DEMO VERSION COMPLETED]",
+        play_again: "PLAY AGAIN",
+        lv: "Lv.",
+        special: "SPECIAL",
+        intro_1: "Why no one join camp invasion today?",
+        intro_2: "None of the matter, this dead camp has only me. I will fight anyway."
+      },
+      vn: {
+        initialize: "KHỞI CHẠY PHÒNG THỦ", abort: "HỦY BỎ NHIỆM VỤ", loading: "ĐANG TẢI DỮ LIỆU NHIỆM VỤ",
+        initializing: "ĐANG KHỞI TẠO...", pressAny: "NHẤN PHÍM BẤT KỲ ĐỂ TIẾP TỤC", shield: "GIÁP TRỤ",
+        vitality: "SINH LỰC", captured: "EXP Combat", level: "CẤP ĐỘ", camp_barrier: "HÀNG RÀO CĂN CỨ",
+        choose_protocol: "CHỌN HỖ TRỢ", paused: "TẠM DỪNG", interrupted: "NHIỆM VỤ BỊ GIÁN ĐOẠN",
+        resume: "TIẾP TỤC NHIỆM VỤ", restart: "KHỞI ĐỘNG LẠI", failed: "NHIỆM VỤ THẤT BẠI",
+        failed_desc: "Hàng rào đã bị phá vỡ. Def camp thất bại.", final_score: "ĐIỂM SỐ CUỐI CÙNG",
+        retry: "THỬ LẠI NHIỆM VỤ", return: "QUAY LẠI KHO LƯU TRỮ", camp_invasion: "DEF CAMP",
+        tip: "MẸO", pause: "TẠM DỪNG",
+        victory: "CHIẾN THẮNG RỰC RỠ",
+        victory_desc: "Chúc mừng! Bạn đã bảo vệ căn cứ thành công.",
+        victory_demo: "[PHIÊN BẢN DEMO ĐÃ HOÀN THÀNH]",
+        play_again: "CHƠI LẠI",
+        lv: "Cấp",
+        special: "ĐẶC BIỆT",
+        intro_1: "Tại sao hôm nay không có ai tham gia invasion hết vậy?",
+        intro_2: "Dù sao cũng không quan trọng, cái dead camp này chỉ còn mỗi mình tôi. Chiến thôi."
+      }
+    };
+
+    let currentLang = localStorage.getItem('defender_lang') || 'en';
+
+    function setLang(lang) {
+      currentLang = lang;
+      localStorage.setItem('defender_lang', lang);
+      
+      const btnEn = document.getElementById('lang-en');
+      const btnVn = document.getElementById('lang-vn');
+      if (btnEn) btnEn.classList.toggle('active', lang === 'en');
+      if (btnVn) btnVn.classList.toggle('active', lang === 'vn');
+
+      const t = TRANSLATIONS[lang];
+      if (!t) return;
+      
+      // Start Menu
+      const startBtn = document.getElementById('startBtn');
+      const abortBtn = document.getElementById('abortBtn');
+      if (startBtn) startBtn.textContent = t.initialize;
+      if (abortBtn) abortBtn.textContent = t.abort;
+      
+      // Game Over
+      const failTitle = document.getElementById('failTitle');
+      const failDesc = document.getElementById('failDesc');
+      const finalScoreLabel = document.getElementById('finalScoreLabel');
+      const restartBtn = document.getElementById('restartBtn');
+      const returnBtn = document.getElementById('returnBtn');
+      if (failTitle) failTitle.textContent = t.failed;
+      if (failDesc) failDesc.textContent = t.failed_desc;
+      if (finalScoreLabel) finalScoreLabel.textContent = t.final_score;
+      if (restartBtn) restartBtn.textContent = t.retry;
+      if (returnBtn) returnBtn.textContent = t.return;
+
+      // Victory
+      const winTitle = document.getElementById('winTitle');
+      const winDesc = document.getElementById('winDesc');
+      const winDemo = document.getElementById('winDemo');
+      const winScoreLabel = document.getElementById('winScoreLabel');
+      const restartWinBtn = document.getElementById('restartWinBtn');
+      const winReturnBtn = document.getElementById('winReturnBtn');
+      if (winTitle) winTitle.textContent = t.victory;
+      if (winDesc) winDesc.textContent = t.victory_desc;
+      if (winDemo) winDemo.textContent = t.victory_demo;
+      if (winScoreLabel) winScoreLabel.textContent = t.final_score;
+      if (restartWinBtn) restartWinBtn.textContent = t.play_again;
+      if (winReturnBtn) winReturnBtn.textContent = t.return;
+
+      // HUD Labels
+      document.querySelectorAll('.bar-label').forEach((el) => {
+         if (el.textContent.includes('SHIELD') || el.textContent.includes('GIÁP')) el.textContent = t.shield;
+         if (el.textContent.includes('VITALITY') || el.textContent.includes('SINH')) el.textContent = t.vitality;
+      });
+
+      const capturedLabel = document.querySelector('.top-hud .stat-label');
+      if (capturedLabel) capturedLabel.textContent = t.captured;
+
+      const buffTitle = document.querySelector('.buff-title');
+      if (buffTitle) buffTitle.textContent = t.choose_protocol;
+
+      const pauseTitle = document.querySelector('.pause-title');
+      if (pauseTitle) pauseTitle.textContent = t.paused;
+
+      const pauseBtns = document.querySelectorAll('#pauseOverlay .btn-start');
+      if (pauseBtns.length >= 2) {
+        pauseBtns[0].textContent = t.resume;
+        pauseBtns[1].textContent = t.restart;
+      }
+
+      const mapIntroText = document.querySelector('.map-intro-text');
+      if (mapIntroText && mapIntroText.firstChild) mapIntroText.firstChild.textContent = t.camp_invasion;
+
+      const barrierLabel = document.querySelector('.defense-bars div');
+      if (barrierLabel) barrierLabel.textContent = t.camp_barrier;
+
+      // Loading Screen
+      const loadLabel = document.querySelector('.loading-label-text');
+      const loadStatus = document.getElementById('loadingStatus');
+      const loadPress = document.getElementById('loadingPressAny');
+      const loadTip = document.querySelector('.loading-tip-label');
+      if (loadLabel) loadLabel.textContent = t.loading;
+      if (loadStatus) loadStatus.textContent = t.initializing;
+      if (loadPress) loadPress.textContent = t.pressAny;
+      if (loadTip) loadTip.textContent = t.tip;
+    }
+
     /* =============================================
        GAME CONSTANTS & STATE
     ============================================= */
@@ -718,7 +901,7 @@
       normal: {
         src: 'assets/img/defender/zombie.png',
         cols: 8, rows: 8,
-        stats: { hpBase: 80, hpScale: 35, speedMult: 1.0, radiusMult: 1.35, animSpeedMult: 1.0, scoreValue: 100, expValue: 25 },
+        stats: { hpBase: 250, hpScale: 100, speedMult: 1.0, radiusMult: 1.35, animSpeedMult: 1.0, scoreValue: 100, expValue: 25 },
         render: {
           drawScale: 5.0,
           yOffset: 0.95,
@@ -739,7 +922,7 @@
       female: {
         src: 'assets/img/defender/zombie_female.png',
         cols: 10, rows: 8,
-        stats: { hpBase: 65, hpScale: 30, speedMult: 1.25, radiusMult: 1.35, animSpeedMult: 1.1, scoreValue: 120, expValue: 30 },
+        stats: { hpBase: 180, hpScale: 80, speedMult: 1.25, radiusMult: 1.35, animSpeedMult: 1.1, scoreValue: 120, expValue: 30 },
         render: {
           drawScale: 3.2,
           yOffset: 0.95,
@@ -760,7 +943,7 @@
       tank: {
         src: 'assets/img/defender/zombie_tank.png',
         cols: 8, rows: 8,
-        stats: { hpBase: 400, hpScale: 100, speedMult: 0.35, radiusMult: 1.6, animSpeedMult: 0.8, scoreValue: 500, expValue: 150 },
+        stats: { hpBase: 800, hpScale: 350, speedMult: 0.35, radiusMult: 1.6, animSpeedMult: 0.8, scoreValue: 500, expValue: 150 },
         render: {
           drawScale: 5.0,
           yOffset: 0.95,
@@ -779,7 +962,7 @@
       child: {
         src: 'assets/img/defender/zombie.png',
         cols: 8, rows: 8,
-        stats: { hpBase: 40, hpScale: 15, speedMult: 1.4, radiusMult: 1.35, animSpeedMult: 1.4, scoreValue: 80, expValue: 15 },
+        stats: { hpBase: 120, hpScale: 50, speedMult: 1.4, radiusMult: 1.35, animSpeedMult: 1.4, scoreValue: 80, expValue: 15 },
         render: {
           drawScale: 5.0,
           yOffset: 0.95,
@@ -831,6 +1014,9 @@
     let frameCount = 0;
     let lastFireTime = 0;
     let lastDisplayedScore = -1;
+    let buffLevels = {}; // Tracks levels of each buff
+    let droneActive = false;
+    let lastDroneTime = 0;
 
     // Player Animation
     // Frames: 0=Idle, 1=Firing-1, 2=Firing-2, 3=Firing-2dup, 4=Reload
@@ -859,10 +1045,10 @@
       damageMult: 1,
       splitOnHit: false,
       bounceCount: 0,
-      knockbackForce: 0
-    };
-
-    /* =============================================
+      knockbackForce: 0,
+      fireRateDelay: 60,
+      doubleShotChance: 0
+    };/* =============================================
        SFX SYSTEM
     ============================================= */
     window.sfxVolume = parseFloat(localStorage.getItem('pgrSfxVolume') || '0.6');
@@ -960,8 +1146,8 @@
 
         const config = ZOMBIE_TYPES[this.zType] || ZOMBIE_TYPES.normal;
 
-        // Stats and scaling
-        const levelSpeedBoost = (level - 1) * 0.03;
+        // Stats and scaling (Increased speed scaling for late game)
+        const levelSpeedBoost = (level - 1) * 0.08;
         this.radius *= config.stats.radiusMult;
         this.speed = (Math.random() * 0.2 + CONFIG.enemySpeedBase * config.stats.speedMult) + levelSpeedBoost;
 
@@ -1190,7 +1376,15 @@
     }
 
     function spawnEnemy() {
-      const rate = Math.max(12, CONFIG.enemySpawnRate - (level * 3));
+      // Scale limit more aggressively for late game
+      const maxActive = Math.min(30, 3 + Math.floor(level * 1.5));
+      const activeCount = enemies.filter(e => !e.isDead).length;
+      if (activeCount >= maxActive) return;
+
+      // Faster scaling spawn rate
+      const baseRate = 150;
+      const rate = Math.max(20, baseRate - (level * 7));
+      
       if (frameCount % rate === 0) {
         let type = 'normal';
 
@@ -1253,6 +1447,13 @@
       // Trigger fire animation
       playerFrame = 1; // Start fire sequence
       animTimer = 0;
+
+      // Double Shot check
+      if (CONFIG.doubleShotChance > 0 && Math.random() < CONFIG.doubleShotChance) {
+        setTimeout(() => {
+          fire(); // Recursive call but careful with state
+        }, 100);
+      }
     }
 
     function createExplosion(x, y, color) {
@@ -1294,6 +1495,10 @@
       if (xp >= xpToNextLevel) {
         xp -= xpToNextLevel;
         level++;
+        if (level >= 21) {
+          winGame();
+          return;
+        }
         xpToNextLevel = Math.floor(xpToNextLevel * 1.2);
         levelUp();
       }
@@ -1358,6 +1563,17 @@
         lastFireTime = frameCount;
       }
 
+      // Repair Drone Logic
+      if (droneActive && frameCount - lastDroneTime >= 1200) { // 20s = 1200 frames
+        const healAmt = maxHp * 0.05;
+        hp = Math.min(maxHp, hp + healAmt);
+        document.getElementById('hpBar').style.width = (hp / maxHp * 100) + '%';
+        lastDroneTime = frameCount;
+        // Visual feedback
+        ctx.fillStyle = 'rgba(0, 255, 100, 0.2)';
+        ctx.fillRect(0, 0, width, height);
+      }
+
       // Advance player animation
       if (playerFrame > 0) {
         animTimer++;
@@ -1391,6 +1607,8 @@
           enemies.splice(i, 1);
           continue;
         }
+
+        if (e.isDead) continue;
 
         // Check collision with all projectiles (Optimized)
         for (let j = projectiles.length - 1; j >= 0; j--) {
@@ -1554,33 +1772,51 @@
        BUFFS SYSTEM
     ============================================= */
     const BUFF_LIST = [
-      { id: 'multishot', name: '+1 Bullets', desc: 'Fires an additional bullet per shot.', icon: 'fa-layer-group', minLevel: 1, action: () => CONFIG.bulletCount++ },
-      { id: 'pierce', name: 'Piercing', desc: 'Bullets pass through 1 additional enemy.', icon: 'fa-arrow-right-to-bracket', minLevel: 1, action: () => CONFIG.pierceCount++ },
-      { id: 'split', name: 'Split Shot', desc: 'On hit, 2 small bullets split to the sides.', icon: 'fa-arrows-split-up-and-left', minLevel: 1, action: () => CONFIG.splitOnHit = true },
-      { id: 'crit', name: 'Critical Hit', desc: '+25% chance to deal massive damage.', icon: 'fa-bolt', minLevel: 1, action: () => CONFIG.critChance += 0.25 },
-      { id: 'damage', name: 'Overdrive', desc: '+60% projectile damage mult.', icon: 'fa-burst', minLevel: 1, action: () => CONFIG.damageMult += 0.6 },
+      { id: 'multishot', name: '+1 Bullets', nameVn: '+1 Tia đạn', desc: 'Fires an additional bullet per shot.', descVn: 'Bắn thêm một tia đạn mỗi lần khai hỏa.', icon: 'fa-layer-group', minLevel: 1, action: () => CONFIG.bulletCount++ },
+      { id: 'pierce', name: 'Piercing', nameVn: 'Xuyên thấu', desc: 'Bullets pass through 1 additional enemy.', descVn: 'Đạn xuyên qua thêm 1 mục tiêu.', icon: 'fa-arrow-right-to-bracket', minLevel: 1, action: () => CONFIG.pierceCount++ },
+      { id: 'split', name: 'Split Shot', nameVn: 'Đạn phân mảnh', desc: 'On hit, 2 small bullets split to the sides.', descVn: 'Khi trúng đích, tách thành 2 tia đạn nhỏ sang hai bên.', icon: 'fa-arrows-split-up-and-left', minLevel: 1, special: true, action: () => CONFIG.splitOnHit = true },
+      { id: 'crit', name: 'Critical Hit', nameVn: 'Chí mạng', desc: '+25% chance to deal massive damage.', descVn: '+25% tỉ lệ gây sát thương cực lớn.', icon: 'fa-bolt', minLevel: 1, action: () => CONFIG.critChance += 0.25 },
+      { id: 'damage', name: 'Overdrive', nameVn: 'Quá tải', desc: '+60% projectile damage mult.', descVn: '+60% sát thương đạn.', icon: 'fa-burst', minLevel: 1, action: () => CONFIG.damageMult += 0.6 },
       // Level 5+ Buffs
-      { id: 'fireRate', name: 'Rapid Fire', desc: 'Increases firing speed by 10%.', icon: 'fa-gauge-high', minLevel: 5, action: () => CONFIG.fireRateDelay = Math.max(5, CONFIG.fireRateDelay * 0.9) },
-      { id: 'bounce', name: 'Ricochet', desc: 'Bullets bounce off screen edges.', icon: 'fa-reply-all', minLevel: 5, action: () => CONFIG.bounceCount++ },
-      { id: 'knockback', name: 'Shockwave', desc: 'Adds +10% knockback effect to bullets.', icon: 'fa-shield-halved', minLevel: 5, action: () => CONFIG.knockbackForce += 0.5 }
+      { id: 'fireRate', name: 'Rapid Fire', nameVn: 'Xả đạn nhanh', desc: 'Increases firing speed by 10%.', descVn: 'Tăng tốc độ xả đạn thêm 10%.', icon: 'fa-gauge-high', minLevel: 5, action: () => CONFIG.fireRateDelay = Math.max(5, CONFIG.fireRateDelay * 0.9) },
+      { id: 'bounce', name: 'Ricochet', nameVn: 'Đạn nảy', desc: 'Bullets bounce off screen edges.', descVn: 'Đạn có khả năng nảy khi chạm cạnh màn hình.', icon: 'fa-reply-all', minLevel: 5, special: true, action: () => CONFIG.bounceCount++ },
+      { id: 'knockback', name: 'Shockwave', nameVn: 'Sóng xung kích', desc: 'Adds +10% knockback effect to bullets.', icon: 'fa-shield-halved', minLevel: 5, action: () => CONFIG.knockbackForce += 0.5 },
+      // Level 10+ Buffs
+      { id: 'drone', name: 'Repair Drone', nameVn: 'Drone sửa chữa', desc: 'Heals 5% barrier HP every 20s.', descVn: 'Hồi 5% máu rào chắn mỗi 20 giây.', icon: 'fa-mendeley', minLevel: 10, special: true, action: () => { droneActive = true; lastDroneTime = frameCount; } },
+      { id: 'double', name: 'Double Shot', nameVn: 'Khai hỏa kép', desc: 'Chance to fire twice in a row.', descVn: 'Có tỉ lệ bắn liên tiếp 2 lần.', icon: 'fa-gun', minLevel: 10, action: () => CONFIG.doubleShotChance += 0.05 }
     ];
 
     function showBuffSelection() {
       buffOverlay.style.display = 'flex';
       buffGrid.innerHTML = '';
 
-      // Filter available buffs based on level
-      const available = BUFF_LIST.filter(b => level >= b.minLevel);
+      const t = TRANSLATIONS[currentLang];
+
+      // Filter available buffs based on level and one-time special rule
+      const available = BUFF_LIST.filter(b => {
+        const meetsLevel = level >= b.minLevel;
+        const alreadyPickedSpecial = b.special && (buffLevels[b.id] > 0);
+        return meetsLevel && !alreadyPickedSpecial;
+      });
+
       const shuffled = available.sort(() => 0.5 - Math.random());
       const selected = shuffled.slice(0, 3);
 
       selected.forEach(buff => {
         const card = document.createElement('div');
         card.className = 'buff-card';
+        const name = currentLang === 'vn' ? buff.nameVn : buff.name;
+        const desc = currentLang === 'vn' ? buff.descVn : buff.desc;
+        const currentLv = buffLevels[buff.id] || 0;
+        const isSpecial = buff.special;
+        
         card.innerHTML = `
+        <div class="buff-level-badge" style="${isSpecial ? 'border-color:var(--primary-gold); color:var(--primary-gold); background:rgba(255,180,0,0.1);' : ''}">
+          ${isSpecial ? t.special : t.lv + ' ' + currentLv}
+        </div>
         <i class="fa-solid ${buff.icon}"></i>
-        <div class="buff-name">${buff.name}</div>
-        <div class="buff-desc">${buff.desc}</div>
+        <div class="buff-name">${name}</div>
+        <div class="buff-desc">${desc}</div>
       `;
         card.onclick = () => applyBuff(buff);
         buffGrid.appendChild(card);
@@ -1588,6 +1824,7 @@
     }
 
     function applyBuff(buff) {
+      buffLevels[buff.id] = (buffLevels[buff.id] || 0) + 1;
       buff.action();
       buffOverlay.style.display = 'none';
       gamePaused = false;
@@ -1608,8 +1845,14 @@
       projectiles = [];
       enemies = [];
       particles = [];
+      droneActive = false;
+      lastDroneTime = 0;
       frameCount = 0;
       lastFireTime = 0;
+      buffLevels = {
+        multishot: 1,
+        damage: 1
+      };
       gameRunning = true;
       gamePaused = true;
       overlay.style.display = 'none';
@@ -1617,10 +1860,8 @@
 
       // RPG Chat Intro
       if (window.showRPGChat) {
-        const introMessages = [
-          "Why no one join camp invasion today?",
-          "None of the matter, this dead camp has only me. I will fight anyway."
-        ];
+        const t = TRANSLATIONS[currentLang];
+        const introMessages = [t.intro_1, t.intro_2];
         let msgIndex = 0;
 
         const showNextMessage = () => {
@@ -1730,9 +1971,32 @@
       }, 1500); // 1.5s delay for the explosion show
     }
 
+    function winGame() {
+      gameRunning = false;
+      if (gameBgmPlayer) gameBgmPlayer.pause();
+      
+      const t = TRANSLATIONS[currentLang];
+      document.getElementById('winTitle').textContent = t.victory;
+      document.getElementById('winDesc').textContent = t.victory_desc;
+      document.getElementById('winDemo').textContent = t.victory_demo;
+      document.getElementById('winScoreLabel').textContent = t.final_score;
+      document.getElementById('restartWinBtn').textContent = t.play_again;
+      
+      overlay.style.display = 'flex';
+      overlay.style.opacity = 1;
+      startMenu.style.display = 'none';
+      gameOverMenu.style.display = 'none';
+      document.getElementById('victoryMenu').style.display = 'block';
+      document.getElementById('winScore').textContent = score;
+    }
+
     document.getElementById('startBtn').addEventListener('click', startGame);
     document.getElementById('restartBtn').addEventListener('click', () => {
       gameOverMenu.style.display = 'none';
+      startGame();
+    });
+    document.getElementById('restartWinBtn').addEventListener('click', () => {
+      document.getElementById('victoryMenu').style.display = 'none';
       startGame();
     });
 
@@ -1756,6 +2020,7 @@
 
     window.addEventListener('resize', resize);
     resize();
+    setLang(currentLang); // Initialize language
     requestAnimationFrame(loop);
   </script>
 

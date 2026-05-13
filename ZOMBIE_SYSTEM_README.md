@@ -19,10 +19,10 @@ sh = Math.floor((rowIdx + 1) * (totalHeight / totalRows)) - sy
 ```
 **Lưu ý**: Không dùng biến `fw/fh` cố định, phải tính trực tiếp trong vòng lặp `draw`.
 
-## 3. Quy trình Xóa nền (Smooth Edge Pipeline)
-- **Mục tiêu**: Xóa nền **Trắng** (Luminance > 230).
-- **Kỹ thuật**: Làm mịn biên (Alpha Feathering) để không bị viền trắng thô quanh nhân vật.
+## 3. Quy trình Xóa nền & Khử Halo (Optimized Pipeline)
+- **Mục tiêu**: Xóa nền (Trắng/Đen) và triệt tiêu viền mờ (Halo).
 - **Lệnh thực hiện**: `node remove_bg.js` (Chạy lệnh này mỗi khi có ảnh sprite mới).
+- **Kỹ thuật Sharp Rendering**: Luôn áp dụng `image-rendering: pixelated;` trong CSS canvas để sprite sắc nét khi scale lớn.
 
 ## 4. Căn chỉnh Grounding & Tỉ lệ
 - **Vị trí chân**: Dùng `yOffset: 0.95` để chân bám đất chính xác.
@@ -50,9 +50,15 @@ sh = Math.floor((rowIdx + 1) * (totalHeight / totalRows)) - sy
 2.  **Grouping**: 
     - Nhóm các cụm `X` gần nhau (khoảng cách < 15px) thành 1 nhân vật.
     - Trung tâm của mỗi nhóm chính là tâm của Frame.
-3.  **Smooth Alpha Formula**:
-    - Để khử viền trắng: `alpha = (255 - brightness) * (255 / 25)`.
-    - Điều này tạo ra một dải mờ (gradient) ở biên, giúp nhân vật mịn màng.
+3.  **Công thức Xóa nền tối ưu (Advanced Transparency)**:
+    - **Nền Trắng**: 
+        - Ngưỡng: `avg > 210`.
+        - Kiểm tra độ trung tính: `max(R,G,B) - min(R,G,B) < 15` (Để tránh làm trong suốt da nhân vật).
+        - Alpha: `(255 - avg) * (255 / 45)`.
+    - **Nền Đen**: 
+        - Ngưỡng: `avg < 55`.
+        - Alpha: `avg * (255 / 55)`.
+    - **Sharpness**: Sử dụng `Hard Threshold` (avg > 250 => alpha 0) nếu muốn sprite "đặc" hoàn toàn không có gradient biên.
 
 ---
 *Cập nhật lần cuối: 12/05/2026 - By Antigravity AI*

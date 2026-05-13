@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SAO-ĐÊM: Frontline</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-cyan: #00f2ff;
+            --primary-pink: #ff00c8;
+            --primary-gold: #ffcc00;
+            --bg-dark: #0a0a0a;
+            --glass-bg: rgba(20, 20, 20, 0.7);
+            --glass-border: rgba(0, 242, 255, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* VIRTUAL CONTROLS */
+        .hud-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .hud-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .stat-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 15px 25px;
+            backdrop-filter: blur(10px);
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-width: 220px;
+        }
+
+        .stat-label {
+            font-size: 9px;
+            color: var(--primary-cyan);
+            letter-spacing: 2px;
+            margin-bottom: 2px;
+        }
+
+        /* BARS */
+        .bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .shield-fill {
+            background: var(--primary-cyan);
+            box-shadow: 0 0 10px var(--primary-cyan);
+        }
+
+        .hp-fill {
+            background: var(--primary-pink);
+            box-shadow: 0 0 10px var(--primary-pink);
+        }
+
+        .hud-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            width: 100%;
+            pointer-events: auto;
+        }
+
+        .ctrl-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .ctrl-btn {
+            width: 70px;
+            height: 70px;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary-cyan);
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .ctrl-btn:active {
+            transform: scale(0.9);
+            background: rgba(0, 242, 255, 0.2);
+            border-color: var(--primary-cyan);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.4);
+        }
+
+        .btn-large {
+            width: 85px;
+            height: 85px;
+            font-size: 32px;
+            border-color: var(--primary-pink);
+            color: var(--primary-pink);
+        }
+
+        .btn-large:active {
+            background: rgba(255, 0, 200, 0.2);
+            border-color: var(--primary-pink);
+            box-shadow: 0 0 30px rgba(255, 0, 200, 0.4);
+        }
+
+        .btn-jump {
+            border-color: var(--primary-cyan);
+            color: var(--primary-cyan);
+        }
+
+        /* SCANLINES EFFECT */
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        /* MENU OVERLAY */
+        #menuOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            backdrop-filter: blur(15px);
+        }
+
+        .menu-content {
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: var(--primary-cyan);
+            text-shadow: 0 0 30px var(--primary-cyan);
+            letter-spacing: 10px;
+        }
+
+        .btn-start {
+            background: transparent;
+            border: 2px solid var(--primary-cyan);
+            color: var(--primary-cyan);
+            padding: 15px 40px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 3px;
+        }
+
+        .btn-start:hover {
+            background: var(--primary-cyan);
+            color: #000;
+            box-shadow: 0 0 40px var(--primary-cyan);
+        }
+
+        /* RESPONSIVE LANDSCAPE WARNING */
+        @media screen and (orientation: portrait) {
+            #landscapeWarning {
+                display: flex !important;
+            }
+        }
+
+        #landscapeWarning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            color: var(--primary-gold);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="landscapeWarning">
+        <i class="fa-solid fa-rotate" style="font-size: 48px; margin-bottom: 20px;"></i>
+        <h2 style="font-family: 'Orbitron';">ROTATE YOUR DEVICE</h2>
+        <p style="margin-top: 10px;">Please use Landscape mode for the best experience.</p>
+    </div>
+
+    <div id="gameContainer">
+        <div class="scanlines"></div>
+        
+        <div class="hud-overlay">
+            <div class="hud-top">
+                <div class="stat-panel">
+                    <div>
+                        <div class="stat-label">SHIELD GENERATOR</div>
+                        <div class="bar-container">
+                            <div class="bar-fill shield-fill" id="shieldBar"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="stat-label">VITALITY STATUS</div>
+                        <div class="bar-container">
+                            <div class="bar-fill hp-fill" id="hpBar"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-panel" style="text-align: right;">
+                    <div class="stat-label">AMMO</div>
+                    <div class="stat-value" id="ammoText">30/∞</div>
+                </div>
+            </div>
+
+            <div class="hud-bottom">
+                <div class="ctrl-group">
+                    <div class="ctrl-btn" id="btnLeft"><i class="fa-solid fa-chevron-left"></i></div>
+                    <div class="ctrl-btn" id="btnRight"><i class="fa-solid fa-chevron-right"></i></div>
+                </div>
+                <div class="ctrl-group" style="flex-direction: column-reverse; align-items: flex-end; gap: 15px;">
+                    <div style="display: flex; gap: 15px;">
+                        <div class="ctrl-btn btn-large" id="btnRoll"><i class="fa-solid fa-person-running"></i></div>
+                        <div class="ctrl-btn btn-large" id="btnFire"><i class="fa-solid fa-crosshairs"></i></div>
+                    </div>
+                    <div class="ctrl-btn btn-large btn-jump" id="btnJump"><i class="fa-solid fa-chevron-up"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="menuOverlay">
+            <div class="menu-content">
+                <h1>FRONTLINE</h1>
+                <p style="margin-bottom: 40px; color: #888; letter-spacing: 2px;">SAO-ĐÊM EXPANSION UNIT</p>
+                <button class="btn-start" onclick="startGame()">DEPLOY UNIT</button>
+                <p style="margin-top: 20px; font-size: 10px; color: #444;">PC: WASD TO MOVE | K TO FIRE | L TO ROLL | SPACE TO JUMP</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        const CONFIG = {
+            gravity: 0.6,
+            friction: 0.8,
+            jumpForce: -12,
+            moveSpeed: 5,
+            rollSpeed: 10,
+            groundY: 0.8,
+            playerSize: 50,
+            sprite: {
+                rows: 8,
+                path: 'assets/img/defender/frontline.png',
+                totalW: 1264, // From analysis
+                totalH: 843
+            },
+            colors: {
+                cyan: '#00f2ff',
+                pink: '#ff00c8',
+                gold: '#ffcc00',
+                bg: '#050505'
+            }
+        };
+
+        let gameRunning = false;
+        let hp = 100;
+        let maxHp = 100;
+        let shield = 100;
+        let maxShield = 100;
+
+        let spriteImg = new Image();
+        spriteImg.src = CONFIG.sprite.path;
+
+        const STATES = {
+            RUN: { row: 0, frames: 6 },
+            RUN_SHOOT: { row: 1, frames: 6 },
+            IDLE: { row: 1, frames: 5, offset: 6 }, // Using Row 2 right side for Idle
+            HIT: { row: 3, frames: 5, offset: 1 }, // Row 4 in user terms
+            DIE: { row: 4, frames: 6 },
+            DIE_2: { row: 5, frames: 8 },
+            JUMP: { row: 6, frames: 7 },
+            ROLL: { row: 6, frames: 7 } 
+        };
+
+        let keys = {};
+        let touchControls = {
+            left: false,
+            right: false,
+            jump: false,
+            fire: false,
+            roll: false
+        };
+
+        class Player {
+            constructor() {
+                this.width = 120; // Adjusted for better visibility of detailed sprites
+                this.height = 120;
+                this.x = 100;
+                this.y = height * CONFIG.groundY - this.height;
+                this.vx = 0;
+                this.vy = 0;
+                
+                this.isGrounded = false;
+                this.isRolling = false;
+                this.isDead = false;
+                
+                this.state = STATES.IDLE;
+                this.frameIdx = 0;
+                this.animTimer = 0;
+                this.animSpeed = 6; // Frames per animation step
+                
+                this.direction = 1; // 1: right, -1: left
+                this.particles = [];
+                this.shootTimer = 0;
+            }
+
+            update() {
+                if (this.isDead) {
+                    this.state = STATES.DIE;
+                    this.vx = 0;
+                    this.updateAnimation();
+                    return;
+                }
+
+                // Default State
+                let newState = this.isGrounded ? STATES.IDLE : STATES.RUN;
+
+                // Apply input
+                if (!this.isRolling) {
+                    if (keys['KeyA'] || keys['ArrowLeft'] || touchControls.left) {
+                        this.vx = -CONFIG.moveSpeed;
+                        this.direction = -1;
+                        newState = STATES.RUN;
+                    } else if (keys['KeyD'] || keys['ArrowRight'] || touchControls.right) {
+                        this.vx = CONFIG.moveSpeed;
+                        this.direction = 1;
+                        newState = STATES.RUN;
+                    } else {
+                        this.vx *= CONFIG.friction;
+                    }
+
+                    if ((keys['Space'] || keys['KeyW'] || keys['ArrowUp'] || touchControls.jump) && this.isGrounded) {
+                        this.vy = CONFIG.jumpForce;
+                        this.isGrounded = false;
+                    }
+                }
+
+                // Roll logic
+                if ((keys['KeyL'] || touchControls.roll) && !this.isRolling && this.isGrounded) {
+                    this.isRolling = true;
+                    this.state = STATES.ROLL;
+                    this.frameIdx = 0;
+                    this.vx = this.direction * CONFIG.rollSpeed;
+                }
+
+                if (this.isRolling) {
+                    newState = STATES.ROLL;
+                    if (this.frameIdx >= CONFIG.sprite.cols - 1) {
+                        this.isRolling = false;
+                    }
+                }
+
+                // Shoot logic
+                if (keys['KeyK'] || touchControls.fire) {
+                    if (this.shootTimer <= 0) {
+                        projectiles.push(new Projectile(this.x + this.width/2 + (this.direction * 30), this.y + this.height/2, this.direction));
+                        this.shootTimer = 15;
+                        this.createShootEffect();
+                    }
+                    if (this.vx !== 0) newState = STATES.RUN_SHOOT;
+                    else newState = STATES.RUN_SHOOT; // Use run-shoot for static shoot too
+                }
+                if (this.shootTimer > 0) this.shootTimer--;
+
+                // Update State & Animation
+                if (this.state !== newState) {
+                    this.state = newState;
+                    this.frameIdx = 0;
+                    this.animTimer = 0;
+                }
+                this.updateAnimation();
+
+                // Physics
+                this.vy += CONFIG.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Ground collision
+                const groundY = height * CONFIG.groundY;
+                if (this.y + this.height > groundY) {
+                    this.y = groundY - this.height;
+                    this.vy = 0;
+                    this.isGrounded = true;
+                }
+
+                // Wall collision
+                if (this.x < 0) this.x = 0;
+                if (this.x + this.width > width) this.x = width - this.width;
+
+                // Update particles
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    this.particles[i].update();
+                    if (this.particles[i].life <= 0) this.particles.splice(i, 1);
+                }
+            }
+
+            updateAnimation() {
+                this.animTimer++;
+                const stateCfg = this.state;
+                if (this.animTimer >= this.animSpeed) {
+                    this.animTimer = 0;
+                    this.frameIdx = (this.frameIdx + 1) % stateCfg.frames;
+                    
+                    // Stop on last frame of death
+                    if (stateCfg === STATES.DIE && this.frameIdx === stateCfg.frames - 1) {
+                        this.frameIdx = stateCfg.frames - 1;
+                    }
+                }
+            }
+
+            createShootEffect() {
+                const effectX = this.x + this.width/2 + (this.direction * 50);
+                const effectY = this.y + this.height/2;
+                for (let i = 0; i < 5; i++) {
+                    this.particles.push(new Particle(effectX, effectY, CONFIG.colors.gold));
+                }
+            }
+
+            draw() {
+                ctx.save();
+                
+                // Draw Shadow
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.beginPath();
+                ctx.ellipse(this.x + this.width/2, height * CONFIG.groundY, 30, 8, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Sprite Drawing logic (Dynamic State Mapping)
+                const stateCfg = this.state;
+                const totalW = 1264;
+                const totalH = 843;
+                const colsInRow = 12; // Maximum columns we'll assume for grid calculation
+                const rows = 8;
+
+                const frameCol = (stateCfg.offset || 0) + this.frameIdx;
+                
+                const sx = Math.floor(frameCol * (totalW / colsInRow));
+                const sy = Math.floor(stateCfg.row * (totalH / rows));
+                const sw = Math.floor((frameCol + 1) * (totalW / colsInRow)) - sx;
+                const sh = Math.floor((stateCfg.row + 1) * (totalH / rows)) - sy;
+
+                if (this.direction === -1) {
+                    ctx.translate(this.x + this.width, this.y);
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(spriteImg, sx, sy, sw, sh, 0, 0, this.width, this.height);
+                } else {
+                    ctx.drawImage(spriteImg, sx, sy, sw, sh, this.x, this.y, this.width, this.height);
+                }
+
+                ctx.restore();
+
+                // Draw particles
+                this.particles.forEach(p => p.draw());
+            }
+        }
+
+        class Projectile {
+            constructor(x, y, dir) {
+                this.x = x;
+                this.y = y;
+                this.vx = dir * 15;
+                this.width = 15;
+                this.height = 4;
+                this.active = true;
+            }
+
+            update() {
+                this.x += this.vx;
+                if (this.x < 0 || this.x > width) this.active = false;
+            }
+
+            draw() {
+                ctx.fillStyle = CONFIG.colors.gold;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = CONFIG.colors.gold;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 4;
+                this.vy = (Math.random() - 0.5) * 4;
+                this.color = color;
+                this.life = 1.0;
+                this.decay = Math.random() * 0.05 + 0.02;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= this.decay;
+            }
+
+            draw() {
+                ctx.globalAlpha = this.life;
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, 3, 3);
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
+        let player;
+        let projectiles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            if (player) player.y = height * CONFIG.groundY - player.height;
+        }
+
+        function drawBackground() {
+            // Dark grid background
+            ctx.strokeStyle = 'rgba(0, 242, 255, 0.05)';
+            ctx.lineWidth = 1;
+            const step = 50;
+            
+            ctx.beginPath();
+            for (let x = 0; x < width; x += step) {
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+            }
+            for (let y = 0; y < height; y += step) {
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+            }
+            ctx.stroke();
+
+            // Ground line
+            const groundY = height * CONFIG.groundY;
+            ctx.strokeStyle = CONFIG.colors.cyan;
+            ctx.lineWidth = 2;
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = CONFIG.colors.cyan;
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(width, groundY);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Simple parallax buildings (silhouettes)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.02)';
+            for (let i = 0; i < 5; i++) {
+                ctx.fillRect(i * 300, groundY - 200, 150, 200);
+            }
+        }
+
+        function startGame() {
+            document.getElementById('menuOverlay').style.display = 'none';
+            player = new Player();
+            projectiles = [];
+            
+            hp = 100;
+            shield = 100;
+            updateHUD();
+
+            gameRunning = true;
+        }
+
+        function updateHUD() {
+            document.getElementById('shieldBar').style.width = (shield / maxShield * 100) + '%';
+            document.getElementById('hpBar').style.width = (hp / maxHp * 100) + '%';
+        }
+
+        function update() {
+            if (!gameRunning) return;
+            player.update();
+            
+            projectiles.forEach((p, index) => {
+                p.update();
+                if (!p.active) projectiles.splice(index, 1);
+            });
+        }
+
+        function draw() {
+            ctx.fillStyle = '#050505';
+            ctx.fillRect(0, 0, width, height);
+
+            drawBackground();
+            
+            if (gameRunning) {
+                projectiles.forEach(p => p.draw());
+                player.draw();
+            }
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        // EVENT LISTENERS
+        window.addEventListener('keydown', e => keys[e.code] = true);
+        window.addEventListener('keyup', e => keys[e.code] = false);
+
+        // Touch Control Listeners
+        const setupBtn = (id, control) => {
+            const btn = document.getElementById(id);
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                touchControls[control] = true;
+            });
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                touchControls[control] = false;
+            });
+            // Also support mouse for testing HUD on PC
+            btn.addEventListener('mousedown', () => touchControls[control] = true);
+            btn.addEventListener('mouseup', () => touchControls[control] = false);
+            btn.addEventListener('mouseleave', () => touchControls[control] = false);
+        };
+
+        setupBtn('btnLeft', 'left');
+        setupBtn('btnRight', 'right');
+        setupBtn('btnJump', 'jump');
+        setupBtn('btnFire', 'fire');
+        setupBtn('btnRoll', 'roll');
+
+        window.addEventListener('resize', resize);
+        resize();
+        requestAnimationFrame(loop);
+    </script>
+</body>
+</html>

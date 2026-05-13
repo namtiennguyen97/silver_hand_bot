@@ -1088,6 +1088,7 @@
     let bossSpawnedAtLvl15 = false;
     let bossClearingPhase = false;
     let bossSequenceTriggered = false; // New safety lock
+    let bossIntroActive = false;
 
     // Player Animation
     // Frames: 0=Idle, 1=Firing-1, 2=Firing-2, 3=Firing-2dup, 4=Reload
@@ -1617,10 +1618,9 @@
       // - The boss is currently in the 3s intro sequence
       // - The boss is alive on screen
       const bossAlive = enemies.some(e => e.zType === 'boss' && !e.isDead);
-      const bossIntroRunning = bossSpawnedAtLvl15 && !bossAlive;
       
       // If intro is playing OR boss is still fighting, NO normal spawns
-      if (bossIntroRunning || bossAlive) return;
+      if (bossIntroActive || bossAlive) return;
 
       // 3. REGULAR SPAWN PHASE (Resumes only when level < 15 OR boss is dead)
       // More enemies on screen for swarm feel
@@ -1750,6 +1750,7 @@
       }
 
       // 1. SEQUENCE: SHOW WARNING FIRST
+      bossIntroActive = true;
       warning.style.display = 'flex';
       warning.classList.remove('boss-warning-active');
       void warning.offsetWidth; 
@@ -1758,6 +1759,7 @@
 
       setTimeout(() => {
         // 2. SEQUENCE: HIDE WARNING & STOP SHAKE
+        bossIntroActive = false;
         warning.classList.remove('boss-warning-active');
         warning.style.display = 'none';
         // gameCont.classList.remove('shake-active');
@@ -2127,6 +2129,7 @@
       bossSpawnedAtLvl15 = false;
       bossClearingPhase = false;
       bossSequenceTriggered = false;
+      bossIntroActive = false;
       buffLevels = {
         multishot: 1,
         damage: 1

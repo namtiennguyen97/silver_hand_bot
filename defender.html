@@ -1051,9 +1051,9 @@
       boss: {
         src: 'assets/img/defender/zombie_boss.png',
         cols: 8, rows: 8,
-        stats: { hpBase: 50000, hpScale: 10000, shieldBase: 15000, shieldScale: 5000, speedMult: 0.2, radiusMult: 2.5, animSpeedMult: 0.7, scoreValue: 10000, expValue: 3000 },
+        stats: { hpBase: 50000, hpScale: 10000, shieldBase: 15000, shieldScale: 5000, speedMult: 0.4, radiusMult: 2.5, animSpeedMult: 0.7, scoreValue: 10000, expValue: 3000 },
         render: {
-          drawScale: 7.0,
+          drawScale: 5.5,
           yOffset: 0.95,
           shMult: 1.0,
         },
@@ -1108,6 +1108,7 @@
     let rpgChatCallback = null; // New safe callback for RPG chat
     let bossSpawnedAtLvl15 = false;
     let bossClearingPhase = false;
+    let bossSequenceTriggered = false; // New safety lock
 
     // Player Animation
     // Frames: 0=Idle, 1=Firing-1, 2=Firing-2, 3=Firing-2dup, 4=Reload
@@ -1384,12 +1385,18 @@
               this.animTimer = 0;
               this.frameIndex++;
               if (this.frameIndex >= seq.length) {
+                // Deal damage on attack completion
+                if (this.state === 'attack' && !this.isDead) {
+                  let dmg = 1;
+                  if (this.zType === 'boss') dmg = 20;
+                  else if (this.zType === 'tank') dmg = 3;
+                  takeDamage(dmg);
+                }
+
                 if (seq.loop) {
                   this.frameIndex = 0;
                 } else if (this.state === 'attack') {
-                  // Loop attack and deal damage each full cycle
-                  this.frameIndex = 0;
-                  if (!this.isDead) takeDamage(8);
+                  this.frameIndex = 0; // Reset to start next attack cycle
                 } else if (this.state === 'fall' || this.state === 'hit') {
                   if (this.isAttacking) {
                     this.setState('attack');
@@ -1577,8 +1584,8 @@
         }
         
         const activeCount = enemies.filter(e => !e.isDead).length;
-        if (activeCount === 0) {
-          bossSpawnedAtLvl15 = true;
+        if (activeCount === 0 && !bossSequenceTriggered) {
+          bossSequenceTriggered = true; // Lock it immediately
           triggerBossSequence();
         }
         return; // Strict stop during clearing
@@ -1715,8 +1722,8 @@
     function triggerBossSequence() {
       const warning = document.getElementById('bossWarning');
       const gameCont = document.getElementById('gameContainer');
-      const t = TRANSLATIONS[currentLang];
-      
+      if (!warning || !gameCont) return;
+
       if (window.playSfx) {
         window.playSfx(alertSfx, 0.4);
       }
@@ -1734,21 +1741,13 @@
         warning.style.display = 'none';
         gameCont.classList.remove('shake-active');
         
-        // 3. SEQUENCE: SPAWN THE BOSS
+        // 3. SEQUENCE: SPAWN THE BOSS VISIBLY
+        bossSpawnedAtLvl15 = true; 
         const boss = new Enemy('boss');
+        boss.x = width / 2; 
+        boss.y = height * 0.3; // Spawn at a visible position
+        boss.setState('spawn'); // Trigger the "emergence" animation
         enemies.push(boss);
-
-        // 4. SEQUENCE: SHOW RPG CHAT & PAUSE after a small delay
-        setTimeout(() => {
-          if (typeof showRPGChat === 'function') {
-            gamePaused = true;
-            rpgChatCallback = () => {
-              gamePaused = false;
-              rpgChatCallback = null;
-            };
-            showRPGChat(TRANSLATIONS[currentLang].boss_speech);
-          }
-        }, 500); // Small delay to let boss render and appear
       }, 3000);
     }
 
@@ -2036,7 +2035,7 @@
       { id: 'knockback', name: 'Shockwave', nameVn: 'Sóng xung kích', desc: 'Adds +10% knockback effect to bullets.', descVn: 'Tăng thêm 10% hiệu ứng đẩy lùi cho mỗi viên đạn.', icon: 'fa-shield-halved', minLevel: 5, action: () => CONFIG.knockbackForce += 0.5 },
       // Level 10+ Buffs
       { id: 'drone', name: 'Repair Drone', nameVn: 'Drone sửa chữa', desc: 'Heals 5% barrier HP every 20s.', descVn: 'Hồi 5% máu rào chắn mỗi 20 giây.', icon: 'fa-mendeley', minLevel: 10, special: true, action: () => { droneActive = true; lastDroneTime = frameCount; } },
-      { id: 'double', name: 'Double Shot', nameVn: 'Khai hỏa kép', desc: 'Chance to fire twice in a row.', descVn: 'Có tỉ lệ bắn liên tiếp 2 lần.', icon: 'fa-gun', minLevel: 10, action: () => CONFIG.doubleShotChance += 0.05 },
+      { id: 'double', name: 'Double Shot', nameVn: 'Khai hỏa kép', desc: '+10% chance to fire twice in a row.', descVn: '+10% tỉ lệ bắn liên tiếp 2 lần.', icon: 'fa-gun', minLevel: 10, action: () => CONFIG.doubleShotChance += 0.1 },
       { id: 'shieldBreaker', name: 'Shield Breaker', nameVn: 'Phá giáp', desc: '+10% damage to boss shields.', descVn: '+10% sát thương lên giáp Boss.', icon: 'fa-burst', minLevel: 10, action: () => CONFIG.shieldDamageMult += 0.1 }
     ];
 
@@ -2105,6 +2104,7 @@
       lastFireTime = 0;
       bossSpawnedAtLvl15 = false;
       bossClearingPhase = false;
+      bossSequenceTriggered = false;
       buffLevels = {
         multishot: 1,
         damage: 1
@@ -2154,6 +2154,8 @@
       CONFIG.bounceCount = 0;
       CONFIG.knockbackForce = 0;
       CONFIG.fireRateDelay = 60;
+      CONFIG.doubleShotChance = 0;
+      CONFIG.shieldDamageMult = 1.0;
 
       // Trigger Map Intro
       const intro = document.getElementById('mapIntro');

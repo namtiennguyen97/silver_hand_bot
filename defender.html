@@ -662,10 +662,6 @@
           </div>
           <div style="font-size: 8px; color: var(--primary-cyan); opacity: 0.8; font-family: 'Orbitron';">PAUSE</div>
         </div>
-        <div class="hud-stat score-wrap">
-          <div class="stat-label">DATA CAPTURED</div>
-          <div class="stat-value" id="scoreDisplay">00000</div>
-        </div>
       </div>
 
       <div class="xp-container">
@@ -741,8 +737,6 @@
       <div class="menu-panel" id="gameOver">
         <h1 id="failTitle">MISSION FAILED</h1>
         <p id="failDesc">The perimeter has been compromised. All data lost.</p>
-        <div class="stat-label" id="finalScoreLabel">FINAL SCORE</div>
-        <div class="final-score" id="finalScore">0</div>
         <button class="btn-start" id="restartBtn">RETRY MISSION</button>
         <br>
         <button class="btn-exit" id="returnBtn" onclick="window.location.href='campaign.html'">RETURN TO ARCHIVE</button>
@@ -753,8 +747,6 @@
         <h1 id="winTitle" style="color: var(--primary-gold);">MISSION ACCOMPLISHED</h1>
         <p id="winDesc">Congratulations! You have successfully defended the camp.</p>
         <p id="winDemo" style="font-size: 10px; opacity: 0.7;">[DEMO VERSION COMPLETED]</p>
-        <div class="stat-label" id="winScoreLabel">FINAL SCORE</div>
-        <div class="final-score" id="winScore">0</div>
         <button class="btn-start" id="restartWinBtn">PLAY AGAIN</button>
         <br>
         <button class="btn-exit" id="winReturnBtn" onclick="window.location.href='campaign.html'">RETURN TO ARCHIVE</button>
@@ -790,10 +782,10 @@
       en: {
         initialize: "INITIALIZE DEFENSE", abort: "ABORT MISSION", loading: "MISSION DATA LOADING",
         initializing: "INITIALIZING...", pressAny: "PRESS ANY KEY TO CONTINUE", shield: "SHIELD",
-        vitality: "VITALITY", captured: "DATA CAPTURED", level: "LEVEL", camp_barrier: "CAMP BARRIER",
+        vitality: "VITALITY", level: "LEVEL", camp_barrier: "CAMP BARRIER",
         choose_protocol: "CHOOSE A PROTOCOL", paused: "SYSTEM PAUSED", interrupted: "MISSION INTERRUPTED",
         resume: "RESUME MISSION", restart: "RESTART MISSION", failed: "MISSION FAILED",
-        failed_desc: "The perimeter has been compromised. All data lost.", final_score: "FINAL SCORE",
+        failed_desc: "The perimeter has been compromised. All data lost.",
         retry: "RETRY MISSION", return: "RETURN TO ARCHIVE", camp_invasion: "CAMP INVASION",
         tip: "TIP", pause: "PAUSE",
         victory: "MISSION ACCOMPLISHED",
@@ -809,10 +801,10 @@
       vn: {
         initialize: "KHỞI CHẠY PHÒNG THỦ", abort: "HỦY BỎ NHIỆM VỤ", loading: "ĐANG TẢI DỮ LIỆU NHIỆM VỤ",
         initializing: "ĐANG KHỞI TẠO...", pressAny: "NHẤN PHÍM BẤT KỲ ĐỂ TIẾP TỤC", shield: "GIÁP TRỤ",
-        vitality: "SINH LỰC", captured: "DỮ LIỆU THU THẬP", level: "CẤP ĐỘ", camp_barrier: "HÀNG RÀO CĂN CỨ",
+        vitality: "SINH LỰC", level: "CẤP ĐỘ", camp_barrier: "HÀNG RÀO CĂN CỨ",
         choose_protocol: "CHỌN HỖ TRỢ", paused: "TẠM DỪNG", interrupted: "NHIỆM VỤ BỊ GIÁN ĐOẠN",
         resume: "TIẾP TỤC NHIỆM VỤ", restart: "KHỞI ĐỘNG LẠI", failed: "NHIỆM VỤ THẤT BẠI",
-        failed_desc: "Hàng rào đã bị phá vỡ. Def camp thất bại.", final_score: "ĐIỂM SỐ CUỐI CÙNG",
+        failed_desc: "Hàng rào đã bị phá vỡ. Def camp thất bại.",
         retry: "THỬ LẠI NHIỆM VỤ", return: "QUAY LẠI KHO LƯU TRỮ", camp_invasion: "DEF CAMP",
         tip: "MẸO", pause: "TẠM DỪNG",
         victory: "CHIẾN THẮNG RỰC RỠ",
@@ -850,12 +842,10 @@
       // Game Over
       const failTitle = document.getElementById('failTitle');
       const failDesc = document.getElementById('failDesc');
-      const finalScoreLabel = document.getElementById('finalScoreLabel');
       const restartBtn = document.getElementById('restartBtn');
       const returnBtn = document.getElementById('returnBtn');
       if (failTitle) failTitle.textContent = t.failed;
       if (failDesc) failDesc.textContent = t.failed_desc;
-      if (finalScoreLabel) finalScoreLabel.textContent = t.final_score;
       if (restartBtn) restartBtn.textContent = t.retry;
       if (returnBtn) returnBtn.textContent = t.return;
 
@@ -863,13 +853,11 @@
       const winTitle = document.getElementById('winTitle');
       const winDesc = document.getElementById('winDesc');
       const winDemo = document.getElementById('winDemo');
-      const winScoreLabel = document.getElementById('winScoreLabel');
       const restartWinBtn = document.getElementById('restartWinBtn');
       const winReturnBtn = document.getElementById('winReturnBtn');
       if (winTitle) winTitle.textContent = t.victory;
       if (winDesc) winDesc.textContent = t.victory_desc;
       if (winDemo) winDemo.textContent = t.victory_demo;
-      if (winScoreLabel) winScoreLabel.textContent = t.final_score;
       if (restartWinBtn) restartWinBtn.textContent = t.play_again;
       if (winReturnBtn) winReturnBtn.textContent = t.return;
 
@@ -878,16 +866,11 @@
          if (el.textContent.includes('SHIELD') || el.textContent.includes('GIÁP')) el.textContent = t.shield;
          if (el.textContent.includes('VITALITY') || el.textContent.includes('SINH')) el.textContent = t.vitality;
       });
-
-      const capturedLabel = document.querySelector('.hud-top .stat-label');
-      if (capturedLabel) capturedLabel.textContent = t.captured;
-
       const hudPauseLabel = document.querySelector('.top-left-ctrl div:last-child');
       if (hudPauseLabel) hudPauseLabel.textContent = t.pause;
 
       const buffTitle = document.querySelector('.buff-title');
       if (buffTitle) buffTitle.textContent = t.choose_protocol;
-
       const pauseTitle = document.querySelector('.pause-title');
       if (pauseTitle) pauseTitle.textContent = t.paused;
 
@@ -931,7 +914,6 @@
     ============================================= */
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-    const scoreDisplay = document.getElementById('scoreDisplay');
     const levelDisplay = document.getElementById('levelDisplay');
     const xpBar = document.getElementById('xpBar');
     const overlay = document.getElementById('overlay');
@@ -939,7 +921,6 @@
     const buffGrid = document.getElementById('buffGrid');
     const startMenu = document.getElementById('startMenu');
     const gameOverMenu = document.getElementById('gameOver');
-    const finalScoreDisplay = document.getElementById('finalScore');
     const gameContainer = document.getElementById('gameContainer');
 
     // Load Assets
@@ -969,7 +950,7 @@
       normal: {
         src: 'assets/img/defender/zombie.png',
         cols: 8, rows: 8,
-        stats: { hpBase: 150, hpScale: 70, speedMult: 0.8, radiusMult: 1.35, animSpeedMult: 1.0, scoreValue: 100, expValue: 25 },
+        stats: { hpBase: 150, hpScale: 70, speedMult: 0.8, radiusMult: 1.35, animSpeedMult: 1.0, expValue: 25 },
         render: {
           drawScale: 5.0,
           yOffset: 0.95,
@@ -990,7 +971,7 @@
       female: {
         src: 'assets/img/defender/zombie_female.png',
         cols: 10, rows: 8,
-        stats: { hpBase: 120, hpScale: 50, speedMult: 0.95, radiusMult: 1.35, animSpeedMult: 1.1, scoreValue: 120, expValue: 30 },
+        stats: { hpBase: 120, hpScale: 50, speedMult: 0.95, radiusMult: 1.35, animSpeedMult: 1.1, expValue: 30 },
         render: {
           drawScale: 3.2,
           yOffset: 0.95,
@@ -1011,7 +992,7 @@
       tank: {
         src: 'assets/img/defender/zombie_tank.png',
         cols: 8, rows: 8,
-        stats: { hpBase: 600, hpScale: 250, speedMult: 0.3, radiusMult: 1.6, animSpeedMult: 0.8, scoreValue: 500, expValue: 150 },
+        stats: { hpBase: 600, hpScale: 250, speedMult: 0.3, radiusMult: 1.6, animSpeedMult: 0.8, expValue: 150 },
         render: {
           drawScale: 5.0,
           yOffset: 0.95,
@@ -1030,7 +1011,7 @@
       child: {
         src: 'assets/img/defender/zombie.png',
         cols: 8, rows: 8,
-        stats: { hpBase: 80, hpScale: 30, speedMult: 1.1, radiusMult: 1.35, animSpeedMult: 1.4, scoreValue: 80, expValue: 15 },
+        stats: { hpBase: 80, hpScale: 30, speedMult: 1.1, radiusMult: 1.35, animSpeedMult: 1.4, expValue: 15 },
         render: {
           drawScale: 5.0,
           yOffset: 0.95,
@@ -1051,7 +1032,7 @@
       boss: {
         src: 'assets/img/defender/zombie_boss.png',
         cols: 8, rows: 8,
-        stats: { hpBase: 50000, hpScale: 10000, shieldBase: 15000, shieldScale: 5000, speedMult: 0.4, radiusMult: 2.5, animSpeedMult: 0.7, scoreValue: 10000, expValue: 3000 },
+        stats: { hpBase: 50000, hpScale: 10000, shieldBase: 15000, shieldScale: 5000, speedMult: 0.4, radiusMult: 2.5, animSpeedMult: 0.7, expValue: 3000 },
         render: {
           drawScale: 5.5,
           yOffset: 0.95,
@@ -1091,7 +1072,6 @@
     let width, height;
     let gameRunning = false;
     let gamePaused = false;
-    let score = 0;
     let hp = 100;
     let maxHp = 100;
     let shield = 100;
@@ -1101,7 +1081,6 @@
     let xpToNextLevel = 100;
     let frameCount = 0;
     let lastFireTime = 0;
-    let lastDisplayedScore = -1;
     let buffLevels = {}; // Tracks levels of each buff
     let droneActive = false;
     let lastDroneTime = 0;
@@ -1151,6 +1130,8 @@
     alertSfx.load();
     const zombieSfx = new Audio('assets/sounds/zombies.mp3');
     zombieSfx.load();
+    const stunSfx = new Audio('assets/sounds/stun.mp3');
+    stunSfx.load();
 
     /* =============================================
        BGM SYSTEM
@@ -1291,6 +1272,23 @@
       setState(newState) {
         // When dead, only allow death animation states
         if (this.isDead && newState !== 'die_collapse' && newState !== 'die_explode') return;
+        
+        const config = ZOMBIE_TYPES[this.zType] || ZOMBIE_TYPES.normal;
+        
+        // Fallback for missing sequences
+        if (!config.sequences[newState]) {
+          if (newState === 'fall' || newState === 'hit') {
+            // If fall is missing, try hit. If hit is also missing, stay in current state or walk.
+            if (config.sequences['hit']) newState = 'hit';
+            else if (config.sequences['walk']) newState = 'walk';
+            else return;
+          } else if (newState === 'run') {
+            newState = 'walk';
+          } else {
+            return; // Ignore unknown missing states
+          }
+        }
+
         if (this.state === newState) return;
         this.state = newState;
         this.frameIndex = 0;
@@ -1318,13 +1316,19 @@
           this.setState(this.dieState);
           const config = ZOMBIE_TYPES[this.zType] || ZOMBIE_TYPES.normal;
           gainXp(config.stats.expValue || 25);
-          score += config.stats.scoreValue || 100;
         }
       }
 
       triggerStun() {
         this.stunTimer = 15 * 60; // 15 seconds at 60fps
         this.setState('stun');
+
+        // Apply knockback for boss
+        if (this.zType === 'boss') {
+          this.knockbackY = -25; // Reduced from -50 for a more moderate push-back
+          this.isAttacking = false;
+        }
+
         if (window.playSfx && typeof stunSfx !== 'undefined') {
           window.playSfx(stunSfx, 0.5);
         }
@@ -1332,6 +1336,19 @@
 
       update() {
         if (!this.isDead) {
+          // Apply knockback
+          if (Math.abs(this.knockbackY) > 0.1) {
+            this.y += this.knockbackY;
+            this.knockbackY *= 0.9;
+            if (this.y < this.radius) this.y = this.radius;
+
+            // If pushed back significantly from attack line, reset attacking state
+            const attackStopY = height * CONFIG.playerY - 45;
+            if (this.y < attackStopY - 20) {
+              this.isAttacking = false;
+            }
+          }
+
           // Handle Stun
           if (this.stunTimer > 0) {
             this.stunTimer--;
@@ -1353,24 +1370,23 @@
             }
 
             if (!this.isAttacking) {
-              this.y += this.speed + this.knockbackY;
-              this.knockbackY *= 0.9;
+              this.y += this.speed;
 
-            // Zigzag movement logic
-            if (this.isZigzag) {
-              this.x += Math.sin(frameCount * this.sinSpeed + this.sinOffset) * this.sinAmp;
-              // Keep within bounds
-              if (this.x < this.radius) this.x = this.radius;
-              if (this.x > width - this.radius) this.x = width - this.radius;
-            }
+              // Zigzag movement logic
+              if (this.isZigzag) {
+                this.x += Math.sin(frameCount * this.sinSpeed + this.sinOffset) * this.sinAmp;
+                // Keep within bounds
+                if (this.x < this.radius) this.x = this.radius;
+                if (this.x > width - this.radius) this.x = width - this.radius;
+              }
 
-            // Stop when reaching the player zone and start attacking
-            const attackStopY = height * CONFIG.playerY - 45;
-            if (this.y >= attackStopY) {
-              this.y = attackStopY;
-              this.isAttacking = true;
-              this.setState('attack');
-            }
+              // Stop when reaching the player zone and start attacking
+              const attackStopY = height * CONFIG.playerY - 45;
+              if (this.y >= attackStopY) {
+                this.y = attackStopY;
+                this.isAttacking = true;
+                this.setState('attack');
+              }
             }
           }
         }
@@ -1388,7 +1404,7 @@
                 // Deal damage on attack completion
                 if (this.state === 'attack' && !this.isDead) {
                   let dmg = 1;
-                  if (this.zType === 'boss') dmg = 20;
+                  if (this.zType === 'boss') dmg = 10; // Reduced from 20 to balance the fight
                   else if (this.zType === 'tank') dmg = 3;
                   takeDamage(dmg);
                 }
@@ -1443,6 +1459,11 @@
 
         if (currentImg && currentImg.complete) {
           const seq = config.sequences[this.state];
+          if (!seq) {
+            ctx.restore();
+            return;
+          }
+
           const frameIdx = Math.floor(this.frameIndex);
           const safeFrame = Math.min(frameIdx, seq.length - 1);
 
@@ -1733,13 +1754,13 @@
       warning.classList.remove('boss-warning-active');
       void warning.offsetWidth; 
       warning.classList.add('boss-warning-active');
-      gameCont.classList.add('shake-active');
+      // gameCont.classList.add('shake-active'); // Removed due to lag
 
       setTimeout(() => {
         // 2. SEQUENCE: HIDE WARNING & STOP SHAKE
         warning.classList.remove('boss-warning-active');
         warning.style.display = 'none';
-        gameCont.classList.remove('shake-active');
+        // gameCont.classList.remove('shake-active');
         
         // 3. SEQUENCE: SPAWN THE BOSS VISIBLY
         bossSpawnedAtLvl15 = true; 
@@ -1884,9 +1905,17 @@
           if (distSq < radiusSum * radiusSum) { // Comparing squared distances
             // Knockback
             if (CONFIG.knockbackForce > 0) {
-              e.knockbackY = -CONFIG.knockbackForce;
-              if (CONFIG.knockbackForce > 1) {
-                e.setState('fall');
+              if (e.zType === 'boss') {
+                // Boss resistance: nhích nhẹ (20% force) and only when NOT stunned
+                if (e.stunTimer <= 0) {
+                  e.knockbackY = -CONFIG.knockbackForce * 0.2;
+                }
+                // No hit animation for boss
+              } else {
+                e.knockbackY = -CONFIG.knockbackForce;
+                if (CONFIG.knockbackForce > 1) {
+                  e.setState('fall');
+                }
               }
             }
 
@@ -1926,12 +1955,6 @@
         const p = particles[i];
         p.update();
         if (p.alpha <= 0) particles.splice(i, 1);
-      }
-
-      // UI Updates (Only on change)
-      if (score !== lastDisplayedScore) {
-        scoreDisplay.textContent = score.toString().padStart(5, '0');
-        lastDisplayedScore = score;
       }
     }
 
@@ -2087,7 +2110,6 @@
        INTERACTIONS
     ============================================= */
     function startGame() {
-      score = 0;
       hp = 100;
       maxHp = 100;
       shield = 100;
@@ -2142,7 +2164,6 @@
       // Reset HUD
       document.getElementById('shieldBar').style.width = '100%';
       document.getElementById('hpBar').style.width = '100%';
-      scoreDisplay.textContent = '00000';
       gainXp(0);
 
       // Reset stats
@@ -2227,7 +2248,6 @@
         overlay.style.opacity = 1;
         startMenu.style.display = 'none';
         gameOverMenu.style.display = 'block';
-        finalScoreDisplay.textContent = score;
       }, 1500); // 1.5s delay for the explosion show
     }
 
@@ -2247,7 +2267,6 @@
       startMenu.style.display = 'none';
       gameOverMenu.style.display = 'none';
       document.getElementById('victoryMenu').style.display = 'block';
-      document.getElementById('winScore').textContent = score;
     }
 
     document.getElementById('startBtn').addEventListener('click', startGame);

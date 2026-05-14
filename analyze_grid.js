@@ -36,7 +36,7 @@ async function analyzeSprite(fileName) {
             if (blocks.length > 0) {
                 let currentGroup = [blocks[0]];
                 for (let i = 1; i < blocks.length; i++) {
-                    if (blocks[i].start - currentGroup[currentGroup.length-1].end < 30) {
+                    if (blocks[i].start - currentGroup[currentGroup.length-1].end < 15) {
                         currentGroup.push(blocks[i]);
                     } else {
                         groups.push(currentGroup);

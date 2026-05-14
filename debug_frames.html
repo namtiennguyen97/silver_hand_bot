@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Frontline Frames (Atlas Fix)</title>
+    <style>
+        body { background: #333; color: white; font-family: sans-serif; }
+        .grid { display: flex; flex-wrap: wrap; gap: 10px; }
+        .frame-box { border: 1px solid #00f2ff; position: relative; background: #000; }
+        canvas { image-rendering: pixelated; }
+        .label { position: absolute; top: 0; left: 0; background: rgba(0,0,0,0.7); font-size: 10px; padding: 2px; color: #00f2ff; }
+    </style>
+</head>
+<body>
+    <h1>Frontline Sprite Atlas (Fixed Row Boundaries)</h1>
+    <div id="container" class="grid"></div>
+
+    <script>
+        const img = new Image();
+        img.src = 'assets/img/defender/frontline.png';
+        
+        const Atlas = {
+            width: 1264,
+            height: 843,
+            rows: [
+                { y: 0, h: 140, cols: 12 },
+                { y: 131, h: 143, cols: 12 },
+                { y: 275, h: 118, cols: 12 },
+                { y: 395, h: 134, cols: 8 },
+                { y: 504, h: 140, cols: 8 },
+                { y: 644, h: 199, cols: 6 }
+            ]
+        };
+
+        img.onload = () => {
+            const container = document.getElementById('container');
+            Atlas.rows.forEach((rowCfg, rIdx) => {
+                for (let c = 0; c < rowCfg.cols; c++) {
+                    const fw = Atlas.width / rowCfg.cols;
+                    const sx = Math.floor(c * fw);
+                    const sy = rowCfg.y;
+                    const sw = Math.floor((c + 1) * fw) - sx;
+                    const sh = rowCfg.h;
+
+                    const box = document.createElement('div');
+                    box.className = 'frame-box';
+                    const canvas = document.createElement('canvas');
+                    canvas.width = sw;
+                    canvas.height = sh;
+                    canvas.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+                    
+                    const label = document.createElement('div');
+                    label.className = 'label';
+                    label.innerText = `R${rIdx} C${c}`;
+                    
+                    box.appendChild(canvas);
+                    box.appendChild(label);
+                    container.appendChild(box);
+                }
+            });
+        };
+    </script>
+</body>
+</html>

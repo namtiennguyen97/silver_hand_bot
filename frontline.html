@@ -48,6 +48,7 @@
             display: block;
             width: 100%;
             height: 100%;
+            image-rendering: pixelated; /* From README */
         }
 
         /* VIRTUAL CONTROLS */
@@ -330,16 +331,16 @@
             groundY: 0.8,
             playerSize: 50,
             sprite: {
-                rows: 8,
-                path: 'assets/img/defender/frontline.png',
-                totalW: 1264, // From analysis
-                totalH: 843
+                path: 'assets/img/defender/frontline_final.png',
+                cellW: 128,
+                cellH: 128,
+                cols: 8
             },
             colors: {
                 cyan: '#00f2ff',
                 pink: '#ff00c8',
                 gold: '#ffcc00',
-                bg: '#050505'
+                bg: '#1a1a1a' // Brighter background
             }
         };
 
@@ -353,15 +354,29 @@
         spriteImg.src = CONFIG.sprite.path;
 
         const STATES = {
-            RUN: { row: 0, frames: 6 },
-            RUN_SHOOT: { row: 1, frames: 6 },
-            IDLE: { row: 1, frames: 5, offset: 6 }, // Using Row 2 right side for Idle
-            HIT: { row: 3, frames: 5, offset: 1 }, // Row 4 in user terms
-            DIE: { row: 4, frames: 6 },
-            DIE_2: { row: 5, frames: 8 },
-            JUMP: { row: 6, frames: 7 },
-            ROLL: { row: 6, frames: 7 } 
+            RUN: { row: 0, frames: 8, offset: 0 },
+            IDLE: { row: 1, frames: 8, offset: 0 },
+            IDLE_SHOOT: { row: 2, frames: 8, offset: 0 },
+            RUN_SHOOT: { row: 3, frames: 8, offset: 0 },
+            HIT: { row: 4, frames: 8, offset: 0 }, 
+            DIE: { row: 5, frames: 8, offset: 0 },
+            ROLL: { row: 6, frames: 8, offset: 0 },
+            JUMP: { row: 7, frames: 8, offset: 0 },
+            JUMP_SHOOT: { row: 8, frames: 8, offset: 0 },
+            BACK: { row: 9, frames: 8, offset: 0 }
         };
+
+        function getFrame(rowIdx, colIdx) {
+            const sx = colIdx * CONFIG.sprite.cellW;
+            const sy = rowIdx * CONFIG.sprite.cellH;
+            return { x: sx, y: sy, w: CONFIG.sprite.cellW, h: CONFIG.sprite.cellH };
+        }
+
+        spriteImg.onload = () => {
+            console.log("Standardized Sprite Loaded.");
+        };
+
+
 
         let keys = {};
         let touchControls = {
@@ -374,9 +389,9 @@
 
         class Player {
             constructor() {
-                this.width = 120; // Adjusted for better visibility of detailed sprites
-                this.height = 120;
-                this.x = 100;
+                this.width = 150; // Smaller sprite
+                this.height = 150;
+                this.x = width / 2 - this.width / 2;
                 this.y = height * CONFIG.groundY - this.height;
                 this.vx = 0;
                 this.vy = 0;
@@ -388,11 +403,12 @@
                 this.state = STATES.IDLE;
                 this.frameIdx = 0;
                 this.animTimer = 0;
-                this.animSpeed = 6; // Frames per animation step
+                this.animSpeed = 10; // Slower for higher quality frames
                 
                 this.direction = 1; // 1: right, -1: left
                 this.particles = [];
                 this.shootTimer = 0;
+                this.isShooting = false;
             }
 
             update() {
@@ -403,19 +419,28 @@
                     return;
                 }
 
-                // Default State
-                let newState = this.isGrounded ? STATES.IDLE : STATES.RUN;
+                // Update inputs
+                this.isShooting = (keys['KeyK'] || touchControls.fire);
+
+                // Default state based on movement and grounded status
+                let newState = this.state;
+                if (!this.isGrounded) {
+                    newState = this.isShooting ? STATES.JUMP_SHOOT : STATES.JUMP;
+                } else if (!this.isRolling) {
+                    newState = Math.abs(this.vx) > 0.1 ? STATES.RUN : STATES.IDLE;
+                    if (this.isShooting) {
+                        newState = Math.abs(this.vx) > 0.1 ? STATES.RUN_SHOOT : STATES.IDLE_SHOOT;
+                    }
+                }
 
                 // Apply input
                 if (!this.isRolling) {
                     if (keys['KeyA'] || keys['ArrowLeft'] || touchControls.left) {
                         this.vx = -CONFIG.moveSpeed;
                         this.direction = -1;
-                        newState = STATES.RUN;
                     } else if (keys['KeyD'] || keys['ArrowRight'] || touchControls.right) {
                         this.vx = CONFIG.moveSpeed;
                         this.direction = 1;
-                        newState = STATES.RUN;
                     } else {
                         this.vx *= CONFIG.friction;
                     }
@@ -442,14 +467,12 @@
                 }
 
                 // Shoot logic
-                if (keys['KeyK'] || touchControls.fire) {
+                if (this.isShooting) {
                     if (this.shootTimer <= 0) {
                         projectiles.push(new Projectile(this.x + this.width/2 + (this.direction * 30), this.y + this.height/2, this.direction));
                         this.shootTimer = 15;
                         this.createShootEffect();
                     }
-                    if (this.vx !== 0) newState = STATES.RUN_SHOOT;
-                    else newState = STATES.RUN_SHOOT; // Use run-shoot for static shoot too
                 }
                 if (this.shootTimer > 0) this.shootTimer--;
 
@@ -516,26 +539,24 @@
                 ctx.ellipse(this.x + this.width/2, height * CONFIG.groundY, 30, 8, 0, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Sprite Drawing logic (Dynamic State Mapping)
+                // Sprite Drawing logic (Standardized Grid)
                 const stateCfg = this.state;
-                const totalW = 1264;
-                const totalH = 843;
-                const colsInRow = 12; // Maximum columns we'll assume for grid calculation
-                const rows = 8;
-
                 const frameCol = (stateCfg.offset || 0) + this.frameIdx;
+                const f = getFrame(stateCfg.row, frameCol);
                 
-                const sx = Math.floor(frameCol * (totalW / colsInRow));
-                const sy = Math.floor(stateCfg.row * (totalH / rows));
-                const sw = Math.floor((frameCol + 1) * (totalW / colsInRow)) - sx;
-                const sh = Math.floor((stateCfg.row + 1) * (totalH / rows)) - sy;
-
-                if (this.direction === -1) {
-                    ctx.translate(this.x + this.width, this.y);
-                    ctx.scale(-1, 1);
-                    ctx.drawImage(spriteImg, sx, sy, sw, sh, 0, 0, this.width, this.height);
-                } else {
-                    ctx.drawImage(spriteImg, sx, sy, sw, sh, this.x, this.y, this.width, this.height);
+                if (f) {
+                    ctx.save();
+                    // Optional: Remove black background if needed (Uncomment if using transparency)
+                    // ctx.globalCompositeOperation = 'screen'; 
+                    
+                    if (this.direction === -1) {
+                        ctx.translate(this.x + this.width, this.y);
+                        ctx.scale(-1, 1);
+                        ctx.drawImage(spriteImg, f.x, f.y, f.w, f.h, 0, 0, this.width, this.height);
+                    } else {
+                        ctx.drawImage(spriteImg, f.x, f.y, f.w, f.h, this.x, this.y, this.width, this.height);
+                    }
+                    ctx.restore();
                 }
 
                 ctx.restore();

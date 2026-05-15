@@ -9,7 +9,7 @@
     <style>
         :root {
             --primary-cyan: #00f2ff;
-            --primary-pink: #ff00c8;
+            --primary-red: #ff3b30;
             --primary-gold: #ffcc00;
             --bg-dark: #0a0a0a;
             --glass-bg: rgba(20, 20, 20, 0.7);
@@ -73,15 +73,112 @@
         }
 
         .stat-panel {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            padding: 15px 25px;
+            background: linear-gradient(135deg, rgba(0, 15, 20, 0.95) 0%, rgba(0, 30, 40, 0.85) 100%);
+            border: 1px solid rgba(94, 242, 214, 0.4);
             backdrop-filter: blur(10px);
             font-family: 'Orbitron', sans-serif;
             display: flex;
-            flex-direction: column;
-            gap: 12px;
+            flex-direction: row;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 18px;
             min-width: 220px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(94, 242, 214, 0.1);
+        }
+
+        .rpg-corner {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #5ef2d6;
+            pointer-events: none;
+        }
+
+        .rpg-corner.top-left {
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .rpg-corner.bottom-right {
+            bottom: -2px;
+            right: -2px;
+            border-left: none;
+            border-top: none;
+        }
+        
+        .stat-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+        }
+
+        .avatar-box {
+            width: 50px;
+            height: 50px;
+            border: 1px solid var(--primary-cyan);
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+        }
+
+        .avatar-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent,
+                rgba(0, 242, 255, 0.1) 50%,
+                transparent
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            animation: scanlineScroll 2s linear infinite;
+        }
+
+        @keyframes scanlineScroll {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        .stat-name {
+            font-size: 9px;
+            color: #fff;
+            letter-spacing: 2px;
+            margin-bottom: 2px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .avatar-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .level-val {
+            font-size: 9px;
+            color: var(--primary-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-shadow: 0 0 5px var(--primary-cyan);
         }
 
         .stat-label {
@@ -101,9 +198,51 @@
         }
 
         .bar-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
             height: 100%;
             width: 100%;
-            transition: width 0.3s ease;
+            z-index: 2;
+        }
+
+        .bar-trail {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.4);
+            z-index: 1;
+            transition: width 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .bar-segments {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 19%,
+                rgba(0, 0, 0, 0.4) 19%,
+                rgba(0, 0, 0, 0.4) 20%
+            );
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* XP BAR */
+        .xp-fill {
+            background: var(--primary-gold);
+            box-shadow: 0 0 5px var(--primary-gold);
+        }
+
+        .bar-container.xp-container {
+            height: 3px;
+            margin-top: 2px;
         }
 
         .shield-fill {
@@ -112,8 +251,17 @@
         }
 
         .hp-fill {
-            background: var(--primary-pink);
-            box-shadow: 0 0 10px var(--primary-pink);
+            background: var(--primary-red);
+            box-shadow: 0 0 10px var(--primary-red);
+        }
+        
+        .stm-fill {
+            background: #1eb53a;
+            box-shadow: 0 0 5px #1eb53a;
+        }
+
+        .bar-container.stm-container {
+            height: 4px;
         }
 
         .hud-bottom {
@@ -167,23 +315,33 @@
             box-shadow: 0 0 30px rgba(255, 0, 200, 0.4);
         }
 
+        .btn-system {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--primary-cyan);
+            width: 34px;
+            height: 34px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: all 0.2s ease;
+            pointer-events: auto;
+        }
+
+        .btn-system:active {
+            transform: scale(0.9);
+            border-color: var(--primary-cyan);
+        }
+
         .btn-jump {
             border-color: var(--primary-cyan);
             color: var(--primary-cyan);
         }
 
-        /* SCANLINES EFFECT */
-        .scanlines {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 50;
-        }
+
 
         /* MENU OVERLAY */
         #menuOverlay {
@@ -266,27 +424,47 @@
     </div>
 
     <div id="gameContainer">
-        <div class="scanlines"></div>
-        
+
         <div class="hud-overlay">
             <div class="hud-top">
                 <div class="stat-panel">
-                    <div>
-                        <div class="stat-label">SHIELD GENERATOR</div>
-                        <div class="bar-container">
-                            <div class="bar-fill shield-fill" id="shieldBar"></div>
+                    <div class="rpg-corner top-left"></div>
+                    <div class="rpg-corner bottom-right"></div>
+                    <div class="avatar-col">
+                        <div class="avatar-box">
+                            <img src="assets/img/mayor_5.png" alt="Silver-Hand">
+                            <div class="avatar-scanline"></div>
                         </div>
+                        <div class="level-val" id="levelDisplay">LV.01</div>
                     </div>
-                    <div>
-                        <div class="stat-label">VITALITY STATUS</div>
+                    <div class="stat-bars">
+                        <div class="stat-name" id="playerName">Silver-Hand</div>
                         <div class="bar-container">
+                            <div class="bar-trail" id="shieldTrail"></div>
+                            <div class="bar-fill shield-fill" id="shieldBar"></div>
+                            <div class="bar-segments"></div>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar-trail" id="hpTrail"></div>
                             <div class="bar-fill hp-fill" id="hpBar"></div>
+                            <div class="bar-segments"></div>
+                        </div>
+                        <div class="bar-container stm-container">
+                            <div class="bar-fill stm-fill" id="stmBar"></div>
+                        </div>
+                        <div class="bar-container xp-container">
+                            <div class="bar-fill xp-fill" id="xpBar"></div>
                         </div>
                     </div>
                 </div>
-                <div class="stat-panel" style="text-align: right;">
-                    <div class="stat-label">AMMO</div>
-                    <div class="stat-value" id="ammoText">30/∞</div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                    <div class="stat-panel" style="text-align: right; padding: 10px 20px;">
+                        <div class="stat-label">AMMO</div>
+                        <div class="stat-value" id="ammoText">30/30</div>
+                    </div>
+                    <div class="btn-system" id="btnFullscreen" onclick="toggleFullscreen()">
+                        <i class="fa-solid fa-expand"></i>
+                    </div>
                 </div>
             </div>
 
@@ -312,7 +490,8 @@
                 <h1>FRONTLINE</h1>
                 <p style="margin-bottom: 40px; color: #888; letter-spacing: 2px;">SAO-ĐÊM EXPANSION UNIT</p>
                 <button class="btn-start" onclick="startGame()">DEPLOY UNIT</button>
-                <p style="margin-top: 20px; font-size: 10px; color: #444;">PC: WASD TO MOVE | K TO FIRE | L TO ROLL | SPACE TO JUMP</p>
+                <p style="margin-top: 20px; font-size: 10px; color: #444;">PC: WASD TO MOVE | K TO FIRE | L TO ROLL | R TO RELOAD | SPACE TO JUMP</p>
+                <p style="margin-top: 5px; font-size: 9px; color: #333;">ROLL CONSUMES STAMINA (YELLOW BAR)</p>
             </div>
         </div>
     </div>
@@ -330,18 +509,20 @@
             rollSpeed: 10,
             groundY: 0.8,
             playerSize: 50,
-            sprite: {
-                path: 'assets/img/defender/frontline_master.png',
-                cellW: 256,
-                cellH: 256,
-                cols: 8
-            },
             colors: {
                 cyan: '#00f2ff',
                 pink: '#ff00c8',
                 gold: '#ffcc00',
                 bg: '#1a1a1a' // Brighter background
-            }
+            },
+            maxAmmo: 30,
+            reloadDuration: 90, // frames
+            maxStamina: 100,
+            staminaRegen: 0.4,
+            rollCost: 35,
+            enemySpawnRate: 120,
+            enemySpeed: 2,
+            enemyDamage: 15
         };
 
         let gameRunning = false;
@@ -349,29 +530,22 @@
         let maxHp = 100;
         let shield = 100;
         let maxShield = 100;
-
-        let spriteImg = new Image();
-        spriteImg.src = CONFIG.sprite.path;
+        let spawnTimer = 0;
+        let invincibilityTimer = 0;
+        let xp = 0;
+        let level = 1;
+        let xpToNext = 100;
 
         const STATES = {
-            RUN: { row: 0, frames: 8, offset: 0 },
-            IDLE: { row: 1, frames: 8, offset: 0 },
-            IDLE_SHOOT: { row: 2, frames: 8, offset: 0 },
-            RUN_SHOOT: { row: 2, frames: 8, offset: 0 }, // Using same for now
-            JUMP_SHOOT: { row: 3, frames: 8, offset: 0 },
-            JUMP: { row: 4, frames: 8, offset: 0 },
-            HIT: { row: 1, frames: 8, offset: 0 }, // Placeholder
-            DIE: { row: 1, frames: 8, offset: 0 }  // Placeholder
-        };
-
-        function getFrame(rowIdx, colIdx) {
-            const sx = colIdx * CONFIG.sprite.cellW;
-            const sy = rowIdx * CONFIG.sprite.cellH;
-            return { x: sx, y: sy, w: CONFIG.sprite.cellW, h: CONFIG.sprite.cellH };
-        }
-
-        spriteImg.onload = () => {
-            console.log("Standardized Sprite Loaded.");
+            RUN: 'RUN',
+            IDLE: 'IDLE',
+            IDLE_SHOOT: 'IDLE_SHOOT',
+            RUN_SHOOT: 'RUN_SHOOT',
+            JUMP_SHOOT: 'JUMP_SHOOT',
+            JUMP: 'JUMP',
+            ROLL: 'ROLL',
+            HIT: 'HIT',
+            DIE: 'DIE'
         };
 
 
@@ -387,8 +561,8 @@
 
         class Player {
             constructor() {
-                this.width = 200; // Adjusted for 256x256 high-res
-                this.height = 200;
+                this.width = 40; 
+                this.height = 60;
                 this.x = width / 2 - this.width / 2;
                 this.y = height * CONFIG.groundY - this.height;
                 this.vx = 0;
@@ -407,6 +581,14 @@
                 this.particles = [];
                 this.shootTimer = 0;
                 this.isShooting = false;
+
+                this.ammo = CONFIG.maxAmmo;
+                this.isReloading = false;
+                this.reloadTimer = 0;
+
+                this.stamina = CONFIG.maxStamina;
+                this.isInvincible = false;
+                this.canAirDash = true;
             }
 
             update() {
@@ -449,30 +631,66 @@
                     }
                 }
 
-                // Roll logic
-                if ((keys['KeyL'] || touchControls.roll) && !this.isRolling && this.isGrounded) {
+                // Roll / Air Dash logic
+                const canRoll = (keys['KeyL'] || touchControls.roll) && !this.isRolling && this.stamina >= CONFIG.rollCost;
+                if (canRoll && (this.isGrounded || this.canAirDash)) {
+                    if (!this.isGrounded) {
+                        this.canAirDash = false;
+                        this.vy = 0; // Freeze vertical movement during air dash
+                    }
                     this.isRolling = true;
+                    this.stamina -= CONFIG.rollCost;
+                    updateHUD();
                     this.state = STATES.ROLL;
-                    this.frameIdx = 0;
+                    this.animTimer = 0;
                     this.vx = this.direction * CONFIG.rollSpeed;
                 }
 
                 if (this.isRolling) {
                     newState = STATES.ROLL;
-                    if (this.frameIdx >= CONFIG.sprite.cols - 1) {
+                    if (this.animTimer >= 20) { // Roll duration
                         this.isRolling = false;
                     }
                 }
 
                 // Shoot logic
-                if (this.isShooting) {
-                    if (this.shootTimer <= 0) {
-                        projectiles.push(new Projectile(this.x + this.width/2 + (this.direction * 30), this.y + this.height/2, this.direction));
-                        this.shootTimer = 15;
-                        this.createShootEffect();
+                if (this.isShooting && !this.isReloading) {
+                    if (this.ammo > 0) {
+                        if (this.shootTimer <= 0) {
+                            projectiles.push(new Projectile(this.x + this.width/2 + (this.direction * 30), this.y + this.height/2, this.direction));
+                            this.shootTimer = 15;
+                            this.ammo--;
+                            this.createShootEffect();
+                            updateHUD();
+                        }
+                    } else {
+                        // Auto reload
+                        this.startReload();
                     }
                 }
                 if (this.shootTimer > 0) this.shootTimer--;
+
+                // Manual reload
+                if (keys['KeyR'] && this.ammo < CONFIG.maxAmmo && !this.isReloading) {
+                    this.startReload();
+                }
+
+                // Reloading logic
+                if (this.isReloading) {
+                    this.reloadTimer++;
+                    if (this.reloadTimer >= CONFIG.reloadDuration) {
+                        this.ammo = CONFIG.maxAmmo;
+                        this.isReloading = false;
+                        this.reloadTimer = 0;
+                        updateHUD();
+                    }
+                }
+
+                // Stamina regen
+                if (this.stamina < CONFIG.maxStamina) {
+                    this.stamina = Math.min(CONFIG.maxStamina, this.stamina + CONFIG.staminaRegen);
+                    updateHUD();
+                }
 
                 // Update State & Animation
                 if (this.state !== newState) {
@@ -493,6 +711,7 @@
                     this.y = groundY - this.height;
                     this.vy = 0;
                     this.isGrounded = true;
+                    this.canAirDash = true;
                 }
 
                 // Wall collision
@@ -506,18 +725,14 @@
                 }
             }
 
+            startReload() {
+                if (this.isReloading) return;
+                this.isReloading = true;
+                this.reloadTimer = 0;
+            }
+
             updateAnimation() {
                 this.animTimer++;
-                const stateCfg = this.state;
-                if (this.animTimer >= this.animSpeed) {
-                    this.animTimer = 0;
-                    this.frameIdx = (this.frameIdx + 1) % stateCfg.frames;
-                    
-                    // Stop on last frame of death
-                    if (stateCfg === STATES.DIE && this.frameIdx === stateCfg.frames - 1) {
-                        this.frameIdx = stateCfg.frames - 1;
-                    }
-                }
             }
 
             createShootEffect() {
@@ -537,30 +752,153 @@
                 ctx.ellipse(this.x + this.width/2, height * CONFIG.groundY, 30, 8, 0, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Sprite Drawing logic (Standardized Grid)
-                const stateCfg = this.state;
-                const frameCol = (stateCfg.offset || 0) + this.frameIdx;
-                const f = getFrame(stateCfg.row, frameCol);
+                // Pure Canvas Character Rendering
+                ctx.save();
+                ctx.translate(this.x + this.width/2, this.y + this.height/2);
                 
-                if (f) {
-                    ctx.save();
-                    // Optional: Remove black background if needed (Uncomment if using transparency)
-                    // ctx.globalCompositeOperation = 'screen'; 
+                if (this.direction === -1) {
+                    ctx.scale(-1, 1);
+                }
+
+                // Body
+                ctx.strokeStyle = CONFIG.colors.cyan;
+                ctx.lineWidth = 2;
+
+                
+                if (this.state === STATES.ROLL) {
+                    // Draw a rolling circle/ball
+                    ctx.rotate(this.animTimer * 0.2);
+                    ctx.strokeRect(-this.width/2, -this.height/2, this.width, this.height);
+                } else {
+                    // Draw a simple humanoid shape
+                    // Head
+                    ctx.strokeRect(-10, -30, 20, 20);
+                    // Body
+                    ctx.strokeRect(-15, -10, 30, 40);
                     
-                    if (this.direction === -1) {
-                        ctx.translate(this.x + this.width, this.y);
-                        ctx.scale(-1, 1);
-                        ctx.drawImage(spriteImg, f.x, f.y, f.w, f.h, 0, 0, this.width, this.height);
+                    // Legs (running animation)
+                    const legOffset = Math.sin(this.animTimer * 0.2) * 10;
+                    if (this.state === STATES.RUN || this.state === STATES.RUN_SHOOT) {
+                        ctx.beginPath();
+                        ctx.moveTo(-10, 30); ctx.lineTo(-10 + legOffset, 45);
+                        ctx.moveTo(10, 30); ctx.lineTo(10 - legOffset, 45);
+                        ctx.stroke();
                     } else {
-                        ctx.drawImage(spriteImg, f.x, f.y, f.w, f.h, this.x, this.y, this.width, this.height);
+                        ctx.beginPath();
+                        ctx.moveTo(-10, 30); ctx.lineTo(-10, 45);
+                        ctx.moveTo(10, 30); ctx.lineTo(10, 45);
+                        ctx.stroke();
                     }
-                    ctx.restore();
+
+                    // Arm/Weapon
+                    if (this.isShooting) {
+                        ctx.strokeStyle = CONFIG.colors.gold;
+                        ctx.shadowColor = CONFIG.colors.gold;
+                        ctx.beginPath();
+                        ctx.moveTo(10, 0); ctx.lineTo(30, 0);
+                        ctx.stroke();
+                    }
                 }
 
                 ctx.restore();
+                ctx.restore();
+
+                // Draw Reload Progress Bar (Vertical)
+                if (this.isReloading) {
+                    const barW = 4;
+                    const barH = 50;
+                    const barX = this.x - 15;
+                    const barY = this.y + this.height/2 - barH/2;
+                    const progress = this.reloadTimer / CONFIG.reloadDuration;
+
+                    // Background
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                    ctx.fillRect(barX, barY, barW, barH);
+
+                    // Fill (Vertical bottom-up)
+                    ctx.fillStyle = CONFIG.colors.gold;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = CONFIG.colors.gold;
+                    ctx.fillRect(barX, barY + barH, barW, -barH * progress);
+                    ctx.shadowBlur = 0;
+                }
 
                 // Draw particles
                 this.particles.forEach(p => p.draw());
+
+                if (invincibilityTimer > 0 && Math.floor(invincibilityTimer / 5) % 2 === 0) {
+                    // Flash effect
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                }
+            }
+        }
+
+        class Enemy {
+            constructor(side) {
+                this.width = 40;
+                this.height = 60;
+                this.x = side === 'left' ? -50 : width + 50;
+                this.y = height * CONFIG.groundY - this.height;
+                this.vx = side === 'left' ? CONFIG.enemySpeed : -CONFIG.enemySpeed;
+                this.hp = 30;
+                this.isDead = false;
+                this.animTimer = Math.random() * 100;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.animTimer++;
+                
+                // Keep on ground
+                this.y = height * CONFIG.groundY - this.height;
+
+                if (this.hp <= 0) this.isDead = true;
+                
+                // Remove if far off screen
+                if (this.x < -200 || this.x > width + 200) this.isDead = true;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x + this.width/2, this.y + this.height/2);
+                if (this.vx > 0) ctx.scale(-1, 1);
+
+                // Zombie Body (Greenish)
+                ctx.strokeStyle = '#39ff14'; // Neon Green
+                ctx.lineWidth = 2;
+
+
+                // Head
+                ctx.strokeRect(-10, -30, 20, 20);
+                // Body
+                ctx.strokeRect(-15, -10, 30, 40);
+                
+                // Legs
+                const legOffset = Math.sin(this.animTimer * 0.15) * 8;
+                ctx.beginPath();
+                ctx.moveTo(-10, 30); ctx.lineTo(-10 + legOffset, 45);
+                ctx.moveTo(10, 30); ctx.lineTo(10 - legOffset, 45);
+                ctx.stroke();
+
+                // Arms (Zombie pose)
+                ctx.beginPath();
+                ctx.moveTo(10, -10); ctx.lineTo(25, -15);
+                ctx.moveTo(10, 5); ctx.lineTo(25, 0);
+                ctx.stroke();
+
+                ctx.restore();
+
+                // Draw HP Bar (Always left-to-right)
+                const barW = 30;
+                const barH = 4;
+                const barX = this.x + this.width/2 - barW/2;
+                const barY = this.y - 10;
+                
+                ctx.fillStyle = 'rgba(0,0,0,0.5)';
+                ctx.fillRect(barX, barY, barW, barH);
+                ctx.fillStyle = '#ff3b30';
+                ctx.fillRect(barX, barY, barW * (Math.max(0, this.hp) / 30), barH);
             }
         }
 
@@ -581,8 +919,7 @@
 
             draw() {
                 ctx.fillStyle = CONFIG.colors.gold;
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = CONFIG.colors.gold;
+
                 ctx.fillRect(this.x, this.y, this.width, this.height);
                 ctx.shadowBlur = 0;
             }
@@ -615,6 +952,30 @@
 
         let player;
         let projectiles = [];
+        let enemies = [];
+
+        function takeDamage(amount) {
+            if (invincibilityTimer > 0) return;
+            
+            if (shield > 0) {
+                shield -= amount;
+                if (shield < 0) {
+                    hp += shield; // subtract overflow from hp
+                    shield = 0;
+                }
+            } else {
+                hp -= amount;
+            }
+
+            if (hp <= 0) {
+                hp = 0;
+                player.isDead = true;
+                // Game over logic would go here
+            }
+
+            invincibilityTimer = 60; // 1 second of invincibility
+            updateHUD();
+        }
 
         function resize() {
             width = canvas.width = window.innerWidth;
@@ -623,28 +984,13 @@
         }
 
         function drawBackground() {
-            // Dark grid background
-            ctx.strokeStyle = 'rgba(0, 242, 255, 0.05)';
-            ctx.lineWidth = 1;
-            const step = 50;
-            
-            ctx.beginPath();
-            for (let x = 0; x < width; x += step) {
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, height);
-            }
-            for (let y = 0; y < height; y += step) {
-                ctx.moveTo(0, y);
-                ctx.lineTo(width, y);
-            }
-            ctx.stroke();
+            /* Removed grid background as requested */
 
             // Ground line
             const groundY = height * CONFIG.groundY;
             ctx.strokeStyle = CONFIG.colors.cyan;
             ctx.lineWidth = 2;
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = CONFIG.colors.cyan;
+
             ctx.beginPath();
             ctx.moveTo(0, groundY);
             ctx.lineTo(width, groundY);
@@ -660,28 +1006,122 @@
 
         function startGame() {
             document.getElementById('menuOverlay').style.display = 'none';
+            
+            // Request Fullscreen on start
+            requestFullscreen();
+
             player = new Player();
             projectiles = [];
+            enemies = [];
             
             hp = 100;
             shield = 100;
+            spawnTimer = 0;
+            invincibilityTimer = 0;
             updateHUD();
 
             gameRunning = true;
         }
 
+        function gainXP(amount) {
+            xp += amount;
+            if (xp >= xpToNext) {
+                xp -= xpToNext;
+                level++;
+                xpToNext = Math.floor(xpToNext * 1.5);
+                // Visual level up effect could go here
+                createLevelUpEffect();
+            }
+            updateHUD();
+        }
+
+        function createLevelUpEffect() {
+            for(let i=0; i<20; i++) {
+                player.particles.push(new Particle(player.x + player.width/2, player.y, '#bc13fe'));
+            }
+        }
+
+        let lastHUDState = {};
+
         function updateHUD() {
-            document.getElementById('shieldBar').style.width = (shield / maxShield * 100) + '%';
-            document.getElementById('hpBar').style.width = (hp / maxHp * 100) + '%';
+            if (!player) return;
+            
+            const currentState = {
+                hp, shield, stamina: Math.floor(player.stamina), ammo: player.ammo, level
+            };
+            
+            // Only update DOM if state actually changed (primitive optimization)
+            if (JSON.stringify(currentState) === JSON.stringify(lastHUDState)) return;
+            lastHUDState = currentState;
+
+            const shieldPct = (shield / maxShield * 100) + '%';
+            const hpPct = (hp / maxHp * 100) + '%';
+            
+            document.getElementById('shieldBar').style.width = shieldPct;
+            document.getElementById('hpBar').style.width = hpPct;
+            
+            setTimeout(() => {
+                const sTrail = document.getElementById('shieldTrail');
+                const hTrail = document.getElementById('hpTrail');
+                if(sTrail) sTrail.style.width = shieldPct;
+                if(hTrail) hTrail.style.width = hpPct;
+            }, 100);
+
+            document.getElementById('stmBar').style.width = (player.stamina / CONFIG.maxStamina * 100) + '%';
+            document.getElementById('ammoText').innerText = `${player.ammo}/${CONFIG.maxAmmo}`;
+            document.getElementById('levelDisplay').innerText = `LV.${level.toString().padStart(2, '0')}`;
         }
 
         function update() {
             if (!gameRunning) return;
             player.update();
             
-            projectiles.forEach((p, index) => {
+            if (invincibilityTimer > 0) invincibilityTimer--;
+
+            // Enemy Spawning
+            spawnTimer++;
+            if (spawnTimer >= CONFIG.enemySpawnRate) {
+                const side = Math.random() > 0.5 ? 'left' : 'right';
+                enemies.push(new Enemy(side));
+                spawnTimer = 0;
+            }
+
+            // Update Enemies
+            enemies.forEach((e, eIdx) => {
+                e.update();
+                
+                // Collision with Player
+                if (!player.isDead && !player.isRolling &&
+                    e.x < player.x + player.width &&
+                    e.x + e.width > player.x &&
+                    e.y < player.y + player.height &&
+                    e.y + e.height > player.y) {
+                    takeDamage(CONFIG.enemyDamage);
+                }
+
+                if (e.isDead) enemies.splice(eIdx, 1);
+            });
+
+            // Update Projectiles
+            projectiles.forEach((p, pIdx) => {
                 p.update();
-                if (!p.active) projectiles.splice(index, 1);
+                
+                // Collision with Enemies
+                enemies.forEach((e) => {
+                    if (!e.isDead &&
+                        p.x < e.x + e.width &&
+                        p.x + p.width > e.x &&
+                        p.y < e.y + e.height &&
+                        p.y + p.height > e.y) {
+                        e.hp -= 15;
+                        if (e.hp <= 0) gainXP(20);
+                        p.active = false;
+                        // Create hit particles
+                        for(let i=0; i<3; i++) player.particles.push(new Particle(p.x, p.y, '#39ff14'));
+                    }
+                });
+
+                if (!p.active) projectiles.splice(pIdx, 1);
             });
         }
 
@@ -693,6 +1133,7 @@
             
             if (gameRunning) {
                 projectiles.forEach(p => p.draw());
+                enemies.forEach(e => e.draw());
                 player.draw();
             }
         }
@@ -729,6 +1170,24 @@
         setupBtn('btnJump', 'jump');
         setupBtn('btnFire', 'fire');
         setupBtn('btnRoll', 'roll');
+
+        function requestFullscreen() {
+            const el = document.documentElement;
+            if (el.requestFullscreen) el.requestFullscreen();
+            else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+            else if (el.msRequestFullscreen) el.msRequestFullscreen();
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                requestFullscreen();
+                document.getElementById('btnFullscreen').innerHTML = '<i class="fa-solid fa-compress"></i>';
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                document.getElementById('btnFullscreen').innerHTML = '<i class="fa-solid fa-expand"></i>';
+            }
+        }
 
         window.addEventListener('resize', resize);
         resize();

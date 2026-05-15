@@ -4,7 +4,7 @@ const path = require('path');
 async function processImage(fileName, backgroundType = 'white') {
   try {
     const filePath = path.join(__dirname, 'assets', 'img', 'defender', fileName);
-    console.log(`Processing ${filePath} - TARGETING ${backgroundType.toUpperCase()} BACKGROUND...`);
+    console.log(`Processing ${filePath} - TARGETING ${backgroundType.toUpperCase()} BACKGROUND (SOLID MODE)...`);
     const image = await Jimp.read(filePath);
     
     image.scan(0, 0, image.bitmap.width, image.bitmap.height, function(x, y, idx) {
@@ -13,36 +13,39 @@ async function processImage(fileName, backgroundType = 'white') {
       const b = this.bitmap.data[idx + 2];
       
       if (backgroundType === 'white') {
-        // Target WHITE background (using average luminance)
+        // Strict WHITE background removal (Hard Threshold)
         const avg = (r + g + b) / 3;
-        if (avg > 210) {
-          const diff = Math.max(r, g, b) - Math.min(r, g, b);
-          if (diff < 15) { // Only target neutral grey/white (the halo)
-            // Pixels from 210 to 255 will fade out
-            const alpha = Math.max(0, (255 - avg) * (255 / 45));
-            this.bitmap.data[idx + 3] = Math.min(this.bitmap.data[idx + 3], alpha);
-          }
+        const diff = Math.max(r, g, b) - Math.min(r, g, b);
+        
+        // Hard threshold: Only remove if very bright AND neutral (pure white/grey)
+        // This prevents semi-transparency on character pixels
+        if (avg > 248 && diff < 10) {
+          this.bitmap.data[idx + 3] = 0;
         }
       } else if (backgroundType === 'black') {
-        // Target BLACK background (using average luminance)
+        // Strict BLACK background removal
         const avg = (r + g + b) / 3;
-        if (avg < 15) { // Very conservative threshold to only remove pure black
-          // Sharp transition to transparency
-          const newAlpha = Math.max(0, avg * (255 / 15));
-          this.bitmap.data[idx + 3] = Math.min(this.bitmap.data[idx + 3], newAlpha);
+        const diff = Math.max(r, g, b) - Math.min(r, g, b);
+
+        if (avg < 8 && diff < 8) {
+          this.bitmap.data[idx + 3] = 0;
         }
       }
     });
 
     await image.write(filePath);
-    console.log(`Successfully removed ${backgroundType.toUpperCase()} background from ${fileName}`);
+    console.log(`Successfully processed ${fileName} with SOLID mode.`);
   } catch (err) {
     console.error(`Error processing ${fileName}:`, err);
   }
 }
 
 async function main() {
-  await processImage('frontline.png', 'black');
+  // Processing all zombie types with the new SOLID logic
+  await processImage('zombie.png', 'white');
+  await processImage('zombie_female.png', 'white');
+  await processImage('zombie_tank.png', 'white');
+  await processImage('zombie_boss.png', 'white');
 }
 
 main();

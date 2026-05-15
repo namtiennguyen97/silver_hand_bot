@@ -50,15 +50,14 @@ sh = Math.floor((rowIdx + 1) * (totalHeight / totalRows)) - sy
 2.  **Grouping**: 
     - Nhóm các cụm `X` gần nhau (khoảng cách < 15px) thành 1 nhân vật.
     - Trung tâm của mỗi nhóm chính là tâm của Frame.
-3.  **Công thức Xóa nền tối ưu (Advanced Transparency)**:
-    - **Nền Trắng**: 
-        - Ngưỡng: `avg > 210`.
-        - Kiểm tra độ trung tính: `max(R,G,B) - min(R,G,B) < 15` (Để tránh làm trong suốt da nhân vật).
-        - Alpha: `(255 - avg) * (255 / 45)`.
-    - **Nền Đen**: 
-        - Ngưỡng: `avg < 55`.
-        - Alpha: `avg * (255 / 55)`.
-    - **Sharpness**: Sử dụng `Hard Threshold` (avg > 250 => alpha 0) nếu muốn sprite "đặc" hoàn toàn không có gradient biên.
+3.  **Thuật toán Xóa nền SOLID (Cập nhật 15/05/2026)**:
+    Để tránh tình trạng Sprite bị mờ hoặc trong suốt (semi-transparent), luôn ưu tiên sử dụng chế độ **SOLID MODE** thay vì Gradient Alpha.
+
+    - **Nguyên tắc SOLID**: Tuyệt đối không dùng công thức tính Alpha dựa trên độ sáng (ví dụ: `(255-avg) * ratio`). Điều này sẽ làm mờ cả nhân vật nếu nhân vật có màu sáng.
+    - **Hard Threshold (Ngưỡng cứng)**:
+        - **Nền Trắng**: Chỉ xóa khi `avg > 248` AND `diff < 10` (R, G, B cực kỳ gần nhau).
+        - **Nền Đen**: Chỉ xóa khi `avg < 8` AND `diff < 8`.
+    - **Sharpness**: Pixel bị xóa sẽ có `alpha = 0`, các pixel còn lại giữ nguyên `alpha = 255`.
 
 ---
-*Cập nhật lần cuối: 12/05/2026 - By Antigravity AI*
+*Cập nhật lần cuối: 15/05/2026 - By Antigravity AI (SOLID MODE Standard)*

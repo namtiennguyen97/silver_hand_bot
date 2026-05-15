@@ -752,7 +752,7 @@
         <button class="btn-exit" id="winReturnBtn" onclick="window.location.href='campaign.html'">RETURN TO ARCHIVE</button>
       </div>
     </div>
-    <audio id="gameBgm" src="assets/sounds/war_and_war_intrumental.mp3" type="audio/mpeg" loop></audio>
+    <audio id="gameBgm" src="assets/sounds/battle_defender_jjk.mp3" type="audio/mpeg" loop></audio>
 
     <!-- RPG CHAT OVERLAY -->
     <div id="rpgChatOverlay">
@@ -930,21 +930,25 @@
     const playerImg = new Image();
     playerImg.onload = () => {
       console.log(`Player sprite loaded: ${playerImg.width}x${playerImg.height}`);
-      // Only read the top row: 3 frames horizontal
+      // Based on 1024x1024 and latest screenshot, it's a 3x2 grid.
       const cols = 3;
-      const rowH = Math.floor(playerImg.height / 2); // height of 1 row
+      const rows = 2;
       window.spriteGrid = {
-        fw: Math.floor(playerImg.width / cols), // 341
-        fh: rowH,                                // 512
+        cols, rows,
+        fw: playerImg.width / cols, // 1024 / 3 = 341.33
+        fh: playerImg.height / rows, // 1024 / 2 = 512
         frames: [
           { col: 0, row: 0 }, // 0: Idle
           { col: 1, row: 0 }, // 1: Firing-1
-          { col: 2, row: 0 }, // 2: Firing-2 (optional)
+          { col: 2, row: 0 }, // 2: Firing-2
+          { col: 0, row: 1 }, // 3: Reload/Other
+          { col: 1, row: 1 }, 
+          { col: 2, row: 1 }
         ]
       };
-      console.log(`Sprite grid: 3 frames, fw=${window.spriteGrid.fw}, fh=${window.spriteGrid.fh}`);
+      console.log(`Sprite grid: 3x2, fw=${window.spriteGrid.fw}, fh=${window.spriteGrid.fh}`);
     };
-    playerImg.src = 'assets/img/defender/player.jpg';
+    playerImg.src = 'assets/img/defender/player.png';
 
     const ZOMBIE_TYPES = {
       normal: {
@@ -1996,20 +2000,22 @@
       if (playerImg.complete && playerImg.naturalWidth !== 0 && window.spriteGrid) {
         const g = window.spriteGrid;
         const frame = g.frames[playerFrame] || g.frames[0];
-        const sx = frame.col * g.fw;
-        const sy = frame.row * g.fh;
+        
+        // Contiguous Slicing Algorithm from ZOMBIE_SYSTEM_README.md
+        const sx = Math.floor(frame.col * g.fw);
+        const sy = Math.floor(frame.row * g.fh);
+        const sw = Math.floor((frame.col + 1) * g.fw) - sx;
+        const sh = Math.floor((frame.row + 1) * g.fh) - sy;
 
         // Draw at fixed height, maintain aspect ratio
-        const finalH = 200;
-        const finalW = finalH * (g.fw / g.fh);
+        const finalH = 180;
+        const finalW = finalH * (sw / sh);
 
-        ctx.globalCompositeOperation = 'screen';
         ctx.drawImage(
           playerImg,
-          sx, sy, g.fw, g.fh,
+          sx, sy, sw, sh,
           -finalW / 2, -finalH / 2, finalW, finalH
         );
-        ctx.globalCompositeOperation = 'source-over';
       } else {
         // Fallback to shapes
         ctx.strokeStyle = CONFIG.colors.cyan;

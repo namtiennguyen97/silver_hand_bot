@@ -41,11 +41,12 @@ async function processImage(fileName, backgroundType = 'white') {
 }
 
 async function main() {
-  // Processing all zombie types with the new SOLID logic
+  // Processing all hero and zombie types with the new SOLID logic
   await processImage('zombie.png', 'white');
   await processImage('zombie_female.png', 'white');
   await processImage('zombie_tank.png', 'white');
   await processImage('zombie_boss.png', 'white');
+  await processImage('player_thaybach.png', 'white');
 }
 
 main();

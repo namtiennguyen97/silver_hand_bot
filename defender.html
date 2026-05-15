@@ -299,6 +299,46 @@
       justify-content: center;
     }
 
+    .buff-card.has-avatar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
+      z-index: 1;
+    }
+
+    .buff-card.has-avatar * {
+      position: relative;
+      z-index: 2;
+    }
+
+    .buff-card.has-avatar .buff-name {
+      color: #fff;
+      text-shadow: 0 0 10px rgba(0,0,0,0.8);
+    }
+
+    .buff-card.has-avatar .buff-desc {
+      color: rgba(255,255,255,0.9);
+    }
+
+    .buff-owner-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 7px;
+      color: var(--primary-cyan);
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--primary-cyan);
+      padding: 2px 4px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      font-weight: bold;
+      z-index: 3;
+    }
+
     .buff-card:hover {
       transform: scale(1.05);
       border-color: var(--primary-cyan);
@@ -928,6 +968,16 @@
     bgImg.src = 'assets/img/defender/map_1.png';
 
     const playerImg = new Image();
+    playerImg.src = 'assets/img/defender/player.png';
+
+    const thayBachImg = new Image();
+    thayBachImg.src = 'assets/img/defender/player_thaybach.png';
+
+    const AVATARS = {
+      'Silver-Hand': 'assets/img/defender/avatar_character/silver_hand.png',
+      'ThayBach': 'assets/img/defender/avatar_character/thaybach.png'
+    };
+
     playerImg.onload = () => {
       console.log(`Player sprite loaded: ${playerImg.width}x${playerImg.height}`);
       // Based on 1024x1024 and latest screenshot, it's a 3x2 grid.
@@ -1084,40 +1134,272 @@
     let xp = 0;
     let xpToNextLevel = 100;
     let frameCount = 0;
-    let lastFireTime = 0;
-    let buffLevels = {}; // Tracks levels of each buff
     let droneActive = false;
     let lastDroneTime = 0;
-    let rpgChatCallback = null; // New safe callback for RPG chat
+    let rpgChatCallback = null;
     let bossSpawnedAtLvl15 = false;
     let bossClearingPhase = false;
-    let bossSequenceTriggered = false; // New safety lock
+    let bossSequenceTriggered = false;
     let bossIntroActive = false;
+    let buffLevels = {};
 
-    // Player Animation
-    // Frames: 0=Idle, 1=Firing-1, 2=Firing-2, 3=Firing-2dup, 4=Reload
-    let playerFrame = 0;
-    let animTimer = 0;
+    class Hero {
+      constructor(id, name, type = 'silver', img = playerImg) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.img = img;
+        this.x = width / 2;
+        this.targetAngle = -Math.PI / 2;
+        this.lastFireTime = 0;
+        this.playerFrame = 0;
+        this.animTimer = 0;
+        
+        // Burst logic for MP5 style
+        this.burstRemaining = 0;
+        this.burstTimer = 0;
+        this.burstInterval = 5; // Frames between bullets in a burst
+        
+        this.drawScale = 1.0;
+        if (name === 'ThayBach') this.drawScale = 0.85;
+        
+        // Calculate grid info for this specific sprite
+        this.cols = 3;
+        this.rows = 2;
+        this.fw = this.img.width / this.cols;
+        this.fh = this.img.height / this.rows;
+        
+        // Horizontal centering offsets (calculated from source pixels)
+        this.frameOffsets = [0, 0, 0, 0, 0, 0];
+        if (name === 'ThayBach') {
+          this.frameOffsets = [51, 7, -15, 47, 2, -17];
+        }
+        
+        // Initial stats inherited from CONFIG but can be buffed individually
+        this.stats = {
+          bulletCount: name === 'ThayBach' ? 5 : CONFIG.bulletCount,
+          pierceCount: CONFIG.pierceCount,
+          critChance: CONFIG.critChance,
+          damageMult: CONFIG.damageMult,
+          fireRateDelay: name === 'ThayBach' ? 360 : CONFIG.fireRateDelay, // 6s for ThayBach
+          shieldDamageMult: 1.0,
+          bounceCount: 0,
+          splitOnHit: false,
+          bulletColor: name === 'ThayBach' ? '#FFD700' : null,
+          spreadOnHit: false
+        };
+      }
+
+      update() {
+        // Auto-targeting
+        const py = height * CONFIG.playerY;
+        let nearest = null;
+        let minDistSq = Infinity;
+
+        for (let i = 0; i < enemies.length; i++) {
+          const e = enemies[i];
+          if (e.isDead) continue;
+          const dx = e.x - this.x;
+          const dy = e.y - py;
+          const dSq = dx * dx + dy * dy;
+          if (dSq < minDistSq) {
+            minDistSq = dSq;
+            nearest = e;
+          }
+        }
+
+        if (nearest) {
+          this.targetAngle = Math.atan2(nearest.y - py, nearest.x - this.x);
+        } else {
+          this.targetAngle = -Math.PI / 2;
+        }
+
+        // Handle Burst Firing
+        if (this.burstRemaining > 0) {
+          this.burstTimer--;
+          if (this.burstTimer <= 0) {
+            this.shootSingle();
+            this.burstRemaining--;
+            this.burstTimer = this.burstInterval;
+          }
+        }
+
+        // Handle Firing Cooldown
+        if (frameCount - this.lastFireTime >= this.stats.fireRateDelay) {
+          if (this.name === 'ThayBach') {
+            this.burstRemaining = this.stats.bulletCount;
+            this.burstTimer = 0;
+          } else {
+            this.fire();
+          }
+          this.lastFireTime = frameCount;
+        }
+
+        // Handle Animation
+        if (this.playerFrame > 0) {
+          this.animTimer++;
+          if (this.animTimer >= ANIM_SPEED) {
+            this.animTimer = 0;
+            const seqIdx = FIRE_ANIM_SEQ.indexOf(this.playerFrame);
+            if (seqIdx !== -1 && seqIdx < FIRE_ANIM_SEQ.length - 1) {
+              this.playerFrame = FIRE_ANIM_SEQ[seqIdx + 1];
+            } else {
+              this.playerFrame = 0; // Back to idle
+            }
+          }
+        }
+      }
+
+      shootSingle() {
+        const py = height * CONFIG.playerY;
+        const p = new Projectile(
+          this.x, py, this.targetAngle, true, 
+          this.stats.pierceCount, 
+          this.stats.splitOnHit, 
+          Math.random() < this.stats.critChance,
+          this.stats.bulletColor
+        );
+        p.damageMult = this.stats.damageMult;
+        p.spreadOnHit = this.stats.spreadOnHit;
+        projectiles.push(p);
+
+        if (window.playSfx) window.playSfx(shootingSfx, 0.15);
+        this.playerFrame = 1;
+        this.animTimer = 0;
+      }
+
+      fire() {
+        const py = height * CONFIG.playerY;
+        const baseAngle = this.targetAngle;
+        const spread = 0.1;
+        const bCount = this.stats.bulletCount;
+
+        for (let i = 0; i < bCount; i++) {
+          const angleOffset = (i - (bCount - 1) / 2) * spread;
+          const finalAngle = baseAngle + angleOffset;
+          
+          const isCrit = Math.random() < this.stats.critChance;
+          const p = new Projectile(
+            this.x, py, finalAngle, true, 
+            this.stats.pierceCount, 
+            this.stats.splitOnHit, 
+            isCrit,
+            this.stats.bulletColor
+          );
+          
+          // Attach hero stats to projectile for damage calculation
+          p.damageMult = this.stats.damageMult;
+          p.shieldDamageMult = this.stats.shieldDamageMult;
+          p.bounceCount = this.stats.bounceCount;
+          p.spreadOnHit = this.stats.spreadOnHit;
+          
+          projectiles.push(p);
+
+          // Double Shot logic
+          if (Math.random() < this.stats.doubleShotChance) {
+            setTimeout(() => {
+              const p2 = new Projectile(this.x, py, finalAngle, true, this.stats.pierceCount, this.stats.splitOnHit, isCrit);
+              p2.damageMult = this.stats.damageMult;
+              p2.shieldDamageMult = this.stats.shieldDamageMult;
+              p2.bounceCount = this.stats.bounceCount;
+              projectiles.push(p2);
+            }, 100);
+          }
+        }
+
+        this.playerFrame = FIRE_ANIM_SEQ[0];
+        this.animTimer = 0;
+
+        if (window.playSfx) {
+          window.playSfx(shootingSfx, 0.2);
+        }
+      }
+
+      draw() {
+        const py = height * CONFIG.playerY;
+        ctx.save();
+        ctx.translate(this.x, py);
+        ctx.rotate(this.targetAngle + Math.PI / 2);
+
+        if (this.img.complete && this.img.naturalWidth !== 0) {
+          // Both heroes use a 3x2 grid mapping
+          const frames = [
+            { col: 0, row: 0 }, // 0: Idle
+            { col: 1, row: 0 }, // 1: Firing-1
+            { col: 2, row: 0 }, // 2: Firing-2
+            { col: 0, row: 1 }, // 3: Reload-1
+            { col: 1, row: 1 }, // 4: Reload-2
+            { col: 2, row: 1 }  // 5: Special
+          ];
+          const frame = frames[this.playerFrame] || frames[0];
+          
+          // Re-calculate fw/fh if image was just loaded
+          if (!this.fw || isNaN(this.fw)) {
+             this.fw = this.img.width / this.cols;
+             this.fh = this.img.height / this.rows;
+          }
+
+          const sx = Math.floor(frame.col * this.fw);
+          const sy = Math.floor(frame.row * this.fh);
+          const sw = Math.floor((frame.col + 1) * this.fw) - sx;
+          const sh = Math.floor((frame.row + 1) * this.fh) - sy;
+
+          const baseH = 180;
+          const finalH = baseH * this.drawScale;
+          const finalW = finalH * (sw / sh);
+          
+          // Apply frame offset for centering (scale source offset to final draw size)
+          const sourceOffset = this.frameOffsets[this.playerFrame] || 0;
+          const drawOffset = sourceOffset * (finalW / this.fw);
+
+          ctx.drawImage(
+            this.img,
+            sx, sy, sw, sh,
+            -finalW / 2 - drawOffset, -finalH / 2, finalW, finalH
+          );
+        } else {
+          // Fallback
+          ctx.strokeStyle = CONFIG.colors.cyan;
+          ctx.lineWidth = 3;
+          ctx.strokeRect(-10, -30, 20, 30);
+          ctx.beginPath();
+          ctx.arc(0, 0, 25, Math.PI, 0);
+          ctx.fillStyle = CONFIG.colors.bg;
+          ctx.fill();
+          ctx.stroke();
+        }
+        ctx.restore();
+
+        // Label
+        ctx.fillStyle = '#fff';
+        ctx.font = '10px Orbitron';
+        ctx.textAlign = 'center';
+        ctx.fillText(this.name, this.x, py + 30);
+      }
+    }
+
+    let heroes = [];
+
+    // Global Constants
     const ANIM_SPEED = 5;
     const FIRE_ANIM_SEQ = [1, 0]; // Firing-1 → Idle
 
     const CONFIG = {
       playerY: 0.82,
       enemySpawnRate: 85,
-      projectileSpeed: 12, // Faster bullets
-      enemySpeedBase: 0.2, // Further reduced from 0.25
-      fireRateDelay: 60, // Slower base fire rate (1 shot/sec)
+      projectileSpeed: 12,
+      enemySpeedBase: 0.2,
       colors: {
         cyan: '#00f2ff',
         pink: '#ff00c8',
         gold: '#ffcc00',
         bg: '#050505'
       },
-      // BUFFABLE STATS
+      // BASE HERO STATS
       bulletCount: 1,
       pierceCount: 0,
       critChance: 0,
-      damageBase: 35, // Base damage
+      damageBase: 35,
       damageMult: 1,
       splitOnHit: false,
       bounceCount: 0,
@@ -1169,17 +1451,21 @@
        CLASSES
     ============================================= */
     class Projectile {
-      constructor(x, y, angle, isCrit = false, bounces = 0, canSplit = true) {
+      constructor(x, y, angle, isPlayer = true, pierce = 0, canSplit = true, isCrit = false, color = null) {
         this.x = x;
         this.y = y;
         this.angle = angle;
+        this.isPlayer = isPlayer;
         this.speed = CONFIG.projectileSpeed;
-        this.radius = isCrit ? 5 : 3;
+        this.radius = isCrit ? 6 : 4;
         this.active = true;
         this.isCrit = isCrit;
-        this.pierceLeft = CONFIG.pierceCount;
-        this.bouncesLeft = bounces;
+        this.pierceLeft = pierce;
         this.canSplit = canSplit;
+        this.bounceCount = 0; 
+        this.damageMult = 1;  
+        this.color = color || (isCrit ? CONFIG.colors.gold : CONFIG.colors.cyan);
+        this.spreadOnHit = false; // New mechanic for ThayBach
       }
 
       update() {
@@ -1207,7 +1493,7 @@
         const length = this.isCrit ? 25 : 15;
         const thickness = this.isCrit ? 4 : 2;
 
-        ctx.fillStyle = this.isCrit ? CONFIG.colors.gold : CONFIG.colors.cyan;
+        ctx.fillStyle = this.color;
         ctx.fillRect(-length / 2, -thickness / 2, length, thickness);
 
         ctx.restore();
@@ -1598,7 +1884,6 @@
       const rect = gameContainer.getBoundingClientRect();
       width = canvas.width = rect.width;
       height = canvas.height = rect.height;
-      playerX = width / 2;
     }
 
     function spawnEnemy() {
@@ -1819,70 +2104,40 @@
         barsWrap.style.opacity = someoneAttacking ? "1" : "0";
       }
 
-      // Auto-targeting (Optimized with squared distance)
-      if (enemies.length > 0) {
-        let nearest = null;
-        let minDistSq = Infinity;
-        const py = height * CONFIG.playerY;
 
-        for (let i = 0; i < enemies.length; i++) {
-          const e = enemies[i];
-          if (e.isDead) continue; // Skip dead zombies
 
-          const dx = e.x - playerX;
-          const dy = e.y - py;
-          const dSq = dx * dx + dy * dy;
-          if (dSq < minDistSq) {
-            minDistSq = dSq;
-            nearest = e;
-          }
+      // Update Heroes Firing Logic
+      heroes.forEach(h => h.update());
+
+      // Adjust Hero Positions (SilverHand stays at center)
+      const spacing = 120;
+      heroes.forEach((h, i) => {
+        let targetX = width / 2;
+        if (i === 1) targetX = width / 2 + spacing;
+        else if (i === 2) targetX = width / 2 - spacing;
+        else if (i > 2) {
+          const side = i % 2 === 0 ? -1 : 1;
+          const mult = Math.floor((i + 1) / 2);
+          targetX = width / 2 + (side * mult * spacing);
         }
-
-        if (nearest) {
-          mouseAngle = Math.atan2(nearest.y - py, nearest.x - playerX);
-        }
-      } else {
-        mouseAngle = -Math.PI / 2;
-      }
-
-      // Auto-fire
-      if (frameCount - lastFireTime >= CONFIG.fireRateDelay) {
-        fire();
-        lastFireTime = frameCount;
-      }
+        h.x += (targetX - h.x) * 0.1;
+      });
 
       // Repair Drone Logic
-      if (droneActive && frameCount - lastDroneTime >= 1200) { // 20s = 1200 frames
+      if (droneActive && frameCount - lastDroneTime >= 1200) { 
         const healAmt = maxHp * 0.05;
         hp = Math.min(maxHp, hp + healAmt);
         document.getElementById('hpBar').style.width = (hp / maxHp * 100) + '%';
         lastDroneTime = frameCount;
-        // Visual feedback
         ctx.fillStyle = 'rgba(0, 255, 100, 0.2)';
         ctx.fillRect(0, 0, width, height);
-      }
-
-      // Advance player animation
-      if (playerFrame > 0) {
-        animTimer++;
-        if (animTimer >= ANIM_SPEED) {
-          animTimer = 0;
-          const seqIdx = FIRE_ANIM_SEQ.indexOf(playerFrame);
-          if (seqIdx !== -1 && seqIdx < FIRE_ANIM_SEQ.length - 1) {
-            playerFrame = FIRE_ANIM_SEQ[seqIdx + 1];
-          } else {
-            playerFrame = 0; // Back to idle
-          }
-        }
       }
 
       // Update projectiles
       for (let i = projectiles.length - 1; i >= 0; i--) {
         const p = projectiles[i];
         p.update();
-        if (!p.active) {
-          projectiles.splice(i, 1);
-        }
+        if (!p.active) projectiles.splice(i, 1);
       }
 
       // Update enemies & Collisions
@@ -1898,7 +2153,6 @@
 
         if (e.isDead) continue;
 
-        // Check collision with all projectiles (Optimized)
         for (let j = projectiles.length - 1; j >= 0; j--) {
           const p = projectiles[j];
           if (!p.active) continue;
@@ -1908,40 +2162,24 @@
           const distSq = dx * dx + dy * dy;
           const radiusSum = e.radius + 15;
 
-          if (distSq < radiusSum * radiusSum) { // Comparing squared distances
-            // Knockback
-            if (CONFIG.knockbackForce > 0) {
-              if (e.zType === 'boss') {
-                // Boss resistance: nhích nhẹ (20% force) and only when NOT stunned
-                if (e.stunTimer <= 0) {
-                  e.knockbackY = -CONFIG.knockbackForce * 0.2;
-                }
-                // No hit animation for boss
-              } else {
-                e.knockbackY = -CONFIG.knockbackForce;
-                if (CONFIG.knockbackForce > 1) {
-                  e.setState('fall');
-                }
-              }
-            }
-
-            // Damage
-            let dmg = CONFIG.damageBase * CONFIG.damageMult;
-            if (p.isCrit) dmg *= 2;
+          if (distSq < radiusSum * radiusSum) {
+            // Damage calculation using projectile stats
+            let dmg = (p.isCrit ? 70 : 35) * (p.damageMult || 1);
             e.takeDamage(dmg, p.isCrit);
-
-            // Split logic
-            if (CONFIG.splitOnHit && p.canSplit) {
-              const offsetX = Math.cos(p.angle) * 10;
-              const offsetY = Math.sin(p.angle) * 10;
-              newProjectiles.push(new Projectile(e.x + offsetX, e.y + offsetY, p.angle - 0.5, false, 0, false));
-              newProjectiles.push(new Projectile(e.x + offsetX, e.y + offsetY, p.angle + 0.5, false, 0, false));
-              p.canSplit = false;
+            
+            // Fragment logic (ThayBach special)
+            if (p.spreadOnHit) {
+              for (let k = 0; k < 3; k++) {
+                const ang = p.angle + (Math.random() - 0.5) * 2.0;
+                const frag = new Projectile(e.x, e.y, ang, true, 0, false, false, p.color);
+                frag.damageMult = p.damageMult * 0.4; // Fragments deal 40% damage
+                newProjectiles.push(frag);
+              }
+              p.spreadOnHit = false; // Prevent multiple triggers per projectile
             }
 
             createExplosion(e.x, e.y, e.color);
 
-            // Handle Pierce
             if (p.pierceLeft > 0) {
               p.pierceLeft--;
             } else {
@@ -1951,12 +2189,8 @@
           }
         }
       }
-      // Add split projectiles to main array after loop
-      if (newProjectiles.length > 0) {
-        projectiles.push(...newProjectiles);
-      }
+      if (newProjectiles.length > 0) projectiles.push(...newProjectiles);
 
-      // Update particles (Optimized Loop)
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.update();
@@ -1985,56 +2219,17 @@
           drawX = (width - drawW) / 2;
         }
         ctx.drawImage(bgImg, drawX, drawY, drawW, drawH);
-
-        // Overlay dark tint for better visibility
         ctx.fillStyle = 'rgba(0,0,0,0.4)';
         ctx.fillRect(0, 0, width, height);
       }
 
-      // Draw Player
-      const py = height * CONFIG.playerY;
-      ctx.save();
-      ctx.translate(playerX, py);
-      ctx.rotate(mouseAngle + Math.PI / 2);
-
-      if (playerImg.complete && playerImg.naturalWidth !== 0 && window.spriteGrid) {
-        const g = window.spriteGrid;
-        const frame = g.frames[playerFrame] || g.frames[0];
-        
-        // Contiguous Slicing Algorithm from ZOMBIE_SYSTEM_README.md
-        const sx = Math.floor(frame.col * g.fw);
-        const sy = Math.floor(frame.row * g.fh);
-        const sw = Math.floor((frame.col + 1) * g.fw) - sx;
-        const sh = Math.floor((frame.row + 1) * g.fh) - sy;
-
-        // Draw at fixed height, maintain aspect ratio
-        const finalH = 180;
-        const finalW = finalH * (sw / sh);
-
-        ctx.drawImage(
-          playerImg,
-          sx, sy, sw, sh,
-          -finalW / 2, -finalH / 2, finalW, finalH
-        );
-      } else {
-        // Fallback to shapes
-        ctx.strokeStyle = CONFIG.colors.cyan;
-        ctx.lineWidth = 3;
-        ctx.strokeRect(-10, -30, 20, 30);
-        ctx.beginPath();
-        ctx.arc(0, 0, 25, Math.PI, 0);
-        ctx.fillStyle = CONFIG.colors.bg;
-        ctx.fill();
-        ctx.stroke();
-      }
-
-      ctx.restore();
+      // Draw Heroes
+      heroes.forEach(h => h.draw());
 
       for (let i = 0; i < projectiles.length; i++) {
         projectiles[i].draw();
       }
 
-      // Y-sorting: Sort in-place to avoid allocation
       enemies.sort((a, b) => a.y - b.y);
       for (let i = 0; i < enemies.length; i++) {
         enemies[i].draw();
@@ -2055,19 +2250,37 @@
        BUFFS SYSTEM
     ============================================= */
     const BUFF_LIST = [
-      { id: 'multishot', name: '+1 Bullets', nameVn: '+1 Tia đạn', desc: 'Fires an additional bullet per shot.', descVn: 'Bắn thêm một tia đạn mỗi lần khai hỏa.', icon: 'fa-layer-group', minLevel: 1, action: () => CONFIG.bulletCount++ },
-      { id: 'pierce', name: 'Piercing', nameVn: 'Xuyên thấu', desc: 'Bullets pass through 1 additional enemy.', descVn: 'Đạn xuyên qua thêm 1 mục tiêu.', icon: 'fa-arrow-right-to-bracket', minLevel: 1, action: () => CONFIG.pierceCount++ },
-      { id: 'split', name: 'Split Shot', nameVn: 'Đạn phân mảnh', desc: 'On hit, 2 small bullets split to the sides.', descVn: 'Khi trúng đích, tách thành 2 tia đạn nhỏ sang hai bên.', icon: 'fa-arrows-split-up-and-left', minLevel: 1, special: true, action: () => CONFIG.splitOnHit = true },
-      { id: 'crit', name: 'Critical Hit', nameVn: 'Chí mạng', desc: '+25% chance to deal massive damage.', descVn: '+25% tỉ lệ gây sát thương cực lớn.', icon: 'fa-bolt', minLevel: 1, action: () => CONFIG.critChance += 0.25 },
-      { id: 'damage', name: 'Overdrive', nameVn: 'Quá tải', desc: '+60% projectile damage mult.', descVn: '+60% sát thương đạn.', icon: 'fa-burst', minLevel: 1, action: () => CONFIG.damageMult += 0.6 },
-      // Level 5+ Buffs
-      { id: 'fireRate', name: 'Rapid Fire', nameVn: 'Xả đạn nhanh', desc: 'Increases firing speed by 10%.', descVn: 'Tăng tốc độ xả đạn thêm 10%.', icon: 'fa-gauge-high', minLevel: 5, action: () => CONFIG.fireRateDelay = Math.max(5, CONFIG.fireRateDelay * 0.9) },
-      { id: 'bounce', name: 'Ricochet', nameVn: 'Đạn nảy', desc: 'Bullets bounce off screen edges.', descVn: 'Đạn có khả năng nảy khi chạm cạnh màn hình.', icon: 'fa-reply-all', minLevel: 5, special: true, action: () => CONFIG.bounceCount++ },
-      { id: 'knockback', name: 'Shockwave', nameVn: 'Sóng xung kích', desc: 'Adds +10% knockback effect to bullets.', descVn: 'Tăng thêm 10% hiệu ứng đẩy lùi cho mỗi viên đạn.', icon: 'fa-shield-halved', minLevel: 5, action: () => CONFIG.knockbackForce += 0.5 },
-      // Level 10+ Buffs
-      { id: 'drone', name: 'Repair Drone', nameVn: 'Drone sửa chữa', desc: 'Heals 5% barrier HP every 20s.', descVn: 'Hồi 5% máu rào chắn mỗi 20 giây.', icon: 'fa-mendeley', minLevel: 10, special: true, action: () => { droneActive = true; lastDroneTime = frameCount; } },
-      { id: 'double', name: 'Double Shot', nameVn: 'Khai hỏa kép', desc: '+10% chance to fire twice in a row.', descVn: '+10% tỉ lệ bắn liên tiếp 2 lần.', icon: 'fa-gun', minLevel: 10, action: () => CONFIG.doubleShotChance += 0.1 },
-      { id: 'shieldBreaker', name: 'Shield Breaker', nameVn: 'Phá giáp', desc: '+10% damage to boss shields.', descVn: '+10% sát thương lên giáp Boss.', icon: 'fa-burst', minLevel: 10, action: () => CONFIG.shieldDamageMult += 0.1 }
+      // RECRUIT HERO
+      { 
+        id: 'recruit_thaybach', 
+        name: 'Recruit: ThayBach', 
+        nameVn: 'Chiêu mộ: ThayBach', 
+        desc: 'ThayBach joins the defense line.', 
+        descVn: 'Thầy Bạch gia nhập hàng phòng thủ.', 
+        icon: 'fa-user-ninja', 
+        minLevel: 3, 
+        special: true, 
+        recruit: true,
+        action: () => {
+          heroes.push(new Hero(heroes.length, 'ThayBach', 'member', thayBachImg));
+        } 
+      },
+      // SILVER-HAND BUFFS
+      { id: 'sh_multishot', owner: 'Silver-Hand', name: 'SH: +1 Bullets', nameVn: 'SH: +1 Tia đạn', desc: 'Silver-Hand fires an additional bullet.', descVn: 'Silver-Hand bắn thêm một tia đạn.', icon: 'fa-layer-group', minLevel: 1, action: (h) => h.stats.bulletCount++ },
+      { id: 'sh_damage', owner: 'Silver-Hand', name: 'SH: Overdrive', nameVn: 'SH: Quá tải', desc: 'Silver-Hand +60% damage.', descVn: 'Silver-Hand +60% sát thương.', icon: 'fa-burst', minLevel: 1, action: (h) => h.stats.damageMult += 0.6 },
+      { id: 'sh_firerate', owner: 'Silver-Hand', name: 'SH: Rapid Fire', nameVn: 'SH: Xả đạn nhanh', desc: 'Silver-Hand +15% fire rate.', descVn: 'Silver-Hand +15% tốc độ bắn.', icon: 'fa-gauge-high', minLevel: 3, action: (h) => h.stats.fireRateDelay = Math.max(5, h.stats.fireRateDelay * 0.85) },
+      
+      // THAYBACH BUFFS (MP5 Style)
+      { id: 'tb_bullets', owner: 'ThayBach', name: 'TB: MP5 Burst +1', nameVn: 'TB: MP5 +1 Viên', desc: 'Adds +1 bullet to each MP5 burst.', descVn: 'Tăng thêm 1 viên cho mỗi lần xả đạn.', icon: 'fa-layer-group', minLevel: 1, action: (h) => h.stats.bulletCount++ },
+      { id: 'tb_damage', owner: 'ThayBach', name: 'TB: High Caliber', nameVn: 'TB: Đạn hạng nặng', desc: 'ThayBach +70% damage.', descVn: 'Thầy Bạch +70% sát thương.', icon: 'fa-burst', minLevel: 1, action: (h) => h.stats.damageMult += 0.7 },
+      { id: 'tb_reload', owner: 'ThayBach', name: 'TB: Fast Hands', nameVn: 'TB: Thay đạn nhanh', desc: 'Reduce MP5 reload time by 20%.', descVn: 'Giảm 20% thời gian hồi đạn.', icon: 'fa-gauge-high', minLevel: 1, action: (h) => h.stats.fireRateDelay = Math.max(30, h.stats.fireRateDelay * 0.8) },
+      { id: 'tb_crit', owner: 'ThayBach', name: 'TB: Focus', nameVn: 'TB: Tập trung', desc: 'ThayBach +25% crit chance.', descVn: 'Thầy Bạch +25% chí mạng.', icon: 'fa-bolt', minLevel: 1, action: (h) => h.stats.critChance += 0.25 },
+      { id: 'tb_pierce', owner: 'ThayBach', name: 'TB: Armor Piercing', nameVn: 'TB: Xuyên giáp', desc: 'Bullets pierce +1 enemy per level.', descVn: 'Đạn xuyên thêm 1 mục tiêu mỗi cấp.', icon: 'fa-arrow-right-to-bracket', minLevel: 1, action: (h) => h.stats.pierceCount++ },
+      { id: 'tb_spread', owner: 'ThayBach', name: 'TB: Fragment', nameVn: 'TB: Đạn tỏa', desc: 'Bullets split into fragments on hit.', descVn: 'Đạn tỏa ra các mảnh vụn khi trúng đích.', icon: 'fa-arrows-split-up-and-left', minLevel: 5, special: true, action: (h) => h.stats.spreadOnHit = true },
+
+      // GLOBAL BUFFS
+      { id: 'pierce', name: 'Global: Piercing', nameVn: 'Toàn bộ: Xuyên thấu', desc: 'All heroes pass through 1 additional enemy.', descVn: 'Tất cả đạn xuyên qua thêm 1 mục tiêu.', icon: 'fa-arrow-right-to-bracket', minLevel: 1, action: () => heroes.forEach(h => h.stats.pierceCount++) },
+      { id: 'crit', name: 'Global: Critical', nameVn: 'Toàn bộ: Chí mạng', desc: 'All heroes +20% crit chance.', descVn: 'Tất cả +20% tỉ lệ chí mạng.', icon: 'fa-bolt', minLevel: 1, action: () => heroes.forEach(h => h.stats.critChance += 0.2) },
     ];
 
     function showBuffSelection() {
@@ -2076,11 +2289,19 @@
 
       const t = TRANSLATIONS[currentLang];
 
-      // Filter available buffs based on level and one-time special rule
       const available = BUFF_LIST.filter(b => {
         const meetsLevel = level >= b.minLevel;
         const alreadyPickedSpecial = b.special && (buffLevels[b.id] > 0);
-        return meetsLevel && !alreadyPickedSpecial;
+        
+        let heroAvailable = true;
+        if (b.owner === 'ThayBach') {
+          heroAvailable = heroes.some(h => h.name === 'ThayBach');
+        }
+        if (b.recruit) {
+          heroAvailable = !heroes.some(h => h.name === 'ThayBach');
+        }
+
+        return meetsLevel && !alreadyPickedSpecial && heroAvailable;
       });
 
       const shuffled = available.sort(() => 0.5 - Math.random());
@@ -2089,6 +2310,20 @@
       selected.forEach(buff => {
         const card = document.createElement('div');
         card.className = 'buff-card';
+        
+        // Character specific background/avatar
+        if (buff.owner || buff.recruit) {
+          const charName = buff.recruit ? 'ThayBach' : buff.owner;
+          const avatarUrl = AVATARS[charName];
+          if (avatarUrl) {
+            card.style.backgroundImage = `url('${avatarUrl}')`;
+            card.style.backgroundSize = 'cover';
+            card.style.backgroundPosition = 'center';
+            // Add a dark overlay to keep text readable
+            card.classList.add('has-avatar');
+          }
+        }
+
         const name = currentLang === 'vn' ? buff.nameVn : buff.name;
         const desc = currentLang === 'vn' ? buff.descVn : buff.desc;
         const currentLv = buffLevels[buff.id] || 0;
@@ -2098,6 +2333,7 @@
         <div class="buff-level-badge" style="${isSpecial ? 'border-color:var(--primary-gold); color:var(--primary-gold); background:rgba(255,180,0,0.1);' : ''}">
           ${isSpecial ? t.special : t.lv + ' ' + currentLv}
         </div>
+        ${buff.owner ? `<div class="buff-owner-badge">${buff.owner}</div>` : ''}
         <i class="fa-solid ${buff.icon}"></i>
         <div class="buff-name">${name}</div>
         <div class="buff-desc">${desc}</div>
@@ -2109,7 +2345,19 @@
 
     function applyBuff(buff) {
       buffLevels[buff.id] = (buffLevels[buff.id] || 0) + 1;
-      buff.action();
+      
+      if (buff.owner) {
+        // Find the specific hero target
+        const target = heroes.find(h => h.name.includes(buff.owner) || h.type === buff.owner.toLowerCase());
+        if (target) {
+          buff.action(target);
+        } else if (buff.owner === 'Silver-Hand') {
+          buff.action(heroes[0]);
+        }
+      } else {
+        buff.action();
+      }
+
       buffOverlay.style.display = 'none';
       gamePaused = false;
     }
@@ -2131,15 +2379,12 @@
       droneActive = false;
       lastDroneTime = 0;
       frameCount = 0;
-      lastFireTime = 0;
       bossSpawnedAtLvl15 = false;
       bossClearingPhase = false;
       bossSequenceTriggered = false;
       bossIntroActive = false;
-      buffLevels = {
-        multishot: 1,
-        damage: 1
-      };
+      buffLevels = {};
+      heroes = [new Hero(0, 'Silver-Hand', 'silver')];
       gameRunning = true;
       gamePaused = true;
       rpgChatCallback = null;

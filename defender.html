@@ -226,8 +226,201 @@
       box-shadow: 0 0 10px var(--primary-cyan);
     }
 
+    /* HERO LIST BUTTON - Bottom Left, mobile-safe */
+    #heroListBtn {
+      position: absolute;
+      left: 15px;
+      bottom: calc(20% + env(safe-area-inset-bottom, 0px));
+      z-index: 150;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    #heroListBtn .btn-pause {
+      border-color: rgba(255,200,0,0.5);
+      color: #ffd700;
+      width: 36px;
+      height: 36px;
+      font-size: 14px;
+    }
+    #heroListBtn .btn-label {
+      font-size: 7px;
+      color: #ffd700;
+      opacity: 0.8;
+      font-family: 'Orbitron';
+      letter-spacing: 1px;
+    }
+
+    /* HERO LIST PANEL */
+    #heroListPanel {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.92);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      pointer-events: auto;
+    }
+    .hero-list-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 14px;
+      letter-spacing: 3px;
+      color: var(--primary-cyan);
+      text-align: center;
+      margin-bottom: 16px;
+      text-shadow: 0 0 10px var(--primary-cyan);
+    }
+    .hero-list-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+    .hero-card-info {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid;
+      border-radius: 8px;
+      padding: 12px;
+      position: relative;
+    }
+    .hero-card-info.sh { border-color: #00f2ff; }
+    .hero-card-info.tb { border-color: #bf00ff; }
+    .hero-card-info.mt { border-color: #ff8c00; }
+    .hero-card-portrait {
+      width: 64px;
+      height: 64px;
+      border-radius: 6px;
+      object-fit: cover;
+      object-position: top center;
+      flex-shrink: 0;
+      border: 2px solid;
+    }
+    .sh .hero-card-portrait { border-color: #00f2ff; box-shadow: 0 0 8px #00f2ff55; }
+    .tb .hero-card-portrait { border-color: #bf00ff; box-shadow: 0 0 8px #bf00ff55; }
+    .mt .hero-card-portrait { border-color: #ff8c00; box-shadow: 0 0 8px #ff8c0055; }
+    .hero-card-header {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .hero-card-header-info {
+      flex: 1;
+    }
+    .hero-card-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .sh .hero-card-name { color: #00f2ff; }
+    .tb .hero-card-name { color: #bf00ff; }
+    .mt .hero-card-name { color: #ff8c00; }
+    .hero-card-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      margin-bottom: 4px;
+      font-size: 9px;
+      color: #ccc;
+      line-height: 1.4;
+    }
+    .hero-card-row .label {
+      font-family: 'Orbitron', monospace;
+      font-size: 8px;
+      font-weight: 600;
+      min-width: 40px;
+      opacity: 0.7;
+      padding-top: 1px;
+    }
+    .hero-card-passive {
+      margin-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 6px;
+      font-size: 9px;
+      line-height: 1.5;
+    }
+    .sh .hero-card-passive { color: #00f2ff; }
+    .tb .hero-card-passive { color: #bf00ff; }
+    .mt .hero-card-passive { color: #ff8c00; }
+    .passive-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      opacity: 0.8;
+      display: block;
+      margin-bottom: 3px;
+    }
+    .btn-close-herolist {
+      margin-top: 16px;
+      font-family: 'Orbitron', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      background: transparent;
+      border: 1px solid var(--primary-cyan);
+      color: var(--primary-cyan);
+      padding: 8px 24px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-close-herolist:hover {
+      background: var(--primary-cyan);
+      color: #000;
+    }
+
     /* BUFF & PAUSE OVERLAY */
     #buffOverlay,
+    /* ORIENTATION WARNING */
+    #orientationWarning {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.97);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      text-align: center;
+      padding: 30px;
+      box-sizing: border-box;
+    }
+    #orientationWarning .orient-icon {
+      font-size: 52px;
+      margin-bottom: 20px;
+      animation: rotatePhone 1.5s ease-in-out infinite alternate;
+      color: #ff8c00;
+    }
+    @keyframes rotatePhone {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(-90deg); }
+    }
+    #orientationWarning .orient-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #ff8c00;
+      margin-bottom: 12px;
+      text-shadow: 0 0 10px #ff8c0088;
+    }
+    #orientationWarning .orient-desc {
+      font-family: 'Orbitron', monospace;
+      font-size: 9px;
+      color: #aaa;
+      line-height: 1.7;
+      letter-spacing: 1px;
+    }
+
     #pauseOverlay {
       position: absolute;
       top: 0;
@@ -262,18 +455,19 @@
 
     .buff-level-badge {
       position: absolute;
-      top: 10px;
+      bottom: 10px;
       left: 10px;
       font-size: 8px;
       font-family: 'Orbitron', sans-serif;
       color: #fff;
-      background: rgba(0, 242, 255, 0.2);
+      background: rgba(0, 0, 0, 0.8);
       border: 1px solid var(--primary-cyan);
       padding: 2px 6px;
-      border-radius: 4px;
+      border-radius: 2px;
       text-transform: uppercase;
       letter-spacing: 1px;
-      box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+      box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+      z-index: 10;
     }
 
     .buff-grid {
@@ -287,7 +481,7 @@
     .buff-card {
       width: 120px;
       height: 180px;
-      background: var(--glass-bg);
+      background: #000; /* Darker base for animated borders */
       border: 1px solid var(--glass-border);
       display: flex;
       flex-direction: column;
@@ -297,59 +491,91 @@
       position: relative;
       text-align: center;
       justify-content: center;
+      overflow: hidden; /* Important for rotating borders */
     }
 
-    .buff-card.has-avatar::before {
+    @keyframes rotateBorder {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .buff-card.animated-border::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(
+        transparent, 
+        var(--border-color, var(--primary-cyan)), 
+        transparent 15%, 
+        transparent 50%, 
+        var(--border-color, var(--primary-cyan)), 
+        transparent 65%
+      );
+      animation: rotateBorder 4s linear infinite;
+      z-index: 0;
+    }
+
+    /* Inner overlay for the card to keep content readable over animation */
+    .buff-card.animated-border::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      background: var(--glass-bg);
       z-index: 1;
+      border-radius: inherit;
     }
 
-    .buff-card.has-avatar * {
-      position: relative;
+    /* For avatar cards, the image should be on the ::after layer to be above the glass-bg but below text */
+    .buff-card.has-avatar::after {
+      background-image: inherit; /* Card's bg image */
+      background-size: cover;
+      background-position: center;
+      filter: brightness(1.1); /* Slightly reduced glare */
+      opacity: 1;
+    }
+
+    /* Specific border colors */
+    .buff-card.border-sh { --border-color: #00f2ff; }
+    .buff-card.border-tb { --border-color: #bf00ff; }
+
+    .buff-avatar-overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 20%, rgba(0,0,0,1) 90%);
       z-index: 2;
+      display: none;
     }
+    .buff-card.has-avatar .buff-avatar-overlay { display: block; }
 
-    .buff-card.has-avatar .buff-name {
-      color: #fff;
-      text-shadow: 0 0 10px rgba(0,0,0,0.8);
-    }
-
-    .buff-card.has-avatar .buff-desc {
-      color: rgba(255,255,255,0.9);
-    }
-
+    /* Hero Badge (Top-Right) */
     .buff-owner-badge {
       position: absolute;
       top: 10px;
       right: 10px;
       font-size: 7px;
-      color: var(--primary-cyan);
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px solid var(--primary-cyan);
-      padding: 2px 4px;
-      border-radius: 3px;
+      color: #000;
+      background: var(--primary-cyan);
+      padding: 1px 6px;
+      border-radius: 2px;
       text-transform: uppercase;
-      font-weight: bold;
-      z-index: 3;
+      font-weight: 900;
+      z-index: 15; /* Above overlay */
+      box-shadow: 0 0 10px rgba(0, 242, 255, 0.4);
     }
 
-    .buff-card:hover {
-      transform: scale(1.05);
-      border-color: var(--primary-cyan);
-      box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
+    .buff-card.has-avatar .buff-name,
+    .buff-card.has-avatar .buff-desc {
+      position: relative;
+      z-index: 10;
     }
 
-    .buff-card i {
-      font-size: 24px;
-      color: var(--primary-cyan);
-      margin-bottom: 15px;
-      text-shadow: 0 0 10px var(--primary-cyan);
+    .buff-card.has-avatar .buff-level-badge,
+    .buff-card.has-avatar .buff-owner-badge {
+      position: absolute;
+      z-index: 15;
     }
 
     .buff-name {
@@ -359,12 +585,18 @@
       margin-bottom: 8px;
       font-weight: 700;
       line-height: 1.2;
+      position: relative;
+      z-index: 10;
     }
 
     .buff-desc {
-      font-size: 9px;
-      color: #aaa;
+      font-size: 11px;
+      color: var(--primary-cyan);
+      text-shadow: 0 0 5px var(--primary-cyan);
       line-height: 1.3;
+      position: relative;
+      z-index: 10;
+      font-weight: 500;
     }
 
     /* CONTROLS OVERLAY */
@@ -752,7 +984,85 @@
       </div>
     </div>
 
+    <!-- HERO LIST BUTTON - Bottom Left -->
+    <div id="heroListBtn" onclick="toggleHeroList()">
+      <div class="btn-pause"><i class="fa-solid fa-users"></i></div>
+      <div class="btn-label">HEROES</div>
+    </div>
+
+    <!-- HERO LIST PANEL -->
+    <div id="heroListPanel">
+      <div class="hero-list-title">⚔ HERO ROSTER ⚔</div>
+      <div class="hero-list-grid">
+
+        <!-- Silver Hand -->
+        <div class="hero-card-info sh">
+          <div class="hero-card-header">
+            <img class="hero-card-portrait" src="assets/img/defender/avatar_character/avatar/silver_hand.png" alt="Silver Hand">
+            <div class="hero-card-header-info">
+              <div class="hero-card-name">★ SILVER HAND</div>
+              <div class="hero-card-row"><span class="label" data-en="WEAPON" data-vn="VŨ KHÍ">WEAPON</span><span data-en="Pistol — fastest fire rate, high accuracy." data-vn="Súng lục — bắn nhanh, chính xác cao.">Pistol — fastest fire rate, high accuracy.</span></div>
+              <div class="hero-card-row"><span class="label" data-en="PRO" data-vn="ƯU">PRO</span><span data-en="Fastest DPS. Extremely versatile build options." data-vn="Tốc độ bắn nhanh nhất. Linh hoạt đa dạng build.">Fastest DPS. Extremely versatile build options.</span></div>
+              <div class="hero-card-row"><span class="label" data-en="CON" data-vn="NHƯỢC">CON</span><span data-en="Low single-shot damage. Relies heavily on buffs." data-vn="Sát thương đơn lẻ thấp, phụ thuộc vào buff.">Low single-shot damage. Relies heavily on buffs.</span></div>
+            </div>
+          </div>
+          <div class="hero-card-passive">
+            <span class="passive-label">⚡ PASSIVE: SERUM LANCER</span>
+            <span data-en="Every 20 shots, Silver Hand throws a Serum vial at the nearest zombie. The Serum zone slows zombies by 60% and deals DoT damage that scales with level." data-vn="Cứ sau 20 phát bắn, Silver Hand ném 1 viên Serum tới vị trí zombie gần nhất. Vùng Serum làm chậm zombie 60% và đốt máu theo thời gian. Sát thương đốt tăng theo level.">Every 20 shots, Silver Hand throws a Serum vial at the nearest zombie. The Serum zone slows zombies by 60% and deals DoT damage that scales with level.</span>
+          </div>
+        </div>
+
+        <!-- ThayBach -->
+        <div class="hero-card-info tb">
+          <div class="hero-card-header">
+            <img class="hero-card-portrait" src="assets/img/defender/avatar_character/avatar/thaybach.png" alt="ThayBach">
+            <div class="hero-card-header-info">
+              <div class="hero-card-name">★ THẦY BẠCH</div>
+              <div class="hero-card-row"><span class="label" data-en="WEAPON" data-vn="VŨ KHÍ">WEAPON</span><span data-en="MP5 — fires an 8-round burst per cycle." data-vn="MP5 — xả đạn liên thanh 8 viên mỗi loạt.">MP5 — fires an 8-round burst per cycle.</span></div>
+              <div class="hero-card-row"><span class="label" data-en="PRO" data-vn="ƯU">PRO</span><span data-en="Massive burst damage. Shreds through dense crowds." data-vn="Sát thương burst cao, tiêu diệt nhanh đám đông dày đặc.">Massive burst damage. Shreds through dense crowds.</span></div>
+              <div class="hero-card-row"><span class="label" data-en="CON" data-vn="NHƯỢC">CON</span><span data-en="Long cooldown (6s). Vulnerable between bursts." data-vn="Thời gian hồi chiêu lâu (6s), điểm mù giữa các loạt bắn.">Long cooldown (6s). Vulnerable between bursts.</span></div>
+            </div>
+          </div>
+          <div class="hero-card-passive">
+            <span class="passive-label">⚡ PASSIVE: OVERDRIVE</span>
+            <span data-en="Every 10 burst cycles, the next burst fires 30 rounds at full speed — decimating entire waves. Counter resets after activation." data-vn="Cứ sau 10 loạt bắn, loạt tiếp theo sẽ bắn liên tiếp 30 viên — tiêu diệt cả đám zombie. Đếm reset sau khi kích hoạt.">Every 10 burst cycles, the next burst fires 30 rounds at full speed — decimating entire waves. Counter resets after activation.</span>
+          </div>
+        </div>
+
+        <!-- Mit -->
+        <div class="hero-card-info mt">
+          <div class="hero-card-header">
+            <img class="hero-card-portrait" src="assets/img/defender/avatar_character/avatar/mit.png" alt="Mit">
+            <div class="hero-card-header-info">
+              <div class="hero-card-name">★ MIT</div>
+              <div class="hero-card-row"><span class="label" data-en="WEAPON" data-vn="VŨ KHÍ">WEAPON</span><span data-en="Shotgun — slow fire, 4 pellets per blast." data-vn="Shotgun — bắn chậm, 4 viên đạn tỏa rộng.">Shotgun — slow fire, 4 pellets per blast.</span></div>
+              <div class="hero-card-row"><span class="label" data-en="PRO" data-vn="ƯU">PRO</span><span data-en="Excellent crowd control. Knockback keeps zombies at bay." data-vn="Kiểm soát đám đông xuất sắc. Đẩy lùi zombie hiệu quả.">Excellent crowd control. Knockback keeps zombies at bay.</span></div>
+              <div class="hero-card-row"><span class="label" data-en="CON" data-vn="NHƯỢC">CON</span><span data-en="Only fires when zombies reach mid-map. Useless at range." data-vn="Chỉ bắn khi zombie qua giữa bản đồ. Tầm ngắn, vô dụng ở xa.">Only fires when zombies reach mid-map. Useless at range.</span></div>
+            </div>
+          </div>
+          <div class="hero-card-passive">
+            <span class="passive-label">⚡ PASSIVE: DOUBLE SHOOT</span>
+            <span data-en="Every 20 shots, Mit auto-fires a rapid second blast (0.2s gap) — 8 total pellets with full knockback applied to all." data-vn="Cứ sau 20 phát bắn, Mit tự động kích hoạt 1 phát bắn kép cực nhanh (0.2s). Tổng 8 viên đạn shotgun xuất hiện liên tiếp gây sát thương và knockback diện rộng.">Every 20 shots, Mit auto-fires a rapid second blast (0.2s gap) — 8 total pellets with full knockback applied to all.</span>
+          </div>
+        </div>
+
+      </div>
+      <button class="btn-close-herolist" id="heroListCloseBtn" onclick="toggleHeroList()">CLOSE</button>
+    </div>
+
+    <!-- ORIENTATION WARNING -->
+    <div id="orientationWarning">
+      <div class="orient-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+      <div class="orient-title" id="orientTitle">PORTRAIT MODE REQUIRED</div>
+      <div class="orient-desc" id="orientDesc">
+        This game is designed for vertical screens.<br>
+        Please rotate your device to portrait mode<br>
+        to continue the mission.
+      </div>
+    </div>
+
     <!-- PAUSE OVERLAY -->
+
     <div id="pauseOverlay">
       <div class="pause-title">SYSTEM PAUSED</div>
       <p style="margin-bottom: 30px; color: #aaa;">MISSION INTERRUPTED</p>
@@ -935,6 +1245,20 @@
       if (loadStatus) loadStatus.textContent = t.initializing;
       if (loadPress) loadPress.textContent = t.pressAny;
       if (loadTip) loadTip.textContent = t.tip;
+
+      // Hero List Panel
+      updateHeroListLang(lang);
+    }
+
+    function updateHeroListLang(lang) {
+      document.querySelectorAll('#heroListPanel [data-en]').forEach(el => {
+        el.textContent = lang === 'vn' ? el.dataset.vn : el.dataset.en;
+      });
+      document.querySelectorAll('#heroListPanel .passive-label').forEach(el => {
+        el.innerHTML = el.innerHTML.replace(/⚡ PASSIVE:|⚡ NỘI TẠI:/g, lang === 'vn' ? '⚡ NỘI TẠI:' : '⚡ PASSIVE:');
+      });
+      const closeBtn = document.getElementById('heroListCloseBtn');
+      if (closeBtn) closeBtn.textContent = lang === 'vn' ? 'ĐÓNG' : 'CLOSE';
     }
 
     /* =============================================
@@ -969,13 +1293,15 @@
 
     const playerImg = new Image();
     playerImg.src = 'assets/img/defender/player.png';
-
     const thayBachImg = new Image();
     thayBachImg.src = 'assets/img/defender/player_thaybach.png';
+    const mitImg = new Image();
+    mitImg.src = 'assets/img/defender/player_mit.png';
 
     const AVATARS = {
       'Silver-Hand': 'assets/img/defender/avatar_character/silver_hand.png',
-      'ThayBach': 'assets/img/defender/avatar_character/thaybach.png'
+      'ThayBach': 'assets/img/defender/avatar_character/thaybach.png',
+      'Mit': 'assets/img/defender/avatar_character/mit.png'
     };
 
     playerImg.onload = () => {
@@ -998,13 +1324,12 @@
       };
       console.log(`Sprite grid: 3x2, fw=${window.spriteGrid.fw}, fh=${window.spriteGrid.fh}`);
     };
-    playerImg.src = 'assets/img/defender/player.png';
 
     const ZOMBIE_TYPES = {
       normal: {
         src: 'assets/img/defender/zombie.png',
         cols: 8, rows: 8,
-        stats: { hpBase: 150, hpScale: 70, speedMult: 0.8, radiusMult: 1.35, animSpeedMult: 1.0, expValue: 25 },
+        stats: { hpBase: 120, hpScale: 50, speedMult: 0.8, radiusMult: 1.35, animSpeedMult: 1.0, expValue: 25 },
         render: {
           drawScale: 5.0,
           yOffset: 0.95,
@@ -1025,7 +1350,7 @@
       female: {
         src: 'assets/img/defender/zombie_female.png',
         cols: 10, rows: 8,
-        stats: { hpBase: 120, hpScale: 50, speedMult: 0.95, radiusMult: 1.35, animSpeedMult: 1.1, expValue: 30 },
+        stats: { hpBase: 100, hpScale: 40, speedMult: 0.95, radiusMult: 1.35, animSpeedMult: 1.1, expValue: 30 },
         render: {
           drawScale: 3.2,
           yOffset: 0.95,
@@ -1046,7 +1371,7 @@
       tank: {
         src: 'assets/img/defender/zombie_tank.png',
         cols: 8, rows: 8,
-        stats: { hpBase: 600, hpScale: 250, speedMult: 0.3, radiusMult: 1.6, animSpeedMult: 0.8, expValue: 150 },
+        stats: { hpBase: 500, hpScale: 200, speedMult: 0.3, radiusMult: 1.6, animSpeedMult: 0.8, expValue: 150 },
         render: {
           drawScale: 5.0,
           yOffset: 0.95,
@@ -1065,7 +1390,7 @@
       child: {
         src: 'assets/img/defender/zombie.png',
         cols: 8, rows: 8,
-        stats: { hpBase: 80, hpScale: 30, speedMult: 1.1, radiusMult: 1.35, animSpeedMult: 1.4, expValue: 15 },
+        stats: { hpBase: 60, hpScale: 20, speedMult: 1.1, radiusMult: 1.35, animSpeedMult: 1.4, expValue: 15 },
         render: {
           drawScale: 5.0,
           yOffset: 0.95,
@@ -1086,7 +1411,7 @@
       boss: {
         src: 'assets/img/defender/zombie_boss.png',
         cols: 8, rows: 8,
-        stats: { hpBase: 50000, hpScale: 10000, shieldBase: 15000, shieldScale: 5000, speedMult: 0.4, radiusMult: 2.5, animSpeedMult: 0.7, expValue: 3000 },
+        stats: { hpBase: 40000, hpScale: 8000, shieldBase: 12000, shieldScale: 4000, speedMult: 0.4, radiusMult: 2.5, animSpeedMult: 0.7, expValue: 3000 },
         render: {
           drawScale: 5.5,
           yOffset: 0.95,
@@ -1159,34 +1484,53 @@
         this.burstRemaining = 0;
         this.burstTimer = 0;
         this.burstInterval = 5; // Frames between bullets in a burst
+        this.shotCount = 0; // Tracks shots fired for serum/passive trigger
+        this.serumShoutTimer = 0; // Floating text timer
+        this.shoutTimer = 0;     // Generic shout timer for Mit
+        this.shoutText = '';     // Text to show
         
         this.drawScale = 1.0;
-        if (name === 'ThayBach') this.drawScale = 0.85;
+        if (name === 'ThayBach') this.drawScale = 1.2;
+        if (name === 'Mit') this.drawScale = 1.0;
         
         // Calculate grid info for this specific sprite
         this.cols = 3;
-        this.rows = 2;
+        this.rows = (name === 'ThayBach' || name === 'Mit') ? 1 : 2;
         this.fw = this.img.width / this.cols;
         this.fh = this.img.height / this.rows;
         
-        // Horizontal centering offsets (calculated from source pixels)
+        // Offset initialization
         this.frameOffsets = [0, 0, 0, 0, 0, 0];
-        if (name === 'ThayBach') {
-          this.frameOffsets = [51, 7, -15, 47, 2, -17];
+        this.yOffset = 0;
+        
+        if (name === 'ThayBach' || name === 'Mit') {
+          // Adjusted offsets for 3x1 grid
+          this.frameOffsets = name === 'ThayBach' ? [51, 7, -15, 0, 0, 0] : [0, 0, 0, 0, 0, 0];
+          this.yOffset = 25; // Move back to align with Silver Hand
         }
         
         // Initial stats inherited from CONFIG but can be buffed individually
         this.stats = {
-          bulletCount: name === 'ThayBach' ? 5 : CONFIG.bulletCount,
+          bulletCount: name === 'ThayBach' ? 8 : (name === 'Mit' ? 4 : CONFIG.bulletCount),
           pierceCount: CONFIG.pierceCount,
           critChance: CONFIG.critChance,
-          damageMult: CONFIG.damageMult,
-          fireRateDelay: name === 'ThayBach' ? 360 : CONFIG.fireRateDelay, // 6s for ThayBach
+          damageMult: name === 'ThayBach' ? 2.0 : (name === 'Mit' ? 3.0 : CONFIG.damageMult),
+          fireRateDelay: name === 'ThayBach' ? 360 : (name === 'Mit' ? 90 : CONFIG.fireRateDelay),
           shieldDamageMult: 1.0,
           bounceCount: 0,
           splitOnHit: false,
           bulletColor: name === 'ThayBach' ? '#FFD700' : null,
-          spreadOnHit: false
+          spreadOnHit: false,
+          // Serum Stats (now Silver Hand only, triggered every 20 shots)
+          serumChance: 0, // No longer used for chance - replaced by shot count
+          serumDuration: 360, // 6 seconds (60fps)
+          serumRadius: 80,
+          serumDamage: 1.5, // Per frame, scales with level
+          serumShotInterval: name === 'Silver-Hand' ? 20 : 0, // Every N shots
+          // Mit Stats
+          knockbackDist: name === 'Mit' ? 7 : 0, // Each pellet nudges zombie back
+          rangeLimitY: name === 'Mit' ? height * 0.5 : 0,
+          doubleShotChance: 0
         };
       }
 
@@ -1199,6 +1543,10 @@
         for (let i = 0; i < enemies.length; i++) {
           const e = enemies[i];
           if (e.isDead) continue;
+          
+          // Mit range check
+          if (this.name === 'Mit' && e.y < this.stats.rangeLimitY) continue;
+
           const dx = e.x - this.x;
           const dy = e.y - py;
           const dSq = dx * dx + dy * dy;
@@ -1226,13 +1574,28 @@
 
         // Handle Firing Cooldown
         if (frameCount - this.lastFireTime >= this.stats.fireRateDelay) {
+          this.lastFireTime = frameCount;
+          // For Mit: only fire if there's a valid in-range target
+          if (this.name === 'Mit' && !nearest) {
+            // No target in range, skip firing
+          } else {
           if (this.name === 'ThayBach') {
-            this.burstRemaining = this.stats.bulletCount;
+            this.shotCount++;
+            if (this.shotCount >= 10) {
+              // OVERDRIVE: fire 30 + bonus bullets above base 8
+              this.shotCount = 0;
+              const bonusBullets = Math.max(0, this.stats.bulletCount - 8);
+              this.burstRemaining = 30 + bonusBullets;
+              this.shoutTimer = 90;
+              this.shoutText = 'OVERDRIVE!';
+            } else {
+              this.burstRemaining = this.stats.bulletCount;
+            }
             this.burstTimer = 0;
           } else {
             this.fire();
           }
-          this.lastFireTime = frameCount;
+          }
         }
 
         // Handle Animation
@@ -1260,6 +1623,8 @@
           this.stats.bulletColor
         );
         p.damageMult = this.stats.damageMult;
+        p.splitOnHit = this.stats.splitOnHit;
+        p.bouncesLeft = this.stats.bounceCount;
         p.spreadOnHit = this.stats.spreadOnHit;
         projectiles.push(p);
 
@@ -1271,39 +1636,90 @@
       fire() {
         const py = height * CONFIG.playerY;
         const baseAngle = this.targetAngle;
-        const spread = 0.1;
         const bCount = this.stats.bulletCount;
 
-        for (let i = 0; i < bCount; i++) {
-          const angleOffset = (i - (bCount - 1) / 2) * spread;
-          const finalAngle = baseAngle + angleOffset;
-          
-          const isCrit = Math.random() < this.stats.critChance;
-          const p = new Projectile(
-            this.x, py, finalAngle, true, 
-            this.stats.pierceCount, 
-            this.stats.splitOnHit, 
-            isCrit,
-            this.stats.bulletColor
-          );
-          
-          // Attach hero stats to projectile for damage calculation
-          p.damageMult = this.stats.damageMult;
-          p.shieldDamageMult = this.stats.shieldDamageMult;
-          p.bounceCount = this.stats.bounceCount;
-          p.spreadOnHit = this.stats.spreadOnHit;
-          
-          projectiles.push(p);
+        if (this.name === 'Mit') {
+          // Shotgun Spread (4+ pellets)
+          const bCount = this.stats.bulletCount;
+          const spread = 0.5; // Slightly wider spread
+          for (let i = 0; i < bCount; i++) {
+            const angleOffset = (i - (bCount - 1) / 2) * (spread / (bCount - 1));
+            const finalAngle = baseAngle + angleOffset;
+            
+            const isCrit = Math.random() < this.stats.critChance;
+            const p = new Projectile(
+              this.x, py, finalAngle, true, 
+              this.stats.pierceCount, 
+              this.stats.splitOnHit, 
+              isCrit,
+              '#aaa' // Grey pellets
+            );
+            p.damageMult = this.stats.damageMult;
+            p.knockback = this.stats.knockbackDist;
+            p.spreadOnHit = this.stats.spreadOnHit;
+            projectiles.push(p);
+          }
+        } else if (bCount === 2) {
+          // 2 parallel shots
+          const offset = 12; // distance between parallel bullets
+          const perpAngle = baseAngle + Math.PI / 2;
+          const ox = Math.cos(perpAngle) * offset;
+          const oy = Math.sin(perpAngle) * offset;
 
-          // Double Shot logic
-          if (Math.random() < this.stats.doubleShotChance) {
-            setTimeout(() => {
-              const p2 = new Projectile(this.x, py, finalAngle, true, this.stats.pierceCount, this.stats.splitOnHit, isCrit);
-              p2.damageMult = this.stats.damageMult;
-              p2.shieldDamageMult = this.stats.shieldDamageMult;
-              p2.bounceCount = this.stats.bounceCount;
-              projectiles.push(p2);
-            }, 100);
+          const pPoints = [
+            { x: this.x - ox / 2, y: py - oy / 2 },
+            { x: this.x + ox / 2, y: py + oy / 2 }
+          ];
+
+          pPoints.forEach(pt => {
+            const isCrit = Math.random() < this.stats.critChance;
+            const p = new Projectile(
+              pt.x, pt.y, baseAngle, true, 
+              this.stats.pierceCount, 
+              this.stats.splitOnHit, 
+              isCrit,
+              this.stats.bulletColor
+            );
+            p.damageMult = this.stats.damageMult;
+            p.shieldDamageMult = this.stats.shieldDamageMult;
+            p.bouncesLeft = this.stats.bounceCount;
+            p.splitOnHit = this.stats.splitOnHit;
+            projectiles.push(p);
+          });
+        } else {
+          // 1 or 3+ shots (3+ uses spread)
+          const spread = 0.1;
+          for (let i = 0; i < bCount; i++) {
+            const angleOffset = bCount === 1 ? 0 : (i - (bCount - 1) / 2) * spread;
+            const finalAngle = baseAngle + angleOffset;
+            
+            const isCrit = Math.random() < this.stats.critChance;
+            const p = new Projectile(
+              this.x, py, finalAngle, true, 
+              this.stats.pierceCount, 
+              this.stats.splitOnHit, 
+              isCrit,
+              this.stats.bulletColor
+            );
+            
+            p.damageMult = this.stats.damageMult;
+            p.shieldDamageMult = this.stats.shieldDamageMult;
+            p.bouncesLeft = this.stats.bounceCount;
+            p.splitOnHit = this.stats.splitOnHit;
+            p.spreadOnHit = this.stats.spreadOnHit;
+            
+            projectiles.push(p);
+
+            // Double Shot logic
+            if (Math.random() < this.stats.doubleShotChance) {
+              setTimeout(() => {
+                const p2 = new Projectile(this.x, py, finalAngle, true, this.stats.pierceCount, this.stats.splitOnHit, isCrit);
+                p2.damageMult = this.stats.damageMult;
+                p2.shieldDamageMult = this.stats.shieldDamageMult;
+                p2.bouncesLeft = this.stats.bounceCount;
+                projectiles.push(p2);
+              }, 100);
+            }
           }
         }
 
@@ -1313,24 +1729,74 @@
         if (window.playSfx) {
           window.playSfx(shootingSfx, 0.2);
         }
+
+        // Serum Trigger logic (Silver Hand: every N shots)
+        if (this.name === 'Silver-Hand' && this.stats.serumShotInterval > 0) {
+          this.shotCount++;
+          if (this.shotCount >= this.stats.serumShotInterval) {
+            this.shotCount = 0;
+            this.throwSerum();
+          }
+        }
+
+        // Mit passive: every 20 shots → rapid double blast
+        if (this.name === 'Mit') {
+          this.shotCount++;
+          if (this.shotCount >= 20) {
+            this.shotCount = 0;
+            setTimeout(() => { if (gameRunning && !gamePaused) this.fire(); }, 200);
+            this.shoutTimer = 90;
+            this.shoutText = 'Double Shoot!';
+          }
+        }
+      }
+
+      throwSerum() {
+        const py = height * CONFIG.playerY;
+        // Target a random nearby enemy or just ahead
+        let tx = this.x + (Math.random() - 0.5) * 400;
+        let ty = py - 300 - Math.random() * 200;
+        
+        // Find nearest enemy to target precisely
+        let nearest = null;
+        let minDist = 1000;
+        enemies.forEach(e => {
+          let d = Math.hypot(e.x - this.x, e.y - py);
+          if (d < minDist) { minDist = d; nearest = e; }
+        });
+        if (nearest) { tx = nearest.x; ty = nearest.y; }
+
+        serumProjectiles.push(new SerumProjectile(this.x, py, tx, ty, this.stats));
+        
+        // Trigger shout text
+        this.serumShoutTimer = 90; // 1.5s at 60fps
       }
 
       draw() {
         const py = height * CONFIG.playerY;
         ctx.save();
-        ctx.translate(this.x, py);
+        ctx.translate(this.x, py + this.yOffset);
         ctx.rotate(this.targetAngle + Math.PI / 2);
 
         if (this.img.complete && this.img.naturalWidth !== 0) {
-          // Both heroes use a 3x2 grid mapping
-          const frames = [
-            { col: 0, row: 0 }, // 0: Idle
-            { col: 1, row: 0 }, // 1: Firing-1
-            { col: 2, row: 0 }, // 2: Firing-2
-            { col: 0, row: 1 }, // 3: Reload-1
-            { col: 1, row: 1 }, // 4: Reload-2
-            { col: 2, row: 1 }  // 5: Special
-          ];
+          // Grid mapping: Standard 3x2 for others, 3x1 for ThayBach
+          let frames = [];
+          if (this.name === 'ThayBach') {
+            frames = [
+              { col: 0, row: 0 }, // 0: Idle
+              { col: 1, row: 0 }, // 1: Firing-1
+              { col: 2, row: 0 }, // 2: Firing-2
+            ];
+          } else {
+            frames = [
+              { col: 0, row: 0 }, // 0: Idle
+              { col: 1, row: 0 }, // 1: Firing-1
+              { col: 2, row: 0 }, // 2: Firing-2
+              { col: 0, row: 1 }, // 3: Reload-1
+              { col: 1, row: 1 }, // 4: Reload-2
+              { col: 2, row: 1 }  // 5: Special
+            ];
+          }
           const frame = frames[this.playerFrame] || frames[0];
           
           // Re-calculate fw/fh if image was just loaded
@@ -1370,11 +1836,45 @@
         }
         ctx.restore();
 
-        // Label
+        // Label + Serum shout
+        const py2 = height * CONFIG.playerY;
+        if (this.serumShoutTimer > 0) {
+          this.serumShoutTimer--;
+          const alpha = Math.min(1, this.serumShoutTimer / 20);
+          const rise = (90 - this.serumShoutTimer) * 0.4;
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.font = 'bold 14px Orbitron, monospace';
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#00f2ff';
+          ctx.strokeStyle = '#000';
+          ctx.lineWidth = 3;
+          ctx.strokeText('Serum!', this.x, py2 + this.yOffset - 60 - rise);
+          ctx.fillText('Serum!', this.x, py2 + this.yOffset - 60 - rise);
+          ctx.globalAlpha = 1;
+          ctx.restore();
+        }
+        // Generic shout (Mit passive etc)
+        if (this.shoutTimer > 0) {
+          this.shoutTimer--;
+          const alpha2 = Math.min(1, this.shoutTimer / 20);
+          const rise2 = (90 - this.shoutTimer) * 0.4;
+          ctx.save();
+          ctx.globalAlpha = alpha2;
+          ctx.font = 'bold 13px Orbitron, monospace';
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#ff8c00';
+          ctx.strokeStyle = '#000';
+          ctx.lineWidth = 3;
+          ctx.strokeText(this.shoutText, this.x, py2 + this.yOffset - 60 - rise2);
+          ctx.fillText(this.shoutText, this.x, py2 + this.yOffset - 60 - rise2);
+          ctx.globalAlpha = 1;
+          ctx.restore();
+        }
         ctx.fillStyle = '#fff';
         ctx.font = '10px Orbitron';
         ctx.textAlign = 'center';
-        ctx.fillText(this.name, this.x, py + 30);
+        ctx.fillText(this.name, this.x, py2 + this.yOffset + 30);
       }
     }
 
@@ -1388,7 +1888,7 @@
       playerY: 0.82,
       enemySpawnRate: 85,
       projectileSpeed: 12,
-      enemySpeedBase: 0.2,
+      enemySpeedBase: 0.15,
       colors: {
         cyan: '#00f2ff',
         pink: '#ff00c8',
@@ -1461,44 +1961,183 @@
         this.active = true;
         this.isCrit = isCrit;
         this.pierceLeft = pierce;
-        this.canSplit = canSplit;
-        this.bounceCount = 0; 
+        this.splitOnHit = false; // Initialized from Hero
+        this.bouncesLeft = 0;   // Initialized from Hero
         this.damageMult = 1;  
-        this.color = color || (isCrit ? CONFIG.colors.gold : CONFIG.colors.cyan);
-        this.spreadOnHit = false; // New mechanic for ThayBach
+        this.color = color || '#fff';
+        this.knockback = 0;
+        this.spreadOnHit = false; // Legacy/Special for ThayBach
       }
 
       update() {
+        if (!this.active) return;
+        
+        const prevX = this.x;
+        const prevY = this.y;
+
         this.x += Math.cos(this.angle) * this.speed;
         this.y += Math.sin(this.angle) * this.speed;
 
-        // Bounce logic
+        // Bounce logic (Standard for all projectiles)
         if (this.bouncesLeft > 0) {
-          if (this.x < 0 || this.x > width) {
-            this.angle = Math.PI - this.angle;
-            this.bouncesLeft--;
-          }
+           if (this.x < 0 || this.x > width) {
+             this.angle = Math.PI - this.angle;
+             this.x = prevX; // Step back
+             this.bouncesLeft--;
+           }
         }
 
-        if (this.x < -50 || this.x > width + 50 || this.y < -50 || this.y > height + 50) {
+        if (this.x < -100 || this.x > width + 100 || this.y < -100 || this.y > height + 100) {
           this.active = false;
         }
       }
 
       draw() {
+        if (!this.active) return;
         ctx.save();
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
 
-        const length = this.isCrit ? 25 : 15;
+        const length = this.isCrit ? 22 : 12;
         const thickness = this.isCrit ? 4 : 2;
 
         ctx.fillStyle = this.color;
+        // Simplified Crit indicator without expensive shadowBlur
+        if (this.isCrit) {
+          ctx.strokeStyle = '#fff';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(-length / 2, -thickness / 2, length, thickness);
+        }
+        
         ctx.fillRect(-length / 2, -thickness / 2, length, thickness);
-
         ctx.restore();
       }
     }
+
+    class SerumProjectile {
+      constructor(sx, sy, tx, ty, stats) {
+        this.x = sx;
+        this.y = sy;
+        this.tx = tx;
+        this.ty = ty;
+        this.stats = { ...stats };
+        this.progress = 0;
+        this.active = true;
+        this.speed = 0.02;
+        this.height = 100; // Peak of arc
+      }
+
+      update() {
+        this.progress += this.speed;
+        if (this.progress >= 1) {
+          this.active = false;
+          serumZones.push(new SerumZone(this.tx, this.ty, this.stats));
+        }
+      }
+
+      draw() {
+        const dx = this.tx - this.x;
+        const dy = this.ty - this.y;
+        const curX = this.x + dx * this.progress;
+        const curY = this.y + dy * this.progress - Math.sin(this.progress * Math.PI) * this.height;
+
+        // Draw glowing cyan vial
+        ctx.save();
+        ctx.fillStyle = '#00f2ff';
+        ctx.beginPath();
+        ctx.arc(curX, curY, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    class SerumZone {
+      constructor(x, y, stats) {
+        this.x = x;
+        this.y = y;
+        this.radius = stats.serumRadius;
+        this.duration = stats.serumDuration;
+        this.damage = stats.serumDamage;
+        this.active = true;
+      }
+
+      update() {
+        this.duration--;
+        if (this.duration <= 0) this.active = false;
+
+        // Apply effects to enemies (only check non-dead ones)
+        for (let i = 0; i < enemies.length; i++) {
+          const e = enemies[i];
+          if (e.isDead) continue;
+          
+          const d = Math.hypot(e.x - this.x, e.y - this.y);
+          if (d < this.radius) {
+            // Damage scales with current game level
+            const scaledDmg = this.damage * (1 + (level - 1) * 0.15);
+            e.takeDamage(scaledDmg, false);
+            e.x -= (e.x - e.prevX || 0) * 0.6; // 60% slow
+            e.y -= (e.y - e.prevY || 0) * 0.6;
+          }
+        }
+      }
+
+      draw() {
+        const opacity = Math.min(1, this.duration / 30);
+        const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 300); // Pulsing effect
+        ctx.save();
+
+        // Outer glowing ring
+        ctx.globalAlpha = (0.3 + 0.2 * pulse) * opacity;
+        ctx.strokeStyle = '#00f2ff';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Inner fill - very subtle cyan
+        ctx.globalAlpha = 0.08 * opacity;
+        ctx.fillStyle = '#00f2ff';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Center vial icon - PURPLE
+        ctx.globalAlpha = (0.8 + 0.2 * pulse) * opacity;
+        ctx.fillStyle = '#bf00ff';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 5, 0, Math.PI * 2);
+        ctx.fill();
+        // Vial cross highlight
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1.5;
+        ctx.globalAlpha = 0.9 * opacity;
+        ctx.beginPath();
+        ctx.moveTo(this.x - 4, this.y);
+        ctx.lineTo(this.x + 4, this.y);
+        ctx.moveTo(this.x, this.y - 4);
+        ctx.lineTo(this.x, this.y + 4);
+        ctx.stroke();
+
+        // Countdown timer above center
+        const secondsLeft = Math.ceil(this.duration / 60);
+        ctx.globalAlpha = opacity;
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 11px Orbitron, monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(secondsLeft + 's', this.x, this.y - 14);
+        ctx.textBaseline = 'alphabetic';
+
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      }
+    }
+
+    let serumProjectiles = [];
+    let serumZones = [];
 
     class Enemy {
       constructor(zType = 'normal') {
@@ -1512,7 +2151,7 @@
         const config = ZOMBIE_TYPES[this.zType] || ZOMBIE_TYPES.normal;
 
         // Stats and scaling (Further reduced speed scaling)
-        const levelSpeedBoost = (level - 1) * 0.02;
+        const levelSpeedBoost = (level - 1) * 0.015;
         this.radius *= config.stats.radiusMult;
         this.speed = (Math.random() * 0.2 + CONFIG.enemySpeedBase * config.stats.speedMult) + levelSpeedBoost;
 
@@ -1586,7 +2225,7 @@
         this.animTimer = 0;
       }
 
-      takeDamage(amount, isCrit = false) {
+      takeDamage(amount, isCrit = false, knockback = 0) {
         if (this.isDead) return;
 
         // Shield Logic
@@ -1601,6 +2240,19 @@
         }
 
         this.hp -= amount;
+        // One-shot direct nudge (no decaying velocity accumulation)
+        if (knockback > 0) {
+          // Boss receives only 30% of knockback (heavy but not immune)
+          const actualKnockback = this.zType === 'boss' ? knockback * 0.3 : knockback;
+          this.y = Math.min(height * 0.95, this.y - actualKnockback);
+          if (this.y < this.radius) this.y = this.radius;
+        }
+
+        // Play hit animation only if there is a knockback effect (e.g. from Mit)
+        if (this.zType !== 'boss' && !this.isDead && knockback > 0) {
+          this.setState('hit');
+        }
+        
         if (this.hp <= 0) {
           this.hp = 0;
           this.isDead = true;
@@ -1771,10 +2423,10 @@
           const fw = config.fw || (currentImg.width / config.cols);
           const fh = config.fh || (currentImg.height / config.rows);
 
-          const sx = Math.floor(actualCol * fw);
-          const sy = Math.floor(actualRow * fh);
-          const sw = Math.floor((actualCol + 1) * fw) - sx;
-          const sh = Math.floor((actualRow + 1) * fh) - sy;
+          const sx = Math.floor(actualCol * fw) + 1;
+          const sy = Math.floor(actualRow * fh) + 1;
+          const sw = Math.max(1, Math.floor((actualCol + 1) * fw) - sx - 1);
+          const sh = Math.max(1, Math.floor((actualRow + 1) * fh) - sy - 1);
 
           const drawSh = sh * (render.shMult || 1.0);
           const aspect = drawSh / sw;
@@ -1820,6 +2472,32 @@
                 ctx.fillText('STUNNED', 0, sBarY - 5);
               }
             }
+          }
+        } else if (this.name === 'Mit') {
+          // Shotgun Spread (4+ pellets)
+          const bCount = this.stats.bulletCount;
+          const spread = 0.4; // Wide spread
+          for (let i = 0; i < bCount; i++) {
+            const angleOffset = (i - (bCount - 1) / 2) * (spread / (bCount - 1));
+            const finalAngle = baseAngle + angleOffset;
+            
+            const isCrit = Math.random() < this.stats.critChance;
+            const p = new Projectile(
+              this.x, py, finalAngle, true, 
+              this.stats.pierceCount, 
+              this.stats.splitOnHit, 
+              isCrit,
+              '#aaa' // Grey pellets
+            );
+            p.damageMult = this.stats.damageMult;
+            p.knockback = this.stats.knockbackDist;
+            p.spreadOnHit = this.stats.spreadOnHit;
+            projectiles.push(p);
+          }
+
+          // Mit Double Shot
+          if (Math.random() < this.stats.doubleShotChance) {
+             setTimeout(() => this.fire(), 150);
           }
         } else {
           // Fallback
@@ -1889,33 +2567,30 @@
     function spawnEnemy() {
       // 1. UNIQUE BOSS EVENT AT LEVEL 15 (Clearing Phase)
       if (level >= 15 && !bossSpawnedAtLvl15) {
+        const aliveEnemies = enemies.filter(e => !e.isDead);
+        
         if (!bossClearingPhase) {
           bossClearingPhase = true;
           console.log("Entering Boss Clearing Phase...");
         }
         
-        const activeCount = enemies.filter(e => !e.isDead).length;
-        if (activeCount === 0 && !bossSequenceTriggered) {
+        if (aliveEnemies.length === 0 && !bossSequenceTriggered) {
           bossSequenceTriggered = true; // Lock it immediately
           triggerBossSequence();
         }
         return; // Strict stop during clearing
       }
 
+      const aliveEnemies = enemies.filter(e => !e.isDead);
+
       // 2. BOSS SEQUENCE & ACTIVE PHASE PROTECTION
-      // We block normal spawning if: 
-      // - The boss is currently in the 3s intro sequence
-      // - The boss is alive on screen
-      const bossAlive = enemies.some(e => e.zType === 'boss' && !e.isDead);
+      const bossAlive = aliveEnemies.some(e => e.zType === 'boss');
       
-      // If intro is playing OR boss is still fighting, NO normal spawns
       if (bossIntroActive || bossAlive) return;
 
-      // 3. REGULAR SPAWN PHASE (Resumes only when level < 15 OR boss is dead)
-      // More enemies on screen for swarm feel
+      // 3. REGULAR SPAWN PHASE
       const maxActive = Math.min(45, 5 + Math.floor(level * 2.0));
-      const activeCount = enemies.filter(e => !e.isDead).length;
-      if (activeCount >= maxActive) return;
+      if (aliveEnemies.length >= maxActive) return;
 
       // Faster base spawn rate
       const baseRate = 100;
@@ -2104,7 +2779,11 @@
         barsWrap.style.opacity = someoneAttacking ? "1" : "0";
       }
 
+      serumProjectiles.forEach(p => p.update());
+      serumProjectiles = serumProjectiles.filter(p => p.active);
 
+      serumZones.forEach(z => z.update());
+      serumZones = serumZones.filter(z => z.active);
 
       // Update Heroes Firing Logic
       heroes.forEach(h => h.update());
@@ -2165,9 +2844,23 @@
           if (distSq < radiusSum * radiusSum) {
             // Damage calculation using projectile stats
             let dmg = (p.isCrit ? 70 : 35) * (p.damageMult || 1);
-            e.takeDamage(dmg, p.isCrit);
+            e.takeDamage(dmg, p.isCrit, p.knockback || 0);
             
-            // Fragment logic (ThayBach special)
+            // Split logic (New standard for both heroes)
+            if (p.splitOnHit) {
+              const splitCount = 2;
+              const angleRange = Math.PI / 3; // 60 degrees total
+              for (let k = 0; k < splitCount; k++) {
+                const angleOffset = (k === 0 ? 1 : -1) * (angleRange / 2);
+                const splitP = new Projectile(e.x, e.y, p.angle + angleOffset, true, 0, false, false, p.color);
+                splitP.damageMult = p.damageMult * 0.5; // Split bullets deal 50% damage
+                splitP.bouncesLeft = p.bouncesLeft; // Carry over bounce property
+                newProjectiles.push(splitP);
+              }
+              p.splitOnHit = false; // Only split once
+            }
+
+            // Fragment logic (ThayBach special - legacy support)
             if (p.spreadOnHit) {
               for (let k = 0; k < 3; k++) {
                 const ang = p.angle + (Math.random() - 0.5) * 2.0;
@@ -2223,6 +2916,14 @@
         ctx.fillRect(0, 0, width, height);
       }
 
+      serumZones.forEach(z => z.draw());
+      
+      // SORT ONCE per frame for depth
+      enemies.sort((a, b) => a.y - b.y);
+      enemies.forEach(e => e.draw());
+
+      serumProjectiles.forEach(p => p.draw());
+      
       // Draw Heroes
       heroes.forEach(h => h.draw());
 
@@ -2230,11 +2931,8 @@
         projectiles[i].draw();
       }
 
-      enemies.sort((a, b) => a.y - b.y);
-      for (let i = 0; i < enemies.length; i++) {
-        enemies[i].draw();
-      }
-
+      // Enemies already drawn above
+      
       for (let i = 0; i < particles.length; i++) {
         particles[i].draw();
       }
@@ -2250,37 +2948,39 @@
        BUFFS SYSTEM
     ============================================= */
     const BUFF_LIST = [
-      // RECRUIT HERO
-      { 
-        id: 'recruit_thaybach', 
-        name: 'Recruit: ThayBach', 
-        nameVn: 'Chiêu mộ: ThayBach', 
-        desc: 'ThayBach joins the defense line.', 
-        descVn: 'Thầy Bạch gia nhập hàng phòng thủ.', 
-        icon: 'fa-user-ninja', 
-        minLevel: 3, 
-        special: true, 
-        recruit: true,
-        action: () => {
-          heroes.push(new Hero(heroes.length, 'ThayBach', 'member', thayBachImg));
-        } 
-      },
-      // SILVER-HAND BUFFS
-      { id: 'sh_multishot', owner: 'Silver-Hand', name: 'SH: +1 Bullets', nameVn: 'SH: +1 Tia đạn', desc: 'Silver-Hand fires an additional bullet.', descVn: 'Silver-Hand bắn thêm một tia đạn.', icon: 'fa-layer-group', minLevel: 1, action: (h) => h.stats.bulletCount++ },
-      { id: 'sh_damage', owner: 'Silver-Hand', name: 'SH: Overdrive', nameVn: 'SH: Quá tải', desc: 'Silver-Hand +60% damage.', descVn: 'Silver-Hand +60% sát thương.', icon: 'fa-burst', minLevel: 1, action: (h) => h.stats.damageMult += 0.6 },
-      { id: 'sh_firerate', owner: 'Silver-Hand', name: 'SH: Rapid Fire', nameVn: 'SH: Xả đạn nhanh', desc: 'Silver-Hand +15% fire rate.', descVn: 'Silver-Hand +15% tốc độ bắn.', icon: 'fa-gauge-high', minLevel: 3, action: (h) => h.stats.fireRateDelay = Math.max(5, h.stats.fireRateDelay * 0.85) },
+      { id: 'recruit_thaybach', name: 'Recruit: ThayBach', nameVn: 'Chiêu mộ: Thầy Bạch', desc: 'ThayBach joins.', descVn: 'Thầy Bạch gia nhập.', icon: 'fa-user-ninja', minLevel: 2, special: true, recruit: true, action: () => { heroes.push(new Hero(heroes.length, 'ThayBach', 'member', thayBachImg)); } },
+      { id: 'recruit_mit', name: 'Recruit: Mit', nameVn: 'Chiêu mộ: Mit', desc: 'Mit joins.', descVn: 'Mit gia nhập.', icon: 'fa-user-secret', minLevel: 2, special: true, recruit: true, action: () => { heroes.push(new Hero(heroes.length, 'Mit', 'member', mitImg)); } },
       
-      // THAYBACH BUFFS (MP5 Style)
-      { id: 'tb_bullets', owner: 'ThayBach', name: 'TB: MP5 Burst +1', nameVn: 'TB: MP5 +1 Viên', desc: 'Adds +1 bullet to each MP5 burst.', descVn: 'Tăng thêm 1 viên cho mỗi lần xả đạn.', icon: 'fa-layer-group', minLevel: 1, action: (h) => h.stats.bulletCount++ },
-      { id: 'tb_damage', owner: 'ThayBach', name: 'TB: High Caliber', nameVn: 'TB: Đạn hạng nặng', desc: 'ThayBach +70% damage.', descVn: 'Thầy Bạch +70% sát thương.', icon: 'fa-burst', minLevel: 1, action: (h) => h.stats.damageMult += 0.7 },
-      { id: 'tb_reload', owner: 'ThayBach', name: 'TB: Fast Hands', nameVn: 'TB: Thay đạn nhanh', desc: 'Reduce MP5 reload time by 20%.', descVn: 'Giảm 20% thời gian hồi đạn.', icon: 'fa-gauge-high', minLevel: 1, action: (h) => h.stats.fireRateDelay = Math.max(30, h.stats.fireRateDelay * 0.8) },
-      { id: 'tb_crit', owner: 'ThayBach', name: 'TB: Focus', nameVn: 'TB: Tập trung', desc: 'ThayBach +25% crit chance.', descVn: 'Thầy Bạch +25% chí mạng.', icon: 'fa-bolt', minLevel: 1, action: (h) => h.stats.critChance += 0.25 },
-      { id: 'tb_pierce', owner: 'ThayBach', name: 'TB: Armor Piercing', nameVn: 'TB: Xuyên giáp', desc: 'Bullets pierce +1 enemy per level.', descVn: 'Đạn xuyên thêm 1 mục tiêu mỗi cấp.', icon: 'fa-arrow-right-to-bracket', minLevel: 1, action: (h) => h.stats.pierceCount++ },
-      { id: 'tb_spread', owner: 'ThayBach', name: 'TB: Fragment', nameVn: 'TB: Đạn tỏa', desc: 'Bullets split into fragments on hit.', descVn: 'Đạn tỏa ra các mảnh vụn khi trúng đích.', icon: 'fa-arrows-split-up-and-left', minLevel: 5, special: true, action: (h) => h.stats.spreadOnHit = true },
+      // SILVER-HAND BUFFS
+      { id: 'sh_multishot', owner: 'Silver-Hand', name: 'SH: +1 Bullets', nameVn: 'SH: +1 Tia đạn', desc: '+1 Bullet.', descVn: '+1 Tia đạn.', icon: 'fa-layer-group', minLevel: 1, action: (h) => h.stats.bulletCount++ },
+      { id: 'sh_damage', owner: 'Silver-Hand', name: 'SH: Overdrive', nameVn: 'SH: Quá tải', desc: '+60% Damage.', descVn: '+60% Sát thương.', icon: 'fa-burst', minLevel: 1, action: (h) => h.stats.damageMult += 0.6 },
+      { id: 'sh_firerate', owner: 'Silver-Hand', name: 'SH: Rapid Fire', nameVn: 'SH: Xả đạn nhanh', desc: '+15% Fire Rate.', descVn: '+15% Tốc độ bắn.', icon: 'fa-gauge-high', minLevel: 3, action: (h) => h.stats.fireRateDelay = Math.max(5, h.stats.fireRateDelay * 0.85) },
+      { id: 'sh_bounce', owner: 'Silver-Hand', name: 'SH: Wall Bounce', nameVn: 'SH: Nảy tường', desc: 'Bullets bounce.', descVn: 'Đạn nảy tường.', icon: 'fa-repeat', minLevel: 3, action: (h) => h.stats.bounceCount++ },
+      { id: 'sh_split', owner: 'Silver-Hand', name: 'SH: Split Shot', nameVn: 'SH: Đạn tách', desc: 'Bullets split.', descVn: 'Đạn tách đôi.', icon: 'fa-arrows-split-up-and-left', minLevel: 5, action: (h) => h.stats.splitOnHit = true },
+      
+      // THAYBACH BUFFS
+      { id: 'tb_bullets', owner: 'ThayBach', name: 'TB: MP5 Burst +2', nameVn: 'TB: MP5 +2 Viên', desc: '+2 Bullets.', descVn: '+2 Viên mỗi loạt.', icon: 'fa-layer-group', minLevel: 1, action: (h) => h.stats.bulletCount += 2 },
+      { id: 'tb_damage', owner: 'ThayBach', name: 'TB: High Caliber', nameVn: 'TB: Đạn hạng nặng', desc: '+70% Damage.', descVn: '+70% Sát thương.', icon: 'fa-burst', minLevel: 1, action: (h) => h.stats.damageMult += 0.7 },
+      { id: 'tb_reload', owner: 'ThayBach', name: 'TB: Fast Hands', nameVn: 'TB: Thay đạn nhanh', desc: '-20% Reload Time.', descVn: '-20% Hồi đạn.', icon: 'fa-gauge-high', minLevel: 1, action: (h) => h.stats.fireRateDelay = Math.max(30, h.stats.fireRateDelay * 0.8) },
+      { id: 'tb_crit', owner: 'ThayBach', name: 'TB: Focus', nameVn: 'TB: Tập trung', desc: '+25% Crit Chance.', descVn: '+25% Chí mạng.', icon: 'fa-bolt', minLevel: 1, action: (h) => h.stats.critChance += 0.25 },
+      { id: 'tb_pierce', owner: 'ThayBach', name: 'TB: Armor Piercing', nameVn: 'TB: Xuyên giáp', desc: 'Pierce +1.', descVn: 'Xuyên thấu +1.', icon: 'fa-arrow-right-to-bracket', minLevel: 1, action: (h) => h.stats.pierceCount++ },
+      { id: 'tb_bounce', owner: 'ThayBach', name: 'TB: Wall Bounce', nameVn: 'TB: Nảy tường', desc: 'Bullets bounce.', descVn: 'Đạn nảy tường.', icon: 'fa-repeat', minLevel: 3, action: (h) => h.stats.bounceCount++ },
+      { id: 'tb_split', owner: 'ThayBach', name: 'TB: Split Shot', nameVn: 'TB: Đạn tách', desc: 'Bullets split.', descVn: 'Đạn tách đôi.', icon: 'fa-arrows-split-up-and-left', minLevel: 5, action: (h) => h.stats.splitOnHit = true },
+      { id: 'sh_serum_dur', owner: 'Silver-Hand', name: 'SH: Lasting Serum', nameVn: 'SH: Serum bền', desc: '+2s Serum Time.', descVn: '+2s Serum.', icon: 'fa-clock', minLevel: 3, maxLevel: 3, action: (h) => h.stats.serumDuration += 120 },
+      { id: 'sh_serum_rad', owner: 'Silver-Hand', name: 'SH: Wide Serum', nameVn: 'SH: Serum rộng', desc: '+40% Serum Area.', descVn: '+40% Phạm vi.', icon: 'fa-up-right-and-down-left-from-center', minLevel: 3, maxLevel: 3, action: (h) => h.stats.serumRadius *= 1.4 },
+      { id: 'tb_spread', owner: 'ThayBach', name: 'TB: Fragment', nameVn: 'TB: Đạn tỏa', desc: 'Bullets fragment.', descVn: 'Đạn tỏa mảnh vụn.', icon: 'fa-arrows-to-circle', minLevel: 8, special: true, action: (h) => h.stats.spreadOnHit = true },
 
-      // GLOBAL BUFFS
-      { id: 'pierce', name: 'Global: Piercing', nameVn: 'Toàn bộ: Xuyên thấu', desc: 'All heroes pass through 1 additional enemy.', descVn: 'Tất cả đạn xuyên qua thêm 1 mục tiêu.', icon: 'fa-arrow-right-to-bracket', minLevel: 1, action: () => heroes.forEach(h => h.stats.pierceCount++) },
-      { id: 'crit', name: 'Global: Critical', nameVn: 'Toàn bộ: Chí mạng', desc: 'All heroes +20% crit chance.', descVn: 'Tất cả +20% tỉ lệ chí mạng.', icon: 'fa-bolt', minLevel: 1, action: () => heroes.forEach(h => h.stats.critChance += 0.2) },
+      // MIT BUFFS
+      { id: 'mit_dmg', owner: 'Mit', name: 'Mit: Slugs', nameVn: 'Mit: Đạn ghém', desc: '+70% Damage.', descVn: '+70% Sát thương.', icon: 'fa-burst', minLevel: 1, action: (h) => h.stats.damageMult += 0.7 },
+      { id: 'mit_cd', owner: 'Mit', name: 'Mit: Tactical Reload', nameVn: 'Mit: Nạp đạn nhanh', desc: '-25% Cooldown.', descVn: '-25% Hồi chiêu.', icon: 'fa-clock', minLevel: 1, action: (h) => h.stats.fireRateDelay = Math.max(60, h.stats.fireRateDelay * 0.75) },
+      { id: 'mit_pierce', owner: 'Mit', name: 'Mit: Armor Piercing', nameVn: 'Mit: Xuyên thấu', desc: 'Pierce +1, +10% Dmg.', descVn: 'Xuyên +1, +10% Dame.', icon: 'fa-arrow-right-to-bracket', minLevel: 1, action: (h) => { h.stats.pierceCount++; h.stats.damageMult += 0.1; } },
+      { id: 'mit_frag', owner: 'Mit', name: 'Mit: Explosive Rounds', nameVn: 'Mit: Đạn nổ', desc: 'Bullets fragment.', descVn: 'Đạn tỏa mảnh.', icon: 'fa-arrows-to-circle', minLevel: 3, action: (h) => h.stats.spreadOnHit = true },
+      { id: 'mit_kb', owner: 'Mit', name: 'Mit: Heavy Impact', nameVn: 'Mit: Đẩy lùi', desc: '+3px Knockback.', descVn: '+3px Đẩy lùi.', icon: 'fa-hand-back-fist', minLevel: 2, action: (h) => h.stats.knockbackDist += 3 },
+      { id: 'mit_crit', owner: 'Mit', name: 'Mit: Sharp Eye', nameVn: 'Mit: Thiện xạ', desc: '+20% Crit Chance.', descVn: '+20% Chí mạng.', icon: 'fa-bolt', minLevel: 1, action: (h) => h.stats.critChance += 0.2 },
+      { id: 'mit_pellets', owner: 'Mit', name: 'Mit: Double Barrel', nameVn: 'Mit: Thêm đạn', desc: '+2 Pellets.', descVn: '+2 Viên đạn.', icon: 'fa-layer-group', minLevel: 4, action: (h) => h.stats.bulletCount += 2 },
+      { id: 'mit_double', owner: 'Mit', name: 'Mit: Double Pump', nameVn: 'Mit: Bắn X2', desc: '+15% Double Shot.', descVn: '+15% Tỷ lệ X2.', icon: 'fa-gun', minLevel: 6, action: (h) => h.stats.doubleShotChance += 0.15 },
+
+
     ];
 
     function showBuffSelection() {
@@ -2292,16 +2992,21 @@
       const available = BUFF_LIST.filter(b => {
         const meetsLevel = level >= b.minLevel;
         const alreadyPickedSpecial = b.special && (buffLevels[b.id] > 0);
+        const reachedMaxLevel = b.maxLevel && (buffLevels[b.id] || 0) >= b.maxLevel;
         
         let heroAvailable = true;
         if (b.owner === 'ThayBach') {
           heroAvailable = heroes.some(h => h.name === 'ThayBach');
         }
+        if (b.owner === 'Mit') {
+          heroAvailable = heroes.some(h => h.name === 'Mit');
+        }
         if (b.recruit) {
-          heroAvailable = !heroes.some(h => h.name === 'ThayBach');
+          const charName = b.id.replace('recruit_', '');
+          heroAvailable = !heroes.some(h => h.name.toLowerCase() === charName.toLowerCase());
         }
 
-        return meetsLevel && !alreadyPickedSpecial && heroAvailable;
+        return meetsLevel && !alreadyPickedSpecial && !reachedMaxLevel && heroAvailable;
       });
 
       const shuffled = available.sort(() => 0.5 - Math.random());
@@ -2313,7 +3018,12 @@
         
         // Character specific background/avatar
         if (buff.owner || buff.recruit) {
-          const charName = buff.recruit ? 'ThayBach' : buff.owner;
+          let charName = buff.owner;
+          if (buff.recruit) {
+            if (buff.id === 'recruit_thaybach') charName = 'ThayBach';
+            if (buff.id === 'recruit_mit') charName = 'Mit';
+          }
+          
           const avatarUrl = AVATARS[charName];
           if (avatarUrl) {
             card.style.backgroundImage = `url('${avatarUrl}')`;
@@ -2329,13 +3039,22 @@
         const currentLv = buffLevels[buff.id] || 0;
         const isSpecial = buff.special;
         
+        const hasAvatar = card.classList.contains('has-avatar');
+        
+        // Add animated border if hero card
+        if (buff.owner) {
+          card.classList.add('animated-border');
+          card.classList.add(buff.owner === 'Silver-Hand' ? 'border-sh' : 'border-tb');
+        }
+
         card.innerHTML = `
-        <div class="buff-level-badge" style="${isSpecial ? 'border-color:var(--primary-gold); color:var(--primary-gold); background:rgba(255,180,0,0.1);' : ''}">
+        <div class="buff-avatar-overlay"></div>
+        <div class="buff-level-badge" style="${isSpecial ? 'border-color:var(--primary-gold); color:var(--primary-gold); background:rgba(0,0,0,0.85);' : ''}">
           ${isSpecial ? t.special : t.lv + ' ' + currentLv}
         </div>
         ${buff.owner ? `<div class="buff-owner-badge">${buff.owner}</div>` : ''}
-        <i class="fa-solid ${buff.icon}"></i>
-        <div class="buff-name">${name}</div>
+        ${hasAvatar ? '' : `<i class="fa-solid ${buff.icon}"></i>`}
+        <div class="buff-name" style="${hasAvatar ? 'font-size: 13px; text-shadow: 0 0 10px rgba(0,0,0,1);' : ''}">${name}</div>
         <div class="buff-desc">${desc}</div>
       `;
         card.onclick = () => applyBuff(buff);
@@ -2537,6 +3256,59 @@
       if (!gameRunning || buffOverlay.style.display === 'flex') return;
       gamePaused = !gamePaused;
       document.getElementById('pauseOverlay').style.display = gamePaused ? 'flex' : 'none';
+    }
+
+    // ── Orientation / Short-screen Guard (mobile only) ────────
+    const MIN_HEIGHT = 500;
+    let orientationPaused = false;
+    const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || ('ontouchstart' in window && navigator.maxTouchPoints > 1);
+
+    function checkOrientation() {
+      if (!isMobileDevice) return; // Desktop: no restriction
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const bad = w > h || h < MIN_HEIGHT;
+      const warning = document.getElementById('orientationWarning');
+      const canvas  = document.getElementById('gameCanvas');
+
+      if (bad) {
+        warning.style.display = 'flex';
+        if (canvas) canvas.style.pointerEvents = 'none';
+        if (gameRunning && !gamePaused) {
+          gamePaused = true;
+          orientationPaused = true;
+        }
+        const isVn = currentLang === 'vn';
+        const title = document.getElementById('orientTitle');
+        const desc  = document.getElementById('orientDesc');
+        if (title) title.textContent = isVn ? 'CẦN MÀN HÌNH DỌC' : 'PORTRAIT MODE REQUIRED';
+        if (desc) desc.innerHTML = isVn
+          ? 'Game chỉ hỗ trợ màn hình dọc.<br>Vui lòng xoay thiết bị về chế độ dọc<br>để tiếp tục nhiệm vụ.'
+          : 'This game is designed for vertical screens.<br>Please rotate your device to portrait mode<br>to continue the mission.';
+      } else {
+        warning.style.display = 'none';
+        if (canvas) canvas.style.pointerEvents = 'auto';
+        if (orientationPaused) {
+          gamePaused = false;
+          orientationPaused = false;
+        }
+      }
+    }
+
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', () => setTimeout(checkOrientation, 200));
+    checkOrientation();
+
+
+    function toggleHeroList() {
+      const panel = document.getElementById('heroListPanel');
+      const canvas = document.getElementById('gameCanvas');
+      const isOpen = window.getComputedStyle(panel).display !== 'none';
+      panel.style.display = isOpen ? 'none' : 'flex';
+      // Disable canvas pointer events so panel buttons are clickable
+      if (canvas) canvas.style.pointerEvents = isOpen ? 'auto' : 'none';
+      // Pause game while viewing hero list
+      if (gameRunning) gamePaused = !isOpen;
     }
 
     function restartFromPause() {

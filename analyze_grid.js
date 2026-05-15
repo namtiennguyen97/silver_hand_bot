@@ -59,7 +59,8 @@ async function analyzeSprite(fileName) {
 }
 
 async function main() {
-    await analyzeSprite('frontline.png');
+    const fileName = process.argv[2] || 'frontline.png';
+    await analyzeSprite(fileName);
 }
 
 main();

@@ -230,7 +230,7 @@
     #heroListBtn {
       position: absolute;
       left: 15px;
-      bottom: calc(20% + env(safe-area-inset-bottom, 0px));
+      bottom: calc(28% + env(safe-area-inset-bottom, 0px));
       z-index: 150;
       display: flex;
       flex-direction: column;
@@ -239,6 +239,7 @@
       pointer-events: auto;
       cursor: pointer;
     }
+
     #heroListBtn .btn-pause {
       border-color: rgba(255,200,0,0.5);
       color: #ffd700;
@@ -258,16 +259,15 @@
     #heroListPanel {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.92);
+      background: rgba(0,0,0,0.94);
       display: none;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       z-index: 300;
-      padding: 20px;
+      padding: 25px 20px calc(110px + env(safe-area-inset-bottom, 20px)) 20px; /* Space for higher fixed button */
       box-sizing: border-box;
-      overflow-y: auto;
       pointer-events: auto;
+      backdrop-filter: blur(10px);
     }
     .hero-list-title {
       font-family: 'Orbitron', monospace;
@@ -275,14 +275,26 @@
       letter-spacing: 3px;
       color: var(--primary-cyan);
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
       text-shadow: 0 0 10px var(--primary-cyan);
+      flex-shrink: 0;
     }
     .hero-list-grid {
       display: flex;
       flex-direction: column;
       gap: 12px;
       width: 100%;
+      overflow-y: auto;
+      padding-bottom: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary-cyan) transparent;
+    }
+    .hero-list-grid::-webkit-scrollbar {
+      width: 4px;
+    }
+    .hero-list-grid::-webkit-scrollbar-thumb {
+      background: var(--primary-cyan);
+      border-radius: 10px;
     }
     .hero-card-info {
       background: rgba(255,255,255,0.04);
@@ -352,6 +364,62 @@
     .sh .hero-card-passive { color: #00f2ff; }
     .tb .hero-card-passive { color: #bf00ff; }
     .mt .hero-card-passive { color: #ff8c00; }
+    
+    .hero-stats-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .hero-stat-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hero-stat-label {
+      font-size: 7px;
+      font-family: 'Orbitron', monospace;
+      color: rgba(255,255,255,0.6);
+      width: 55px;
+      letter-spacing: 1px;
+    }
+    .hero-stat-bar-bg {
+      flex: 1;
+      height: 6px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 2px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+      position: relative;
+    }
+    /* Vertical segments overlay (Frontline style) */
+    .hero-stat-bar-bg::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-image: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent calc(20% - 1px),
+        rgba(0, 0, 0, 0.6) calc(20% - 1px),
+        rgba(0, 0, 0, 0.6) 20%
+      );
+      pointer-events: none;
+      z-index: 5;
+    }
+    .hero-stat-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 1s ease-out;
+      position: relative;
+      z-index: 1;
+    }
+    .bar-dame { background: #bf00ff; box-shadow: 0 0 8px #bf00ff88; }
+    .bar-range { background: #ffcc00; box-shadow: 0 0 8px #ffcc0088; }
+    .bar-support { background: #00ff88; box-shadow: 0 0 8px #00ff8888; }
+
     .passive-label {
       font-family: 'Orbitron', monospace;
       font-size: 8px;
@@ -362,20 +430,23 @@
       margin-bottom: 3px;
     }
     .btn-close-herolist {
-      margin-top: 16px;
+      position: absolute;
+      bottom: calc(35px + env(safe-area-inset-bottom, 15px));
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 60px);
+      max-width: 250px;
       font-family: 'Orbitron', monospace;
       font-size: 10px;
       letter-spacing: 2px;
-      background: transparent;
+      background: rgba(0,0,0,0.5);
       border: 1px solid var(--primary-cyan);
       color: var(--primary-cyan);
-      padding: 8px 24px;
+      padding: 12px 24px;
       cursor: pointer;
       transition: all 0.3s;
-    }
-    .btn-close-herolist:hover {
-      background: var(--primary-cyan);
-      color: #000;
+      z-index: 10;
+      backdrop-filter: blur(5px);
     }
 
     /* BUFF & PAUSE OVERLAY */
@@ -1004,6 +1075,20 @@
               <div class="hero-card-row"><span class="label" data-en="WEAPON" data-vn="VŨ KHÍ">WEAPON</span><span data-en="Pistol — fastest fire rate, high accuracy." data-vn="Súng lục — bắn nhanh, chính xác cao.">Pistol — fastest fire rate, high accuracy.</span></div>
               <div class="hero-card-row"><span class="label" data-en="PRO" data-vn="ƯU">PRO</span><span data-en="Fastest DPS. Extremely versatile build options." data-vn="Tốc độ bắn nhanh nhất. Linh hoạt đa dạng build.">Fastest DPS. Extremely versatile build options.</span></div>
               <div class="hero-card-row"><span class="label" data-en="CON" data-vn="NHƯỢC">CON</span><span data-en="Low single-shot damage. Relies heavily on buffs." data-vn="Sát thương đơn lẻ thấp, phụ thuộc vào buff.">Low single-shot damage. Relies heavily on buffs.</span></div>
+              <div class="hero-stats-bars">
+                <div class="hero-stat-item">
+                  <span class="hero-stat-label" data-en="DAME" data-vn="DAME">DAME</span>
+                  <div class="hero-stat-bar-bg"><div class="hero-stat-bar-fill bar-dame" style="width: 55%;"></div></div>
+                </div>
+                <div class="hero-stat-item">
+                  <span class="hero-stat-label" data-en="RANGE" data-vn="TẦM XA">RANGE</span>
+                  <div class="hero-stat-bar-bg"><div class="hero-stat-bar-fill bar-range" style="width: 100%;"></div></div>
+                </div>
+                <div class="hero-stat-item">
+                  <span class="hero-stat-label" data-en="SUPPORT" data-vn="HỖ TRỢ">SUPPORT</span>
+                  <div class="hero-stat-bar-bg"><div class="hero-stat-bar-fill bar-support" style="width: 85%;"></div></div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="hero-card-passive">
@@ -1020,7 +1105,21 @@
               <div class="hero-card-name">★ THẦY BẠCH</div>
               <div class="hero-card-row"><span class="label" data-en="WEAPON" data-vn="VŨ KHÍ">WEAPON</span><span data-en="MP5 — fires an 8-round burst per cycle." data-vn="MP5 — xả đạn liên thanh 8 viên mỗi loạt.">MP5 — fires an 8-round burst per cycle.</span></div>
               <div class="hero-card-row"><span class="label" data-en="PRO" data-vn="ƯU">PRO</span><span data-en="Massive burst damage. Shreds through dense crowds." data-vn="Sát thương burst cao, tiêu diệt nhanh đám đông dày đặc.">Massive burst damage. Shreds through dense crowds.</span></div>
-              <div class="hero-card-row"><span class="label" data-en="CON" data-vn="NHƯỢC">CON</span><span data-en="Long cooldown (6s). Vulnerable between bursts." data-vn="Thời gian hồi chiêu lâu (6s), điểm mù giữa các loạt bắn.">Long cooldown (6s). Vulnerable between bursts.</span></div>
+              <div class="hero-card-row"><span class="label" data-en="CON" data-vn="NHƯỢC">CON</span><span data-en="Moderate cooldown (4s). Vulnerable between bursts." data-vn="Thời gian hồi chiêu (4s), điểm mù giữa các loạt bắn.">Moderate cooldown (4s). Vulnerable between bursts.</span></div>
+              <div class="hero-stats-bars">
+                <div class="hero-stat-item">
+                  <span class="hero-stat-label" data-en="DAME" data-vn="DAME">DAME</span>
+                  <div class="hero-stat-bar-bg"><div class="hero-stat-bar-fill bar-dame" style="width: 90%;"></div></div>
+                </div>
+                <div class="hero-stat-item">
+                  <span class="hero-stat-label" data-en="RANGE" data-vn="TẦM XA">RANGE</span>
+                  <div class="hero-stat-bar-bg"><div class="hero-stat-bar-fill bar-range" style="width: 100%;"></div></div>
+                </div>
+                <div class="hero-stat-item">
+                  <span class="hero-stat-label" data-en="SUPPORT" data-vn="HỖ TRỢ">SUPPORT</span>
+                  <div class="hero-stat-bar-bg"><div class="hero-stat-bar-fill bar-support" style="width: 20%;"></div></div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="hero-card-passive">
@@ -1038,11 +1137,25 @@
               <div class="hero-card-row"><span class="label" data-en="WEAPON" data-vn="VŨ KHÍ">WEAPON</span><span data-en="Shotgun — slow fire, 4 pellets per blast." data-vn="Shotgun — bắn chậm, 4 viên đạn tỏa rộng.">Shotgun — slow fire, 4 pellets per blast.</span></div>
               <div class="hero-card-row"><span class="label" data-en="PRO" data-vn="ƯU">PRO</span><span data-en="Excellent crowd control. Knockback keeps zombies at bay." data-vn="Kiểm soát đám đông xuất sắc. Đẩy lùi zombie hiệu quả.">Excellent crowd control. Knockback keeps zombies at bay.</span></div>
               <div class="hero-card-row"><span class="label" data-en="CON" data-vn="NHƯỢC">CON</span><span data-en="Only fires when zombies reach mid-map. Useless at range." data-vn="Chỉ bắn khi zombie qua giữa bản đồ. Tầm ngắn, vô dụng ở xa.">Only fires when zombies reach mid-map. Useless at range.</span></div>
+              <div class="hero-stats-bars">
+                <div class="hero-stat-item">
+                  <span class="hero-stat-label" data-en="DAME" data-vn="DAME">DAME</span>
+                  <div class="hero-stat-bar-bg"><div class="hero-stat-bar-fill bar-dame" style="width: 100%;"></div></div>
+                </div>
+                <div class="hero-stat-item">
+                  <span class="hero-stat-label" data-en="RANGE" data-vn="TẦM XA">RANGE</span>
+                  <div class="hero-stat-bar-bg"><div class="hero-stat-bar-fill bar-range" style="width: 35%;"></div></div>
+                </div>
+                <div class="hero-stat-item">
+                  <span class="hero-stat-label" data-en="SUPPORT" data-vn="HỖ TRỢ">SUPPORT</span>
+                  <div class="hero-stat-bar-bg"><div class="hero-stat-bar-fill bar-support" style="width: 75%;"></div></div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="hero-card-passive">
-            <span class="passive-label">⚡ PASSIVE: DOUBLE SHOOT</span>
-            <span data-en="Every 20 shots, Mit auto-fires a rapid second blast (0.2s gap) — 8 total pellets with full knockback applied to all." data-vn="Cứ sau 20 phát bắn, Mit tự động kích hoạt 1 phát bắn kép cực nhanh (0.2s). Tổng 8 viên đạn shotgun xuất hiện liên tiếp gây sát thương và knockback diện rộng.">Every 20 shots, Mit auto-fires a rapid second blast (0.2s gap) — 8 total pellets with full knockback applied to all.</span>
+            <span class="passive-label">⚡ PASSIVE: TRIPLE SHOOT</span>
+            <span data-en="Every 10 shots, Mit auto-fires 2 additional rapid blasts — 12 total pellets with full knockback applied to all." data-vn="Cứ sau 10 phát bắn, Mit tự động kích hoạt thêm 2 phát bắn cực nhanh. Tổng 12 viên đạn shotgun xuất hiện liên tiếp gây sát thương và knockback cực mạnh.">Every 10 shots, Mit auto-fires 2 additional rapid blasts — 12 total pellets with full knockback applied to all.</span>
           </div>
         </div>
 
@@ -1411,7 +1524,7 @@
       boss: {
         src: 'assets/img/defender/zombie_boss.png',
         cols: 8, rows: 8,
-        stats: { hpBase: 40000, hpScale: 8000, shieldBase: 12000, shieldScale: 4000, speedMult: 0.4, radiusMult: 2.5, animSpeedMult: 0.7, expValue: 3000 },
+        stats: { hpBase: 15000, hpScale: 3000, shieldBase: 12000, shieldScale: 2500, speedMult: 0.4, radiusMult: 2.5, animSpeedMult: 0.7, expValue: 3000 },
         render: {
           drawScale: 5.5,
           yOffset: 0.95,
@@ -1514,8 +1627,8 @@
           bulletCount: name === 'ThayBach' ? 8 : (name === 'Mit' ? 4 : CONFIG.bulletCount),
           pierceCount: CONFIG.pierceCount,
           critChance: CONFIG.critChance,
-          damageMult: name === 'ThayBach' ? 2.0 : (name === 'Mit' ? 3.0 : CONFIG.damageMult),
-          fireRateDelay: name === 'ThayBach' ? 360 : (name === 'Mit' ? 90 : CONFIG.fireRateDelay),
+          damageMult: name === 'ThayBach' ? 2.0 : (name === 'Mit' ? 5.0 : CONFIG.damageMult),
+          fireRateDelay: name === 'ThayBach' ? 240 : (name === 'Mit' ? 90 : CONFIG.fireRateDelay),
           shieldDamageMult: 1.0,
           bounceCount: 0,
           splitOnHit: false,
@@ -1528,7 +1641,7 @@
           serumDamage: 1.5, // Per frame, scales with level
           serumShotInterval: name === 'Silver-Hand' ? 20 : 0, // Every N shots
           // Mit Stats
-          knockbackDist: name === 'Mit' ? 7 : 0, // Each pellet nudges zombie back
+          knockbackDist: name === 'Mit' ? 1.0 : 0, // Further reduced for a very subtle push-back
           rangeLimitY: name === 'Mit' ? height * 0.5 : 0,
           doubleShotChance: 0
         };
@@ -1739,14 +1852,15 @@
           }
         }
 
-        // Mit passive: every 20 shots → rapid double blast
+        // Mit passive: every 10 shots → rapid triple blast
         if (this.name === 'Mit') {
           this.shotCount++;
-          if (this.shotCount >= 20) {
+          if (this.shotCount >= 10) {
             this.shotCount = 0;
-            setTimeout(() => { if (gameRunning && !gamePaused) this.fire(); }, 200);
+            setTimeout(() => { if (gameRunning && !gamePaused) this.fire(); }, 150);
+            setTimeout(() => { if (gameRunning && !gamePaused) this.fire(); }, 300);
             this.shoutTimer = 90;
-            this.shoutText = 'Double Shoot!';
+            this.shoutText = 'Triple Shoot!';
           }
         }
       }
@@ -2078,8 +2192,7 @@
             // Damage scales with current game level
             const scaledDmg = this.damage * (1 + (level - 1) * 0.15);
             e.takeDamage(scaledDmg, false);
-            e.x -= (e.x - e.prevX || 0) * 0.6; // 60% slow
-            e.y -= (e.y - e.prevY || 0) * 0.6;
+            e.moveMult *= 0.4; // 60% slow (stackable if multiple zones)
           }
         }
       }
@@ -2154,6 +2267,7 @@
         const levelSpeedBoost = (level - 1) * 0.015;
         this.radius *= config.stats.radiusMult;
         this.speed = (Math.random() * 0.2 + CONFIG.enemySpeedBase * config.stats.speedMult) + levelSpeedBoost;
+        this.moveMult = 1; // Slow factor (1 = normal, 0.4 = 60% slow)
 
         this.active = true;
         this.angle = 0;
@@ -2184,6 +2298,11 @@
         this.deathComplete = false;
         this.isAttacking = false;
         this.dieState = this.zType === 'boss' ? 'die_explode' : (this.zType === 'female' ? 'die_collapse' : (Math.random() < 0.5 ? 'die_collapse' : 'die_explode'));
+        
+        // Boss summon scaling
+        if (this.zType === 'boss') {
+          this.bossSummonCount = 3;
+        }
 
         // Entry animations
         if (this.zType === 'boss') {
@@ -2224,7 +2343,6 @@
         this.frameIndex = 0;
         this.animTimer = 0;
       }
-
       takeDamage(amount, isCrit = false, knockback = 0) {
         if (this.isDead) return;
 
@@ -2240,19 +2358,17 @@
         }
 
         this.hp -= amount;
-        // One-shot direct nudge (no decaying velocity accumulation)
+        // Smooth velocity-based knockback
         if (knockback > 0) {
-          // Boss receives only 30% of knockback (heavy but not immune)
-          const actualKnockback = this.zType === 'boss' ? knockback * 0.3 : knockback;
-          this.y = Math.min(height * 0.95, this.y - actualKnockback);
-          if (this.y < this.radius) this.y = this.radius;
+          const actualKnockback = this.zType === 'boss' ? knockback * 0.8 : knockback;
+          this.knockbackY -= actualKnockback;
+          
+          // Play hit animation only if not a boss
+          if (this.zType !== 'boss' && !this.isDead) {
+            this.setState('hit');
+          }
         }
 
-        // Play hit animation only if there is a knockback effect (e.g. from Mit)
-        if (this.zType !== 'boss' && !this.isDead && knockback > 0) {
-          this.setState('hit');
-        }
-        
         if (this.hp <= 0) {
           this.hp = 0;
           this.isDead = true;
@@ -2287,8 +2403,9 @@
 
             // If pushed back significantly from attack line, reset attacking state
             const attackStopY = height * CONFIG.playerY - 45;
-            if (this.y < attackStopY - 20) {
+            if (this.isAttacking && this.y < attackStopY - 5) {
               this.isAttacking = false;
+              this.setState(this.isZigzag ? 'run' : 'walk');
             }
           }
 
@@ -2313,11 +2430,11 @@
             }
 
             if (!this.isAttacking) {
-              this.y += this.speed;
+              this.y += this.speed * this.moveMult;
 
               // Zigzag movement logic
               if (this.isZigzag) {
-                this.x += Math.sin(frameCount * this.sinSpeed + this.sinOffset) * this.sinAmp;
+                this.x += Math.sin(frameCount * this.sinSpeed + this.sinOffset) * this.sinAmp * this.moveMult;
                 // Keep within bounds
                 if (this.x < this.radius) this.x = this.radius;
                 if (this.x > width - this.radius) this.x = width - this.radius;
@@ -2365,8 +2482,9 @@
                 } else if (this.state === 'spawn' || this.state === 'land') {
                   this.setState(this.isZigzag ? 'run' : 'walk');
                 } else if (this.state === 'roar') {
-                  // Summon 3 female zombies chui từ dưới lên
-                  for (let i = 0; i < 3; i++) {
+                  // Summon scaling number of female zombies chui từ dưới lên
+                  const count = this.bossSummonCount || 3;
+                  for (let i = 0; i < count; i++) {
                     const female = new Enemy('female');
                     female.state = 'spawn';
                     female.x = this.x + (Math.random() - 0.5) * 180;
@@ -2374,6 +2492,11 @@
                     // Clamp to bounds
                     female.x = Math.max(female.radius, Math.min(width - female.radius, female.x));
                     enemies.push(female);
+                  }
+                  
+                  // Increment for next summon cycle
+                  if (this.bossSummonCount) {
+                    this.bossSummonCount++;
                   }
                   
                   if (this.isAttacking) {
@@ -2472,32 +2595,6 @@
                 ctx.fillText('STUNNED', 0, sBarY - 5);
               }
             }
-          }
-        } else if (this.name === 'Mit') {
-          // Shotgun Spread (4+ pellets)
-          const bCount = this.stats.bulletCount;
-          const spread = 0.4; // Wide spread
-          for (let i = 0; i < bCount; i++) {
-            const angleOffset = (i - (bCount - 1) / 2) * (spread / (bCount - 1));
-            const finalAngle = baseAngle + angleOffset;
-            
-            const isCrit = Math.random() < this.stats.critChance;
-            const p = new Projectile(
-              this.x, py, finalAngle, true, 
-              this.stats.pierceCount, 
-              this.stats.splitOnHit, 
-              isCrit,
-              '#aaa' // Grey pellets
-            );
-            p.damageMult = this.stats.damageMult;
-            p.knockback = this.stats.knockbackDist;
-            p.spreadOnHit = this.stats.spreadOnHit;
-            projectiles.push(p);
-          }
-
-          // Mit Double Shot
-          if (Math.random() < this.stats.doubleShotChance) {
-             setTimeout(() => this.fire(), 150);
           }
         } else {
           // Fallback
@@ -2782,6 +2879,9 @@
       serumProjectiles.forEach(p => p.update());
       serumProjectiles = serumProjectiles.filter(p => p.active);
 
+      // Reset move multipliers for all enemies before zone effects
+      enemies.forEach(e => e.moveMult = 1);
+
       serumZones.forEach(z => z.update());
       serumZones = serumZones.filter(z => z.active);
 
@@ -3003,7 +3103,9 @@
         }
         if (b.recruit) {
           const charName = b.id.replace('recruit_', '');
-          heroAvailable = !heroes.some(h => h.name.toLowerCase() === charName.toLowerCase());
+          const alreadyHave = heroes.some(h => h.name.toLowerCase() === charName.toLowerCase());
+          const canAddMore = heroes.length < 3;
+          heroAvailable = !alreadyHave && canAddMore;
         }
 
         return meetsLevel && !alreadyPickedSpecial && !reachedMaxLevel && heroAvailable;

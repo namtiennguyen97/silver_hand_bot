@@ -107,6 +107,21 @@ const viewVideoBtn = document.getElementById("viewVideoBtn");
 const videoModal = document.getElementById("videoModal");
 const closeVideoBtn = document.getElementById("closeVideoBtn");
 const planVideo = document.getElementById("planVideo");
+const scoreCalcBtn = document.getElementById("scoreCalcBtn");
+const scoreCalcModal = document.getElementById("scoreCalcModal");
+const closeScoreCalcBtn = document.getElementById("closeScoreCalcBtn");
+const analyzeScoreBtn = document.getElementById("analyzeScoreBtn");
+const ourScoreInput = document.getElementById("ourScoreInput");
+const enemyScoreInput = document.getElementById("enemyScoreInput");
+const scoreCalcResult = document.getElementById("scoreCalcResult");
+const scoreCalcTitle = document.getElementById("scoreCalcTitle");
+const scoreCalcSubtitle = document.getElementById("scoreCalcSubtitle");
+const ourScoreLabel = document.getElementById("ourScoreLabel");
+const enemyScoreLabel = document.getElementById("enemyScoreLabel");
+const analyzeScoreText = document.getElementById("analyzeScoreText");
+const closeScoreCalcText = document.getElementById("closeScoreCalcBtn");
+const scoreCalcEmptyText = document.getElementById("scoreCalcEmptyText");
+const scoreLangButtons = document.querySelectorAll("[data-score-lang]");
 
 // Manage Players
 const managePlayersBtn = document.getElementById("managePlayersBtn");
@@ -129,11 +144,7 @@ const moreOptionsWrap = document.getElementById("moreOptionsWrap");
 const moreOptionsBtn = document.getElementById("moreOptionsBtn");
 const moreOptionsMenu = document.getElementById("moreOptionsMenu");
 
-const mobileSmartSplitBtn = document.getElementById("mobileSmartSplitBtn");
-const mobileSortPowerBtn = document.getElementById("mobileSortPowerBtn");
-const mobileSortNameBtn = document.getElementById("mobileSortNameBtn");
 const mobileResetBtn = document.getElementById("mobileResetBtn");
-const mobileRandomSplitBtn = document.getElementById("mobileRandomSplitBtn");
 
 // Workspace Elements
 const workspaceBrowser = document.getElementById("workspaceBrowser");
@@ -1253,6 +1264,195 @@ function closeVideoModal() {
 }
 
 // =========================
+// MODAL - SCORE CALCULATOR
+// =========================
+let scoreCalcLanguage = "vi";
+let lastScoreAnalysis = null;
+
+const SCORE_CALC_I18N = {
+    vi: {
+        title: "PHÂN TÍCH ĐIỂM BASE",
+        subtitle: "Tool tính nhanh phút 20 offensive / defending. Mốc thắng: 10,000. Phá base sẽ ăn cắp 20% điểm hiện tại của đối thủ.",
+        ourScore: "Điểm bên mình",
+        enemyScore: "Điểm đối thủ",
+        analyze: "Phân tích",
+        close: "Đóng",
+        empty: "Nhập điểm hai đội, rồi phân tích xem nên phá trước hay thủ chờ phản phá sau.",
+        missing: "Hãy nhập điểm của cả hai đội trước khi phân tích.",
+        recBreakFirst: "Nên cân nhắc phá base trước",
+        recWaitCounter: "Nên thủ và chờ phản phá sau",
+        recNeutral: "Hai lựa chọn gần như ngang nhau",
+        waitBetter: "Chờ phản phá sau tốt hơn khoảng <strong>{score}</strong> điểm cho bên mình.",
+        breakBetter: "Phá trước tốt hơn khoảng <strong>{score}</strong> điểm cho bên mình.",
+        sameValue: "Hai hướng cho bên mình cùng mức lợi điểm.",
+        ourFirstTitle: "Mình phá trước, địch phá sau",
+        enemyFirstTitle: "Địch phá trước, mình phá sau",
+        firstSteal: "Phá lần 1 lấy cắp <b>{score}</b> điểm.",
+        afterFirst: "Sau phá lần 1: mình <b>{our}</b> / địch <b>{enemy}</b>.",
+        counterSteal: "Đội phản phá sau lấy cắp <b>{score}</b> điểm.",
+        finalOur: "Final mình",
+        finalEnemy: "Final địch",
+        winnerOur: "Bên mình đang lợi thế",
+        winnerEnemy: "Đối thủ đang lợi thế",
+        winnerTieMax: "Cả hai chạm mốc 10k",
+        winnerTie: "Đang cân bằng",
+    },
+    en: {
+        title: "BASE SCORE ANALYZER",
+        subtitle: "Minute 20 offensive / defending quick calculator. Win target: 10,000. Base break steals 20% of opponent current score.",
+        ourScore: "Our score",
+        enemyScore: "Enemy score",
+        analyze: "Analyze",
+        close: "Close",
+        empty: "Enter both scores, then analyze whether we should break first or wait to counter-break.",
+        missing: "Please enter both scores before analyzing.",
+        recBreakFirst: "Consider breaking base first",
+        recWaitCounter: "Defend and wait to counter-break",
+        recNeutral: "Both choices are nearly equal",
+        waitBetter: "Waiting to counter-break is better for us by about <strong>{score}</strong> points.",
+        breakBetter: "Breaking first is better for us by about <strong>{score}</strong> points.",
+        sameValue: "Both options give us the same point value.",
+        ourFirstTitle: "We break first, enemy breaks second",
+        enemyFirstTitle: "Enemy breaks first, we break second",
+        firstSteal: "First break steals <b>{score}</b> points.",
+        afterFirst: "After first break: us <b>{our}</b> / enemy <b>{enemy}</b>.",
+        counterSteal: "The counter-break steals <b>{score}</b> points.",
+        finalOur: "Final us",
+        finalEnemy: "Final enemy",
+        winnerOur: "We are ahead",
+        winnerEnemy: "Enemy is ahead",
+        winnerTieMax: "Both teams hit 10k",
+        winnerTie: "Still tied",
+    },
+};
+
+function scoreText(key, values = {}) {
+    const dict = SCORE_CALC_I18N[scoreCalcLanguage] || SCORE_CALC_I18N.vi;
+    return (dict[key] || "").replace(/\{(\w+)\}/g, (_, name) => values[name] ?? "");
+}
+
+function openScoreCalcModal() {
+    if (!scoreCalcModal) return;
+    updateScoreCalcLanguage();
+    scoreCalcModal.classList.add("show");
+    document.body.style.overflow = "hidden";
+    setTimeout(() => ourScoreInput && ourScoreInput.focus(), 50);
+}
+
+function closeScoreCalcModal() {
+    if (!scoreCalcModal) return;
+    scoreCalcModal.classList.remove("show");
+    document.body.style.overflow = "";
+}
+
+function getScoreCalculator() {
+    return window.CTCScoreCalculator || null;
+}
+
+function scoreWinnerLabel(winner) {
+    if (winner === "our") return scoreText("winnerOur");
+    if (winner === "enemy") return scoreText("winnerEnemy");
+    if (winner === "tie-max") return scoreText("winnerTieMax");
+    return scoreText("winnerTie");
+}
+
+function scenarioToneClass(winner) {
+    if (winner === "our") return "score-calc-scenario-safe";
+    if (winner === "enemy") return "score-calc-scenario-danger";
+    return "score-calc-scenario-neutral";
+}
+
+function recommendationText(recommendation) {
+    if (recommendation === "break-first") {
+        return scoreText("recBreakFirst");
+    }
+    if (recommendation === "wait-counter") {
+        return scoreText("recWaitCounter");
+    }
+    return scoreText("recNeutral");
+}
+
+function buildScenarioHtml(title, scenario, formatter) {
+    return `
+        <div class="score-calc-scenario ${scenarioToneClass(scenario.final.winner)}">
+            <h4>${title}</h4>
+            <div class="score-calc-lines">
+                <div>${scoreText("firstSteal", { score: formatter(scenario.afterFirst.steal) })}</div>
+                <div>${scoreText("afterFirst", { our: formatter(scenario.afterFirst.our), enemy: formatter(scenario.afterFirst.enemy) })}</div>
+                <div>${scoreText("counterSteal", { score: formatter(scenario.final.steal) })}</div>
+                <div class="score-calc-score">
+                    <span>${scoreText("finalOur")}: ${formatter(scenario.final.our)}</span>
+                    <span>${scoreText("finalEnemy")}: ${formatter(scenario.final.enemy)}</span>
+                </div>
+                <div>${scoreWinnerLabel(scenario.final.winner)}</div>
+            </div>
+        </div>
+    `;
+}
+
+function analyzeScoreCalculator() {
+    const calculator = getScoreCalculator();
+    if (!calculator || !scoreCalcResult) return;
+
+    const ourScore = ourScoreInput ? ourScoreInput.value : "";
+    const enemyScore = enemyScoreInput ? enemyScoreInput.value : "";
+    const hasOurScore = String(ourScore).trim() !== "";
+    const hasEnemyScore = String(enemyScore).trim() !== "";
+
+    if (!hasOurScore || !hasEnemyScore) {
+        lastScoreAnalysis = null;
+        scoreCalcResult.innerHTML = `<div class="score-calc-warning">${scoreText("missing")}</div>`;
+        return;
+    }
+
+    const analysis = calculator.analyzeBaseBreakStrategy(ourScore, enemyScore);
+    lastScoreAnalysis = analysis;
+    renderScoreAnalysis(analysis);
+}
+
+function renderScoreAnalysis(analysis) {
+    const calculator = getScoreCalculator();
+    if (!calculator || !scoreCalcResult || !analysis) return;
+
+    const format = calculator.formatScore;
+    const valueDiff = analysis.waitCounterValue - analysis.breakFirstValue;
+    const diffLine = valueDiff > 0
+        ? scoreText("waitBetter", { score: format(valueDiff) })
+        : valueDiff < 0
+            ? scoreText("breakBetter", { score: format(Math.abs(valueDiff)) })
+            : scoreText("sameValue");
+
+    scoreCalcResult.innerHTML = `
+        <div class="score-calc-summary">
+            <div><strong>${recommendationText(analysis.recommendation)}</strong></div>
+            <div>${diffLine}</div>
+        </div>
+        <div class="score-calc-grid">
+            ${buildScenarioHtml(scoreText("ourFirstTitle"), analysis.ourFirst, format)}
+            ${buildScenarioHtml(scoreText("enemyFirstTitle"), analysis.enemyFirst, format)}
+        </div>
+    `;
+}
+
+function updateScoreCalcLanguage() {
+    if (scoreCalcTitle) {
+        scoreCalcTitle.innerHTML = `<i class="fa-solid fa-calculator" style="margin-right:8px;"></i>${scoreText("title")}`;
+    }
+    if (scoreCalcSubtitle) scoreCalcSubtitle.textContent = scoreText("subtitle");
+    if (ourScoreLabel) ourScoreLabel.textContent = scoreText("ourScore");
+    if (enemyScoreLabel) enemyScoreLabel.textContent = scoreText("enemyScore");
+    if (analyzeScoreText) analyzeScoreText.textContent = scoreText("analyze");
+    if (closeScoreCalcText) closeScoreCalcText.textContent = scoreText("close");
+    if (scoreCalcEmptyText && !lastScoreAnalysis) scoreCalcEmptyText.textContent = scoreText("empty");
+
+    scoreLangButtons.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.scoreLang === scoreCalcLanguage);
+    });
+
+    if (lastScoreAnalysis) renderScoreAnalysis(lastScoreAnalysis);
+}
+
+// =========================
 // MODAL - MANAGE PLAYERS
 // =========================
 function resetPlayerForm() {
@@ -1527,10 +1727,22 @@ if (roleFilter) {
     });
 }
 
-if (smartSplitBtn) smartSplitBtn.addEventListener("click", smartSplit);
-if (randomSplitBtn) randomSplitBtn.addEventListener("click", randomSplit);
-if (sortPowerBtn) sortPowerBtn.addEventListener("click", sortAllTeamsByPower);
-if (sortNameBtn) sortNameBtn.addEventListener("click", sortAllTeamsByName);
+function closeMoreOptionsMenu() {
+    if (moreOptionsMenu) moreOptionsMenu.classList.remove("show");
+}
+
+function bindMoreOption(button, action) {
+    if (!button) return;
+    button.addEventListener("click", () => {
+        action();
+        closeMoreOptionsMenu();
+    });
+}
+
+bindMoreOption(smartSplitBtn, smartSplit);
+bindMoreOption(randomSplitBtn, randomSplit);
+bindMoreOption(sortPowerBtn, sortAllTeamsByPower);
+bindMoreOption(sortNameBtn, sortAllTeamsByName);
 if (copyBtn) copyBtn.addEventListener("click", copyResult);
 if (resetBtn) resetBtn.addEventListener("click", resetAll);
 if (clearTeamsBtn) clearTeamsBtn.addEventListener("click", clearTeamsOnly);
@@ -1546,6 +1758,38 @@ if (closeVideoBtn) {
 if (videoModal) {
     videoModal.addEventListener("click", (e) => {
         if (e.target === videoModal) closeVideoModal();
+    });
+}
+
+if (scoreCalcBtn) {
+    scoreCalcBtn.addEventListener("click", openScoreCalcModal);
+}
+
+if (closeScoreCalcBtn) {
+    closeScoreCalcBtn.addEventListener("click", closeScoreCalcModal);
+}
+
+if (analyzeScoreBtn) {
+    analyzeScoreBtn.addEventListener("click", analyzeScoreCalculator);
+}
+
+scoreLangButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+        scoreCalcLanguage = btn.dataset.scoreLang || "vi";
+        updateScoreCalcLanguage();
+    });
+});
+
+[ourScoreInput, enemyScoreInput].forEach(input => {
+    if (!input) return;
+    input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") analyzeScoreCalculator();
+    });
+});
+
+if (scoreCalcModal) {
+    scoreCalcModal.addEventListener("click", (e) => {
+        if (e.target === scoreCalcModal) closeScoreCalcModal();
     });
 }
 
@@ -1713,39 +1957,7 @@ if (moreOptionsBtn && moreOptionsMenu) {
     });
 }
 
-if (mobileSmartSplitBtn) {
-    mobileSmartSplitBtn.addEventListener("click", () => {
-        smartSplit();
-        moreOptionsMenu.classList.remove("show");
-    });
-}
-
-if (mobileSortPowerBtn) {
-    mobileSortPowerBtn.addEventListener("click", () => {
-        sortAllTeamsByPower();
-        moreOptionsMenu.classList.remove("show");
-    });
-}
-
-if (mobileSortNameBtn) {
-    mobileSortNameBtn.addEventListener("click", () => {
-        sortAllTeamsByName();
-        moreOptionsMenu.classList.remove("show");
-    });
-}
-
-if (mobileResetBtn) {
-    mobileResetBtn.addEventListener("click", () => {
-        resetAll();
-        moreOptionsMenu.classList.remove("show");
-    });
-}
-if (mobileRandomSplitBtn) {
-    mobileRandomSplitBtn.addEventListener("click", () => {
-        randomSplit();
-        moreOptionsMenu.classList.remove("show");
-    });
-}
+bindMoreOption(mobileResetBtn, resetAll);
 // =========================
 // WORKSPACE BROWSER LOGIC
 // =========================
@@ -2009,6 +2221,7 @@ const rosterGroups   = document.getElementById("rosterGroups");
 const rosterSearch   = document.getElementById("rosterSearch");
 const closeRosterBtn = document.getElementById("closeRosterBtn");
 const showAllPlayersBtn = document.getElementById("showAllPlayersBtn");
+let activeRosterGroup = "";
 
 const ROLE_COLORS = {
     Rifle:   { color: "#5dffb2", bg: "rgba(93,255,178,0.12)",   border: "rgba(93,255,178,0.35)"  },
@@ -2033,10 +2246,15 @@ function highlightText(text, keyword) {
     return escaped.replace(re, `<mark class="roster-highlight">$1</mark>`);
 }
 
+function applyRosterGroupFilter(players, group) {
+    if (!group) return players;
+    return players.filter(p => p.group === group);
+}
+
 function renderRoster(keyword = "") {
     const kw = keyword.trim().toLowerCase();
 
-    const filtered = masterPlayers.filter(p => {
+    const searchedPlayers = masterPlayers.filter(p => {
         if (!kw) return true;
         return (
             p.name.toLowerCase().includes(kw) ||
@@ -2046,26 +2264,30 @@ function renderRoster(keyword = "") {
             (p.note || "").toLowerCase().includes(kw)
         );
     });
+    const filtered = applyRosterGroupFilter(searchedPlayers, activeRosterGroup);
 
     // ── Stats Strip ─────────────────────────────────────────
-    const total      = filtered.length;
-    const commanders = filtered.filter(p => p.group === "Commander").length;
-    const elites     = filtered.filter(p => p.group === "Elite").length;
-    const nonElites  = filtered.filter(p => p.group === "Non-Elite").length;
-    const pending    = filtered.filter(p => p.group === "Pending").length;
+    const total      = searchedPlayers.length;
+    const commanders = searchedPlayers.filter(p => p.group === "Commander").length;
+    const elites     = searchedPlayers.filter(p => p.group === "Elite").length;
+    const nonElites  = searchedPlayers.filter(p => p.group === "Non-Elite").length;
+    const pending    = searchedPlayers.filter(p => p.group === "Pending").length;
 
     const statCards = [
-        { value: total,      label: "Total",      color: "#c4b8ff" },
-        { value: commanders, label: "Commander",   color: "#ffd700" },
-        { value: elites,     label: "Elite",       color: "var(--cyan)" },
-        { value: nonElites,  label: "Non-Elite",   color: "var(--green)" },
-        { value: pending,    label: "Pending",     color: "var(--muted)" },
+        { value: total,      label: "Total",      color: "#c4b8ff", group: "" },
+        { value: commanders, label: "Commander",   color: "#ffd700", group: "Commander" },
+        { value: elites,     label: "Elite",       color: "var(--cyan)", group: "Elite" },
+        { value: nonElites,  label: "Non-Elite",   color: "var(--green)", group: "Non-Elite" },
+        { value: pending,    label: "Pending",     color: "var(--muted)", group: "Pending" },
     ];
     rosterStats.innerHTML = statCards.map(s => `
-        <div class="roster-stat-card">
+        <button type="button"
+                class="roster-stat-card ${activeRosterGroup === s.group ? "active" : ""}"
+                data-roster-group="${escapeHtml(s.group)}"
+                aria-pressed="${activeRosterGroup === s.group ? "true" : "false"}">
             <div class="roster-stat-value" style="color:${s.color}">${s.value}</div>
             <div class="roster-stat-label">${s.label}</div>
-        </div>
+        </button>
     `).join("") + buildRoleRow(filtered);
 
     // ── Manor Groups ────────────────────────────────────────
@@ -2079,7 +2301,9 @@ function renderRoster(keyword = "") {
     });
 
     if (!filtered.length) {
-        rosterGroups.innerHTML = `<div class="roster-empty"><i class="fa-solid fa-user-slash" style="font-size:32px; opacity:.3; display:block; margin-bottom:12px;"></i>No players found matching "<b>${escapeHtml(keyword)}</b>"</div>`;
+        const groupText = activeRosterGroup ? ` in <b>${escapeHtml(activeRosterGroup)}</b>` : "";
+        const searchText = keyword ? ` matching "<b>${escapeHtml(keyword)}</b>"` : "";
+        rosterGroups.innerHTML = `<div class="roster-empty"><i class="fa-solid fa-user-slash" style="font-size:32px; opacity:.3; display:block; margin-bottom:12px;"></i>No players found${groupText}${searchText}</div>`;
         return;
     }
 
@@ -2154,6 +2378,7 @@ function buildRosterPlayerRow(player, kw) {
 
 function openRosterModal() {
     if (!rosterModal) return;
+    activeRosterGroup = "";
     if (rosterSearch) rosterSearch.value = "";
     renderRoster("");
     rosterModal.classList.add("show");
@@ -2176,6 +2401,14 @@ if (closeRosterBtn) {
 if (rosterModal) {
     rosterModal.addEventListener("click", e => {
         if (e.target === rosterModal) closeRosterModal();
+    });
+}
+if (rosterStats) {
+    rosterStats.addEventListener("click", e => {
+        const card = e.target.closest("[data-roster-group]");
+        if (!card) return;
+        activeRosterGroup = card.dataset.rosterGroup || "";
+        renderRoster(rosterSearch ? rosterSearch.value : "");
     });
 }
 if (rosterSearch) {

@@ -171,6 +171,10 @@
 }
 
 /* TACTICAL CONFIRM MODAL STYLES */
+#dynamicConfirmModal {
+    z-index: 1500;
+}
+
 #dynamicConfirmModal .modal-panel {
     border: 2px solid rgba(255, 107, 138, 0.4);
     box-shadow: 0 0 30px rgba(255, 107, 138, 0.15), var(--shadow);

@@ -121,6 +121,9 @@ const pmSearch = document.getElementById("pmSearch");
 const pmList = document.getElementById("pmList");
 const pmCloseBtn = document.getElementById("pmCloseBtn");
 const pmResetDefaultBtn = document.getElementById("pmResetDefaultBtn");
+const pmSelectAll = document.getElementById("pmSelectAll");
+const pmDeleteSelectedBtn = document.getElementById("pmDeleteSelectedBtn");
+const pmDeleteAllBtn = document.getElementById("pmDeleteAllBtn");
 
 const moreOptionsWrap = document.getElementById("moreOptionsWrap");
 const moreOptionsBtn = document.getElementById("moreOptionsBtn");
@@ -322,13 +325,15 @@ function initializeDefaultState() {
 }
 function buildSharedPayload() {
     normalizeState();
+    const password = sessionStorage.getItem(`ctc_auth_${activeWorkspace}`);
 
     return {
         version: 1,
         masterPlayers: deepClone(masterPlayers),
         pool: deepClone(state.pool),
         categories: deepClone(state.categories),
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
+        password: password || null
     };
 }
 
@@ -466,8 +471,11 @@ async function saveSharedStateOnline(force = false) {
     if (uploadBtnText) uploadBtnText.textContent = "Uploading...";
     if (uploadPlanBtn) uploadPlanBtn.disabled = true;
 
+    const password = sessionStorage.getItem(`ctc_auth_${activeWorkspace}`);
+    const url = `${SHARED_STATE_API}?workspace=${encodeURIComponent(activeWorkspace)}${password ? `&password=${encodeURIComponent(password)}` : ""}`;
+
     try {
-        const res = await fetch(`${SHARED_STATE_API}?workspace=${encodeURIComponent(activeWorkspace)}`, {
+        const res = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -501,20 +509,11 @@ async function loadSharedStateOnStartup(password = null) {
 
         if (json.ok && json.data) {
             if (json.data.requiresPassword) {
-                // If it was already a password attempt from URL, then it was WRONG
-                if (password) {
-                    showToast("INVALID ACCESS CODE");
-                }
-                
-                // Trigger Keypad for beautiful entry
-                const pass = await showTacticalKeypad();
-                if (pass) {
-                    return await loadSharedStateOnStartup(pass);
-                } else {
-                    // Aborted - go back to browser
+                sessionStorage.setItem("ctc_auth_error", "Access Denied: Incorrect or missing password.");
+                setTimeout(() => {
                     window.location.href = window.location.pathname;
-                    return false;
-                }
+                }, 100);
+                return false;
             }
 
             // Valid data fetched - apply it
@@ -1271,6 +1270,9 @@ function resetPlayerForm() {
 function openPlayerManager() {
     if (!playerManagerModal) return;
 
+    if (pmSelectAll) pmSelectAll.checked = false;
+    if (pmDeleteSelectedBtn) pmDeleteSelectedBtn.classList.add("hidden");
+
     renderPlayerManagerList();
     resetPlayerForm();
     playerManagerModal.classList.add("show");
@@ -1285,8 +1287,22 @@ function closePlayerManager() {
     resetPlayerForm();
 }
 
+function updateDeleteSelectedBtn() {
+    if (!pmDeleteSelectedBtn) return;
+    const checked = pmList.querySelectorAll(".pm-select-row:checked").length;
+    if (checked > 0) {
+        pmDeleteSelectedBtn.textContent = `Delete Selected (${checked})`;
+        pmDeleteSelectedBtn.classList.remove("hidden");
+    } else {
+        pmDeleteSelectedBtn.classList.add("hidden");
+    }
+}
+
 function renderPlayerManagerList() {
     if (!pmList) return;
+
+    if (pmSelectAll) pmSelectAll.checked = false;
+    updateDeleteSelectedBtn();
 
     const keyword = (pmSearch?.value || "").trim().toLowerCase();
     pmList.innerHTML = "";
@@ -1313,7 +1329,8 @@ function renderPlayerManagerList() {
         const row = document.createElement("div");
         row.className = "commander-item";
         row.innerHTML = `
-            <div class="chip-main" style="flex-wrap: wrap;">
+            <div class="chip-main" style="flex-wrap: wrap; align-items: center; gap: 8px;">
+                <input type="checkbox" class="pm-select-row" value="${escapeHtml(uid(player))}" style="cursor:pointer;" />
                 <div class="commander-name">${escapeHtml(player.name)}</div>
                 <span class="tag ${roleClass(player.role)}">${escapeHtml(player.role)}</span>
                 <span class="tag power">${escapeHtml(String(player.power))}</span>
@@ -1326,6 +1343,13 @@ function renderPlayerManagerList() {
             </div>
         `;
         pmList.appendChild(row);
+    });
+
+    // Handle single checkbox selection changes
+    pmList.querySelectorAll(".pm-select-row").forEach(cb => {
+        cb.addEventListener("change", () => {
+            updateDeleteSelectedBtn();
+        });
     });
 
     pmList.querySelectorAll("[data-edit-player]").forEach(btn => {
@@ -1345,10 +1369,14 @@ function renderPlayerManagerList() {
     });
 
     pmList.querySelectorAll("[data-delete-player]").forEach(btn => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", async () => {
             const id = btn.dataset.deletePlayer;
 
-            if (!confirm(`Delete player "${id}"?`)) return;
+            const ok = await customConfirm(
+                "DELETE PLAYER?",
+                `Are you sure you want to delete player <b>"${escapeHtml(id)}"</b>?`
+            );
+            if (!ok) return;
 
             masterPlayers = masterPlayers.filter(p => uid(p) !== id);
             removePlayerEverywhere(id);
@@ -1581,6 +1609,78 @@ if (pmSaveBtn) {
     pmSaveBtn.addEventListener("click", addOrUpdatePlayer);
 }
 
+if (pmSelectAll) {
+    pmSelectAll.addEventListener("change", (e) => {
+        const checked = e.target.checked;
+        pmList.querySelectorAll(".pm-select-row").forEach(cb => {
+            cb.checked = checked;
+        });
+        updateDeleteSelectedBtn();
+    });
+}
+
+if (pmDeleteSelectedBtn) {
+    pmDeleteSelectedBtn.addEventListener("click", async () => {
+        const selectedCbs = pmList.querySelectorAll(".pm-select-row:checked");
+        const selectedIds = [...selectedCbs].map(cb => cb.value);
+        if (!selectedIds.length) return;
+
+        const ok = await customConfirm(
+            "DELETE SELECTED?",
+            `Are you sure you want to delete the <b>${selectedIds.length}</b> selected player(s)?`
+        );
+        if (!ok) return;
+
+        selectedIds.forEach(id => {
+            masterPlayers = masterPlayers.filter(p => uid(p) !== id);
+            removePlayerEverywhere(id);
+        });
+
+        saveMasterPlayers();
+        saveState();
+        saveSharedStateDebounced();
+        renderPlayerManagerList();
+        render();
+
+        // If currently editing one of the deleted players, reset the form
+        if (state.editingPlayerId && selectedIds.includes(state.editingPlayerId)) {
+            resetPlayerForm();
+        }
+
+        showToast(`Deleted ${selectedIds.length} player(s)`);
+    });
+}
+
+if (pmDeleteAllBtn) {
+    pmDeleteAllBtn.addEventListener("click", async () => {
+        if (!masterPlayers.length) {
+            showToast("No players to delete");
+            return;
+        }
+
+        const ok = await customConfirm(
+            "DELETE ALL PLAYERS?",
+            `Are you sure you want to permanently delete <b>ALL ${masterPlayers.length}</b> players?<br/>This will clear the entire list. You can reset to defaults later if needed.`
+        );
+        if (!ok) return;
+
+        masterPlayers = [];
+        state.pool = [];
+        for (const cat of CATEGORIES) {
+            state.categories[cat] = [];
+        }
+
+        saveMasterPlayers();
+        saveState();
+        saveSharedStateDebounced();
+        renderPlayerManagerList();
+        render();
+        resetPlayerForm();
+
+        showToast("All players deleted");
+    });
+}
+
 if (pmResetDefaultBtn) {
     pmResetDefaultBtn.addEventListener("click", async () => {
         const ok = await customConfirm(
@@ -1663,7 +1763,18 @@ async function initWorkspaceFlow() {
         loadState();
         render();
 
-        const password = params.get("password");
+        // Check if password is in URL parameters first
+        let password = params.get("password");
+        if (password) {
+            sessionStorage.setItem(`ctc_auth_${activeWorkspace}`, password);
+            // Clean it from the URL without reloading the page
+            params.delete("password");
+            const newUrl = `${window.location.pathname}?${params.toString()}`;
+            window.history.replaceState({}, document.title, newUrl);
+        } else {
+            password = sessionStorage.getItem(`ctc_auth_${activeWorkspace}`);
+        }
+
         const success = await loadSharedStateOnStartup(password);
 
         if (success) {
@@ -1678,6 +1789,11 @@ async function initWorkspaceFlow() {
         }
     } else {
         showWorkspaceBrowser();
+        const authError = sessionStorage.getItem("ctc_auth_error");
+        if (authError) {
+            showToast(authError);
+            sessionStorage.removeItem("ctc_auth_error");
+        }
     }
 }
 
@@ -1728,7 +1844,7 @@ function renderWorkspaceList(list) {
                 </div>
                 
                 <div class="wb-actions">
-                    <button class="mini-btn" onclick="deleteWorkspace(event, '${ws.name}')">
+                    <button class="mini-btn" onclick="deleteWorkspace(event, '${ws.name}', ${ws.protected})">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
                 </div>
@@ -1739,9 +1855,30 @@ function renderWorkspaceList(list) {
 
 window.handleWorkspaceSelection = async (e, name, isProtected) => {
     if (isProtected) {
-        const pass = await showTacticalKeypad();
-        if (pass) {
-            window.enterWorkspace(name, pass);
+        let authenticated = false;
+        while (!authenticated) {
+            const pass = await showTacticalKeypad();
+            if (!pass) break; // User cancelled
+            
+            showToast("VERIFYING CODE...");
+            try {
+                const url = `${SHARED_STATE_API}?workspace=${encodeURIComponent(name)}&password=${encodeURIComponent(pass)}`;
+                const res = await fetch(url, { cache: "no-store" });
+                const json = await res.json();
+                
+                if (json.ok && json.data) {
+                    if (json.data.requiresPassword) {
+                        showToast("INVALID ACCESS CODE");
+                    } else {
+                        authenticated = true;
+                        window.enterWorkspace(name, pass);
+                    }
+                } else {
+                    showToast("SERVER ERROR");
+                }
+            } catch (err) {
+                showToast("CONNECTION ERROR");
+            }
         }
     } else {
         window.enterWorkspace(name);
@@ -1749,16 +1886,24 @@ window.handleWorkspaceSelection = async (e, name, isProtected) => {
 };
 
 window.enterWorkspace = (name, password = null) => {
+    if (password) {
+        sessionStorage.setItem(`ctc_auth_${name}`, password);
+    }
     const url = new URL(window.location.href);
     url.searchParams.set("workspace", name);
-    if (password) {
-        url.searchParams.set("password", password);
-    }
+    url.searchParams.delete("password");
     window.location.href = url.toString();
 };
 
-window.deleteWorkspace = async (e, name) => {
+window.deleteWorkspace = async (e, name, isProtected) => {
     e.stopPropagation();
+    
+    let password = null;
+    if (isProtected) {
+        password = await showTacticalKeypad();
+        if (!password) return; // cancelled
+    }
+
     const ok = await customConfirm(
         "DELETE WORKSPACE?",
         `Are you sure you want to permanently delete <b>"${escapeHtml(name)}"</b>? <br/>This action cannot be undone.`
@@ -1766,12 +1911,16 @@ window.deleteWorkspace = async (e, name) => {
     if (!ok) return;
     
     try {
-        const res = await fetch(`${SHARED_STATE_API}?workspace=${encodeURIComponent(name)}`, {
+        const url = `${SHARED_STATE_API}?workspace=${encodeURIComponent(name)}${password ? `&password=${encodeURIComponent(password)}` : ""}`;
+        const res = await fetch(url, {
             method: "DELETE"
         });
         if (res.ok) {
             showToast("Workspace deleted");
             showWorkspaceBrowser();
+        } else {
+            const errData = await res.json();
+            showToast(errData.error || "Delete failed");
         }
     } catch (err) {
         showToast("Delete failed");
@@ -1824,7 +1973,7 @@ async function handleCreateWorkspace() {
         });
         
         if (res.ok) {
-            enterWorkspace(name);
+            enterWorkspace(name, pass);
         } else {
             showToast("Creation failed");
         }

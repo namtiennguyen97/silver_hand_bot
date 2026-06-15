@@ -103,7 +103,7 @@
   </div>
 </div>
 
-<div class="app" id="mainApp">
+<div class="app hidden" id="mainApp">
   <div class="topbar">
     <section class="hero">
       <div class="hero-head">
@@ -459,13 +459,20 @@
           </div>
         </div>
 
-        <input id="pmSearch" class="search" placeholder="Search player..." />
+        <div style="display:flex; gap:12px; align-items:center;">
+          <input id="pmSearch" class="search" placeholder="Search player..." style="flex:1;" />
+          <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:13px; color:var(--cyan); user-select:none; margin-left:8px;">
+            <input type="checkbox" id="pmSelectAll" style="cursor:pointer;" /> Select All
+          </label>
+        </div>
       </div>
 
       <div id="pmList" style="display:grid; gap:10px;"></div>
     </div>
 
     <div class="modal-foot">
+      <button id="pmDeleteSelectedBtn" class="btn warn hidden">Delete Selected (0)</button>
+      <button id="pmDeleteAllBtn" class="btn warn">Delete All Players</button>
       <button id="pmResetDefaultBtn" class="btn warn">Reset Players to Default</button>
       <button id="pmCloseBtn" class="btn">Close</button>
     </div>

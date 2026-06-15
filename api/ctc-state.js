@@ -113,7 +113,28 @@ export default async function handler(req, res) {
                 return res.status(400).json({ ok: false, error: "Missing workspace name" });
             }
 
+            const { data: existing, error: fetchError } = await supabase
+                .from('ctc_plans')
+                .select('*')
+                .eq('name', workspaceName)
+                .single();
+
+            if (fetchError && fetchError.code !== 'PGRST116') throw fetchError;
+
             const payload = sanitizePayload(req.body);
+
+            if (existing && existing.data) {
+                const existingPayload = existing.data;
+                if (existingPayload.password) {
+                    const clientPass = payload.password || providedPassword;
+                    if (existingPayload.password !== clientPass) {
+                        return res.status(403).json({ ok: false, error: "Forbidden: Incorrect password" });
+                    }
+                    if (!payload.password) {
+                        payload.password = existingPayload.password;
+                    }
+                }
+            }
             
             const { error } = await supabase
                 .from('ctc_plans')
@@ -134,6 +155,20 @@ export default async function handler(req, res) {
         if (req.method === "DELETE") {
             if (!workspaceName) {
                 return res.status(400).json({ ok: false, error: "Missing workspace name" });
+            }
+
+            const { data: existing, error: fetchError } = await supabase
+                .from('ctc_plans')
+                .select('*')
+                .eq('name', workspaceName)
+                .single();
+
+            if (fetchError && fetchError.code !== 'PGRST116') throw fetchError;
+
+            if (existing && existing.data && existing.data.password) {
+                if (existing.data.password !== providedPassword) {
+                    return res.status(403).json({ ok: false, error: "Forbidden: Incorrect password" });
+                }
             }
 
             const { error } = await supabase

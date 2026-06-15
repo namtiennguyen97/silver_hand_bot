@@ -2001,6 +2001,188 @@ if (browseWorkspacesBtn) {
 }
 
 // =========================
+// ROSTER MODAL — Show All Players
+// =========================
+const rosterModal    = document.getElementById("rosterModal");
+const rosterStats    = document.getElementById("rosterStats");
+const rosterGroups   = document.getElementById("rosterGroups");
+const rosterSearch   = document.getElementById("rosterSearch");
+const closeRosterBtn = document.getElementById("closeRosterBtn");
+const showAllPlayersBtn = document.getElementById("showAllPlayersBtn");
+
+const ROLE_COLORS = {
+    Rifle:   { color: "#5dffb2", bg: "rgba(93,255,178,0.12)",   border: "rgba(93,255,178,0.35)"  },
+    Sniper:  { color: "#6ee7ff", bg: "rgba(110,231,255,0.12)",  border: "rgba(110,231,255,0.35)" },
+    Warrior: { color: "#ffb347", bg: "rgba(255,179,71,0.12)",   border: "rgba(255,179,71,0.35)"  },
+    Virus:   { color: "#ff6b8a", bg: "rgba(255,107,138,0.12)",  border: "rgba(255,107,138,0.35)" },
+};
+
+function getManorInfo(power) {
+    const p = Number(power) || 0;
+    if (p >= 150) return { label: "MANOR 30", cls: "manor-30", range: "Lv.150+" };
+    if (p >= 145) return { label: "MANOR 29", cls: "manor-29", range: "Lv.145–149" };
+    if (p >= 140) return { label: "MANOR 28", cls: "manor-28", range: "Lv.140–144" };
+    return { label: "OTHER",    cls: "manor-other", range: "Lv.<140" };
+}
+
+function highlightText(text, keyword) {
+    if (!keyword) return escapeHtml(text);
+    const escaped = escapeHtml(text);
+    const kw = escapeHtml(keyword);
+    const re = new RegExp(`(${kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
+    return escaped.replace(re, `<mark class="roster-highlight">$1</mark>`);
+}
+
+function renderRoster(keyword = "") {
+    const kw = keyword.trim().toLowerCase();
+
+    const filtered = masterPlayers.filter(p => {
+        if (!kw) return true;
+        return (
+            p.name.toLowerCase().includes(kw) ||
+            p.role.toLowerCase().includes(kw) ||
+            p.group.toLowerCase().includes(kw) ||
+            String(p.power).includes(kw) ||
+            (p.note || "").toLowerCase().includes(kw)
+        );
+    });
+
+    // ── Stats Strip ─────────────────────────────────────────
+    const total      = filtered.length;
+    const commanders = filtered.filter(p => p.group === "Commander").length;
+    const elites     = filtered.filter(p => p.group === "Elite").length;
+    const nonElites  = filtered.filter(p => p.group === "Non-Elite").length;
+    const pending    = filtered.filter(p => p.group === "Pending").length;
+
+    const statCards = [
+        { value: total,      label: "Total",      color: "#c4b8ff" },
+        { value: commanders, label: "Commander",   color: "#ffd700" },
+        { value: elites,     label: "Elite",       color: "var(--cyan)" },
+        { value: nonElites,  label: "Non-Elite",   color: "var(--green)" },
+        { value: pending,    label: "Pending",     color: "var(--muted)" },
+    ];
+    rosterStats.innerHTML = statCards.map(s => `
+        <div class="roster-stat-card">
+            <div class="roster-stat-value" style="color:${s.color}">${s.value}</div>
+            <div class="roster-stat-label">${s.label}</div>
+        </div>
+    `).join("") + buildRoleRow(filtered);
+
+    // ── Manor Groups ────────────────────────────────────────
+    const manorOrder = ["manor-30", "manor-29", "manor-28", "manor-other"];
+    const manorBuckets = {};
+    manorOrder.forEach(m => manorBuckets[m] = []);
+
+    filtered.forEach(p => {
+        const info = getManorInfo(p.power);
+        manorBuckets[info.cls].push({ ...p, _manorInfo: info });
+    });
+
+    if (!filtered.length) {
+        rosterGroups.innerHTML = `<div class="roster-empty"><i class="fa-solid fa-user-slash" style="font-size:32px; opacity:.3; display:block; margin-bottom:12px;"></i>No players found matching "<b>${escapeHtml(keyword)}</b>"</div>`;
+        return;
+    }
+
+    rosterGroups.innerHTML = manorOrder
+        .filter(m => manorBuckets[m].length > 0)
+        .map(m => {
+            const players = manorBuckets[m];
+            const sample  = players[0]._manorInfo;
+            return `
+                <div class="roster-manor-section ${m}">
+                    <div class="roster-manor-header">
+                        <span class="roster-manor-badge">${sample.label}</span>
+                        <span class="roster-manor-title">${sample.range}</span>
+                        <span class="roster-manor-count">${players.length} PLAYER${players.length !== 1 ? "S" : ""}</span>
+                    </div>
+                    <div class="roster-player-grid">
+                        ${players.map(p => buildRosterPlayerRow(p, kw)).join("")}
+                    </div>
+                </div>
+            `;
+        }).join("");
+}
+
+function buildRoleRow(players) {
+    const roles = {};
+    players.forEach(p => {
+        roles[p.role] = (roles[p.role] || 0) + 1;
+    });
+
+    const pills = Object.entries(roles)
+        .sort((a, b) => b[1] - a[1])
+        .map(([role, count]) => {
+            const rc = ROLE_COLORS[role] || { color: "var(--text)", bg: "rgba(255,255,255,0.06)", border: "rgba(255,255,255,0.15)" };
+            return `
+                <span class="roster-role-pill tag ${roleClass(role)}"
+                      style="background:${rc.bg}; border-color:${rc.border}; color:${rc.color};">
+                    <span>${escapeHtml(role)}</span>
+                    <span class="pill-count">${count}</span>
+                </span>`;
+        }).join("");
+
+    return `<div class="roster-role-row" style="grid-column:1/-1;">
+        <span style="font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-right:4px;">Roles:</span>
+        ${pills || '<span style="color:var(--muted); font-size:12px;">—</span>'}
+    </div>`;
+}
+
+function buildRosterPlayerRow(player, kw) {
+    const rc = ROLE_COLORS[player.role] || { color: "var(--muted)", bg: "transparent", border: "transparent" };
+    const manorInfo = getManorInfo(player.power);
+    
+    let levelColor = "var(--muted)";
+    if (manorInfo.cls === "manor-30") levelColor = "#ffd700";
+    else if (manorInfo.cls === "manor-29") levelColor = "var(--cyan)";
+    else if (manorInfo.cls === "manor-28") levelColor = "var(--green)";
+
+    const name  = highlightText(player.name, kw);
+    const note  = player.note ? `<div class="roster-player-note"><i class="fa-solid fa-comment-dots" style="opacity:.5; margin-right:4px;"></i>${highlightText(player.note, kw)}</div>` : "";
+    const group = player.group === "Commander"
+        ? `<span class="tag commander" style="font-size:9px; padding:1px 6px;">CMD</span>`
+        : "";
+
+    return `
+        <div class="roster-player-row">
+            <div class="roster-player-name">${name} ${group}</div>
+            <span class="tag ${roleClass(player.role)}" style="font-size:10px; background:${rc.bg}; border-color:${rc.border}; color:${rc.color};">${escapeHtml(player.role)}</span>
+            <span class="roster-player-level" style="color:${levelColor}; border-color:${levelColor}25;">${escapeHtml(String(player.power))}</span>
+            ${note}
+        </div>
+    `;
+}
+
+function openRosterModal() {
+    if (!rosterModal) return;
+    if (rosterSearch) rosterSearch.value = "";
+    renderRoster("");
+    rosterModal.classList.add("show");
+    document.body.style.overflow = "hidden";
+    setTimeout(() => rosterSearch && rosterSearch.focus(), 80);
+}
+
+function closeRosterModal() {
+    if (!rosterModal) return;
+    rosterModal.classList.remove("show");
+    document.body.style.overflow = "";
+}
+
+if (showAllPlayersBtn) {
+    showAllPlayersBtn.addEventListener("click", openRosterModal);
+}
+if (closeRosterBtn) {
+    closeRosterBtn.addEventListener("click", closeRosterModal);
+}
+if (rosterModal) {
+    rosterModal.addEventListener("click", e => {
+        if (e.target === rosterModal) closeRosterModal();
+    });
+}
+if (rosterSearch) {
+    rosterSearch.addEventListener("input", () => renderRoster(rosterSearch.value));
+}
+
+// =========================
 // INIT
 // =========================
 initWorkspaceFlow();

@@ -189,6 +189,11 @@
           <span>Tutorial</span>
         </button>
 
+        <button class="btn btn-roster" id="showAllPlayersBtn" type="button">
+          <span class="btn-icon"><i class="fa-solid fa-list-ul"></i></span>
+          <span>All Players</span>
+        </button>
+
         <!-- Mobile only More Options -->
         <div class="more-options-wrap" id="moreOptionsWrap">
           <button class="btn more-options-btn" id="moreOptionsBtn" type="button">
@@ -536,6 +541,35 @@
 </div>
 
 <div class="toast" id="toast">Saved</div>
+
+<!-- ROSTER / SHOW ALL PLAYERS MODAL -->
+<div class="modal" id="rosterModal">
+  <div class="modal-panel roster-panel" style="max-width: 900px;">
+    <div class="modal-head">
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h3 style="color:var(--cyan); letter-spacing:3px; text-shadow: 0 0 12px var(--cyan); margin:0 0 4px;">
+            <i class="fa-solid fa-shield-halved" style="margin-right:8px;"></i>FULL ROSTER
+          </h3>
+          <p style="margin:0; font-size:12px; color:var(--muted);">All registered players &amp; statistics</p>
+        </div>
+        <input type="text" id="rosterSearch" class="search" placeholder="Search roster..." style="max-width:220px; margin:0;" />
+      </div>
+    </div>
+    <div class="modal-body" style="padding:0; overflow-y:auto; max-height:72vh;">
+
+      <!-- STATS STRIP -->
+      <div id="rosterStats" class="roster-stats-strip"></div>
+
+      <!-- MANOR LEVEL GROUPS -->
+      <div id="rosterGroups" class="roster-groups"></div>
+
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="closeRosterBtn">Close</button>
+    </div>
+  </div>
+</div>
 <script src="assets/js/loading.js"></script>
 <script src="assets/js/ctc.js"></script>
 <script src="assets/js/rpg_chat.js"></script>

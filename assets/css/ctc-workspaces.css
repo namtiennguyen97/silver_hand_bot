@@ -34,7 +34,7 @@
     border: 1px solid rgba(110, 231, 255, 0.1);
     border-radius: 12px;
     padding: 20px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     transition: all 0.2s ease;
     display: flex;
     flex-direction: column;
@@ -309,7 +309,7 @@
     font-size: 20px;
     font-weight: 700;
     color: var(--text);
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     transition: all 0.1s active;
     position: relative;
     overflow: hidden;

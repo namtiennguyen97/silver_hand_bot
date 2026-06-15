@@ -184,7 +184,7 @@
 
 .switch-slider {
     position: absolute;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     top: 0; left: 0; right: 0; bottom: 0;
     background-color: #111;
     border: 1px solid #333;
@@ -265,7 +265,7 @@ input:checked + .switch-slider:before {
 .schedule-item.main-item {
     background: transparent;
     border: none;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
 }
 
 .expand-arrow {
@@ -472,7 +472,7 @@ body.schedule-page {
     border: 2px solid #00ffff;
     color: #00ffff;
     font-size: 20px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     z-index: 100;
     display: flex;
     align-items: center;

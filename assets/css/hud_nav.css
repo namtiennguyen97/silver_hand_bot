@@ -24,7 +24,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     pointer-events: all;
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);

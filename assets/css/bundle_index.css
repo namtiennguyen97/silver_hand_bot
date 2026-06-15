@@ -3,17 +3,20 @@
     src: url('../fonts/Conthrax-SemiBold.otf') format('opentype');
     font-display: swap;
 }
+body {
+    cursor: url('assets/img/cursor.png'), auto;
+}
 
 /*modal faq*/
 #faqBtn{
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
 }
 /* Nút FAQ cạnh tiêu đề */
 .faq-btn {
     background: none;
     border: none;
     font-size: 1.2rem;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     margin-left: 8px;
     transition: transform 0.2s;
 }
@@ -134,7 +137,7 @@
     padding: 10px;
     border-radius: 6px;
     margin-bottom: 8px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     transition: background 0.2s;
 }
 
@@ -151,7 +154,7 @@
     border: 1px solid rgba(94, 242, 214, 0.5);
     padding: 9px 28px;
     border-radius: 4px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     font-family: 'Conthrax', 'Orbitron', sans-serif;
     font-size: 11px;
     letter-spacing: 0.18em;
@@ -225,7 +228,7 @@
     font-weight: 600;
     border: none;
     border-radius: 8px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     transition: 0.2s ease;
 }
 
@@ -339,7 +342,7 @@
     border: none;
     color: #ffcc33;
     font-size: 16px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     display: none; /* mặc định ẩn */
     transition: transform 0.2s ease, color 0.2s ease;
     text-shadow: 0 0 8px #ffcc33;
@@ -371,7 +374,7 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     font-size: 15px;
     box-shadow: 0 0 8px #ffcc33, 0 0 16px #ff9800;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -640,7 +643,7 @@ body {
     border: 1px solid rgba(94,242,214,0.4);
     border-radius: 14px;
     padding: 20px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     box-shadow: 0 0 12px rgba(94,242,214,0.3);
     transition: 0.25s ease;
     font-size: 20px;
@@ -872,7 +875,7 @@ button.round-focus:focus-visible::after {
     border-radius: 14px;
     padding: 18px 12px;
     text-align: center;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
 
     box-shadow:
         0 0 10px rgba(94, 242, 214, 0.25);
@@ -1332,7 +1335,7 @@ body.finished #loadingOverlay {
     font-weight: 700;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
 
     padding: 6px 14px;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
@@ -1520,7 +1523,7 @@ body.finished #loadingOverlay {
     align-items: center;
     padding: 6px;
     border-radius: 10px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     transition: 0.2s ease;
     background: rgba(255,255,255,0.01);
 }
@@ -1617,7 +1620,7 @@ body.finished #loadingOverlay {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     transition: 0.2s ease;
     box-sizing: border-box;
 }
@@ -1785,7 +1788,7 @@ body.finished #loadingOverlay {
     justify-content: center;
 
     border-radius: 10px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     box-sizing: border-box;
     transition: 0.2s ease;
 }
@@ -1909,7 +1912,7 @@ body.finished #loadingOverlay {
     font-size: 13px;
     text-align: center;
 
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     transition:
             transform 0.25s ease,
             opacity 0.25s ease,
@@ -2107,7 +2110,7 @@ body.finished #loadingOverlay {
     border-radius: 10px;
     background: rgba(15,25,35,.8);
     border: 1px solid rgba(120,220,255,.25);
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
 }
 
 .skill-trait-item img {
@@ -2238,7 +2241,7 @@ body.finished #loadingOverlay {
     padding: 8px 6px;
 
     border-radius: 12px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
 
     background: rgba(15,25,35,.9);
     border: 1px solid rgba(120,220,255,.25);
@@ -2732,7 +2735,7 @@ body.finished #loadingOverlay {
     border-radius: 10px;
     padding: 10px 14px;
     z-index: 10;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     overflow: visible;
     /* để ánh sáng tỏa ra */
     box-shadow:
@@ -2831,7 +2834,7 @@ body.finished #loadingOverlay {
     padding: 14px 20px;
     margin: 10px 0;
     /*border-radius: 8px;*/
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     overflow: hidden;
     position: relative;
     opacity: 0;
@@ -2888,7 +2891,7 @@ body.finished #loadingOverlay {
     font-weight: 800;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     overflow: hidden;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -3517,7 +3520,7 @@ body.finished #loadingOverlay {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     transition: all 0.3s;
     user-select: none;
 }
@@ -3554,7 +3557,7 @@ body.finished #loadingOverlay {
     right: -10px;
     color: #5ef2d6;
     font-size: 12px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     text-transform: uppercase;
     letter-spacing: 2px;
     border-bottom: 2px solid #5ef2d6;
@@ -3837,7 +3840,7 @@ body.finished #loadingOverlay {
     font-size: 12px;
     opacity: 0;
     animation: bounceIndicator 1.5s infinite;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     transition: opacity 0.3s ease;
 }
 
@@ -3924,7 +3927,7 @@ body.finished #loadingOverlay {
     border-radius: 0 4px 4px 0;
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     animation: itemReveal 0.6s backwards;
 }
 
@@ -4135,7 +4138,7 @@ body.finished #loadingOverlay {
     border: 1px solid #5ef2d6;
     color: #5ef2d6;
     padding: 6px 14px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     font-family: 'Ethnocentric', sans-serif;
     font-size: 10px;
     transition: all 0.3s;
@@ -4208,7 +4211,7 @@ body.finished #loadingOverlay {
     font-family: 'Conthrax', sans-serif;
     font-size: 11px;
     padding: 6px 12px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     outline: none;
     transition: all 0.3s;
     text-transform: uppercase;
@@ -4610,7 +4613,7 @@ body.finished #hud-root {
   color: #fff;
   font-family: var(--hud-font);
   text-align: left;
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
   transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
   overflow: visible; /* Changed from hidden to allow glow spread */
   backdrop-filter: var(--hud-blur);
@@ -4758,7 +4761,7 @@ body.finished #hud-root {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
   transition: all 0.2s;
   backdrop-filter: var(--hud-blur);
   position: relative;
@@ -4783,7 +4786,7 @@ body.finished #hud-root {
   border: 1px solid var(--hud-border);
   position: relative;
   overflow: hidden;
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
   pointer-events: auto; /* Force interactive */
 }
 
@@ -5003,7 +5006,7 @@ body.finished #hud-root {
   width: 18px;
   height: 18px;
   background: var(--hud-cyan);
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
   clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
   box-shadow: 0 0 10px var(--hud-cyan), 0 0 20px var(--hud-cyan);
   transition: transform 0.1s, background 0.2s;
@@ -5226,7 +5229,7 @@ body.finished #hud-root {
   background: transparent;
   border: 1px solid rgba(94,242,214,0.2);
   padding: 5px 12px;
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
   clip-path: polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);
   transition: all 0.2s;
 }
@@ -5242,7 +5245,7 @@ body.finished #hud-root {
   opacity: 0;
   transition: opacity 0.3s ease;
   animation: vnBounce 1.4s ease-in-out infinite;
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
 }
 .vn-next-indicator.visible { opacity: 1; }
 @keyframes vnBounce {
@@ -5302,7 +5305,7 @@ body.finished #hud-root {
   font-size: 12px;
   letter-spacing: 0.1em;
   padding: 12px 20px;
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
   clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
   transition: all 0.3s;
   box-shadow: 0 0 10px rgba(94,242,214,0.2);
@@ -5451,7 +5454,7 @@ body.finished #hud-root {
   border: 1px solid var(--neon-cyan);
   color: #fff;
   padding: 8px 14px;
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
   font-family: 'Orbitron', sans-serif;
   font-size: 11px;
   font-weight: bold;
@@ -5530,7 +5533,7 @@ body.finished #hud-root {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
   transition: all 0.15s;
   overflow: hidden;
 }
@@ -5602,7 +5605,7 @@ body.finished #hud-root {
     font-weight: 700;
     font-size: 14px;
     letter-spacing: 3px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     text-transform: uppercase;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;

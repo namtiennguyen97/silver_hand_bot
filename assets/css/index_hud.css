@@ -261,7 +261,7 @@ body.finished #hud-root {
   color: #fff;
   font-family: var(--hud-font);
   text-align: left;
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
   transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
   overflow: visible; /* Changed from hidden to allow glow spread */
   backdrop-filter: var(--hud-blur);
@@ -409,7 +409,7 @@ body.finished #hud-root {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
   transition: all 0.2s;
   backdrop-filter: var(--hud-blur);
   position: relative;
@@ -434,7 +434,7 @@ body.finished #hud-root {
   border: 1px solid var(--hud-border);
   position: relative;
   overflow: hidden;
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
   pointer-events: auto; /* Force interactive */
 }
 
@@ -669,7 +669,7 @@ body.finished #hud-root {
   width: 18px;
   height: 18px;
   background: var(--hud-cyan);
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
   clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
   box-shadow: 0 0 10px var(--hud-cyan), 0 0 20px var(--hud-cyan);
   transition: transform 0.1s, background 0.2s;

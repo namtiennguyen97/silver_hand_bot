@@ -1,13 +1,13 @@
 /*modal faq*/
 #faqBtn{
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
 }
 /* Nút FAQ cạnh tiêu đề */
 .faq-btn {
     background: none;
     border: none;
     font-size: 1.2rem;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     margin-left: 8px;
     transition: transform 0.2s;
 }
@@ -128,7 +128,7 @@
     padding: 10px;
     border-radius: 6px;
     margin-bottom: 8px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     transition: background 0.2s;
 }
 
@@ -145,7 +145,7 @@
     border: 1px solid rgba(94, 242, 214, 0.5);
     padding: 9px 28px;
     border-radius: 4px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     font-family: 'Conthrax', 'Orbitron', sans-serif;
     font-size: 11px;
     letter-spacing: 0.18em;
@@ -219,7 +219,7 @@
     font-weight: 600;
     border: none;
     border-radius: 8px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     transition: 0.2s ease;
 }
 
@@ -333,7 +333,7 @@
     border: none;
     color: #ffcc33;
     font-size: 16px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     display: none; /* mặc định ẩn */
     transition: transform 0.2s ease, color 0.2s ease;
     text-shadow: 0 0 8px #ffcc33;
@@ -365,7 +365,7 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     font-size: 15px;
     box-shadow: 0 0 8px #ffcc33, 0 0 16px #ff9800;
     transition: transform 0.2s ease, box-shadow 0.2s ease;

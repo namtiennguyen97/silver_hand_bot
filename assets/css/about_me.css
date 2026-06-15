@@ -261,7 +261,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     transition: all 0.3s;
     user-select: none;
 }
@@ -298,7 +298,7 @@
     right: -10px;
     color: #5ef2d6;
     font-size: 12px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     text-transform: uppercase;
     letter-spacing: 2px;
     border-bottom: 2px solid #5ef2d6;

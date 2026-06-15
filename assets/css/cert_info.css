@@ -161,7 +161,7 @@
     align-items: center;
     padding: 6px;
     border-radius: 10px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     transition: 0.2s ease;
     background: rgba(255,255,255,0.01);
 }
@@ -258,7 +258,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     transition: 0.2s ease;
     box-sizing: border-box;
 }
@@ -426,7 +426,7 @@
     justify-content: center;
 
     border-radius: 10px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     box-sizing: border-box;
     transition: 0.2s ease;
 }
@@ -550,7 +550,7 @@
     font-size: 13px;
     text-align: center;
 
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     transition:
             transform 0.25s ease,
             opacity 0.25s ease,
@@ -748,7 +748,7 @@
     border-radius: 10px;
     background: rgba(15,25,35,.8);
     border: 1px solid rgba(120,220,255,.25);
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
 }
 
 .skill-trait-item img {
@@ -879,7 +879,7 @@
     padding: 8px 6px;
 
     border-radius: 12px;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
 
     background: rgba(15,25,35,.9);
     border: 1px solid rgba(120,220,255,.25);

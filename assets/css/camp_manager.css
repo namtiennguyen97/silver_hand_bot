@@ -135,7 +135,7 @@ body {
   padding: 8px 15px;
   font-family: var(--font-accent);
   font-size: 0.75rem;
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
   transition: 0.3s;
 }
 
@@ -237,7 +237,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
   position: relative;
   transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
@@ -405,7 +405,7 @@ body {
   font-family: var(--font-accent);
   font-weight: 700;
   border-radius: 4px;
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
   transition: 0.2s;
   display: flex;
   flex-direction: column;
@@ -462,7 +462,7 @@ body {
   padding: 10px 20px;
   font-family: var(--font-accent);
   font-weight: 700;
-  cursor: pointer;
+  cursor: url('assets/img/cursor_pointer.png'), pointer;
   transition: 0.3s;
 }
 

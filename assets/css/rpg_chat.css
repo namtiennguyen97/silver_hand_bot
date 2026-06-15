@@ -155,7 +155,7 @@
     font-size: 12px;
     opacity: 0;
     animation: bounceIndicator 1.5s infinite;
-    cursor: pointer;
+    cursor: url('assets/img/cursor_pointer.png'), pointer;
     transition: opacity 0.3s ease;
 }
 

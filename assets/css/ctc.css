@@ -179,7 +179,7 @@ body::before {
     color: var(--text);
     padding: 11px 14px;
     border-radius: var(--r-sm);
-    cursor: url('assets/img/cursor_pointer.png'), pointer;
+    cursor: url('/assets/img/cursor_pointer.png'), pointer;
     font-size: 13px;
     font-weight: 800;
     letter-spacing: 0.02em;
@@ -418,7 +418,7 @@ body::before {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    cursor: url('assets/img/cursor_pointer.png'), pointer;
+    cursor: url('/assets/img/cursor_pointer.png'), pointer;
     padding: 0;
     font-size: 14px;
     border-radius: 4px;
@@ -500,7 +500,7 @@ body::before {
     color: var(--text);
     padding: 8px 10px;
     border-radius: 8px;
-    cursor: url('assets/img/cursor_pointer.png'), pointer;
+    cursor: url('/assets/img/cursor_pointer.png'), pointer;
     font-size: 12px;
     font-weight: 800;
 }
@@ -591,7 +591,7 @@ body::before {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    cursor: url('assets/img/cursor_pointer.png'), pointer;
+    cursor: url('/assets/img/cursor_pointer.png'), pointer;
     box-shadow: var(--glow-green);
     transition: .18s ease;
 }
@@ -708,7 +708,7 @@ body::before {
     border-radius: 10px;
     border: 1px solid rgba(110, 231, 255, 0.08);
     background: linear-gradient(180deg, rgba(19, 28, 40, 0.92), rgba(14, 21, 31, 0.92));
-    cursor: url('assets/img/cursor_pointer.png'), pointer;
+    cursor: url('/assets/img/cursor_pointer.png'), pointer;
     transition: .16s ease;
     min-height: 50px;
 }
@@ -1496,7 +1496,7 @@ textarea.input:focus {
     background-repeat: no-repeat, no-repeat;
     background-position: 0 0, right 14px center;
     background-size: auto, 14px;
-    cursor: url('assets/img/cursor_pointer.png'), pointer;
+    cursor: url('/assets/img/cursor_pointer.png'), pointer;
 }
 
 /* Number input remove ugly browser arrows (optional) */

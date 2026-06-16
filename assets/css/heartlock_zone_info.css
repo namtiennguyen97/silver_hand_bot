@@ -110,7 +110,7 @@
     font-weight: 700;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    cursor: url('assets/img/cursor_pointer.png'), pointer;
+    cursor: url('/assets/img/cursor_pointer.png'), pointer;
 
     padding: 6px 14px;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);

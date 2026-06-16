@@ -69,7 +69,7 @@ body {
     border: 1px solid rgba(94,242,214,0.4);
     border-radius: 14px;
     padding: 20px;
-    cursor: url('assets/img/cursor_pointer.png'), pointer;
+    cursor: url('/assets/img/cursor_pointer.png'), pointer;
     box-shadow: 0 0 12px rgba(94,242,214,0.3);
     transition: 0.25s ease;
     font-size: 20px;
@@ -301,7 +301,7 @@ button.round-focus:focus-visible::after {
     border-radius: 14px;
     padding: 18px 12px;
     text-align: center;
-    cursor: url('assets/img/cursor_pointer.png'), pointer;
+    cursor: url('/assets/img/cursor_pointer.png'), pointer;
 
     box-shadow:
         0 0 10px rgba(94, 242, 214, 0.25);

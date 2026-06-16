@@ -102,7 +102,7 @@
   border: 1px solid var(--neon-cyan);
   color: #fff;
   padding: 8px 14px;
-  cursor: url('assets/img/cursor_pointer.png'), pointer;
+  cursor: url('/assets/img/cursor_pointer.png'), pointer;
   font-family: 'Orbitron', sans-serif;
   font-size: 11px;
   font-weight: bold;
@@ -181,7 +181,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  cursor: url('assets/img/cursor_pointer.png'), pointer;
+  cursor: url('/assets/img/cursor_pointer.png'), pointer;
   transition: all 0.15s;
   overflow: hidden;
 }
@@ -253,7 +253,7 @@
     font-weight: 700;
     font-size: 14px;
     letter-spacing: 3px;
-    cursor: url('assets/img/cursor_pointer.png'), pointer;
+    cursor: url('/assets/img/cursor_pointer.png'), pointer;
     text-transform: uppercase;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;

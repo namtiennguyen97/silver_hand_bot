@@ -36,7 +36,7 @@ html,body{height:100%}
 /*	background: radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.08), transparent 8%),*/
 /*	radial-gradient(1000px 500px at 90% 90%, rgba(110,231,183,0.03), transparent 8%),*/
 /*	var(--bg);*/
-/*	!*background: url("assets/img/la_background.jpg") center center / cover no-repeat fixed;*!*/
+/*	!*background: url("/assets/img/la_background.jpg") center center / cover no-repeat fixed;*!*/
 /*	color:#e6eef3;*/
 /*	display:flex;*/
 /*	align-items:center;*/
@@ -245,7 +245,7 @@ button#sendBtn {
     border: none;
     padding: 10px;
     font-weight: 700;
-    cursor: url('assets/img/cursor_pointer.png'), pointer;
+    cursor: url('/assets/img/cursor_pointer.png'), pointer;
     background: linear-gradient(90deg, var(--accent), var(--accent-2));
     color: #021017;
     transition: all 0.15s ease;
@@ -481,7 +481,7 @@ button#sendBtn:active {
 
 /* Brand = Home */
 .home-brand {
-    cursor: url('assets/img/cursor_pointer.png'), pointer;
+    cursor: url('/assets/img/cursor_pointer.png'), pointer;
     transition: transform 0.2s ease, filter 0.2s ease;
 }
 
@@ -634,7 +634,7 @@ button#sendBtn:active {
 
 .switch-slider {
   position: absolute;
-  cursor: url('assets/img/cursor_pointer.png'), pointer;
+  cursor: url('/assets/img/cursor_pointer.png'), pointer;
   top: 0; left: 0; right: 0; bottom: 0;
   background-color: #1a1a1a;
   border: 1px solid #333;

@@ -249,7 +249,7 @@ body {
 .stage-node {
     position: absolute;
     width: 240px;
-    cursor: url('assets/img/cursor_pointer.png'), pointer;
+    cursor: url('/assets/img/cursor_pointer.png'), pointer;
     z-index: 5;
     transition: transform 0.3s ease;
 }
@@ -678,7 +678,7 @@ body {
     font-weight: 700;
     letter-spacing: 1px;
     padding: 10px 24px;
-    cursor: url('assets/img/cursor_pointer.png'), pointer;
+    cursor: url('/assets/img/cursor_pointer.png'), pointer;
     border: none;
     clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
     transition: all 0.25s ease;

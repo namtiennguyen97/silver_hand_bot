@@ -217,6 +217,13 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("sao-dem-ctc-tutorial-done", "1");
     }
 
+    function startTutorial() {
+        currentStep = 0;
+        document.body.classList.add("tutorial-lock");
+        overlay.style.display = "block";
+        showStep(currentStep);
+    }
+
     overlay.addEventListener("click", (e) => {
         e.stopPropagation();
         if (window.isChatTyping) {
@@ -242,39 +249,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function tryStartAutoTutorial() {
-        if (localStorage.getItem("sao-dem-ctc-tutorial-done")) return;
-
-        // Check both conditions: workspace is loaded AND loading screen is dismissed
-        const isWorkspaceReady = window.ctcWorkspaceReady;
-        const isLoadingFinished = document.body.classList.contains("finished");
-
-        if (!isWorkspaceReady || !isLoadingFinished) return;
-
-        setTimeout(() => {
-            overlay.style.display = "block";
-            document.body.classList.add("tutorial-lock");
-            showStep(currentStep);
-        }, 500);
-    }
-
     window.addEventListener("ctc:workspace-ready", () => {
         window.ctcWorkspaceReady = true;
-        tryStartAutoTutorial();
-    });
-
-    window.addEventListener("app:loaded", () => {
-        tryStartAutoTutorial();
     });
 
     const helpBtn = document.getElementById("startTutorialBtn");
     if (helpBtn) {
         helpBtn.addEventListener("click", (e) => {
             e.stopPropagation();
-            currentStep = 0;
-            document.body.classList.add("tutorial-lock");
-            overlay.style.display = "block";
-            showStep(currentStep);
+            startTutorial();
         });
     }
 

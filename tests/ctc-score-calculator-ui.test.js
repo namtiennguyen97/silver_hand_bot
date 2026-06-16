@@ -19,16 +19,28 @@ assert(
 
 assert(css.includes(".score-calc-panel"), "score calculator modal should have scoped styles");
 assert(css.includes(".btn-score-calc"), "score calculator toolbar button should have scoped styles");
+assert(css.includes("#browseWorkspacesBtn"), "switch workspace button should have highlighted scoped styles");
 
 assert(js.includes("openScoreCalcModal"), "ctc.js should open the score calculator modal");
 assert(js.includes("analyzeScoreCalculator"), "ctc.js should render score analysis");
+assert(js.includes("clampScoreInput"), "score calculator inputs should clamp values to the max score");
+assert(js.includes('input.addEventListener("input", () => clampScoreInput(input))'), "score calculator inputs should clamp while typing");
+assert(js.includes("closeScoreCalcBtn.addEventListener(\"click\", closeScoreCalcModal)"), "score calculator should close from its close button");
+assert(!js.includes("scoreCalcModal.addEventListener(\"click\""), "score calculator should not close from backdrop clicks");
 assert(js.includes("scoreCalcLanguage"), "ctc.js should track score calculator language");
 assert(js.includes("SCORE_CALC_I18N"), "ctc.js should render score calculator text from i18n labels");
+assert(js.includes("bothCasesWin"), "summary should support the both-cases-win message");
+assert(js.includes("bothCasesLose"), "summary should support the both-cases-lose message");
+assert(js.includes("caseOneLabel"), "score scenario cards should label the first case");
+assert(js.includes("caseTwoLabel"), "score scenario cards should label the second case");
 assert(js.includes("score-calc-scenario-safe"), "winning scenario card should get safe styling class");
 assert(js.includes("score-calc-scenario-danger"), "losing scenario card should get danger styling class");
 assert(js.includes("window.CTCScoreCalculator"), "ctc.js should use the calculator module");
 
 assert(css.includes(".score-calc-scenario-safe"), "safe scenario card should have scoped CSS");
 assert(css.includes(".score-calc-scenario-danger"), "danger scenario card should have scoped CSS");
+assert(css.includes(".score-calc-summary-success"), "sure-win summary should have success styling");
+assert(css.includes(".score-calc-summary-danger"), "sure-lose summary should have danger styling");
+assert(css.includes(".score-calc-case-label"), "case labels should have scoped CSS");
 
 console.log("ctc score calculator UI smoke test passed");

@@ -39,6 +39,21 @@ assert.strictEqual(
     "when behind, counter-breaking after the enemy should be less bad than breaking first"
 );
 
+const maxReachedAnalysis = analyzeBaseBreakStrategy(9000, 7300);
+assert.strictEqual(
+    maxReachedAnalysis.ourFirst.final.our,
+    10460,
+    "scenario should stop once our first break reaches the 10k win target"
+);
+assert.strictEqual(maxReachedAnalysis.ourFirst.final.enemy, 5840);
+assert.strictEqual(maxReachedAnalysis.ourFirst.final.winner, "our");
+assert.strictEqual(maxReachedAnalysis.ourFirst.resolvedAt, "after-first");
+assert.strictEqual(
+    maxReachedAnalysis.recommendation,
+    "break-first",
+    "reaching 10k immediately should override waiting for a later counter-break"
+);
+
 assert.strictEqual(formatScore(5200), "5,200");
 assert.strictEqual(formatScore(666.666), "667");
 assert.strictEqual(formatScore(7300.8), "7,301");

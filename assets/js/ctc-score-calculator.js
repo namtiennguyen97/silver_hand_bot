@@ -42,6 +42,10 @@
         return "tie";
     }
 
+    function scoreHitsMax(ourScore, enemyScore) {
+        return ourScore >= MAX_SCORE || enemyScore >= MAX_SCORE;
+    }
+
     function buildScenario(ourScore, enemyScore, firstBreaker) {
         const initial = {
             our: normalizeScore(ourScore),
@@ -56,6 +60,26 @@
             ? { our: first.attacker, enemy: first.defender, steal: first.steal }
             : { our: first.defender, enemy: first.attacker, steal: first.steal };
 
+        if (scoreHitsMax(afterFirst.our, afterFirst.enemy)) {
+            return {
+                firstBreaker,
+                initial,
+                resolvedAt: "after-first",
+                afterFirst: {
+                    our: roundScore(afterFirst.our),
+                    enemy: roundScore(afterFirst.enemy),
+                    steal: first.steal,
+                    winner: getWinner(afterFirst.our, afterFirst.enemy),
+                },
+                final: {
+                    our: roundScore(afterFirst.our),
+                    enemy: roundScore(afterFirst.enemy),
+                    steal: 0,
+                    winner: getWinner(afterFirst.our, afterFirst.enemy),
+                },
+            };
+        }
+
         const counter = firstBreaker === "our"
             ? breakBase(afterFirst.enemy, afterFirst.our)
             : breakBase(afterFirst.our, afterFirst.enemy);
@@ -67,6 +91,7 @@
         return {
             firstBreaker,
             initial,
+            resolvedAt: "final",
             afterFirst: {
                 our: roundScore(afterFirst.our),
                 enemy: roundScore(afterFirst.enemy),

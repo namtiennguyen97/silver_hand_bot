@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CTC Score Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/hud_nav.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="icon" type="image/png" href="assets/img/mayor_avatar.jpg">
+  <link rel="stylesheet" href="assets/css/ctc.css">
+  <link rel="stylesheet" href="assets/css/ctc-footer.css">
+  <style>
+    body {
+      cursor: url('assets/img/cursor.png'), auto;
+    }
+
+    .score-calc-page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: grid;
+      align-items: center;
+      justify-items: center;
+      padding: 72px 18px 58px;
+    }
+
+    .score-calc-page-panel {
+      width: min(760px, 100%);
+    }
+
+    .score-calc-page-kicker {
+      color: var(--amber);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin: 0 0 10px;
+      text-transform: uppercase;
+    }
+
+    .score-calc-page .modal-head,
+    .score-calc-page .modal-body {
+      background: transparent;
+    }
+
+    @media (max-width: 720px) {
+      .score-calc-page {
+        align-items: start;
+        padding-top: 86px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="scanline"></div>
+
+<div class="stage-nav-wrap">
+  <button class="stage-btn-control nav-back" onclick="window.location.href='ctc-planer.html'">
+    <span class="btn-icon"><i class="fa-solid fa-arrow-left"></i></span>
+    <span class="btn-text">Back to CTC Plan</span>
+  </button>
+</div>
+
+<main class="score-calc-page">
+  <section class="modal-panel score-calc-panel score-calc-page-panel">
+    <div class="modal-head">
+      <p class="score-calc-page-kicker">CTC Score Tool</p>
+      <div class="score-calc-head-row">
+        <div>
+          <h3 id="scoreCalcTitle"><i class="fa-solid fa-calculator" style="margin-right:8px;"></i>PHÂN TÍCH ĐIỂM BASE</h3>
+          <p id="scoreCalcSubtitle">Tool tính nhanh phút 20 offensive / defending. Mốc thắng: 10,000. Phá base sẽ ăn cắp 20% điểm hiện tại của đối thủ.</p>
+        </div>
+        <div class="score-lang-switch" aria-label="Score calculator language">
+          <button class="score-lang-btn active" type="button" data-score-lang="vi">VI</button>
+          <button class="score-lang-btn" type="button" data-score-lang="en">EN</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-body score-calc-body">
+      <div class="score-calc-inputs">
+        <label class="score-calc-field">
+          <span id="ourScoreLabel">Điểm bên mình</span>
+          <input type="number" id="ourScoreInput" class="input" min="0" max="10000" step="1" placeholder="e.g. 5000" inputmode="decimal" />
+        </label>
+        <label class="score-calc-field">
+          <span id="enemyScoreLabel">Điểm đối thủ</span>
+          <input type="number" id="enemyScoreInput" class="input" min="0" max="10000" step="1" placeholder="e.g. 5000" inputmode="decimal" />
+        </label>
+      </div>
+      <button class="btn btn-important score-calc-analyze" id="analyzeScoreBtn" type="button">
+        <span class="btn-icon"><i class="fa-solid fa-chart-simple"></i></span>
+        <span id="analyzeScoreText">Phân tích</span>
+      </button>
+      <div id="scoreCalcResult" class="score-calc-result">
+        <div class="score-calc-empty" id="scoreCalcEmptyText">
+          Nhập điểm hai đội, rồi phân tích xem nên phá trước hay thủ chờ phản phá sau.
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-credit">
+  <span class="credit-line">
+    <i class="fa-solid fa-crosshairs"></i>
+    <span class="credit-text">Made by</span>
+    <span class="credit-author">
+      <img src="assets/img/mayor_avatar.jpg" alt="Silver-Hand Avatar" class="credit-avatar">
+      <strong>Silver-Hand</strong>
+    </span>
+    <span class="credit-text">the Mayor</span>
+  </span>
+</footer>
+
+<script src="assets/js/ctc-score-calculator.js"></script>
+<script src="assets/js/ctc-score-calculator-page.js"></script>
+<script src="assets/js/tracker.js"></script>
+</body>
+</html>

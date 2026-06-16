@@ -1285,6 +1285,10 @@ const SCORE_CALC_I18N = {
         waitBetter: "Chờ phản phá sau tốt hơn khoảng <strong>{score}</strong> điểm cho bên mình.",
         breakBetter: "Phá trước tốt hơn khoảng <strong>{score}</strong> điểm cho bên mình.",
         sameValue: "Hai hướng cho bên mình cùng mức lợi điểm.",
+        bothCasesWin: "Bên mình hoàn toàn có thể thắng dù phá trước hay phản phá sau.",
+        bothCasesLose: "Bên mình sẽ thua trong cả hai trường hợp phá trước hoặc phản phá sau.",
+        caseOneLabel: "Trường hợp 1",
+        caseTwoLabel: "Trường hợp 2",
         ourFirstTitle: "Mình phá trước, địch phá sau",
         enemyFirstTitle: "Địch phá trước, mình phá sau",
         firstSteal: "Phá lần 1 lấy cắp <b>{score}</b> điểm.",
@@ -1294,6 +1298,9 @@ const SCORE_CALC_I18N = {
         finalEnemy: "Final địch",
         winnerOur: "Bên mình thắng",
         winnerEnemy: "Đối thủ thắng",
+        winnerOurMax: "Bên mình thắng vì đã đạt 10k.",
+        winnerEnemyMax: "Đối thủ thắng vì đã đạt 10k.",
+        winnerTieMaxReason: "Cả hai đội đã đạt 10k.",
         winnerTieMax: "Cả hai chạm mốc 10k",
         winnerTie: "Đang cân bằng",
     },
@@ -1312,6 +1319,10 @@ const SCORE_CALC_I18N = {
         waitBetter: "Waiting to counter-break is better for us by about <strong>{score}</strong> points.",
         breakBetter: "Breaking first is better for us by about <strong>{score}</strong> points.",
         sameValue: "Both options give us the same point value.",
+        bothCasesWin: "We can win whether we break first or counter-break later.",
+        bothCasesLose: "We lose in both cases, whether breaking first or counter-breaking later.",
+        caseOneLabel: "Case 1",
+        caseTwoLabel: "Case 2",
         ourFirstTitle: "We break first, enemy breaks second",
         enemyFirstTitle: "Enemy breaks first, we break second",
         firstSteal: "First break steals <b>{score}</b> points.",
@@ -1321,6 +1332,9 @@ const SCORE_CALC_I18N = {
         finalEnemy: "Final enemy",
         winnerOur: "We are win",
         winnerEnemy: "Enemy win",
+        winnerOurMax: "We win because we reached 10k.",
+        winnerEnemyMax: "Enemy wins because they reached 10k.",
+        winnerTieMaxReason: "Both teams reached 10k.",
         winnerTieMax: "Both teams hit 10k",
         winnerTie: "Still tied",
     },
@@ -1349,7 +1363,28 @@ function getScoreCalculator() {
     return window.CTCScoreCalculator || null;
 }
 
-function scoreWinnerLabel(winner) {
+function clampScoreInput(input) {
+    const calculator = getScoreCalculator();
+    const maxScore = calculator ? calculator.MAX_SCORE : 10000;
+    const rawValue = String(input.value || "").trim();
+    if (rawValue === "") return;
+
+    const value = Number(rawValue);
+    if (!Number.isFinite(value)) {
+        input.value = "";
+        return;
+    }
+
+    if (value > maxScore) input.value = String(maxScore);
+    if (value < 0) input.value = "0";
+}
+
+function scoreWinnerLabel(winner, scoreState = null, maxScore = 10000) {
+    if (scoreState) {
+        if (winner === "our" && scoreState.our >= maxScore) return scoreText("winnerOurMax");
+        if (winner === "enemy" && scoreState.enemy >= maxScore) return scoreText("winnerEnemyMax");
+        if (winner === "tie-max") return scoreText("winnerTieMaxReason");
+    }
     if (winner === "our") return scoreText("winnerOur");
     if (winner === "enemy") return scoreText("winnerEnemy");
     if (winner === "tie-max") return scoreText("winnerTieMax");
@@ -1362,7 +1397,20 @@ function scenarioToneClass(winner) {
     return "score-calc-scenario-neutral";
 }
 
-function recommendationText(recommendation) {
+function recommendationText(recommendation, analysis = null) {
+    const calculator = getScoreCalculator();
+    const maxScore = calculator ? calculator.MAX_SCORE : 10000;
+    const recommendedScenario = analysis && recommendation === "break-first"
+        ? analysis.ourFirst
+        : analysis && recommendation === "wait-counter"
+            ? analysis.enemyFirst
+            : null;
+
+    if (recommendedScenario) {
+        const maxWinnerLabel = scoreWinnerLabel(recommendedScenario.final.winner, recommendedScenario.final, maxScore);
+        if (maxWinnerLabel !== scoreWinnerLabel(recommendedScenario.final.winner)) return maxWinnerLabel;
+    }
+
     if (recommendation === "break-first") {
         return scoreText("recBreakFirst");
     }
@@ -1372,19 +1420,40 @@ function recommendationText(recommendation) {
     return scoreText("recNeutral");
 }
 
-function buildScenarioHtml(title, scenario, formatter) {
+function bothScenariosOurWin(analysis) {
+    return analysis
+        && analysis.ourFirst.final.winner === "our"
+        && analysis.enemyFirst.final.winner === "our";
+}
+
+function bothScenariosEnemyWin(analysis) {
+    return analysis
+        && analysis.ourFirst.final.winner === "enemy"
+        && analysis.enemyFirst.final.winner === "enemy";
+}
+
+function buildScenarioHtml(caseLabel, title, scenario, formatter) {
+    const calculator = getScoreCalculator();
+    const maxScore = calculator ? calculator.MAX_SCORE : 10000;
+    const counterLine = scenario.resolvedAt === "after-first"
+        ? ""
+        : `<div>${scoreText("counterSteal", { score: formatter(scenario.final.steal) })}</div>`;
+
     return `
         <div class="score-calc-scenario ${scenarioToneClass(scenario.final.winner)}">
-            <h4>${title}</h4>
+            <div class="score-calc-scenario-head">
+                <span class="score-calc-case-label">${caseLabel}</span>
+                <h4>${title}</h4>
+            </div>
             <div class="score-calc-lines">
                 <div>${scoreText("firstSteal", { score: formatter(scenario.afterFirst.steal) })}</div>
                 <div>${scoreText("afterFirst", { our: formatter(scenario.afterFirst.our), enemy: formatter(scenario.afterFirst.enemy) })}</div>
-                <div>${scoreText("counterSteal", { score: formatter(scenario.final.steal) })}</div>
+                ${counterLine}
                 <div class="score-calc-score">
                     <span>${scoreText("finalOur")}: ${formatter(scenario.final.our)}</span>
                     <span>${scoreText("finalEnemy")}: ${formatter(scenario.final.enemy)}</span>
                 </div>
-                <div>${scoreWinnerLabel(scenario.final.winner)}</div>
+                <div>${scoreWinnerLabel(scenario.final.winner, scenario.final, maxScore)}</div>
             </div>
         </div>
     `;
@@ -1393,6 +1462,10 @@ function buildScenarioHtml(title, scenario, formatter) {
 function analyzeScoreCalculator() {
     const calculator = getScoreCalculator();
     if (!calculator || !scoreCalcResult) return;
+
+    [ourScoreInput, enemyScoreInput].forEach(input => {
+        if (input) clampScoreInput(input);
+    });
 
     const ourScore = ourScoreInput ? ourScoreInput.value : "";
     const enemyScore = enemyScoreInput ? enemyScoreInput.value : "";
@@ -1421,15 +1494,29 @@ function renderScoreAnalysis(analysis) {
         : valueDiff < 0
             ? scoreText("breakBetter", { score: format(Math.abs(valueDiff)) })
             : scoreText("sameValue");
+    const isBothWin = bothScenariosOurWin(analysis);
+    const isBothLose = bothScenariosEnemyWin(analysis);
+    const summaryToneClass = isBothWin
+        ? "score-calc-summary-success"
+        : isBothLose
+            ? "score-calc-summary-danger"
+            : "";
+    const summaryHtml = isBothWin
+        ? `<div><strong>${scoreText("bothCasesWin")}</strong></div>`
+        : isBothLose
+            ? `<div><strong>${scoreText("bothCasesLose")}</strong></div>`
+            : `
+            <div><strong>${recommendationText(analysis.recommendation, analysis)}</strong></div>
+            <div>${diffLine}</div>
+        `;
 
     scoreCalcResult.innerHTML = `
-        <div class="score-calc-summary">
-            <div><strong>${recommendationText(analysis.recommendation)}</strong></div>
-            <div>${diffLine}</div>
+        <div class="score-calc-summary ${summaryToneClass}">
+            ${summaryHtml}
         </div>
         <div class="score-calc-grid">
-            ${buildScenarioHtml(scoreText("ourFirstTitle"), analysis.ourFirst, format)}
-            ${buildScenarioHtml(scoreText("enemyFirstTitle"), analysis.enemyFirst, format)}
+            ${buildScenarioHtml(scoreText("caseOneLabel"), scoreText("ourFirstTitle"), analysis.ourFirst, format)}
+            ${buildScenarioHtml(scoreText("caseTwoLabel"), scoreText("enemyFirstTitle"), analysis.enemyFirst, format)}
         </div>
     `;
 }
@@ -1782,16 +1869,11 @@ scoreLangButtons.forEach(btn => {
 
 [ourScoreInput, enemyScoreInput].forEach(input => {
     if (!input) return;
+    input.addEventListener("input", () => clampScoreInput(input));
     input.addEventListener("keydown", (e) => {
         if (e.key === "Enter") analyzeScoreCalculator();
     });
 });
-
-if (scoreCalcModal) {
-    scoreCalcModal.addEventListener("click", (e) => {
-        if (e.target === scoreCalcModal) closeScoreCalcModal();
-    });
-}
 
 if (modalSearch) {
     modalSearch.addEventListener("input", () => {

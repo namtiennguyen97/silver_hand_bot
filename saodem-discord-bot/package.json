@@ -1,0 +1,20 @@
+{
+  "name": "saodem-discord-bot",
+  "version": "1.0.0",
+  "description": "Discord reminder bot for SAO-DEM camp events.",
+  "type": "module",
+  "main": "src/bot.js",
+  "scripts": {
+    "start": "node src/bot.js",
+    "deploy:commands": "node src/deploy-commands.js",
+    "check": "node --check src/bot.js && node --check src/commands.js && node --check src/config-store.js && node --check src/deploy-commands.js && node --check src/event-store.js && node --check src/scheduler.js"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "discord.js": "^14.26.4",
+    "dotenv": "^17.2.3",
+    "luxon": "^3.7.2"
+  }
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "resource-scramble",
+    "name": "Resource Scramble",
+    "enabled": true,
+    "notes": "Random window in game: Monday 19:00 - 21:30.",
+    "reminders": [
+      {
+        "weekday": 1,
+        "time": "19:00",
+        "label": "MON 19:00 - 21:30 INGAME",
+        "message": "Resource Scramble window is starting. Watch camp chat and be ready."
+      }
+    ]
+  },
+  {
+    "id": "camp-invasion",
+    "name": "Camp Invasion",
+    "enabled": true,
+    "notes": "Main event: Tuesday 22:30 ingame.",
+    "reminders": [
+      {
+        "weekday": 2,
+        "time": "11:00",
+        "label": "TUE 11:00 INGAME",
+        "message": "Morning reminder for Camp Invasion. Check gear and attendance."
+      },
+      {
+        "weekday": 2,
+        "time": "22:20",
+        "label": "TUE 22:20 INGAME",
+        "message": "Camp Invasion starts soon. Gather and prepare for battle."
+      },
+      {
+        "weekday": 2,
+        "time": "22:30",
+        "label": "TUE 22:30 INGAME",
+        "message": "Camp Invasion is starting now."
+      }
+    ]
+  },
+  {
+    "id": "boss-camp",
+    "name": "Boss Camp",
+    "enabled": true,
+    "notes": "Main event: Thursday 23:00 ingame.",
+    "reminders": [
+      {
+        "weekday": 4,
+        "time": "11:00",
+        "label": "THU 11:00 INGAME",
+        "message": "Morning reminder for Boss Camp. Check gear and attendance."
+      },
+      {
+        "weekday": 4,
+        "time": "22:50",
+        "label": "THU 22:50 INGAME",
+        "message": "Boss Camp starts soon. Gather and prepare."
+      },
+      {
+        "weekday": 4,
+        "time": "23:00",
+        "label": "THU 23:00 INGAME",
+        "message": "Boss Camp is starting now."
+      }
+    ]
+  }
+]
